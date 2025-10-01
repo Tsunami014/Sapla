@@ -1,26 +1,26 @@
 #include <QApplication>
+#include <QScreen>
 #include <QLabel>
 #include <QWidget>
-#include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QVBoxLayout>
+#include "main.hpp"
 
-int main(int argc, char *argv[])
-{
+QGraphicsScene* scene = nullptr;
+MainGame* MG = nullptr;
+
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    QWidget window;
+    scene = new QGraphicsScene();
 
-    QGraphicsScene *scene = new QGraphicsScene();
-    scene->addRect(0, 0, 100, 100);
+    QGraphicsView* view = new QGraphicsView(scene);
 
-    QGraphicsView *view = new QGraphicsView(scene);
+    MG = new MainGame();
 
-    QVBoxLayout *layout = new QVBoxLayout(&window);
-    layout->addWidget(view);
-    layout->setContentsMargins(0,0,0,0);
+    // Get the primary screen's available geometry
+    QRect screenRect = QApplication::primaryScreen()->availableGeometry();
+    view->resize(screenRect.width(), screenRect.height());
+    view->move(screenRect.topLeft());
 
-    window.resize(800, 600);
-    window.show();
+    view->show();
     return app.exec();
 }
-

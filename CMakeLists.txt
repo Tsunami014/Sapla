@@ -4,6 +4,7 @@ set(APP_NAME    Sapla)
 set(APP_OUTPUT  sapla)
 set(SOURCES
     main.cpp
+    game.cpp
 )
 
 project(${APP_NAME} LANGUAGES CXX)

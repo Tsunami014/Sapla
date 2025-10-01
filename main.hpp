@@ -1,7 +1,8 @@
 #pragma once
+#include <QStackedLayout>
 #include <QGraphicsScene>
 #include "game.hpp"
 
-extern QGraphicsScene* scene;
+extern QGraphicsScene* MScene;
 extern MainGame* MG;
 

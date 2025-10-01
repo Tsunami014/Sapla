@@ -1,15 +1,22 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 set(APP_NAME    Sapla)
 set(APP_OUTPUT  sapla)
 set(SOURCES
     main.cpp
     game.cpp
+    items/base/svgItem.cpp
+)
+set(RESOURCES
+    resources.qrc
 )
 
 project(${APP_NAME} LANGUAGES CXX)
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
-add_executable(${APP_NAME} ${SOURCES})
+find_package(Qt6 REQUIRED COMPONENTS Svg Widgets)
+add_executable(${APP_NAME} ${SOURCES} ${RESOURCES})
 set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME ${APP_OUTPUT})
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Widgets)
-
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Svg Qt6::Widgets)

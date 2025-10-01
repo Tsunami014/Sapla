@@ -5,15 +5,26 @@
 #include <QGraphicsView>
 #include "main.hpp"
 
-QGraphicsScene* scene = nullptr;
+QGraphicsScene* MScene = nullptr;
 MainGame* MG = nullptr;
+
+class BetterView : public QGraphicsView {
+public:
+    BetterView(QGraphicsScene* scene) : QGraphicsView(scene) {}
+
+protected:
+    void resizeEvent(QResizeEvent* event) override {
+        QGraphicsView::resizeEvent(event);
+        QRectF newRect = QRectF(QPointF(0, 0), viewport()->size());
+        MScene->setSceneRect(newRect);
+        MG->resizeEvent(newRect);
+    }
+};
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    scene = new QGraphicsScene();
-
-    QGraphicsView* view = new QGraphicsView(scene);
-
+    MScene = new QGraphicsScene();
+    BetterView* view = new BetterView(MScene);
     MG = new MainGame();
 
     // Get the primary screen's available geometry

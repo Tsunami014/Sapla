@@ -8,10 +8,22 @@ A cool flashcard app!
 ### The easy way
 Download the executable from the releases tab
 ### The hard way (build from source)
-1. Ensure QT is installed
-    - For Linux, find which package it is. Ubuntu is `qt6-base-dev` and arch is `qt6-base`
-    - For Windows I guess you can `choco install qt6`
-2. 
+1. Ensure you have cmake (on any Linux just install `cmake`, and on Windows if you have chocolatey you can `choco install cmake`)
+2. Ensure QT is installed (and the svg library too)
+    - For Linux, find which package it is.
+        - Ubuntu:
+```
+sudo apt install qt6-base-dev qt6-svg-dev
+```
+        - Arch:
+```
+sudo pacman -S qt6-base qt6-svg
+```
+    - For Windows I guess you can run this if you have chocolatey and if not that's your problem.
+```
+choco install qt6 qt6-svg
+```
+3. 
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel --config Release
 ```

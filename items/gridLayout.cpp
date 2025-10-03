@@ -14,8 +14,8 @@ void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
     float rowHei = rect.height()/2;
     for (int i = 0; i < Cols; i++) {
         for (int j = 0; j < 2; j++) {
-            int x = i*colWid;
-            int y = j*rowHei;
+            int x = rect.x() + i*colWid;
+            int y = rect.y() + j*rowHei;
             MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
         }
     }
@@ -28,9 +28,12 @@ QRectF GLayoutGraphicItem::boundingRect() const {
 void GLayoutGraphicItem::setRect(const QRectF& newRect) {
     prepareGeometryChange();
     rect = newRect;
+    // Reduce height by 0.1 on both sides
+    rect.setY(rect.y() + rect.height()*0.1);
+    rect.setHeight(rect.height()*0.8);
 
-    float colWid = newRect.width()/Cols;
-    float rowHei = newRect.height()/2;
+    float colWid = rect.width()/Cols;
+    float rowHei = rect.height()/2;
     for (gridItem& it : grid) {
         int hei;
         if (it.lay.botWid == -1) {
@@ -38,7 +41,10 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
         } else {
             hei = 2;
         }
-        it.item->setRect(QRectF(0, 0, colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei));
+        it.item->setRect(QRectF(
+            rect.x() + colWid * it.x, rect.y() + colWid * it.y, 
+            colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei
+        ));
     }
 }
 

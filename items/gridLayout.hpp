@@ -35,5 +35,5 @@ protected:
     std::vector<gridItem> grid;
     inline static std::unique_ptr<QSvgRenderer> MTrenderer;
 
-    inline static int Cols = 3;
+    inline static int Cols = 2;
 };

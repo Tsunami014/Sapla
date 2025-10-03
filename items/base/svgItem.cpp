@@ -1,7 +1,6 @@
 #include "svgItem.hpp"
 
-SvgGraphicItem::SvgGraphicItem(const QString& svgPath)
-    : renderer(svgPath) {}
+SvgGraphicItem::SvgGraphicItem(const QString& svgPath) : renderer(svgPath) {}
 
 QRectF SvgGraphicItem::boundingRect() const {
     return rect;

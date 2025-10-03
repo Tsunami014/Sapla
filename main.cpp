@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGraphicsView>
 #include "main.hpp"
+#include "scenes/playScn.hpp"
 
 QGraphicsScene* MScene = nullptr;
 MainGame* MG = nullptr;
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     MScene = new QGraphicsScene();
     BetterView* view = new BetterView(MScene);
-    MG = new MainGame();
+    MG = new MainGame(new PlayScene());
 
     // Get the primary screen's available geometry
     QRect screenRect = QApplication::primaryScreen()->availableGeometry();

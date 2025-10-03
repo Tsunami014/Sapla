@@ -1,9 +1,11 @@
 #include "gridLayout.hpp"
+#include "cardIt.hpp"
+#include "../main.hpp"
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
     : QGraphicsItem(parent) {
         if (!MTrenderer) {
-            MTrenderer = std::make_unique<QSvgRenderer>(QString(":/assets/FCLayouts/emptyIt.svg"));
+            MTrenderer = std::make_unique<QSvgRenderer>(QString(":/assets/CardLayouts/emptyIt.svg"));
         }
     }
 
@@ -29,22 +31,29 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
 
     float colWid = newRect.width()/Cols;
     float rowHei = newRect.height()/2;
-    for (int i = 0; i < Cols; i++) {
-        for (int y = 0; y < 2; y++) {
+    for (gridItem& it : grid) {
+        int hei;
+        if (it.lay.botWid == -1) {
+            hei = 1;
+        } else {
+            hei = 2;
         }
+        it.item->setRect(QRectF(0, 0, colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei));
     }
 }
 
-bool GLayoutGraphicItem::addItem(QGraphicsItem* item, layout lay) {
+bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
     uint8_t nx = 0;
     uint8_t ny = 0;
     // TODO: Find the right spot here, and return false if failed
     gridItem val;
     val.item = item;
-    val.lay = lay;
+    val.lay = item->lay;
     val.x = nx;
     val.y = ny;
     grid.push_back(val);
+    MScene->addItem(item);
+    setRect(rect);
     return true;
 }
 

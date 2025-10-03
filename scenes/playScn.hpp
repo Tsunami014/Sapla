@@ -1,5 +1,5 @@
 #pragma once
-#include "items/gridLayout.hpp"
+#include "../items/gridLayout.hpp"
 #include "baseScn.hpp"
 
 class PlayScene : public BaseScene {

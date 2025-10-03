@@ -7,6 +7,7 @@ MainGame::MainGame(BaseScene* scene) {
     MScene->addItem(bg);
 
     curScene = scene;
+    curScene->setZValue(-1);
     MScene->addItem(scene);
 }
 

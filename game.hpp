@@ -1,7 +1,7 @@
 #pragma once
 #include <QGraphicsView>
 #include "scenes/baseScn.hpp"
-#include "scenes/items/base/svgItem.hpp"
+#include "items/base/svgItem.hpp"
 
 class MainGame {
 public:

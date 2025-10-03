@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGraphicsView>
 #include "main.hpp"
+#include "cards/getCards.hpp"
 #include "scenes/playScn.hpp"
 
 QGraphicsScene* MScene = nullptr;
@@ -23,6 +24,7 @@ protected:
 };
 
 int main(int argc, char *argv[]) {
+    initCards();
     QApplication app(argc, argv);
     MScene = new QGraphicsScene();
     BetterView* view = new BetterView(MScene);

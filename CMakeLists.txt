@@ -9,9 +9,13 @@ set(APP_OUTPUT  sapla)
 set(SOURCES
     main.cpp
     game.cpp
+    cards/getCards.cpp
+    cards/cardTyps.cpp
     scenes/playScn.cpp
-    scenes/items/gridLayout.cpp
-    scenes/items/base/svgItem.cpp
+    items/gridLayout.cpp
+    items/sideRends.cpp
+    items/cardIt.cpp
+    items/base/svgItem.cpp
 )
 set(RESOURCES
     resources.qrc

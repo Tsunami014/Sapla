@@ -18,9 +18,9 @@ struct gridItem {
     layout lay;
 };
 
-class LayoutGraphicItem : public QGraphicsItem {
+class GLayoutGraphicItem : public QGraphicsItem {
 public:
-    LayoutGraphicItem(QGraphicsItem* parent = nullptr);
+    GLayoutGraphicItem(QGraphicsItem* parent = nullptr);
 
     bool addItem(QGraphicsItem* item, layout lay);
     void setRect(const QRectF& newRect);

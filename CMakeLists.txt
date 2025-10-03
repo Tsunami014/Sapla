@@ -10,7 +10,7 @@ set(SOURCES
     main.cpp
     game.cpp
     scenes/playScn.cpp
-    scenes/items/layout.cpp
+    scenes/items/gridLayout.cpp
     scenes/items/base/svgItem.cpp
 )
 set(RESOURCES

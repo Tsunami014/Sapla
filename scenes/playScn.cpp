@@ -1,6 +1,6 @@
 #include "playScn.hpp"
 
-PlayScene::PlayScene() : main(new LayoutGraphicItem(this)) {}
+PlayScene::PlayScene() : main(new GLayoutGraphicItem(this)) {}
 
 void PlayScene::resize() {
     main->setRect(rect);

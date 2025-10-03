@@ -10,8 +10,8 @@ set(SOURCES
     main.cpp
     game.cpp
     scenes/playScn.cpp
-    items/layout.cpp
-    items/base/svgItem.cpp
+    scenes/items/layout.cpp
+    scenes/items/base/svgItem.cpp
 )
 set(RESOURCES
     resources.qrc

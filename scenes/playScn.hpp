@@ -6,6 +6,10 @@ class PlayScene : public BaseScene {
 public:
     PlayScene();
     void resize() override;
+    void setOverlay(QGraphicsRectItem* newOverlay);
+    bool hasOverlay();
+    void removeOverlay();
 private:
     GLayoutGraphicItem* main;
+    QGraphicsRectItem* overlay;
 };

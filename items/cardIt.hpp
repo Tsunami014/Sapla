@@ -10,6 +10,7 @@ public:
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
     layout lay;
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2

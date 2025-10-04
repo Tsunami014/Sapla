@@ -1,5 +1,8 @@
+#include "../main.hpp"
+#include "../scenes/playScn.hpp"
 #include "cardIt.hpp"
 #include "gridLayout.hpp"
+#include "overlay.hpp"
 #include <QCursor>
 #include <QGraphicsSceneHoverEvent>
 
@@ -20,7 +23,7 @@ CardGraphicItem::~CardGraphicItem() {
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     bool oldHover = hovering;
-    if (contains(event->pos())) {
+    if (contains(event->pos()) && !((PlayScene*)MG->curScene)->hasOverlay()) {
         hovering = true;
         setCursor(Qt::PointingHandCursor);
     } else {
@@ -36,6 +39,21 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     hovering = false;
     update();
 }
+void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    if (contains(event->pos())) {
+        if (side == 0) {
+            setZValue(3);
+            auto* overl = new Overlay(this);
+            overl->setZValue(2);
+            ((PlayScene*)MG->curScene)->setOverlay(overl);
+            side = 255;  // TODO: Animations
+        } else if (side == 255) {
+            ((PlayScene*)MG->curScene)->removeOverlay();
+            scene()->removeItem(this);
+            delete this;
+        }
+    }
+}
 
 void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
     // <chatGPT>
@@ -46,7 +64,7 @@ void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* s
     renderer->render(&p1);
     p1.end();
 
-    if (hovering) {
+    if (hovering || zValue() == 3) {
         // Create a colorized outline version
         QImage outline = img;
         QPainter p2(&outline);

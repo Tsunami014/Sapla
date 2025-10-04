@@ -8,8 +8,8 @@ public:
     MainGame(BaseScene* scene);
     void resizeEvent(QRectF& newSze);
     void changeScene(BaseScene* newScene);
+    BaseScene* curScene;
 
 private:
     SvgGraphicItem* bg;
-    BaseScene* curScene;
 };

@@ -86,12 +86,10 @@ bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
 }
 
 void GLayoutGraphicItem::removeItem(CardGraphicItem* item) {
-    // <chatGPT>
     grid.erase(
         std::remove_if(grid.begin(), grid.end(),
                        [item](gridItem& it) { return it.item == item; }),
         grid.end()
     );
-    // </chatGPT>
 }
 

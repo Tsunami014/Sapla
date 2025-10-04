@@ -28,12 +28,12 @@ public:
     void removeItem(CardGraphicItem* item);
     void setRect(const QRectF& newRect);
 
+    std::vector<gridItem> grid;
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
     QRectF rect{0, 0, 800, 600}; // default size, will be overridden
-    std::vector<gridItem> grid;
     inline static std::unique_ptr<QSvgRenderer> MTrenderer;
 
     inline static int Cols = 2;

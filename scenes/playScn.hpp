@@ -5,6 +5,7 @@
 class PlayScene : public BaseScene {
 public:
     PlayScene();
+    void onEvent(QEvent* event) override;
     void resize() override;
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();

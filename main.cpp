@@ -7,8 +7,9 @@
 #include "cards/getCards.hpp"
 #include "scenes/playScn.hpp"
 
-QGraphicsScene* MScene = nullptr;
+BetterScene* MScene = nullptr;
 MainGame* MG = nullptr;
+
 
 class BetterView : public QGraphicsView {
 public:
@@ -26,7 +27,7 @@ protected:
 int main(int argc, char *argv[]) {
     initCards();
     QApplication app(argc, argv);
-    MScene = new QGraphicsScene();
+    MScene = new BetterScene();
     BetterView* view = new BetterView(MScene);
     MG = new MainGame(new PlayScene());
 

@@ -8,6 +8,8 @@ public:
     CardGraphicItem(layout lay, BaseSideRend* front, BaseSideRend* back, QGraphicsItem* parent = nullptr);   
     ~CardGraphicItem();
 
+    void finish();
+
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

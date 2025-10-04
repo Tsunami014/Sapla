@@ -41,21 +41,24 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 }
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (contains(event->pos())) {
-        PlayScene* curS = (PlayScene*)MG->curScene;
         if (side == 0) {
+            unsetCursor();
             setZValue(3);
             auto* overl = new Overlay();
             MScene->addItem(overl);
             overl->setZValue(2);
-            curS->setOverlay(overl);
+            ((PlayScene*)MG->curScene)->setOverlay(overl);
             side = 255;  // TODO: Animations
-        } else if (side == 255) {
-            curS->removeOverlay();
-            curS->main->removeItem(this);
-            curS->main->update();
-            scene()->removeItem(this);
         }
     }
+}
+
+void CardGraphicItem::finish() {
+    PlayScene* curS = (PlayScene*)MG->curScene;
+    curS->removeOverlay();
+    curS->main->removeItem(this);
+    curS->main->update();
+    scene()->removeItem(this);
 }
 
 void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* sogi, QWidget* w) {

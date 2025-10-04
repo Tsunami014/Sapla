@@ -1,6 +1,9 @@
 # Sapla
 A cool flashcard app!
 
+## ChatGPT usage
+Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself. Just used its judgement ('how do I do xyz' not 'rewrite abc program to do xyz') and helped debugging (but I fixed the problems myself)
+
 ## Features
 
 

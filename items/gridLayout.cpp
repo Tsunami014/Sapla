@@ -1,6 +1,7 @@
 #include "gridLayout.hpp"
 #include "cardIt.hpp"
 #include "../main.hpp"
+#include <QRandomGenerator>
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
     : QGraphicsItem(parent) {
@@ -9,6 +10,28 @@ GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
         }
     }
 
+bool GLayoutGraphicItem::isGood(int col, int row) {
+    for (gridItem& it : grid) {
+        int itx = it.x;
+        int itWid;
+        if (row == 1 && it.y == 0) {
+            if (it.lay.botWid == -1) {
+                continue;
+            }
+            itx += it.lay.botOffs;
+            itWid = it.lay.botWid;
+        } else if (row == 0 && it.y == 1) {
+            continue;
+        } else {
+            itWid = it.lay.topWid;
+        }
+        if (col >= itx && col < itx + itWid) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
     float colWid = rect.width()/Cols;
     float rowHei = rect.height()/2;
@@ -16,25 +39,7 @@ void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
         for (int j = 0; j < 2; j++) {
             int x = rect.x() + i*colWid;
             int y = rect.y() + j*rowHei;
-            bool good = true;
-            for (gridItem& it : grid) {
-                int itx = it.x;
-                int itWid;
-                if (j == 1 && it.y == 0) {
-                    if (it.lay.botWid == -1) {
-                        continue;
-                    }
-                    itx += it.lay.botOffs;
-                    itWid = it.lay.botWid;
-                } else {
-                    itWid = it.lay.topWid;
-                }
-                if (i >= itx && i < itx + itWid) {
-                    good = false;
-                    break;
-                }
-            }
-            if (good) {
+            if (isGood(i, j)) {
                 MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
             }
         }
@@ -69,20 +74,34 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
 }
 
 bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
-    uint8_t nx = 0;
-    uint8_t ny = 0;
-    // TODO: Find the right spot here, and return false if failed
-    gridItem val;
-    val.item = item;
-    item->setParentItem(this);
-    val.lay = item->lay;
-    val.x = nx;
-    val.y = ny;
-    grid.push_back(val);
-    MScene->addItem(item);
-    setRect(rect);
-    update();
-    return true;
+    uint8_t loops = (item->lay.botWid == -1) + 1;
+    uint8_t maxX = Cols + 1 - qMax(item->lay.topWid, item->lay.botWid);
+    uint8_t nx = QRandomGenerator::global()->bounded(0, maxX);
+    uint8_t ny = QRandomGenerator::global()->bounded(0, loops);
+    for (uint8_t _ = 0; _ < loops; _++) {
+        for (uint8_t offx = 0; offx < maxX; offx++) {
+            if (isGood((nx + offx) % maxX, ny)) {  // TODO: Check if isGood for every square that makes up the object
+                gridItem val;
+                val.item = item;
+                item->setParentItem(this);
+                val.lay = item->lay;
+                val.x = (nx + offx) % maxX;
+                val.y = ny;
+                grid.push_back(val);
+                MScene->addItem(item);
+                setRect(rect);
+                update();
+                return true;
+            }
+        }
+        // loops can only be 0 or 1
+        if (ny == 0) {
+            ny = loops - 1;
+        } else {
+            ny = 0;
+        }
+    }
+    return false;
 }
 
 void GLayoutGraphicItem::removeItem(CardGraphicItem* item) {

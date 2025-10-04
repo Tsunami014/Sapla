@@ -33,6 +33,8 @@ protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
+    bool isGood(int col, int row);
+
     QRectF rect{0, 0, 800, 600}; // default size, will be overridden
     inline static std::unique_ptr<QSvgRenderer> MTrenderer;
 

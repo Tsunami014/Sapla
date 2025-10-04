@@ -6,7 +6,9 @@
 
 PlayScene::PlayScene() : main(new GLayoutGraphicItem(this)) {
     overlay = NULL;
-    main->addItem(cards[0]->getItem());
+    for (auto& c : cards) {
+        main->addItem(c->getItem());
+    }
 }
 
 void PlayScene::onEvent(QEvent* event) {

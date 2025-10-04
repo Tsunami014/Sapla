@@ -25,6 +25,7 @@ public:
     GLayoutGraphicItem(QGraphicsItem* parent = nullptr);
 
     bool addItem(CardGraphicItem* item);
+    void removeItem(CardGraphicItem* item);
     void setRect(const QRectF& newRect);
 
 protected:

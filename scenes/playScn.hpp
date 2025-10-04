@@ -9,7 +9,7 @@ public:
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();
     void removeOverlay();
-private:
     GLayoutGraphicItem* main;
+private:
     QGraphicsRectItem* overlay;
 };

@@ -1,5 +1,6 @@
 #include "playScn.hpp"
 #include "../cards/getCards.hpp"
+#include "../main.hpp"
 
 PlayScene::PlayScene() : main(new GLayoutGraphicItem(this)) {
     overlay = NULL;
@@ -21,7 +22,7 @@ bool PlayScene::hasOverlay() {
     return overlay != NULL;
 }
 void PlayScene::removeOverlay() {
-    delete overlay;
+    MScene->removeItem(overlay);
     overlay = NULL;
 }
 

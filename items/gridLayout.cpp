@@ -16,7 +16,27 @@ void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
         for (int j = 0; j < 2; j++) {
             int x = rect.x() + i*colWid;
             int y = rect.y() + j*rowHei;
-            MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
+            bool good = true;
+            for (gridItem& it : grid) {
+                int itx = it.x;
+                int itWid;
+                if (j == 1 && it.y == 0) {
+                    if (it.lay.botWid == -1) {
+                        continue;
+                    }
+                    itx += it.lay.botOffs;
+                    itWid = it.lay.botWid;
+                } else {
+                    itWid = it.lay.topWid;
+                }
+                if (i >= itx && i < itx + itWid) {
+                    good = false;
+                    break;
+                }
+            }
+            if (good) {
+                MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
+            }
         }
     }
 }
@@ -54,12 +74,24 @@ bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
     // TODO: Find the right spot here, and return false if failed
     gridItem val;
     val.item = item;
+    item->setParentItem(this);
     val.lay = item->lay;
     val.x = nx;
     val.y = ny;
     grid.push_back(val);
     MScene->addItem(item);
     setRect(rect);
+    update();
     return true;
+}
+
+void GLayoutGraphicItem::removeItem(CardGraphicItem* item) {
+    // <chatGPT>
+    grid.erase(
+        std::remove_if(grid.begin(), grid.end(),
+                       [item](gridItem& it) { return it.item == item; }),
+        grid.end()
+    );
+    // </chatGPT>
 }
 

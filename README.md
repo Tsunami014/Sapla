@@ -50,22 +50,22 @@ Download the executable from the releases tab
 2. Ensure QT is installed (and the svg library too)
     - For Linux, find which package it is.
         - Ubuntu:
-```
-sudo apt install qt6-base-dev qt6-svg-dev
-```
+        ```
+        sudo apt install qt6-base-dev qt6-svg-dev
+        ```
         - Arch:
-```
-sudo pacman -S qt6-base qt6-svg
-```
+        ```
+        sudo pacman -S qt6-base qt6-svg
+        ```
     - For Windows I guess you can run this if you have chocolatey and if not that's your problem.
-```
-choco install qt6 qt6-svg
-```
+    ```
+    choco install qt6 qt6-svg
+    ```
 3. 
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel --config Release
 ```
-3. Go find the executable in the build folder! (Usually at the top level)
+4. Go find the executable in the build folder! (Usually at the top level)
 
 ## ChatGPT usage
 Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself (you copy paste only what you need from Google because everything else is useless so too do I with chatGPT). I just used its judgement for generalised problems ('how do I do xyz' not '(re)write abc program to do xyz') (like using Google) and helped debugging by pointing out what the problems were (but I fixed the problems myself) as that saved me a lot of unecessary time (and also it means the codebase is much neater).

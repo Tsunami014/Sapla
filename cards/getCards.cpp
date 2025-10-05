@@ -31,10 +31,10 @@ void initCards() {
             qFatal() << "Failed writing to file at `" << fullpth << "`!";
         }
         QTextStream out(&file);
-        out << "t\nFront 1\nBack 1\n"
-               "t\nFront 2\nBack 2\n"
-               "t\nFront 3\nBack 3\n"
-               "t\nFront 4\nBack 4\n"
+        out << "t\nWhat is Australia?\nA country\n"
+               "t\nWhat is the meaning of life?\n42\n"
+               "t\nWhat is 1 + 1?\n2\n"
+               "t\nWhat is this?\nA flashcard app\n"
         ;
     }
 

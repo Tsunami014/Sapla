@@ -5,6 +5,12 @@
 #include <QTimer>
 #include <QGraphicsTextItem>
 
+struct Stats {
+    int coins;
+    int successes;
+    int faliures;
+};
+
 class PlayScene : public BaseScene {
 public:
     PlayScene();
@@ -24,6 +30,7 @@ public:
 private:
     void resetTimer(bool add = true);
 
+    Stats s;
     int coins;
     int skipCoins;
 

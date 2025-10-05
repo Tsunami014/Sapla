@@ -14,6 +14,9 @@ PlayScene::PlayScene() :
         coinsTxt.setDefaultTextColor(Qt::yellow);
         coinsTxt.setScale(1.5);
 
+        s.successes = 0;
+        s.faliures = 0;
+
         overlay = NULL;
 
         pb.setZValue(2);
@@ -70,7 +73,8 @@ void PlayScene::resetTimer(bool add) {
         if (!main->addItem(newItem)) {
             delete newItem;
             // Failed to add a new item; you LOSE!
-            QTimer::singleShot(0, [this]() { MG->changeScene(new LoseScene()); });
+            s.coins = coins;
+            QTimer::singleShot(0, [this]() { MG->changeScene(new LoseScene(s)); });
             return;
         }
         main->update();
@@ -100,8 +104,10 @@ void PlayScene::onEvent(QEvent* event) {
             for (auto& it : main->grid) {
                 if (it.item->side == 255) {
                     if (key == Qt::Key_Space) {
+                        s.faliures++;
                         increaseCoins(-1);
                     } else {
+                        s.successes++;
                         increaseCoins(2);
                     }
                     it.item->finish();

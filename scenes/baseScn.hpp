@@ -1,21 +1,17 @@
 #pragma once
-#include <QGraphicsItem>
+#include "../items/base/myItem.hpp"
 
-class BaseScene : public QGraphicsItem {
+class BaseScene : public MyGraphicsItem {
 public:
-    virtual ~BaseScene() {}
+    BaseScene() : MyGraphicsItem() {}
+    ~BaseScene() {}
     virtual void onEvent(QEvent* event) = 0;
     virtual void resize() = 0;  // Has the updated 'rect', no need for arguments
-    virtual void setRect(const QRectF& newRect) final {
+    void setRect(const QRectF& newRect) final {
         prepareGeometryChange();
         rect = newRect;
         resize();
     }
-    QRectF boundingRect() const override final {
-        return rect;
-    }
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override {}
-
-    QRectF rect{0, 0, 800, 600};  // default size, will be overridden
 };
 

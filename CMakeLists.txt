@@ -16,6 +16,7 @@ set(SOURCES
     items/sideRends.cpp
     items/cardIt.cpp
     items/base/svgItem.cpp
+    items/base/myItem.cpp
 )
 set(RESOURCES
     resources.qrc

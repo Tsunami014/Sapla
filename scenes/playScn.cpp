@@ -4,7 +4,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-PlayScene::PlayScene() : main(new GLayoutGraphicItem(this)) {
+PlayScene::PlayScene() : BaseScene(), main(new GLayoutGraphicItem(this)) {
     overlay = NULL;
     for (auto& c : cards) {
         main->addItem(c->getItem());

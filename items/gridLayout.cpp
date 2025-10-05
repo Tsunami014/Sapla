@@ -4,7 +4,7 @@
 #include <QRandomGenerator>
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
-    : QGraphicsItem(parent) {
+    : MyGraphicsItem(parent) {
         if (!MTrenderer) {
             MTrenderer = std::make_unique<QSvgRenderer>(QString(":/assets/CardLayouts/emptyIt.svg"));
         }

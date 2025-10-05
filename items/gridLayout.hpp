@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <QString>
-#include <QGraphicsItem>
+#include "base/myItem.hpp"
 #include <QSvgRenderer>
 
 class CardGraphicItem;  // Forward declaration
@@ -20,13 +20,13 @@ struct gridItem {
     layout lay;
 };
 
-class GLayoutGraphicItem : public QGraphicsItem {
+class GLayoutGraphicItem : public MyGraphicsItem {
 public:
     GLayoutGraphicItem(QGraphicsItem* parent = nullptr);
 
     bool addItem(CardGraphicItem* item);
     void removeItem(CardGraphicItem* item);
-    void setRect(const QRectF& newRect);
+    void setRect(const QRectF& newRect) override;
 
     std::vector<gridItem> grid;
 protected:
@@ -35,7 +35,6 @@ protected:
 
     bool isGood(int col, int row);
 
-    QRectF rect{0, 0, 800, 600}; // default size, will be overridden
     inline static std::unique_ptr<QSvgRenderer> MTrenderer;
 
     inline static int Cols = 2;

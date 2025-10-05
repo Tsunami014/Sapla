@@ -1,20 +1,11 @@
 #include "svgItem.hpp"
 #include <QPainter>
 
-SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : QGraphicsItem(parent) {
+SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : MyGraphicsItem(parent) {
     renderer = new QSvgRenderer(svgPath);
 }
 SvgGraphicItem::~SvgGraphicItem() {
     delete renderer;
-}
-
-QRectF SvgGraphicItem::boundingRect() const {
-    return rect;
-}
-
-void SvgGraphicItem::setRect(const QRectF& newRect) {
-    prepareGeometryChange();
-    rect = newRect;
 }
 
 bool SvgGraphicItem::contains(const QPointF& point) const {

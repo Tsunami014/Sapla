@@ -27,7 +27,7 @@ PlayScene::PlayScene() :
 
 void PlayScene::pauseTimer() {
     timer.stop();
-    timeOffset = elapsed.elapsed();
+    timeOffset += elapsed.elapsed();
 }
 void PlayScene::resumeTimer() {
     double offs = timeOffset;

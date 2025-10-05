@@ -24,6 +24,8 @@ class GLayoutGraphicItem : public MyGraphicsItem {
 public:
     GLayoutGraphicItem(QGraphicsItem* parent = nullptr);
 
+    void updateAllChildren();
+
     bool addItem(CardGraphicItem* item);
     void removeItem(CardGraphicItem* item);
     void setRect(const QRectF& newRect) override;

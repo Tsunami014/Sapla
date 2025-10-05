@@ -10,6 +10,13 @@ GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
         }
     }
 
+void GLayoutGraphicItem::updateAllChildren() {
+    const QList<QGraphicsItem*> children = childItems();
+    for (QGraphicsItem* child : children) {
+        child->update();
+    }
+}
+
 bool GLayoutGraphicItem::isGood(int col, int row) {
     for (gridItem& it : grid) {
         int itx = it.x;

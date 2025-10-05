@@ -51,6 +51,8 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             overl->setZValue(3);
             curS->setOverlay(overl);
             side = 255;  // TODO: Animations
+            hovering = false;
+            curS->main->updateAllChildren();
         }
     }
 }
@@ -62,10 +64,10 @@ void CardGraphicItem::finish() {
     curS->main->update();
     scene()->removeItem(this);
     curS->resumeTimer();
+    curS->main->updateAllChildren();
 }
 
 void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
-    // <chatGPT>
     QImage img(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::transparent);
 
@@ -85,12 +87,15 @@ void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* s
     }
     painter->drawImage(rect.topLeft(), img);
 
-    // </chatGPT>
-
-    // TODO: Partial flipped states
     if (side == 0) {
-        front->render(painter, rect);
+        if (!((PlayScene*)MG->curScene)->hasOverlay()) {
+            front->render(painter, rect);
+        }
     } else {
-        back->render(painter, rect);
+        if (side == 255) {
+            back->render(painter, rect);
+        } else {
+            // TODO: Partial flipped states
+        }
     }
 }

@@ -13,11 +13,15 @@ public:
     bool hasOverlay();
     void removeOverlay();
 
+    void pauseTimer();
+    void resumeTimer();
+
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
     void resetTimer();
 
+    double timeOffset;
     QGraphicsRectItem* overlay;
     ProgressBarItem* pb;
     QTimer timer;

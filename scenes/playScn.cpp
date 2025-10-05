@@ -11,10 +11,11 @@ PlayScene::PlayScene() :
             main->addItem(c->getItem());
         }
 
+        timeLeft = 10000;
+
         pb->setZValue(2);
-        timeLeft = 5000;
         QObject::connect(&timer, &QTimer::timeout, [this]() {
-            double progress = elapsed.elapsed() / double(timeLeft);
+            double progress = (elapsed.elapsed() + timeOffset) / double(timeLeft);
             if (progress >= 1) {
                 resetTimer();
                 progress = 0;
@@ -24,7 +25,18 @@ PlayScene::PlayScene() :
         resetTimer();
     }
 
+void PlayScene::pauseTimer() {
+    timer.stop();
+    timeOffset = elapsed.elapsed();
+}
+void PlayScene::resumeTimer() {
+    double offs = timeOffset;
+    resetTimer();
+    timeOffset = offs;
+}
+
 void PlayScene::resetTimer() {
+    timeOffset = 0;
     elapsed.restart();
     if (!timer.isActive()) {
         timer.start(16); // ~60 FPS

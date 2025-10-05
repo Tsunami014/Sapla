@@ -9,7 +9,7 @@
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), coinsTxt(this) {
         coins = 0;
-        skipCoins = 4;
+        skipCoins = 2;
         increaseCoins(0);
         coinsTxt.setDefaultTextColor(Qt::yellow);
         coinsTxt.setScale(1.5);
@@ -105,10 +105,10 @@ void PlayScene::onEvent(QEvent* event) {
                 if (it.item->side == 255) {
                     if (key == Qt::Key_Space) {
                         s.faliures++;
-                        increaseCoins(-1);
+                        increaseCoins(-2);
                     } else {
                         s.successes++;
-                        increaseCoins(2);
+                        increaseCoins(1);
                     }
                     it.item->finish();
                     if (main->grid.empty()) {

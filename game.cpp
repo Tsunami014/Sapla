@@ -16,6 +16,7 @@ void MainGame::changeScene(BaseScene* newScene) {
     delete curScene;
     curScene = newScene;
     MScene->addItem(newScene);
+    newScene->setRect(bg->boundingRect());
 }
 
 void MainGame::resizeEvent(QRectF& newSze) {

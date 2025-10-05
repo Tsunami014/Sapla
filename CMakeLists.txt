@@ -12,6 +12,7 @@ set(SOURCES
     cards/getCards.cpp
     cards/cardTyps.cpp
     scenes/playScn.cpp
+    scenes/loseScn.cpp
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp

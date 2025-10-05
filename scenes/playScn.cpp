@@ -1,4 +1,5 @@
 #include "playScn.hpp"
+#include "loseScn.hpp"
 #include "../cards/getCards.hpp"
 #include "../main.hpp"
 #include <QEvent>
@@ -47,18 +48,23 @@ void PlayScene::resetTimer(bool add) {
                 if (good) {
                     break;
                 }
-                idx++;
+                idx = (idx + 1) % cardsAmnt;
                 tries++;
             }
         }
-        if (!main->addItem(cards[idx]->getItem())) {
-            // Failed to add a new item
+
+        CardGraphicItem* newItem = cards[idx]->getItem();
+        if (!main->addItem(newItem)) {
+            delete newItem;
+            // Failed to add a new item; you LOSE!
+            QTimer::singleShot(0, [this]() { MG->changeScene(new LoseScene()); });
+            return;
         }
         main->update();
 
         timeOffset = 0;
         // Later TODO: Change time based on how difficult card is
-        timeLeft = 6000 + QRandomGenerator::global()->bounded(2001);  // Random between 6 and 8 seconds
+        timeLeft = 4000 + QRandomGenerator::global()->bounded(2001);  // Random between 4 and 6 seconds
     }
     elapsed.restart();
     if (!timer.isActive()) {

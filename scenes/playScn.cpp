@@ -34,7 +34,7 @@ PlayScene::PlayScene() :
 void PlayScene::increaseCoins(int amnt) {
     coins += amnt;
     coinsTxt.setPlainText(QString::fromStdString(
-        "💰 " + std::to_string(coins) + "\n💰 " + std::to_string(skipCoins) + " to increase by 5 seconds"
+        "💰 " + std::to_string(coins) + "\n ` 💰 " + std::to_string(skipCoins) + " to increase by 5 seconds"
     ));
 }
 

@@ -8,6 +8,9 @@ A cool flashcard app made in QT. Flashcards are arranged in a grid and you are p
 - Buy time extensions
 - When the board gets full you lose!
 
+## Demo
+https://github.com/user-attachments/assets/9885b8d0-9aff-4a45-96d2-a8b8d44cca54
+
 ## Controls
 - Click on a flashcard when you think you know what it is
     - It now shows you the other side

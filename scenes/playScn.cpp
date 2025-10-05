@@ -8,7 +8,6 @@
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(new ProgressBarItem(this)) {
         overlay = NULL;
-        timeLeft = 10000;
 
         pb->setZValue(2);
         QObject::connect(&timer, &QTimer::timeout, [this]() {
@@ -27,43 +26,44 @@ void PlayScene::pauseTimer() {
     timeOffset += elapsed.elapsed();
 }
 void PlayScene::resumeTimer() {
-    double offs = timeOffset;
     resetTimer(false);
-    timeOffset = offs;
 }
 
 void PlayScene::resetTimer(bool add) {
-    timeOffset = 0;
+    if (add) {
+        int cardsAmnt = cards.size();
+        int idx = QRandomGenerator::global()->bounded(cardsAmnt);
+        if (cardsAmnt >= main->Cols*2) {
+            int tries = 0;
+            while (tries < cardsAmnt) {
+                auto& card = cards[idx];
+                bool good = true;
+                for (auto& it : main->grid) {
+                    if (*card == *it.item) {
+                        good = false;
+                        break;
+                    }
+                }
+                if (good) {
+                    break;
+                }
+                idx++;
+                tries++;
+            }
+        }
+        if (!main->addItem(cards[idx]->getItem())) {
+            // Failed to add a new item
+        }
+        main->update();
+
+        timeOffset = 0;
+        // Later TODO: Change time based on how difficult card is
+        timeLeft = 6000 + QRandomGenerator::global()->bounded(2001);  // Random between 6 and 8 seconds
+    }
     elapsed.restart();
     if (!timer.isActive()) {
         timer.start(16); // ~60 FPS
     }
-
-    if (!add) { return; }
-    int cardsAmnt = cards.size();
-    int idx = QRandomGenerator::global()->bounded(cardsAmnt);
-    if (cardsAmnt >= main->Cols*2) {
-        int tries = 0;
-        while (tries < cardsAmnt) {
-            auto& card = cards[idx];
-            bool good = true;
-            for (auto& it : main->grid) {
-                if (*card == *it.item) {
-                    good = false;
-                    break;
-                }
-            }
-            if (good) {
-                break;
-            }
-            idx++;
-            tries++;
-        }
-    }
-    if (!main->addItem(cards[idx]->getItem())) {
-        // Failed to add a new item
-    }
-    main->update();
 }
 
 void PlayScene::onEvent(QEvent* event) {

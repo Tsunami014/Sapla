@@ -4,10 +4,30 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-PlayScene::PlayScene() : BaseScene(), main(new GLayoutGraphicItem(this)) {
-    overlay = NULL;
-    for (auto& c : cards) {
-        main->addItem(c->getItem());
+PlayScene::PlayScene() : 
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(new ProgressBarItem(this)) {
+        overlay = NULL;
+        for (auto& c : cards) {
+            main->addItem(c->getItem());
+        }
+
+        pb->setZValue(2);
+        timeLeft = 5000;
+        QObject::connect(&timer, &QTimer::timeout, [this]() {
+            double progress = elapsed.elapsed() / double(timeLeft);
+            if (progress >= 1) {
+                resetTimer();
+                progress = 0;
+            }
+            pb->setValue(progress);
+        });
+        resetTimer();
+    }
+
+void PlayScene::resetTimer() {
+    elapsed.restart();
+    if (!timer.isActive()) {
+        timer.start(16); // ~60 FPS
     }
 }
 
@@ -29,6 +49,7 @@ void PlayScene::onEvent(QEvent* event) {
 
 void PlayScene::resize() {
     main->setRect(rect);
+    pb->setRect(rect);
     if (overlay != NULL) {
         overlay->setRect(rect);
     }

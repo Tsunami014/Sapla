@@ -15,6 +15,7 @@ set(SOURCES
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp
+    items/progress.cpp
     items/base/svgItem.cpp
     items/base/myItem.cpp
 )

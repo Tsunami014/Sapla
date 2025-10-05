@@ -43,10 +43,10 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (contains(event->pos())) {
         if (side == 0) {
             unsetCursor();
-            setZValue(3);
+            setZValue(4);
             auto* overl = new Overlay();
             MScene->addItem(overl);
-            overl->setZValue(2);
+            overl->setZValue(3);
             ((PlayScene*)MG->curScene)->setOverlay(overl);
             side = 255;  // TODO: Animations
         }

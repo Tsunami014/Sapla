@@ -28,9 +28,12 @@ public:
 
     bool addItem(CardGraphicItem* item);
     void removeItem(CardGraphicItem* item);
+
     void setRect(const QRectF& newRect) override;
+    QRectF getRealRect();
 
     std::vector<gridItem> grid;
+    inline static int Cols = 2;
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
@@ -38,6 +41,4 @@ protected:
     bool isGood(int col, int row);
 
     inline static std::unique_ptr<QSvgRenderer> MTrenderer;
-
-    inline static int Cols = 2;
 };

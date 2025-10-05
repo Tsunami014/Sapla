@@ -19,7 +19,7 @@ public:
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
-    void resetTimer();
+    void resetTimer(bool add = true);
 
     double timeOffset;
     QGraphicsRectItem* overlay;

@@ -40,12 +40,13 @@ bool GLayoutGraphicItem::isGood(int col, int row) {
 }
 
 void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
-    float colWid = rect.width()/Cols;
-    float rowHei = rect.height()/2;
+    QRectF nrect = getRealRect();
+    float colWid = nrect.width()/Cols;
+    float rowHei = nrect.height()/2;
     for (int i = 0; i < Cols; i++) {
         for (int j = 0; j < 2; j++) {
-            int x = rect.x() + i*colWid;
-            int y = rect.y() + j*rowHei;
+            int x = nrect.x() + i*colWid;
+            int y = nrect.y() + j*rowHei;
             if (isGood(i, j)) {
                 MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
             }
@@ -57,15 +58,19 @@ QRectF GLayoutGraphicItem::boundingRect() const {
     return rect;
 }
 
-void GLayoutGraphicItem::setRect(const QRectF& newRect) {
-    prepareGeometryChange();
-    rect = newRect;
+QRectF GLayoutGraphicItem::getRealRect() {
+    QRectF nrect = rect;
     // Reduce height by 0.1 on both sides
-    rect.setY(rect.y() + rect.height()*0.1);
-    rect.setHeight(rect.height()*0.8);
+    nrect.setY(nrect.y() + nrect.height()*0.1);
+    nrect.setHeight(nrect.height()*0.8);
+    return nrect;
+}
 
-    float colWid = rect.width()/Cols;
-    float rowHei = rect.height()/2;
+void GLayoutGraphicItem::setRect(const QRectF& newRect) {
+    MyGraphicsItem::setRect(newRect);
+    QRectF nrect = getRealRect();
+    float colWid = nrect.width()/Cols;
+    float rowHei = nrect.height()/2;
     for (gridItem& it : grid) {
         int hei;
         if (it.lay.botWid == -1) {
@@ -74,7 +79,7 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
             hei = 2;
         }
         it.item->setRect(QRectF(
-            rect.x() + colWid * it.x, rect.y() + rowHei * it.y, 
+            nrect.x() + colWid * it.x, nrect.y() + rowHei * it.y, 
             colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei
         ));
     }
@@ -83,8 +88,8 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
 bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
     uint8_t loops = (item->lay.botWid == -1) + 1;
     uint8_t maxX = Cols + 1 - qMax(item->lay.topWid, item->lay.botWid);
-    uint8_t nx = QRandomGenerator::global()->bounded(0, maxX);
-    uint8_t ny = QRandomGenerator::global()->bounded(0, loops);
+    uint8_t nx = QRandomGenerator::global()->bounded(maxX);
+    uint8_t ny = QRandomGenerator::global()->bounded(loops);
     for (uint8_t _ = 0; _ < loops; _++) {
         for (uint8_t offx = 0; offx < maxX; offx++) {
             if (isGood((nx + offx) % maxX, ny)) {  // TODO: Check if isGood for every square that makes up the object
@@ -95,7 +100,6 @@ bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
                 val.x = (nx + offx) % maxX;
                 val.y = ny;
                 grid.push_back(val);
-                MScene->addItem(item);
                 setRect(rect);
                 update();
                 return true;

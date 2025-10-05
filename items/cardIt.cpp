@@ -15,10 +15,13 @@ CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, Q
     hovering = false;
     setAcceptHoverEvents(true);
 }
-
 CardGraphicItem::~CardGraphicItem() {
     delete front;
     delete back;
+}
+
+bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
+    return *front == *other.front && *back == *other.back;
 }
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {

@@ -8,6 +8,8 @@ public:
     CardGraphicItem(layout lay, BaseSideRend* front, BaseSideRend* back, QGraphicsItem* parent = nullptr);   
     ~CardGraphicItem();
 
+    bool operator==(const CardGraphicItem& other) const;
+
     void finish();
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event) override;

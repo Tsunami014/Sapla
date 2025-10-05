@@ -5,13 +5,15 @@
 class BaseCardTyp {
 public:
     virtual ~BaseCardTyp() {}
-    virtual CardGraphicItem* getItem() = 0;
+    virtual CardGraphicItem* getItem() const = 0;
+    bool operator==(const BaseCardTyp& other) const;
+    bool operator==(const CardGraphicItem& other) const;
 };
 
 class TextCard : public BaseCardTyp {
 public:
     TextCard(QString front, QString back);
-    CardGraphicItem* getItem() override;
+    CardGraphicItem* getItem() const override;
 protected:
     QString front;
     QString back;

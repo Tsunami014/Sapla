@@ -7,20 +7,33 @@
 #include <QRandomGenerator>
 
 PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(new ProgressBarItem(this)) {
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), coinsTxt(this) {
+        coins = 0;
+        skipCoins = 4;
+        increaseCoins(0);
+        coinsTxt.setDefaultTextColor(Qt::yellow);
+        coinsTxt.setScale(1.5);
+
         overlay = NULL;
 
-        pb->setZValue(2);
+        pb.setZValue(2);
         QObject::connect(&timer, &QTimer::timeout, [this]() {
             double progress = (elapsed.elapsed() + timeOffset) / double(timeLeft);
             if (progress >= 1) {
                 resetTimer();
                 progress = 0;
             }
-            pb->setValue(progress);
+            pb.setValue(progress);
         });
         resetTimer();
     }
+
+void PlayScene::increaseCoins(int amnt) {
+    coins += amnt;
+    coinsTxt.setPlainText(QString::fromStdString(
+        "💰 " + std::to_string(coins) + "\n💰 " + std::to_string(skipCoins) + " to increase by 5 seconds"
+    ));
+}
 
 void PlayScene::pauseTimer() {
     timer.stop();
@@ -77,10 +90,24 @@ void PlayScene::onEvent(QEvent* event) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
-        if (key == Qt::Key_Space && overlay != NULL) {
+        if (key == Qt::Key_QuoteLeft && coins >= skipCoins) {
+            timeLeft += 5000;
+            increaseCoins(-skipCoins);
+            skipCoins *= 2;
+        }
+
+        if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
                 if (it.item->side == 255) {
+                    if (key == Qt::Key_Space) {
+                        increaseCoins(-1);
+                    } else {
+                        increaseCoins(2);
+                    }
                     it.item->finish();
+                    if (main->grid.empty()) {
+                        resetTimer();
+                    }
                     break;
                 }
             }
@@ -90,7 +117,7 @@ void PlayScene::onEvent(QEvent* event) {
 
 void PlayScene::resize() {
     main->setRect(rect);
-    pb->setRect(rect);
+    pb.setRect(rect);
     if (overlay != NULL) {
         overlay->setRect(rect);
     }

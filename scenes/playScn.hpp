@@ -3,6 +3,7 @@
 #include "../items/progress.hpp"
 #include "baseScn.hpp"
 #include <QTimer>
+#include <QGraphicsTextItem>
 
 class PlayScene : public BaseScene {
 public:
@@ -16,14 +17,21 @@ public:
     void pauseTimer();
     void resumeTimer();
 
+    void increaseCoins(int amnt);
+
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
     void resetTimer(bool add = true);
 
-    double timeOffset;
+    int coins;
+    int skipCoins;
+
+    QGraphicsTextItem coinsTxt;
     QGraphicsRectItem* overlay;
-    ProgressBarItem* pb;
+    ProgressBarItem pb;
+
+    double timeOffset;
     QTimer timer;
     QElapsedTimer elapsed;
 };

@@ -1,12 +1,57 @@
 #include "getCards.hpp"
+#include <iostream>
+#include <QStandardPaths>
+#include <QDir>
 
 std::vector<BaseCardTyp*> cards = {};
 
+QString getPath() {
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(path);
+    return path + "/savedata.txt";
+}
+
+BaseCardTyp* readTextCard(QString line, QTextStream& in) {
+    QString front = in.readLine();
+    if (front.isNull()) { qFatal() << "Text item has no contents!"; }
+    QString back = in.readLine();
+    if (front.isNull()) { qFatal() << "Text item has no back!"; }
+    return new TextCard(front, back);
+}
+
 void initCards() {
-    // Fill with some sample cards
-    cards.push_back(new TextCard("This is the front", "This is the back"));
-    cards.push_back(new TextCard("This is another front", "This is another back"));
-    cards.push_back(new TextCard("This is yet another front", "This is yet another back"));
-    cards.push_back(new TextCard("Would you believe it; this is *another* front!", "Look at this! *Another* back!"));
+    QString fullpth = getPath();
+    QFile file(fullpth);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // File does not exist, so MAKE IT EXIST.
+        QString fullpth = getPath();
+        QFile file(fullpth);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This should never fail (as it's writing to a new file if not exists), but we need to check every possibility
+            qFatal() << "Failed writing to file at `" << fullpth << "`!";
+        }
+        QTextStream out(&file);
+        out << "t\nFront 1\nBack 1\n"
+               "t\nFront 2\nBack 2\n"
+               "t\nFront 3\nBack 3\n"
+               "t\nFront 4\nBack 4\n"
+        ;
+    }
+
+    QTextStream in(&file);
+    QString line = in.readLine();
+    while (!line.isNull()) {
+        BaseCardTyp* newC;
+        if (line == "" || line[0] == "#") {
+            // Nothing or comment
+        } else if (line[0] == "t") {
+            newC = readTextCard(line, in);
+        } else { qFatal() << "Unknown card type '" << line << "'!"; }
+        cards.push_back(newC);
+        line = in.readLine();
+    }
+
+    if (cards.empty()) { qFatal() << "No flashcards present!"; }
+    std::cout << "Successfully loaded configuration from `" << fullpth.toStdString() << "`, containing " << cards.size() << " cards.\n";
 }
 

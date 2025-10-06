@@ -36,6 +36,10 @@ void initCards() {
                "t\nWhat is 1 + 1?\n2\n"
                "t\nWhat is this?\nA flashcard app\n"
         ;
+        file.close();
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qFatal() << "Failed reading to file at `" << fullpth << "`!";
+        }
     }
 
     QTextStream in(&file);

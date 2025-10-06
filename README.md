@@ -8,6 +8,9 @@ A cool flashcard app made in QT. Flashcards are arranged in a grid and you are p
 - Buy time extensions
 - When the board gets full you lose!
 
+## Demo
+https://github.com/user-attachments/assets/9885b8d0-9aff-4a45-96d2-a8b8d44cca54
+
 ## Controls
 - Click on a flashcard when you think you know what it is
     - It now shows you the other side
@@ -43,26 +46,26 @@ Run the app in the terminal. If it's a problem with the flashcard configuration 
 ### The easy way
 Download the executable from the releases tab
 ### The hard way (build from source)
-1. Ensure you have cmake (on any Linux just install `cmake`, and on Windows if you have chocolatey you can `choco install cmake`)
+#### Linux
+1. Ensure you have cmake installed (on any Linux just install `cmake`)
 2. Ensure QT is installed (and the svg library too)
     - For Linux, find which package it is.
         - Ubuntu:
-```
-sudo apt install qt6-base-dev qt6-svg-dev
-```
+        ```
+        sudo apt install qt6-base-dev qt6-svg-dev
+        ```
         - Arch:
-```
-sudo pacman -S qt6-base qt6-svg
-```
-    - For Windows I guess you can run this if you have chocolatey and if not that's your problem.
-```
-choco install qt6 qt6-svg
-```
+        ```
+        sudo pacman -S qt6-base qt6-svg
+        ```
 3. 
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel --config Release
 ```
-3. Go find the executable in the build folder! (Usually at the top level)
+4. Go find the executable in the build folder! (Usually at the top level)
+#### Windows
+1. Get QT Creator (you can use `choco install qtcreator`)
+2. Build it for release there (figure out how yourself, sorry it's not as straightforward as Linux)
 
 ## ChatGPT usage
 Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself. I just used its judgement for generalised problems ('how do I do xyz' not '(re)write abc program to do xyz') (like using Google) and helped debugging by pointing out what the problems were (but I fixed the problems myself) as that saved me a lot of unecessary time (and also it means the codebase is much neater).

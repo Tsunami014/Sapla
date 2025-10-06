@@ -11,6 +11,7 @@ set(SOURCES
     game.cpp
     cards/getCards.cpp
     cards/cardTyps.cpp
+    scenes/homeScn.cpp
     scenes/playScn.cpp
     scenes/loseScn.cpp
     items/gridLayout.cpp

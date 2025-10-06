@@ -1,5 +1,6 @@
 #include "loseScn.hpp"
 #include "playScn.hpp"
+#include "homeScn.hpp"
 #include "../main.hpp"
 #include <QEvent>
 #include <QTimer>
@@ -19,7 +20,7 @@ LoseScene::LoseScene(Stats s) : txt(this) {
 
 void LoseScene::onEvent(QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
-        QTimer::singleShot(0, [this]() { MG->changeScene(new PlayScene()); });
+        QTimer::singleShot(0, [this]() { MG->changeScene(new HomeScene()); });
     }
 }
 

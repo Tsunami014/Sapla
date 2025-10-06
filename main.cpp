@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 #include "main.hpp"
 #include "cards/getCards.hpp"
-#include "scenes/playScn.hpp"
+#include "scenes/homeScn.hpp"
 
 BetterScene* MScene = nullptr;
 MainGame* MG = nullptr;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     MScene = new BetterScene();
     BetterView* view = new BetterView(MScene);
-    MG = new MainGame(new PlayScene());
+    MG = new MainGame(new HomeScene());
 
     // Get the primary screen's available geometry
     QRect screenRect = QApplication::primaryScreen()->availableGeometry();

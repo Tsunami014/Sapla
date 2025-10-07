@@ -4,6 +4,9 @@
 SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : MyGraphicsItem(parent) {
     renderer = new QSvgRenderer(svgPath);
 }
+SvgGraphicItem::SvgGraphicItem(QGraphicsItem* parent) : MyGraphicsItem(parent) {
+    renderer = new QSvgRenderer();
+}
 SvgGraphicItem::~SvgGraphicItem() {
     delete renderer;
 }

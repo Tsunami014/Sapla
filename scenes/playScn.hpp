@@ -1,6 +1,7 @@
 #pragma once
 #include "../items/gridLayout.hpp"
 #include "../items/progress.hpp"
+#include "../items/treeItem.hpp"
 #include "baseScn.hpp"
 #include <QTimer>
 #include <QGraphicsTextItem>
@@ -34,8 +35,9 @@ private:
     int coins;
     int skipCoins;
 
-    QGraphicsTextItem coinsTxt;
     QGraphicsRectItem* overlay;
+    QGraphicsTextItem coinsTxt;
+    Tree tr;
     ProgressBarItem pb;
 
     double timeOffset;

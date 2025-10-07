@@ -2,7 +2,15 @@
     <qresource prefix="/">
         <file>assets/bg.svg</file>
         <file>assets/btn.svg</file>
+
         <file>assets/CardLayouts/emptyIt.svg</file>
         <file>assets/CardLayouts/smlIt.svg</file>
+
+        <file>assets/treeGround.svg</file>
+        <file>assets/TreeParts/phase1.svg</file>
+        <file>assets/TreeParts/phase2.svg</file>
+        <file>assets/TreeParts/phase3.svg</file>
+        <file>assets/TreeParts/phase4.svg</file>
+        <file>assets/TreeParts/phase5.svg</file>
     </qresource>
 </RCC>

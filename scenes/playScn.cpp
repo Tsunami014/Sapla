@@ -7,7 +7,7 @@
 #include <QRandomGenerator>
 
 PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), coinsTxt(this) {
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this), coinsTxt(this) {
         coins = 0;
         skipCoins = 2;
         increaseCoins(0);
@@ -109,6 +109,7 @@ void PlayScene::onEvent(QEvent* event) {
                     } else {
                         s.successes++;
                         increaseCoins(1);
+                        tr.nextPhase();
                     }
                     it.item->finish();
                     if (main->grid.empty()) {
@@ -123,6 +124,7 @@ void PlayScene::onEvent(QEvent* event) {
 
 void PlayScene::resize() {
     main->setRect(rect);
+    tr.setRect(rect);
     pb.setRect(rect);
     if (overlay != NULL) {
         overlay->setRect(rect);

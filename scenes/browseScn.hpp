@@ -2,9 +2,9 @@
 #include "baseScn.hpp"
 #include "../items/listIt.hpp"
 
-class CreateScene : public BaseScene {
+class BrowseScene : public BaseScene {
 public:
-    CreateScene();
+    BrowseScene();
     void onEvent(QEvent* event) override;
     void resize() override;
 

@@ -1,7 +1,7 @@
 #include "homeScn.hpp"
 #include "../main.hpp"
 #include "playScn.hpp"
-#include "createScn.hpp"
+#include "browseScn.hpp"
 #include <QFontMetricsF>
 #include <QTextOption>
 #include <QTextDocument>
@@ -19,10 +19,10 @@ HomeScene::HomeScene() : BaseScene() {
     playBtn->onClick = []() {
         MG->changeScene(new PlayScene());
     };
-    addBtn = new SvgBtnItem(":/assets/btn.svg", "Add cards!", this);
-    addBtn->setTxtColour(QColor(184, 115, 51));
-    addBtn->onClick = []() {
-        MG->changeScene(new CreateScene());
+    browseBtn = new SvgBtnItem(":/assets/btn.svg", "Browse cards", this);
+    browseBtn->setTxtColour(QColor(184, 115, 51));
+    browseBtn->onClick = []() {
+        MG->changeScene(new BrowseScene());
     };
 }
 
@@ -43,8 +43,8 @@ void HomeScene::resize() {
     playBtn->setPos(QPointF(
         (rect.width() - playBtn->boundingRect().width())/2, rect.height() * 0.35
     ));
-    addBtn->setFont(getFont(rect.height()*0.1));
-    addBtn->setPos(QPointF(
-        (rect.width() - addBtn->boundingRect().width())/2, rect.height() * 0.36 + playBtn->boundingRect().height()
+    browseBtn->setFont(getFont(rect.height()*0.1));
+    browseBtn->setPos(QPointF(
+        (rect.width() - browseBtn->boundingRect().width())/2, rect.height() * 0.36 + playBtn->boundingRect().height()
     ));
 }

@@ -1,8 +1,8 @@
 #pragma once
-#include "myItem.hpp"
+#include "rectIt.hpp"
 #include <QSvgRenderer>
 
-class SvgGraphicItem : public MyGraphicsItem {
+class SvgGraphicItem : public RectItem {
 public:
     SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent = nullptr);
     ~SvgGraphicItem();

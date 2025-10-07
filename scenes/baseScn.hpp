@@ -1,9 +1,9 @@
 #pragma once
-#include "../items/base/myItem.hpp"
+#include "../items/base/rectIt.hpp"
 
-class BaseScene : public MyGraphicsItem {
+class BaseScene : public RectItem {
 public:
-    BaseScene() : MyGraphicsItem() {}
+    BaseScene() : RectItem() {}
     ~BaseScene() {}
     virtual void onEvent(QEvent* event) {}
     virtual void resize() {}  // Has the updated 'rect', no need for arguments

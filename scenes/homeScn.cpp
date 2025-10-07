@@ -1,6 +1,7 @@
 #include "homeScn.hpp"
 #include "../main.hpp"
 #include "playScn.hpp"
+#include "createScn.hpp"
 #include <QFontMetricsF>
 #include <QTextOption>
 #include <QTextDocument>
@@ -15,9 +16,13 @@ HomeScene::HomeScene() : BaseScene() {
 
     playBtn = new SvgBtnItem(":/assets/btn.svg", "Play!", this);
     playBtn->setTxtColour(QColor(184, 115, 51));
-
     playBtn->onClick = []() {
         MG->changeScene(new PlayScene());
+    };
+    addBtn = new SvgBtnItem(":/assets/btn.svg", "Add cards!", this);
+    addBtn->setTxtColour(QColor(184, 115, 51));
+    addBtn->onClick = []() {
+        MG->changeScene(new CreateScene());
     };
 }
 
@@ -37,5 +42,9 @@ void HomeScene::resize() {
     playBtn->setFont(getFont(rect.height()*0.1));
     playBtn->setPos(QPointF(
         (rect.width() - playBtn->boundingRect().width())/2, rect.height() * 0.35
+    ));
+    addBtn->setFont(getFont(rect.height()*0.1));
+    addBtn->setPos(QPointF(
+        (rect.width() - addBtn->boundingRect().width())/2, rect.height() * 0.36 + playBtn->boundingRect().height()
     ));
 }

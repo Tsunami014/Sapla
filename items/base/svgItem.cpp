@@ -1,10 +1,10 @@
 #include "svgItem.hpp"
 #include <QPainter>
 
-SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : MyGraphicsItem(parent) {
+SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : RectItem(parent) {
     renderer = new QSvgRenderer(svgPath);
 }
-SvgGraphicItem::SvgGraphicItem(QGraphicsItem* parent) : MyGraphicsItem(parent) {
+SvgGraphicItem::SvgGraphicItem(QGraphicsItem* parent) : RectItem(parent) {
     renderer = new QSvgRenderer();
 }
 SvgGraphicItem::~SvgGraphicItem() {

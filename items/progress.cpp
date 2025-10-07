@@ -1,7 +1,7 @@
 #include "progress.hpp"
 #include <QPainter>
 
-ProgressBarItem::ProgressBarItem(QGraphicsItem* parent) : MyGraphicsItem(parent) {
+ProgressBarItem::ProgressBarItem(QGraphicsItem* parent) : RectItem(parent) {
     value = 0;
 }
 

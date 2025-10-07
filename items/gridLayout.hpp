@@ -1,7 +1,7 @@
 #pragma once
+#include "base/rectIt.hpp"
 #include <vector>
 #include <QString>
-#include "base/myItem.hpp"
 #include <QSvgRenderer>
 
 class CardGraphicItem;  // Forward declaration
@@ -20,7 +20,7 @@ struct gridItem {
     layout lay;
 };
 
-class GLayoutGraphicItem : public MyGraphicsItem {
+class GLayoutGraphicItem : public RectItem {
 public:
     GLayoutGraphicItem(QGraphicsItem* parent = nullptr);
 

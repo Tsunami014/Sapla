@@ -19,8 +19,10 @@ void SvgBtnItem::init() {
 }
 
 void SvgBtnItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    QApplication::setOverrideCursor(Qt::ArrowCursor);
-    if (onClick) onClick();
+    if (contains(event->pos())) {
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+        if (onClick) onClick();
+    }
 }
 
 QRectF SvgBtnItem::boundingRect() const {
@@ -63,13 +65,13 @@ void SvgBtnItem::setRect(const QRectF& newRect) {
     QRectF txtBR = txt->boundingRect();
     qreal xtraX = txtBR.width() * 0.2;
     qreal xtraY = txtBR.height() * 0.1;
-    MyGraphicsItem::setRect(QRectF(
+    RectMixin::setRect(QRectF(
         newRect.x(), newRect.y(), txtBR.width() + xtraX, txtBR.height() + xtraY
     ));
     txt->setPos(newRect.x() + xtraX/2, newRect.y());
 }
 void SvgBtnItem::setPos(const QPointF& pos) {
-    MyGraphicsItem::setRect(QRectF(pos, rect.size()));
+    RectMixin::setRect(QRectF(pos, rect.size()));
     txt->setPos(pos.x() + (txt->boundingRect().width()*0.2)/2, pos.y());
 }
 void SvgBtnItem::setText(const QString& text) {

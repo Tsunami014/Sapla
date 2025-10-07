@@ -3,7 +3,7 @@
 #include <QRandomGenerator>
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
-    : MyGraphicsItem(parent) {
+    : RectItem(parent) {
         if (!MTrenderer) {
             MTrenderer = std::make_unique<QSvgRenderer>(QString(":/assets/CardLayouts/emptyIt.svg"));
         }
@@ -68,7 +68,7 @@ QRectF GLayoutGraphicItem::getRealRect() {
 }
 
 void GLayoutGraphicItem::setRect(const QRectF& newRect) {
-    MyGraphicsItem::setRect(newRect);
+    RectItem::setRect(newRect);
     QRectF nrect = getRealRect();
     float colWid = nrect.width()/Cols;
     float rowHei = nrect.height()/2;

@@ -10,5 +10,6 @@ public:
 private:
     QGraphicsTextItem* txt;
     SvgBtnItem* playBtn;
+    SvgBtnItem* addBtn;
 };
 

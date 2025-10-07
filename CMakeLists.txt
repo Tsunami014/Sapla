@@ -12,8 +12,10 @@ set(SOURCES
     cards/getCards.cpp
     cards/cardTyps.cpp
     scenes/homeScn.cpp
+    scenes/createScn.cpp
     scenes/playScn.cpp
     scenes/winScn.cpp
+    items/listIt.cpp
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp
@@ -21,7 +23,7 @@ set(SOURCES
     items/treeItem.cpp
     items/base/svgBtnItem.cpp
     items/base/svgItem.cpp
-    items/base/myItem.cpp
+    items/base/rectIt.cpp
 )
 set(RESOURCES
     resources.qrc

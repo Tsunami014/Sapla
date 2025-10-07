@@ -1,7 +1,7 @@
 #pragma once
-#include "base/myItem.hpp"
+#include "base/rectIt.hpp"
 
-class ProgressBarItem : public MyGraphicsItem {
+class ProgressBarItem : public RectItem {
 public:
     ProgressBarItem(QGraphicsItem* parent = nullptr);
     void setValue(double value);

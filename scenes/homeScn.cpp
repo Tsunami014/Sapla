@@ -1,4 +1,6 @@
 #include "homeScn.hpp"
+#include "../main.hpp"
+#include "playScn.hpp"
 #include <QFontMetricsF>
 #include <QTextOption>
 #include <QTextDocument>
@@ -13,6 +15,10 @@ HomeScene::HomeScene() : BaseScene() {
 
     playBtn = new SvgBtnItem(":/assets/btn.svg", "Play!", this);
     playBtn->setTxtColour(QColor(184, 115, 51));
+
+    playBtn->onClick = []() {
+        MG->changeScene(new PlayScene());
+    };
 }
 
 QFont getFont(qreal targetH) {

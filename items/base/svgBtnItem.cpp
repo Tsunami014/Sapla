@@ -1,6 +1,7 @@
 #include "svgBtnItem.hpp"
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
+#include <QApplication>
 #include <QCursor>
 
 SvgBtnItem::SvgBtnItem(const QString &svgPath, QGraphicsItem *parent) : SvgGraphicItem(svgPath, parent) {
@@ -15,6 +16,11 @@ void SvgBtnItem::init() {
     hovering = false;
     setAcceptHoverEvents(true);
     txt->setAcceptHoverEvents(false);
+}
+
+void SvgBtnItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    QApplication::setOverrideCursor(Qt::ArrowCursor);
+    if (onClick) onClick();
 }
 
 QRectF SvgBtnItem::boundingRect() const {

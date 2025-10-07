@@ -18,6 +18,7 @@ set(SOURCES
     items/sideRends.cpp
     items/cardIt.cpp
     items/progress.cpp
+    items/base/svgBtnItem.cpp
     items/base/svgItem.cpp
     items/base/myItem.cpp
 )

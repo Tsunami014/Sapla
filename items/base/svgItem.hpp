@@ -11,7 +11,4 @@ public:
 
 protected:
     QSvgRenderer* renderer;
-
-private:
-    bool _contains(const QPointF &point);
 };

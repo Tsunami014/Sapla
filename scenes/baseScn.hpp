@@ -5,8 +5,8 @@ class BaseScene : public MyGraphicsItem {
 public:
     BaseScene() : MyGraphicsItem() {}
     ~BaseScene() {}
-    virtual void onEvent(QEvent* event) = 0;
-    virtual void resize() = 0;  // Has the updated 'rect', no need for arguments
+    virtual void onEvent(QEvent* event) {}
+    virtual void resize() {}  // Has the updated 'rect', no need for arguments
     void setRect(const QRectF& newRect) final {
         prepareGeometryChange();
         rect = newRect;

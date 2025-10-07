@@ -4,9 +4,9 @@
 
 struct Stats; // Forward reference
 
-class LoseScene : public BaseScene {
+class WinScene : public BaseScene {
 public:
-    LoseScene(Stats stats);
+    WinScene(Stats stats);
     void onEvent(QEvent* event) override;
     void resize() override;
 private:

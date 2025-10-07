@@ -1,4 +1,4 @@
-#include "loseScn.hpp"
+#include "winScn.hpp"
 #include "playScn.hpp"
 #include "homeScn.hpp"
 #include "../main.hpp"
@@ -6,9 +6,9 @@
 #include <QTimer>
 #include <QTextDocument>
 
-LoseScene::LoseScene(Stats s) : txt(this) {
+WinScene::WinScene(Stats s) : txt(this) {
     txt.setPlainText(QString::fromStdString(
-        "You lost!\nPress any button to go home\n"
+        "You win!\nPress any button to go home\n"
         "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"
     ));
     txt.setScale(2);
@@ -17,13 +17,13 @@ LoseScene::LoseScene(Stats s) : txt(this) {
     txt.document()->setDefaultTextOption(opt);
 }
 
-void LoseScene::onEvent(QEvent* event) {
+void WinScene::onEvent(QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QTimer::singleShot(0, [this]() { MG->changeScene(new HomeScene()); });
     }
 }
 
-void LoseScene::resize() {
+void WinScene::resize() {
     txt.setTextWidth(rect.width() / 2.0);
 
     qreal textHeight = txt.document()->size().height();

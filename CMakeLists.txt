@@ -13,7 +13,7 @@ set(SOURCES
     cards/cardTyps.cpp
     scenes/homeScn.cpp
     scenes/playScn.cpp
-    scenes/loseScn.cpp
+    scenes/winScn.cpp
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp

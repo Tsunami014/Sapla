@@ -1,5 +1,5 @@
 #include "playScn.hpp"
-#include "loseScn.hpp"
+#include "winScn.hpp"
 #include "../cards/getCards.hpp"
 #include "../main.hpp"
 #include <QEvent>
@@ -15,6 +15,9 @@ PlayScene::PlayScene() :
 
         pb.setZValue(2);
         QObject::connect(&timer, &QTimer::timeout, [this]() {
+            if (main->grid.size() >= 3) {
+                tr.grow(-0.05*(main->grid.size()-2));
+            }
             double progress = (elapsed.elapsed() + timeOffset) / double(timeLeft);
             if (progress >= 1) {
                 resetTimer();
@@ -59,9 +62,8 @@ void PlayScene::resetTimer(bool add) {
         CardGraphicItem* newItem = cards[idx]->getItem();
         if (!main->addItem(newItem)) {
             delete newItem;
-            // Failed to add a new item; you LOSE!
-            QTimer::singleShot(0, [this]() { MG->changeScene(new LoseScene(s)); });
-            return;
+            // Failed to add a new item; you lose a lot of growth
+            tr.grow(-150);
         }
         main->update();
 
@@ -85,9 +87,12 @@ void PlayScene::onEvent(QEvent* event) {
                 if (it.item->side == 255) {
                     if (key == Qt::Key_Space) {
                         s.faliures++;
+                        tr.grow(-10);
                     } else {
                         s.successes++;
-                        tr.nextPhase();
+                        if (!tr.grow(50)) {
+                            QTimer::singleShot(0, [this]() { MG->changeScene(new WinScene(s)); });
+                        }
                     }
                     it.item->finish();
                     if (main->grid.empty()) {
@@ -103,10 +108,13 @@ void PlayScene::onEvent(QEvent* event) {
 void PlayScene::resize() {
     main->setRect(rect);
     tr.setRect(rect);
-    pb.setRect(rect);
     if (overlay != NULL) {
         overlay->setRect(rect);
     }
+    pb.setRect({
+        rect.x() + rect.width()*0.1, rect.y() + rect.height()*0.92,
+        rect.width()*0.8, rect.height()*0.06
+    });
 }
 
 void PlayScene::setOverlay(QGraphicsRectItem* ovl) {

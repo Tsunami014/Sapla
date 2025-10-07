@@ -7,13 +7,7 @@
 #include <QRandomGenerator>
 
 PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this), coinsTxt(this) {
-        coins = 0;
-        skipCoins = 2;
-        increaseCoins(0);
-        coinsTxt.setDefaultTextColor(Qt::yellow);
-        coinsTxt.setScale(1.5);
-
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         s.successes = 0;
         s.faliures = 0;
 
@@ -30,13 +24,6 @@ PlayScene::PlayScene() :
         });
         resetTimer();
     }
-
-void PlayScene::increaseCoins(int amnt) {
-    coins += amnt;
-    coinsTxt.setPlainText(QString::fromStdString(
-        "💰 " + std::to_string(coins) + "\n ` 💰 " + std::to_string(skipCoins) + " to increase by 5 seconds"
-    ));
-}
 
 void PlayScene::pauseTimer() {
     timer.stop();
@@ -73,7 +60,6 @@ void PlayScene::resetTimer(bool add) {
         if (!main->addItem(newItem)) {
             delete newItem;
             // Failed to add a new item; you LOSE!
-            s.coins = coins;
             QTimer::singleShot(0, [this]() { MG->changeScene(new LoseScene(s)); });
             return;
         }
@@ -94,21 +80,13 @@ void PlayScene::onEvent(QEvent* event) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
-        if (key == Qt::Key_QuoteLeft && coins >= skipCoins) {
-            timeLeft += 5000;
-            increaseCoins(-skipCoins);
-            skipCoins *= 2;
-        }
-
         if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
                 if (it.item->side == 255) {
                     if (key == Qt::Key_Space) {
                         s.faliures++;
-                        increaseCoins(-2);
                     } else {
                         s.successes++;
-                        increaseCoins(1);
                         tr.nextPhase();
                     }
                     it.item->finish();

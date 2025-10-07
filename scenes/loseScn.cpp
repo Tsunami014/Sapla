@@ -8,9 +8,8 @@
 
 LoseScene::LoseScene(Stats s) : txt(this) {
     txt.setPlainText(QString::fromStdString(
-        "You lost!\nPress any button to try again\n"
-        "You amassed 💰 " + std::to_string(s.coins) + "\n"
-        "With " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"
+        "You lost!\nPress any button to go home\n"
+        "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"
     ));
     txt.setScale(2);
     QTextOption opt = txt.document()->defaultTextOption();

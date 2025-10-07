@@ -15,7 +15,7 @@ void Tree::setRect(const QRectF& newRect) {
     qreal wid = newRect.width()*0.2;
     qreal hei = wid * 2;
     treeR = {
-        newRect.width()*0.75, (newRect.height() - hei)/2, 
+        newRect.width()*0.75, (newRect.height()/2 - hei)/2, 
         wid, hei
     };
     SvgGraphicItem::setRect(newRect);

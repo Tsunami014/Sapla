@@ -1,6 +1,7 @@
 #pragma once
 #include "baseScn.hpp"
-#include "../items/listIt.hpp"
+#include <QGraphicsProxyWidget>
+#include <QTreeWidget>
 
 class BrowseScene : public BaseScene {
 public:
@@ -9,5 +10,6 @@ public:
     void resize() override;
 
 protected:
-    TextListItem* tl;
+    QGraphicsProxyWidget proxy;
+    QTreeWidget* tree;
 };

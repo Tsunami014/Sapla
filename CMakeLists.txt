@@ -9,13 +9,13 @@ set(APP_OUTPUT  sapla)
 set(SOURCES
     main.cpp
     game.cpp
-    cards/getCards.cpp
     cards/cardTyps.cpp
+    cards/getCards.cpp
+    cards/cardTree.cpp
     scenes/homeScn.cpp
-    scenes/createScn.cpp
+    scenes/browseScn.cpp
     scenes/playScn.cpp
     scenes/winScn.cpp
-    items/listIt.cpp
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp

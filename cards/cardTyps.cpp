@@ -20,4 +20,7 @@ TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {}
 CardGraphicItem* TextCard::getItem() const {
     return new CardGraphicItem(Single, new TextSide(front), new TextSide(back));
 }
+QString TextCard::getName() {
+    return front;
+}
 

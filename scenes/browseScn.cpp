@@ -3,7 +3,9 @@
 #include "../cards/cardTyps.hpp"
 
 BrowseScene::BrowseScene() : BaseScene(), proxy(this) {
-    tree = getCardTree();
+    tree = new CardTree();
+    getCardTree(tree);
+
     QWidget::connect(tree, &QTreeWidget::itemClicked, [&](QTreeWidgetItem* item, int column){
         BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
         qDebug() << "Clicked item:" << data->getName();

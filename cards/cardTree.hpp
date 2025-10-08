@@ -1,5 +1,5 @@
 #pragma once
 #include <QTreeWidget>
 
-QTreeWidget* getCardTree();
+void getCardTree(QTreeWidget* tree);
 

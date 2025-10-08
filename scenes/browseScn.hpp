@@ -1,5 +1,6 @@
 #pragma once
 #include "baseScn.hpp"
+#include "../items/cardTree.hpp"
 #include <QGraphicsProxyWidget>
 #include <QTreeWidget>
 
@@ -11,5 +12,5 @@ public:
 
 protected:
     QGraphicsProxyWidget proxy;
-    QTreeWidget* tree;
+    CardTree* tree;
 };

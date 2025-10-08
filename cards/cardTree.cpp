@@ -1,14 +1,9 @@
 #include "cardTree.hpp"
 #include "getCards.hpp"
-#include <QHeaderView>
 
-QTreeWidget* getCardTree() {
-    QTreeWidget* tree = new QTreeWidget();
+void getCardTree(QTreeWidget* tree) {
     tree->setColumnCount(1);
     tree->setHeaderLabels({"Name"});
-    tree->setSortingEnabled(true);
-    tree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tree->header()->setSectionResizeMode(QHeaderView::Stretch);
 
     for (auto* card : cards) {
         QTreeWidgetItem* item = new QTreeWidgetItem(tree);
@@ -17,6 +12,4 @@ QTreeWidget* getCardTree() {
         item->setData(0, Qt::UserRole, QVariant::fromValue<void*>(card));
         //item->setIcon(0, QIcon(":/icons/file.png"));
     }
-
-    return tree;
 }

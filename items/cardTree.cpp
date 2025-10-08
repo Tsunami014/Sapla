@@ -11,14 +11,22 @@ CardTree::CardTree(QWidget *parent) : QTreeWidget(parent) {
     setStyleSheet(
         "QTreeWidget::item { background: transparent; }"
         "QTreeWidget {"
-            "color: black;"
+            "color: rgb(70, 35, 10);"
             "border: 1px solid #333;"
+            "padding: 4px;"
         "}"
         "QTreeWidget::item:selected {"
-            "background-color: rgba(80, 80, 80, 200);"
+            "background-color: rgba(210, 125, 45, 200);"
         "}"
-        "QTreeWidget::item:hover { background-color: rgba(120, 120, 120, 140); }"
-        "QHeaderView::section { padding: 4px; }"
+        "QTreeWidget::item:hover {"
+            "background-color: rgba(185, 115, 50, 140);"
+        "}"
+        "QHeaderView::section {"
+            "background-color: rgb(90, 40, 10);"
+            "border-top-left-radius: 10px;"
+            "border-top-right-radius: 10px;"
+            "padding: 4px;"
+        "}"
     );
     viewport()->setAutoFillBackground(false);
 }
@@ -27,7 +35,7 @@ bool CardTree::viewportEvent(QEvent *event) {
     if (event->type() == QEvent::Paint) {
         QPaintEvent *pe = static_cast<QPaintEvent*>(event);
         QPainter p(viewport());
-        p.fillRect(pe->rect(), QColor(128, 128, 128, 128));
+        p.fillRect(pe->rect(), QColor(140, 68, 44, 128));
     }
     return QTreeWidget::viewportEvent(event);
 }

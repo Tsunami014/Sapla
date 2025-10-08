@@ -6,9 +6,14 @@ BrowseScene::BrowseScene() : BaseScene(), proxy(this) {
     tree = new CardTree();
     getCardTree(tree);
 
-    QWidget::connect(tree, &QTreeWidget::itemClicked, [&](QTreeWidgetItem* item, int column){
+    QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
+        QList<QTreeWidgetItem*> selected = tree->selectedItems();
+        if (selected.isEmpty())
+            return;
+
+        QTreeWidgetItem* item = selected.first();
         BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
-        qDebug() << "Clicked item:" << data->getName();
+        qDebug() << "Selected item:" << data->getName();
     });
     proxy.setWidget(tree);
 }

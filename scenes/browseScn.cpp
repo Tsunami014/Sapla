@@ -6,6 +6,31 @@
 #include <QTimer>
 #include <QHeaderView>
 
+#ifdef _WIN32
+// Windows being JUST THAT BAD
+class FixedMenuBar : public QMenuBar {
+public:
+    using QMenuBar::QMenuBar;
+
+protected:
+    void mousePressEvent(QMouseEvent* ev) override {
+        if (QAction* act = actionAt(ev->pos())) {
+            if (QMenu* menu = act->menu()) {
+                // We have to make a new menu with the same items otherwise Windows will just not show it
+                QMenu dyn;
+                dyn.addActions(menu->actions());
+                dyn.exec(QCursor::pos());
+                ev->accept();
+                return;
+            }
+        }
+        QMenuBar::mousePressEvent(ev);
+    }
+};
+#else
+using FixedMenuBar = QMenuBar;
+#endif
+
 class FormWidget : public QWidget {
 public:
     FormWidget(QWidget *parent = nullptr) : QWidget(parent) {
@@ -13,7 +38,11 @@ public:
         setFocusPolicy(Qt::ClickFocus);
         setStyleSheet(
             "QTextEdit {"
-                "background: rgba(110, 60, 30, 220);"
+#ifdef _WIN32
+                "background: rgba(110, 60, 30, 220);"  // Imagine not having transparent bg because your OS can't handle the superiority
+#else
+                "background: transparent;"
+#endif
                 "border-radius: 6px;"
                 "border: 1px solid #666;"
             "}"
@@ -75,7 +104,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     getCardTree(tree);
 
     FormWidget* formWid = new FormWidget();
-    fmenu = new QMenuBar(formWid);
+    fmenu = new FixedMenuBar(formWid);
 
     QMenu* newCmenu = fmenu->addMenu("New card");
     for (const auto& typ : CardRegistry::registry) {

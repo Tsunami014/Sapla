@@ -9,7 +9,7 @@ CardTree::CardTree(QWidget *parent) : QTreeWidget(parent) {
     header()->setSectionResizeMode(QHeaderView::Stretch);
     setAttribute(Qt::WA_TranslucentBackground);
     setStyleSheet(
-        "QTreeWidget::item { background: transparent; }"
+        "QTreeWidget::item { background: rgb(193, 154, 107); }"
         "QTreeWidget {"
             "color: rgb(70, 35, 10);"
             "border: 1px solid #333;"

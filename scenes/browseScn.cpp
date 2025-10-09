@@ -3,6 +3,7 @@
 #include "../main.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/cardTyps.hpp"
+#include "../cards/getCards.hpp"
 #include <QTimer>
 
 class FormWidget : public QWidget {
@@ -83,6 +84,26 @@ void BrowseScene::onEvent(QEvent* event) {
 
         if (key == Qt::Key_Escape) {
             goBack();
+        } else if (key == Qt::Key_Backspace && 
+                   keyEvent->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier)) {
+            QList<QTreeWidgetItem*> selected = tree->selectedItems();
+            if (selected.isEmpty())
+                return;
+
+            QTreeWidgetItem* item = selected.first();
+            BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
+            auto it = std::find(cards.begin(), cards.end(), data);
+            if (it != cards.end()) {
+                delete *it;
+                cards.erase(it);
+                writeCards();
+            }
+            if (QTreeWidgetItem* parent = item->parent()) {
+                parent->removeChild(item);
+            } else if (QTreeWidget *tree = item->treeWidget()) {
+                tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
+            }
+            delete item;
         }
     }
 }

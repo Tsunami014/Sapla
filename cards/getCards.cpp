@@ -13,7 +13,19 @@ QString getPath() {
 }
 
 void writeCards() {
-
+    QString fullpth = getPath();
+    QFile file(fullpth);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This *should* never fail but it's still good to check
+        qCritical() << "Failed writing to file at `" << fullpth << "`!";
+        return;
+    }
+    QTextStream out(&file);
+    for (auto& c : cards) {
+        c->toFile(out);
+    }
+    file.close();
+    qDebug() << "Successfully wrote" << cards.size() << "cards to the configuration file at:\n" << fullpth;
+    //std::cout << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth.toStdString() << "\n";
 }
 
 void initCards() {
@@ -24,21 +36,14 @@ void initCards() {
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // File does not exist, so MAKE IT EXIST.
-        QString fullpth = getPath();
-        QFile file(fullpth);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This should never fail (as it's writing to a new file if not exists), but we need to check every possibility
-            qFatal() << "Failed writing to file at `" << fullpth << "`!";
-        }
-        QTextStream out(&file);
-        out << "t\nWhat is Australia?\nA country\n"
-               "t\nWhat is the meaning of life?\n42\n"
-               "t\nWhat is 1 + 1?\n2\n"
-               "t\nWhat is this?\nA flashcard app\n"
-        ;
-        file.close();
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qFatal() << "Failed reading to file at `" << fullpth << "`!";
-        }
+        cards = {
+            new TextCard("What is Australia?", "A country"),
+            new TextCard("What is the meaning of life?", "42"),
+            new TextCard("What is 1 + 1?", "2"),
+            new TextCard("What is this?", "A flashcard app")
+        };
+        writeCards();
+        return;
     }
 
     QTextStream in(&file);
@@ -61,7 +66,7 @@ void initCards() {
         line = in.readLine();
     }
 
-    if (cards.empty()) { qFatal() << "No flashcards present!"; }
-    std::cout << "Successfully loaded configuration from `" << fullpth.toStdString() << "`, containing " << cards.size() << " cards.\n";
+    file.close();
+    std::cout << "Successfully loaded " << cards.size() << " cards from the configuration file at:\n" << fullpth.toStdString() << "\n";
 }
 

@@ -26,9 +26,9 @@ protected:
 };
 
 int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
     registerCardTypes();
     initCards();
-    QApplication app(argc, argv);
     MScene = new BetterScene();
     BetterView* view = new BetterView(MScene);
     MG = new MainGame(new HomeScene());

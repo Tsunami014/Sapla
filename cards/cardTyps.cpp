@@ -1,5 +1,6 @@
 #include "cardTyps.hpp"
 #include "formElms.hpp"
+#include "getCards.hpp"
 #include "../items/cardLayouts.hpp"
 
 void registerCardTypes() {
@@ -45,9 +46,16 @@ QString TextCard::getName() {
 }
 void TextCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::labelField(lay, "Front:");
-    Form::textField(lay, front, [=](const QString &s){ front = s; trit->setText(0, s); });
+    Form::textField(lay, front, [=](const QString &s){
+        front = s;
+        trit->setText(0, s);
+        writeCards();
+    });
     Form::labelField(lay, "Back:");
-    Form::textField(lay, back, [=](const QString &s){ back = s; });
+    Form::textField(lay, back, [=](const QString &s){
+        back = s;
+        writeCards();
+    });
 }
 bool TextCard::canParse(const QString& header) {
     return header == "t";

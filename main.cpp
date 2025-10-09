@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <QGraphicsView>
+#include <iostream>
 #include "main.hpp"
 #include "cards/cardTyps.hpp"
 #include "cards/getCards.hpp"
@@ -26,6 +27,7 @@ protected:
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    std::cout << getPath().toStdString() << "\n";
     registerCardTypes();
     initCards();
     MScene = new BetterScene();
@@ -33,10 +35,7 @@ int main(int argc, char *argv[]) {
     MG = new MainGame();
     MG->initScene();
 
-    // Get the primary screen's available geometry
-    QRect screenRect = QApplication::primaryScreen()->availableGeometry();
-    view->resize(screenRect.width(), screenRect.height());
-    view->move(screenRect.topLeft());
+    view->showMaximized();
 
     view->show();
     return app.exec();

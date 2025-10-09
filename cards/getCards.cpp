@@ -1,6 +1,5 @@
 #include "getCards.hpp"
 #include "cardTyps.hpp"
-#include <iostream>
 #include <QStandardPaths>
 #include <QDir>
 
@@ -67,6 +66,6 @@ void initCards() {
     }
 
     file.close();
-    std::cout << "Successfully loaded " << cards.size() << " cards from the configuration file at:\n" << fullpth.toStdString() << "\n";
+    qDebug() << "Successfully loaded" << cards.size() << "cards!";
 }
 

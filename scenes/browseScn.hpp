@@ -2,9 +2,11 @@
 #include "baseScn.hpp"
 #include "../items/cardTree.hpp"
 #include "../items/base/svgBtnItem.hpp"
+#include "../cards/cardTyps.hpp"
 #include <QGraphicsProxyWidget>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QMenuBar>
 
 class BrowseScene : public BaseScene {
 public:
@@ -20,4 +22,8 @@ protected:
 
     QGraphicsProxyWidget FormProxy;
     QVBoxLayout* form;
+    QMenuBar* fmenu;
+
+private:
+    void addCard(BaseCardTyp* card);
 };

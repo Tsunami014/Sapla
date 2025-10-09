@@ -2,14 +2,14 @@
 #include "homeScn.hpp"
 #include "../main.hpp"
 #include "../cards/cardTree.hpp"
-#include "../cards/cardTyps.hpp"
 #include "../cards/getCards.hpp"
 #include <QTimer>
+#include <QHeaderView>
 
 class FormWidget : public QWidget {
 public:
     FormWidget(QWidget *parent = nullptr) : QWidget(parent) {
-        setAttribute(Qt::WA_TranslucentBackground, true);
+        setAttribute(Qt::WA_TranslucentBackground);
         setFocusPolicy(Qt::ClickFocus);
         setStyleSheet(
             "QTextEdit {"
@@ -19,6 +19,32 @@ public:
             "}"
             "QTextEdit:focus {"
                 "border: 2px solid #333;"
+            "}"
+            "QMenuBar {"
+                "margin: 4px;"
+                "border-top-left-radius: 10px;"
+                "border-top-right-radius: 10px;"
+                "border: 1px solid #666;"
+                "background: rgb(90, 40, 10);"
+            "}"
+            "QMenuBar::item {"
+                "padding: 4px;"
+                "background: rgb(70, 35, 10);"
+                "border-radius: 6px;"
+            "}"
+            "QMenuBar::item:selected {"
+                "background: rgb(110, 60, 30);"
+            "}"
+            "QMenu {"
+                "background: rgba(90,40,10,220);"
+                "border-radius: 6px;"
+            "}"
+            "QMenu::item {"
+                "border-radius: 4px;"
+                "padding: 4px;"
+            "}"
+            "QMenu::item:selected {"
+                "background: rgba(255,255,255,30);"
             "}"
         );
     }
@@ -45,11 +71,20 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     tree = new CardTree();
     getCardTree(tree);
 
-    FormWidget* formWid = new FormWidget();  // Set and forget
+    FormWidget* formWid = new FormWidget();
+    fmenu = new QMenuBar(formWid);
+
+    QMenu* newCmenu = fmenu->addMenu("New card");
+    for (const auto& typ : CardRegistry::registry) {
+        QAction* act = newCmenu->addAction(typ.name);
+        QObject::connect(act, &QAction::triggered, [this, typ]() {
+            addCard(typ.newBlank());
+        });
+    }
+
     FormProxy.setWidget(formWid);
     FormProxy.setAutoFillBackground(false);
     form = new QVBoxLayout(formWid);
-    form->setContentsMargins(10, 10, 10, 10);
     form->setSpacing(4);
 
     QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
@@ -75,6 +110,18 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     TreeProxy.setWidget(tree);
 
     backBtn.onClick = [](){ goBack(); };
+}
+
+void BrowseScene::addCard(BaseCardTyp* card) {
+    cards.push_back(card);
+    writeCards();
+
+    auto* it = addToTree(tree, card);
+    tree->sortItems(
+        tree->header()->sortIndicatorSection(),
+        tree->header()->sortIndicatorOrder()
+    );
+    tree->setCurrentItem(it);
 }
 
 void BrowseScene::onEvent(QEvent* event) {
@@ -112,6 +159,9 @@ void BrowseScene::resize() {
     TreeProxy.setPos(0, rect.height()*0.05);
     TreeProxy.resize(rect.width()/2, rect.height()*0.95);
     FormProxy.setPos(rect.width()/2, rect.height()*0.05);
-    FormProxy.resize(rect.width()/2, rect.height()*0.95);
+    qreal formWid = rect.width()/2;
+    FormProxy.resize(formWid, rect.height()*0.95);
+    fmenu->setFixedWidth(formWid);
+    form->setContentsMargins(10, 10+fmenu->height(), 10, 10);
     backBtn.setRect({ 0, 0, rect.height()*0.05, rect.height()*0.05 });
 }

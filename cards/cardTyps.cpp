@@ -4,7 +4,7 @@
 #include "../items/cardLayouts.hpp"
 
 void registerCardTypes() {
-    REGISTER_CARD(TextCard)
+    REGISTER_CARD(TextCard, "Text card")
 }
 
 
@@ -38,6 +38,7 @@ bool BaseCardTyp::operator==(const CardGraphicItem& other) const {
 }
 
 TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {}
+BaseCardTyp* TextCard::newBlank() { return new TextCard("", ""); }
 CardGraphicItem* TextCard::getItem() const {
     return new CardGraphicItem(Single, new TextSide(front), new TextSide(back));
 }

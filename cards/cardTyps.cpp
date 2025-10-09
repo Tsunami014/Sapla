@@ -24,10 +24,10 @@ CardGraphicItem* TextCard::getItem() const {
 QString TextCard::getName() {
     return front;
 }
-void TextCard::createForm(QVBoxLayout* lay) {
+void TextCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::labelField(lay, "Front:");
-    Form::textField(lay, front, [this](const QString &s){ front = s; });
+    Form::textField(lay, front, [=](const QString &s){ front = s; trit->setText(0, s); });
     Form::labelField(lay, "Back:");
-    Form::textField(lay, back, [this](const QString &s){ back = s; });
+    Form::textField(lay, back, [=](const QString &s){ back = s; });
 }
 

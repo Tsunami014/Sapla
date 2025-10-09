@@ -61,7 +61,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this) {
         QTreeWidgetItem* item = selected.first();
         BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
 
-        data->createForm(form);
+        data->createForm(form, item);
         form->addStretch();
     });
     TreeProxy.setWidget(tree);

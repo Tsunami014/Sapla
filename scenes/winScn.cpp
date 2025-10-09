@@ -7,6 +7,7 @@
 #include <QTextDocument>
 
 WinScene::WinScene(Stats s) : txt(this) {
+    MG->setBottomTxt("");
     txt.setPlainText(QString::fromStdString(
         "You win!\nPress any button to go home\n"
         "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"

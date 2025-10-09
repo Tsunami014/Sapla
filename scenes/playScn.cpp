@@ -8,6 +8,7 @@
 
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
+        MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
         s.successes = 0;
         s.faliures = 0;
 
@@ -69,7 +70,7 @@ void PlayScene::resetTimer(bool add) {
 
         timeOffset = 0;
         // Later TODO: Change time based on how difficult card is
-        timeLeft = 4000 + QRandomGenerator::global()->bounded(2001);  // Random between 4 and 6 seconds
+        timeLeft = 2000 + QRandomGenerator::global()->bounded(4001);  // Random between 2 and 6 seconds
     }
     elapsed.restart();
     if (!timer.isActive()) {
@@ -95,9 +96,6 @@ void PlayScene::onEvent(QEvent* event) {
                         }
                     }
                     it.item->finish();
-                    if (main->grid.empty()) {
-                        resetTimer();
-                    }
                     break;
                 }
             }

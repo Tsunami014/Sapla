@@ -1,12 +1,13 @@
 #include "homeScn.hpp"
-#include "../main.hpp"
 #include "playScn.hpp"
 #include "browseScn.hpp"
-#include <QFontMetricsF>
+#include "../items/base/font.hpp"
+#include "../main.hpp"
 #include <QTextOption>
 #include <QTextDocument>
 
 HomeScene::HomeScene() : BaseScene() {
+    MG->setBottomTxt("");
     txt = new QGraphicsTextItem(this);
     txt->setHtml("<b>Sapla</b>");
     txt->setDefaultTextColor(QColor(149, 69, 53));
@@ -24,15 +25,6 @@ HomeScene::HomeScene() : BaseScene() {
     browseBtn->onClick = []() {
         MG->changeScene(new BrowseScene());
     };
-}
-
-QFont getFont(qreal targetH) {
-    QFont font;
-    font.setFamilies({"DejaVu Sans", "Ubuntu", "Segoe UI", "Arial", "Helvetica"});
-    QFontMetricsF metrics(font);
-    qreal currentH = metrics.height();
-    font.setPointSizeF(font.pointSizeF() * (targetH / currentH));
-    return font;
 }
 
 void HomeScene::resize() {

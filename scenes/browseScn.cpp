@@ -68,6 +68,8 @@ void goBack() {
 }
 
 BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
+    MG->setBottomTxt("<Ctrl+Shift+Backspace> to delete currently selected item, <Esc> to go back");
+
     tree = new CardTree();
     getCardTree(tree);
 
@@ -158,9 +160,9 @@ void BrowseScene::onEvent(QEvent* event) {
 void BrowseScene::resize() {
     TreeProxy.setPos(0, rect.height()*0.05);
     TreeProxy.resize(rect.width()/2, rect.height()*0.95);
-    FormProxy.setPos(rect.width()/2, rect.height()*0.05);
+    FormProxy.setPos(rect.width()/2, 0);
     qreal formWid = rect.width()/2;
-    FormProxy.resize(formWid, rect.height()*0.95);
+    FormProxy.resize(formWid, rect.height());
     fmenu->setFixedWidth(formWid);
     form->setContentsMargins(10, 10+fmenu->height(), 10, 10);
     backBtn.setRect({ 0, 0, rect.height()*0.05, rect.height()*0.05 });

@@ -10,6 +10,7 @@ set(SOURCES
     main.cpp
     game.cpp
     cards/cardTyps.cpp
+    cards/formElms.cpp
     cards/getCards.cpp
     cards/cardTree.cpp
     scenes/homeScn.cpp

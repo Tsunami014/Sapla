@@ -1,4 +1,5 @@
 #include "cardTyps.hpp"
+#include "formElms.hpp"
 #include "../items/cardLayouts.hpp"
 
 bool BaseCardTyp::operator==(const BaseCardTyp& other) const {
@@ -22,5 +23,11 @@ CardGraphicItem* TextCard::getItem() const {
 }
 QString TextCard::getName() {
     return front;
+}
+void TextCard::createForm(QVBoxLayout* lay) {
+    Form::labelField(lay, "Front:");
+    Form::textField(lay, front, [this](const QString &s){ front = s; });
+    Form::labelField(lay, "Back:");
+    Form::textField(lay, back, [this](const QString &s){ back = s; });
 }
 

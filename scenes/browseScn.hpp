@@ -3,14 +3,17 @@
 #include "../items/cardTree.hpp"
 #include <QGraphicsProxyWidget>
 #include <QTreeWidget>
+#include <QVBoxLayout>
 
 class BrowseScene : public BaseScene {
 public:
     BrowseScene();
-    void onEvent(QEvent* event) override;
     void resize() override;
 
 protected:
-    QGraphicsProxyWidget proxy;
+    QGraphicsProxyWidget TreeProxy;
     CardTree* tree;
+
+    QGraphicsProxyWidget FormProxy;
+    QVBoxLayout* form;
 };

@@ -14,6 +14,7 @@ MainGame::MainGame(BaseScene* scene) {
 void MainGame::changeScene(BaseScene* newScene) {
     MScene->removeItem(curScene);
     delete curScene;
+    MScene->views()[0]->viewport()->unsetCursor();
     curScene = newScene;
     MScene->addItem(newScene);
     newScene->setRect(bg->boundingRect());

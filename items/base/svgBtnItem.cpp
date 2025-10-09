@@ -20,7 +20,6 @@ void SvgBtnItem::init() {
 
 void SvgBtnItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (contains(event->pos())) {
-        QApplication::setOverrideCursor(Qt::ArrowCursor);
         if (onClick) onClick();
     }
 }

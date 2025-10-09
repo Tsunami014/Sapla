@@ -24,7 +24,6 @@ void writeCards() {
     }
     file.close();
     //qDebug() << "Successfully wrote" << cards.size() << "cards to the configuration file at:\n" << fullpth;
-    //std::cout << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth.toStdString() << "\n";
 }
 
 void initCards() {

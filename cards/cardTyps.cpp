@@ -22,6 +22,21 @@ QString tryReadLine(QTextStream& in, QString error = "") {
     return out;
 }
 
+QString makeSafe(QString str) {
+    if (str == "") return "\\";
+    str.replace("\\", "\\\\");
+    str.replace("\n", "\\n");
+    str.replace("\r", "\\r");
+    return str;
+}
+QString unSafe(QString str) {
+    if (str == "\\") return "";
+    str.replace("\\n", "\n");
+    str.replace("\\r", "\r");
+    str.replace("\\\\", "\\");
+    return str;
+}
+
 bool BaseCardTyp::operator==(const BaseCardTyp& other) const {
     auto* it1 = getItem();
     auto* it2 = other.getItem();
@@ -64,9 +79,9 @@ bool TextCard::canParse(const QString& header) {
 BaseCardTyp* TextCard::parse(const QString& header, QTextStream& in) {
     QString front = tryReadLine(in, "TextCard needs a front, but not provided!");
     QString back = tryReadLine(in, "TextCard needs a back, but not provided!");
-    return new TextCard(front, back);
+    return new TextCard(unSafe(front), unSafe(back));
 }
 void TextCard::toFile(QTextStream& out) {
-    out << "t\n" << front << "\n" << back << "\n";
+    out << "t\n" << makeSafe(front) << "\n" << makeSafe(back) << "\n";
 }
 

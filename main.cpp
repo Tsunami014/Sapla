@@ -28,6 +28,7 @@ protected:
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     std::cout << getPath().toStdString() << "\n";
+    std::cout.flush();
     registerCardTypes();
     initCards();
     MScene = new BetterScene();

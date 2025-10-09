@@ -9,7 +9,8 @@ namespace Form {
     }
 
     void textField(QVBoxLayout* lay, const QString& initTxt, std::function<void(const QString&)> onChange) {
-        QTextEdit* edit = new QTextEdit(initTxt);
+        QTextEdit* edit = new QTextEdit();
+        edit->setPlainText(initTxt);
         lay->addWidget(edit);
 
         if (onChange) {

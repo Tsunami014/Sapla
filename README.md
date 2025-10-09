@@ -68,5 +68,5 @@ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel
 2. Build it for release there (figure out how yourself, sorry it's not as straightforward as Linux)
 
 ## ChatGPT usage
-Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself. I just used its judgement for generalised problems ('how do I do xyz' not '(re)write abc program to do xyz') (like using Google) and helped debugging by pointing out what the problems were (but I fixed the problems myself) as that saved me a lot of unecessary time (and also it means the codebase is much neater).
+Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself (which means the codebase is much neater than if I'd just chatGPT'd it all). I just used its judgement for *generalised* problems ('how do I do xyz' not '(re)write abc program to do xyz') (like using Google) and helped debugging by pointing out what the problems were (but I fixed the problems myself) as that saved me a lot of unecessary time.
 

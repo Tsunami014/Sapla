@@ -1,4 +1,5 @@
 #include "getCards.hpp"
+#include "cardTyps.hpp"
 #include <iostream>
 #include <QStandardPaths>
 #include <QDir>
@@ -11,15 +12,13 @@ QString getPath() {
     return path + "/savedata.txt";
 }
 
-BaseCardTyp* readTextCard(QString line, QTextStream& in) {
-    QString front = in.readLine();
-    if (front.isNull()) { qFatal() << "Text item has no contents!"; }
-    QString back = in.readLine();
-    if (front.isNull()) { qFatal() << "Text item has no back!"; }
-    return new TextCard(front, back);
+void writeCards() {
+
 }
 
 void initCards() {
+    for (auto* c : cards) delete c;
+    cards = {};
     QString fullpth = getPath();
     QFile file(fullpth);
 
@@ -48,10 +47,17 @@ void initCards() {
         BaseCardTyp* newC;
         if (line == "" || line[0] == "#") {
             // Nothing or comment
-        } else if (line[0] == "t") {
-            newC = readTextCard(line, in);
-        } else { qFatal() << "Unknown card type '" << line << "'!"; }
-        cards.push_back(newC);
+        } else {
+            bool done = false;
+            for (auto& typ : CardRegistry::registry) {
+                if (typ.canParse(line)) {
+                    cards.push_back(typ.parse(line, in));
+                    done = true;
+                    break;
+                }
+            }
+            if (!done) qFatal() << "Card parser cannot be found for header: '" << line << "'!";
+        }
         line = in.readLine();
     }
 

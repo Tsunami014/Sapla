@@ -2,6 +2,25 @@
 #include "formElms.hpp"
 #include "../items/cardLayouts.hpp"
 
+void registerCardTypes() {
+    REGISTER_CARD(TextCard)
+}
+
+
+QString tryReadLine(QTextStream& in, QString error = "") {
+    QString out;
+    while (true) {
+        out = in.readLine();
+        if (out.isNull()) {
+            if (error != "") qFatal() << error;
+            else return out;
+        }
+        if (out == "" || out[0] == "#") continue;
+        break;
+    }
+    return out;
+}
+
 bool BaseCardTyp::operator==(const BaseCardTyp& other) const {
     auto* it1 = getItem();
     auto* it2 = other.getItem();
@@ -29,5 +48,16 @@ void TextCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::textField(lay, front, [=](const QString &s){ front = s; trit->setText(0, s); });
     Form::labelField(lay, "Back:");
     Form::textField(lay, back, [=](const QString &s){ back = s; });
+}
+bool TextCard::canParse(const QString& header) {
+    return header == "t";
+}
+BaseCardTyp* TextCard::parse(const QString& header, QTextStream& in) {
+    QString front = tryReadLine(in, "TextCard needs a front, but not provided!");
+    QString back = tryReadLine(in, "TextCard needs a back, but not provided!");
+    return new TextCard(front, back);
+}
+void TextCard::toFile(QTextStream& out) {
+    out << "t\n" << front << "\n" << back << "\n";
 }
 

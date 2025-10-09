@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGraphicsView>
 #include "main.hpp"
+#include "cards/cardTyps.hpp"
 #include "cards/getCards.hpp"
 #include "scenes/homeScn.hpp"
 
@@ -25,6 +26,7 @@ protected:
 };
 
 int main(int argc, char *argv[]) {
+    registerCardTypes();
     initCards();
     QApplication app(argc, argv);
     MScene = new BetterScene();

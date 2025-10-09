@@ -1,6 +1,9 @@
 #include "browseScn.hpp"
+#include "homeScn.hpp"
+#include "../main.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/cardTyps.hpp"
+#include <QTimer>
 
 class FormWidget : public QWidget {
 public:
@@ -33,7 +36,11 @@ protected:
     }
 };
 
-BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this) {
+void goBack() {
+    QTimer::singleShot(0, [](){ MG->changeScene(new HomeScene()); });
+}
+
+BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
     tree = new CardTree();
     getCardTree(tree);
 
@@ -65,6 +72,19 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this) {
         form->addStretch();
     });
     TreeProxy.setWidget(tree);
+
+    backBtn.onClick = [](){ goBack(); };
+}
+
+void BrowseScene::onEvent(QEvent* event) {
+    if (event->type() == QEvent::KeyPress) {
+        auto* keyEvent = (QKeyEvent*)event;
+        int key = keyEvent->key();
+
+        if (key == Qt::Key_Escape) {
+            goBack();
+        }
+    }
 }
 
 void BrowseScene::resize() {
@@ -72,4 +92,5 @@ void BrowseScene::resize() {
     TreeProxy.resize(rect.width()/2, rect.height()*0.95);
     FormProxy.setPos(rect.width()/2, rect.height()*0.05);
     FormProxy.resize(rect.width()/2, rect.height()*0.95);
+    backBtn.setRect({ 0, 0, rect.height()*0.05, rect.height()*0.05 });
 }

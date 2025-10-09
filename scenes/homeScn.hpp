@@ -9,7 +9,7 @@ public:
 
 private:
     QGraphicsTextItem* txt;
-    SvgBtnItem* playBtn;
-    SvgBtnItem* browseBtn;
+    TxtBtnItem* playBtn;
+    TxtBtnItem* browseBtn;
 };
 

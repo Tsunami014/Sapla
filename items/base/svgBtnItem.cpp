@@ -5,23 +5,8 @@
 #include <QCursor>
 
 SvgBtnItem::SvgBtnItem(const QString &svgPath, QGraphicsItem *parent) : SvgGraphicItem(svgPath, parent) {
-    txt = new QGraphicsTextItem(this);
-    init();
-}
-SvgBtnItem::SvgBtnItem(const QString& svgPath, const QString& text, QGraphicsItem* parent) : SvgGraphicItem(svgPath, parent) {
-    txt = new QGraphicsTextItem(text, this);
-    init();
-}
-void SvgBtnItem::init() {
     hovering = false;
     setAcceptHoverEvents(true);
-    txt->setAcceptHoverEvents(false);
-}
-
-void SvgBtnItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (contains(event->pos())) {
-        if (onClick) onClick();
-    }
 }
 
 QRectF SvgBtnItem::boundingRect() const {
@@ -31,9 +16,6 @@ QRectF SvgBtnItem::boundingRect() const {
     newR.setY(rect.y() - rect.height()*0.1);
     newR.setHeight(rect.height()*1.2);
     return newR;
-}
-bool SvgBtnItem::contains(const QPointF& point) const {
-    return SvgGraphicItem::contains(point);
 }
 
 void SvgBtnItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
@@ -57,32 +39,10 @@ void SvgBtnItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     SvgGraphicItem::hoverLeaveEvent(event);
 }
 
-void SvgBtnItem::setTxtColour(const QColor& colour) {
-    txt->setDefaultTextColor(colour);
-}
-void SvgBtnItem::setRect(const QRectF& newRect) {
-    QRectF txtBR = txt->boundingRect();
-    qreal xtraX = txtBR.width() * 0.2;
-    qreal xtraY = txtBR.height() * 0.1;
-    RectMixin::setRect(QRectF(
-        newRect.x(), newRect.y(), txtBR.width() + xtraX, txtBR.height() + xtraY
-    ));
-    txt->setPos(newRect.x() + xtraX/2, newRect.y());
-}
-void SvgBtnItem::setPos(const QPointF& pos) {
-    RectMixin::setRect(QRectF(pos, rect.size()));
-    txt->setPos(pos.x() + (txt->boundingRect().width()*0.2)/2, pos.y());
-}
-void SvgBtnItem::setText(const QString& text) {
-    txt->setPlainText(text);
-    setRect(rect);
-}
-QString SvgBtnItem::getText() {
-    return txt->toPlainText();
-}
-void SvgBtnItem::setFont(const QFont& font) {
-    txt->setFont(font);
-    setRect(rect);
+void SvgBtnItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    if (contains(event->pos())) {
+        if (onClick) onClick();
+    }
 }
 
 void SvgBtnItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
@@ -91,5 +51,45 @@ void SvgBtnItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidg
         target = boundingRect();
     }
     renderer->render(painter, target);
+}
+
+
+
+TxtBtnItem::TxtBtnItem(const QString &svgPath, QGraphicsItem *parent) : SvgBtnItem(svgPath, parent) {
+    txt = new QGraphicsTextItem(this);
+    txt->setAcceptHoverEvents(false);
+}
+TxtBtnItem::TxtBtnItem(const QString& svgPath, const QString& text, QGraphicsItem* parent) : SvgBtnItem(svgPath, parent) {
+    txt = new QGraphicsTextItem(text, this);
+    txt->setAcceptHoverEvents(false);
+}
+
+void TxtBtnItem::setRect(const QRectF& newRect) {
+    QRectF txtBR = txt->boundingRect();
+    qreal xtraX = txtBR.width() * 0.2;
+    qreal xtraY = txtBR.height() * 0.1;
+    RectMixin::setRect(QRectF(
+        newRect.x(), newRect.y(), txtBR.width() + xtraX, txtBR.height() + xtraY
+    ));
+    txt->setPos(newRect.x() + xtraX/2, newRect.y());
+}
+
+void TxtBtnItem::setTxtColour(const QColor& colour) {
+    txt->setDefaultTextColor(colour);
+}
+void TxtBtnItem::setPos(const QPointF& pos) {
+    RectMixin::setRect(QRectF(pos, rect.size()));
+    txt->setPos(pos.x() + (txt->boundingRect().width()*0.2)/2, pos.y());
+}
+void TxtBtnItem::setText(const QString& text) {
+    txt->setPlainText(text);
+    setRect(rect);
+}
+QString TxtBtnItem::getText() {
+    return txt->toPlainText();
+}
+void TxtBtnItem::setFont(const QFont& font) {
+    txt->setFont(font);
+    setRect(rect);
 }
 

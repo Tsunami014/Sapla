@@ -14,12 +14,12 @@ HomeScene::HomeScene() : BaseScene() {
     opt.setAlignment(Qt::AlignHCenter);
     txt->document()->setDefaultTextOption(opt);
 
-    playBtn = new SvgBtnItem(":/assets/btn.svg", "Play!", this);
+    playBtn = new TxtBtnItem(":/assets/btn.svg", "Play!", this);
     playBtn->setTxtColour(QColor(184, 115, 51));
     playBtn->onClick = []() {
         MG->changeScene(new PlayScene());
     };
-    browseBtn = new SvgBtnItem(":/assets/btn.svg", "Browse cards", this);
+    browseBtn = new TxtBtnItem(":/assets/btn.svg", "Browse cards", this);
     browseBtn->setTxtColour(QColor(184, 115, 51));
     browseBtn->onClick = []() {
         MG->changeScene(new BrowseScene());

@@ -11,15 +11,12 @@ Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
     toNext = 50;
     nextPhase();
 }
-Tree::~Tree() {
-    delete baseRend;
-}
 
 void Tree::setRect(const QRectF& newRect) {
     qreal wid = newRect.width()*0.2;
     qreal hei = wid * 2;
     treeR = {
-        newRect.width()*0.75, (newRect.height()/2 - hei)/2, 
+        newRect.x()+newRect.width()*0.75, newRect.y()+(newRect.height() - hei)/2, 
         wid, hei
     };
     SvgGraphicItem::setRect(newRect);
@@ -52,17 +49,22 @@ void Tree::nextPhase() {
     isSmall = renderer->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
 }
+void Tree::lastPhase() {
+    phase = MAX_PHASE - 1;
+    nextPhase();
+}
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
+    QRectF fitR = treeR.adjusted(-treeR.width()*0.1, -treeR.height()*0.1, treeR.width()*0.1, treeR.height()*0.1);
     QRectF sTreeR{
-        treeR.x(), treeR.y() + treeR.height()/2, treeR.width(), treeR.height()/2
+        fitR.x(), fitR.y() + fitR.height()/2, fitR.width(), fitR.height()/2
     };
     baseRend->render(painter, sTreeR);
     QRectF drawR;
     if (isSmall) {
         drawR = sTreeR;
     } else {
-        drawR = treeR;
+        drawR = fitR;
     }
     renderer->render(painter, drawR);
 }

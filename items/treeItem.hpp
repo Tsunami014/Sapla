@@ -5,9 +5,9 @@
 class Tree : public SvgGraphicItem {
 public:
     Tree(QGraphicsItem* parent = nullptr);
-    ~Tree();
     bool grow(double amount);
     void nextPhase();
+    void lastPhase();  // Does not update toNext correctly
     void setRect(const QRectF& newRect) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 

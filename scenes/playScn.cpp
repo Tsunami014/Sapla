@@ -9,6 +9,7 @@
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
+        MG->changeBG("pretty");
         s.successes = 0;
         s.faliures = 0;
 

@@ -12,7 +12,7 @@ You are a wizard/witch/whatever who wants to grow a forest. But waiting 100 year
 - Flashcards in a grid!
 - Adds new flashcards with a timer
 - Grow a tree with your answers
-- Custom tree pictures hand drawn by me (in fact everything you see was drawn by me)
+- Custom tree/UI/background pictures *hand drawn* by me
 - Browse all your flashcards, edit them, delete them or add more
 - Keybinds down the bottom of the screen for ease of use
 - Saves flashcards to a configuration file

@@ -69,6 +69,7 @@ void goBack() {
 
 BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
     MG->setBottomTxt("<Ctrl+Shift+Backspace> to delete currently selected item, <Esc> to go back");
+    MG->changeBG("dirt");
 
     tree = new CardTree();
     getCardTree(tree);

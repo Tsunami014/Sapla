@@ -8,8 +8,9 @@
 #include <QKeyEvent>
 
 WinScene::WinScene(Stats s) : txt(this), tr(this) {
-    tr.lastPhase();
     MG->setBottomTxt("<Escape> to go home");
+    MG->changeBG("win");
+    tr.lastPhase();
     txt.setPlainText(QString::fromStdString(
         "You win!\n"
         "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"

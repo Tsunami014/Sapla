@@ -8,7 +8,7 @@
 
 HomeScene::HomeScene() : BaseScene() {
     MG->setBottomTxt("");
-    MG->changeBG("dirt");
+    MG->changeBG("pretty");
     txt = new QGraphicsTextItem(this);
     txt->setHtml("<b>Sapla</b>");
     txt->setDefaultTextColor(QColor(149, 69, 53));

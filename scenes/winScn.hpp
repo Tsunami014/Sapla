@@ -1,5 +1,6 @@
 #pragma once
 #include "baseScn.hpp"
+#include "../items/treeItem.hpp"
 #include <QGraphicsTextItem>
 
 struct Stats; // Forward reference
@@ -11,4 +12,5 @@ public:
     void resize() override;
 private:
     QGraphicsTextItem txt;
+    Tree tr;
 };

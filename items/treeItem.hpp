@@ -16,7 +16,6 @@ protected:
     double toNext;
     ProgressBarItem pb;
     static QSvgRenderer* baseRend;
-    QRectF treeR;
 
 private:
     int phase;

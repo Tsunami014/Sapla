@@ -6,7 +6,8 @@
 #include <QTimer>
 #include <QTextDocument>
 
-WinScene::WinScene(Stats s) : txt(this) {
+WinScene::WinScene(Stats s) : txt(this), tr(this) {
+    tr.lastPhase();
     MG->setBottomTxt("");
     txt.setPlainText(QString::fromStdString(
         "You win!\nPress any button to go home\n"
@@ -25,7 +26,8 @@ void WinScene::onEvent(QEvent* event) {
 }
 
 void WinScene::resize() {
-    txt.setTextWidth(rect.width() / 2.0);
+    tr.setRect(rect);
+    txt.setTextWidth(tr.boundingRect().left() / 2.0);
 
     qreal textHeight = txt.document()->size().height();
     qreal y = (rect.height() - textHeight) / 2.0;

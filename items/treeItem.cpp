@@ -13,16 +13,16 @@ Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
 }
 
 void Tree::setRect(const QRectF& newRect) {
+    prepareGeometryChange();
     qreal wid = newRect.width()*0.2;
     qreal hei = wid * 2;
-    treeR = {
+    rect = {
         newRect.x()+newRect.width()*0.75, newRect.y()+(newRect.height() - hei)/2, 
         wid, hei
     };
-    SvgGraphicItem::setRect(newRect);
     pb.setRect({
-        treeR.x(), treeR.y() + treeR.height()*1.1,
-        treeR.width(), newRect.height()*0.04
+        rect.x(), rect.y() + rect.height()*1.1,
+        rect.width(), newRect.height()*0.04
     });
 }
 
@@ -33,7 +33,7 @@ bool Tree::grow(double amount) {
     }
     if (growth >= toNext) {
         growth -= toNext;
-        if (phase+1 > MAX_PHASE) {
+        if (phase+1 >= MAX_PHASE) {
             return false;
         }
         nextPhase();
@@ -48,6 +48,8 @@ void Tree::nextPhase() {
     ));
     isSmall = renderer->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
+
+    if (phase == MAX_PHASE) pb.hide();
 }
 void Tree::lastPhase() {
     phase = MAX_PHASE - 1;
@@ -55,7 +57,8 @@ void Tree::lastPhase() {
 }
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
-    QRectF fitR = treeR.adjusted(-treeR.width()*0.1, -treeR.height()*0.1, treeR.width()*0.1, treeR.height()*0.1);
+    // Because the svg is smaller than the bounding rect, and I really want to show them off
+    QRectF fitR = rect.adjusted(-rect.width()*0.1, -rect.height()*0.1, rect.width()*0.1, rect.height()*0.1);
     QRectF sTreeR{
         fitR.x(), fitR.y() + fitR.height()/2, fitR.width(), fitR.height()/2
     };

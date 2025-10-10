@@ -24,6 +24,9 @@ Controls for things that are not obvious are down the bottom of the screen. Here
     - Press space if you got it wrong
     - Press enter if you got it right
 
+## Demo video
+https://github.com/user-attachments/assets/feb3e6fd-aa4f-4918-ab6f-fb62bd83d840
+
 ## Getting it
 ### The easy way
 Download the executable from the releases tab

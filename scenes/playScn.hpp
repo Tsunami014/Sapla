@@ -26,7 +26,8 @@ public:
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
-    void resetTimer(bool add = true);
+    void resetTimer();
+    int addAnother();
 
     Stats s;
 

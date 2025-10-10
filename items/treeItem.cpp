@@ -15,7 +15,7 @@ Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
 void Tree::setRect(const QRectF& newRect) {
     prepareGeometryChange();
     qreal wid = newRect.width()*0.2;
-    qreal hei = wid * 2;
+    qreal hei = wid * 2.1;
     rect = {
         newRect.x()+newRect.width()*0.75, newRect.y()+(newRect.height() - hei)/2, 
         wid, hei

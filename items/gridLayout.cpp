@@ -62,8 +62,6 @@ QRectF GLayoutGraphicItem::getRealRect() {
     // Reduce height by 0.1 on both sides
     nrect.setY(nrect.y() + nrect.height()*0.1);
     nrect.setHeight(nrect.height()*0.8);
-    // Reduce width to get a nice section on the other side for the tree
-    nrect.setWidth(nrect.width()*0.7);
     return nrect;
 }
 

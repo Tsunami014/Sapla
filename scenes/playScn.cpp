@@ -15,7 +15,6 @@ PlayScene::PlayScene() :
 
         overlay = NULL;
 
-        pb.setZValue(2);
         QObject::connect(&timer, &QTimer::timeout, [this]() {
             if (main->grid.size() >= 3) {
                 tr.grow(-0.05*(main->grid.size()-2));
@@ -115,8 +114,8 @@ void PlayScene::onEvent(QEvent* event) {
 }
 
 void PlayScene::resize() {
-    main->setRect(rect);
     tr.setRect(rect);
+    main->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
     if (overlay != NULL) {
         overlay->setRect(rect);
     }

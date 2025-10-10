@@ -8,6 +8,7 @@ class MainGame {
 public:
     MainGame();
     void initScene();
+    void changeBG(QString bgName);
     void resizeEvent(const QRectF& newSze);
     void changeScene(BaseScene* newScene);
     BaseScene* curScene;

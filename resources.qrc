@@ -1,8 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/bg.svg</file>
         <file>assets/btn.svg</file>
         <file>assets/backBtn.svg</file>
+
+        <file>assets/bgs/dirt.svg</file>
 
         <file>assets/CardLayouts/emptyIt.svg</file>
         <file>assets/CardLayouts/smlIt.svg</file>

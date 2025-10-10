@@ -4,9 +4,7 @@
 #include "items/base/font.hpp"
 
 MainGame::MainGame() {
-    bg = new SvgGraphicItem(":/assets/bg.svg");
-    bg->setZValue(-100);
-    MScene->addItem(bg);
+    bg = nullptr;
 
     bottomTxt = new QGraphicsTextItem("");
     bottomTxt->setDefaultTextColor({0, 0, 0});
@@ -17,6 +15,16 @@ void MainGame::initScene() {
     curScene = new HomeScene();
     curScene->setZValue(-1);
     MScene->addItem(curScene);
+}
+
+void MainGame::changeBG(QString bgName) {
+    if (bg != nullptr) {
+        MScene->removeItem(bg);
+        delete bg;
+    }
+    bg = new SvgGraphicItem(":/assets/bgs/"+bgName+".svg");
+    bg->setZValue(-100);
+    MScene->addItem(bg);
 }
 
 void MainGame::setBottomTxt(const QString& newTxt) {

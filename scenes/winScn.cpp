@@ -5,12 +5,13 @@
 #include <QEvent>
 #include <QTimer>
 #include <QTextDocument>
+#include <QKeyEvent>
 
 WinScene::WinScene(Stats s) : txt(this), tr(this) {
     tr.lastPhase();
-    MG->setBottomTxt("");
+    MG->setBottomTxt("<Escape> to go home");
     txt.setPlainText(QString::fromStdString(
-        "You win!\nPress any button to go home\n"
+        "You win!\n"
         "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"
     ));
     txt.setScale(2);
@@ -21,7 +22,8 @@ WinScene::WinScene(Stats s) : txt(this), tr(this) {
 
 void WinScene::onEvent(QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
-        QTimer::singleShot(0, [this]() { MG->changeScene(new HomeScene()); });
+        auto* keyEvent = (QKeyEvent*)event;
+        if (keyEvent->key() == Qt::Key_Escape) QTimer::singleShot(0, [this]() { MG->changeScene(new HomeScene()); });
     }
 }
 

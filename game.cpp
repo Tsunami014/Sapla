@@ -38,7 +38,7 @@ void MainGame::changeScene(BaseScene* newScene) {
     curScene = newScene;
     curScene->setZValue(-1);
     MScene->addItem(newScene);
-    resizeEvent(bg->boundingRect());
+    resizeEvent(MScene->sceneRect());
 }
 
 void MainGame::resizeEvent(const QRectF& newSze) {

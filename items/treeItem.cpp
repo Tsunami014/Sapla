@@ -1,8 +1,15 @@
 #include "treeItem.hpp"
+// New imports
+#include <QPainter>
+#include <QRandomGenerator>
 
-#define MAX_PHASE 5
+// New swap
+//#define MAX_PHASE 5
+#define MAX_PHASE 1
 
 QSvgRenderer* Tree::baseRend = NULL;
+
+QString Tree::fullTxt = ""; // New
 
 Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
     if (!baseRend) baseRend = new QSvgRenderer(QStringLiteral(":/assets/treeGround.svg"));
@@ -48,15 +55,34 @@ void Tree::nextPhase() {
     ));
     isSmall = renderer->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
+    toNext = 2000;  // New
 
     if (phase == MAX_PHASE) pb.hide();
 }
 void Tree::lastPhase() {
     phase = MAX_PHASE - 1;
     nextPhase();
+    growth = toNext;  // New
 }
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
+    // All before return is new
+    painter->setPen(Qt::black);
+    int goodChars = (growth/toNext) * fullTxt.length();
+    QString res = fullTxt.sliced(0, goodChars);
+    if (goodChars > 0 && goodChars < fullTxt.length()) {
+        res = "[" + res + "]\n";
+    }
+    for (int _ = 0; _ < fullTxt.length() - goodChars; _++) {
+        int code;
+        code = QRandomGenerator::global()->bounded(33, 127);
+        res += QChar(code);
+    }
+    QTextOption opt;
+    opt.setAlignment(Qt::AlignCenter);
+    opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+    painter->drawText(rect, res, opt);
+    return;
     // Because the svg is smaller than the bounding rect, and I really want to show them off
     QRectF fitR = rect.adjusted(-rect.width()*0.1, -rect.height()*0.1, rect.width()*0.1, rect.height()*0.1);
     QRectF sTreeR{
@@ -70,5 +96,10 @@ void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
         drawR = fitR;
     }
     renderer->render(painter, drawR);
+}
+
+// New stuff:
+void Tree::changeTxt() {
+    fullTxt = "This is a very long test testing some very long text inside this very short box.";
 }
 

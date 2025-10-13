@@ -10,15 +10,14 @@ PlayScene::PlayScene() :
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
         MG->changeBG("pretty");
+        tr.changeTxt();  // New
         s.successes = 0;
         s.faliures = 0;
 
         overlay = NULL;
 
         QObject::connect(&timer, &QTimer::timeout, [this]() {
-            if (main->grid.size() >= 3) {
-                tr.grow(-0.05*(main->grid.size()-2));
-            }
+            tr.updateCipher();  // New
             double progress = (elapsed.elapsed() + timeOffset) / double(timeLeft);
             if (progress >= 1) {
                 timeOffset = 0;
@@ -72,8 +71,8 @@ int PlayScene::addAnother() {
     CardGraphicItem* newItem = cards[idx]->getItem();
     if (!main->addItem(newItem)) {
         delete newItem;
-        // Failed to add a new item; you lose a lot of growth
-        tr.grow(-150);
+        // Failed to add a new item; you lose some growth
+        tr.grow(-50);
     }
     main->update();
 

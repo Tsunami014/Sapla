@@ -5,6 +5,36 @@
 
 std::vector<BaseCardTyp*> cards = {};
 
+QString tryReadLine(QTextStream& in, QString error) {
+    QString out;
+    while (true) {
+        out = in.readLine();
+        if (out.isNull()) {
+            if (error != "") qFatal() << error;
+            else return out;
+        }
+        if (out == "" || out[0] == "#") continue;
+        break;
+    }
+    return out;
+}
+
+QString makeSafe(QString str) {
+    if (str == "") return "\\";
+    str.replace("\\", "\\\\");
+    str.replace("\n", "\\n");
+    str.replace("\r", "\\r");
+    return str;
+}
+QString unSafe(QString str) {
+    if (str == "\\") return "";
+    str.replace("\\n", "\n");
+    str.replace("\\r", "\r");
+    str.replace("\\\\", "\\");
+    return str;
+}
+
+
 QString getPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(path);

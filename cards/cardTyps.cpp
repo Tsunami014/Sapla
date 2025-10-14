@@ -7,36 +7,6 @@ void registerCardTypes() {
     REGISTER_CARD(TextCard, "Text card")
 }
 
-
-QString tryReadLine(QTextStream& in, QString error = "") {
-    QString out;
-    while (true) {
-        out = in.readLine();
-        if (out.isNull()) {
-            if (error != "") qFatal() << error;
-            else return out;
-        }
-        if (out == "" || out[0] == "#") continue;
-        break;
-    }
-    return out;
-}
-
-QString makeSafe(QString str) {
-    if (str == "") return "\\";
-    str.replace("\\", "\\\\");
-    str.replace("\n", "\\n");
-    str.replace("\r", "\\r");
-    return str;
-}
-QString unSafe(QString str) {
-    if (str == "\\") return "";
-    str.replace("\\n", "\n");
-    str.replace("\\r", "\r");
-    str.replace("\\\\", "\\");
-    return str;
-}
-
 bool BaseCardTyp::operator==(const BaseCardTyp& other) const {
     auto* it1 = getItem();
     auto* it2 = other.getItem();
@@ -51,6 +21,8 @@ bool BaseCardTyp::operator==(const CardGraphicItem& other) const {
     delete it;
     return eq;
 }
+
+/////// TextCard
 
 TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {}
 BaseCardTyp* TextCard::newBlank() { return new TextCard("", ""); }

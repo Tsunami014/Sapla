@@ -1,9 +1,9 @@
-#include "cardTree.hpp"
+#include "listWid.hpp"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QHeaderView>
 
-CardTree::CardTree(QWidget *parent) : QTreeWidget(parent) {
+ListWidget::ListWidget(QWidget *parent) : QTreeWidget(parent) {
     setSortingEnabled(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     header()->setSectionResizeMode(QHeaderView::Stretch);
@@ -31,7 +31,7 @@ CardTree::CardTree(QWidget *parent) : QTreeWidget(parent) {
     viewport()->setAutoFillBackground(false);
 }
 
-bool CardTree::viewportEvent(QEvent *event) {
+bool ListWidget::viewportEvent(QEvent *event) {
     if (event->type() == QEvent::Paint) {
         QPaintEvent *pe = static_cast<QPaintEvent*>(event);
         QPainter p(viewport());

@@ -17,7 +17,7 @@ set(SOURCES
     scenes/browseScn.cpp
     scenes/playScn.cpp
     scenes/winScn.cpp
-    items/cardTree.cpp
+    items/listWid.cpp
     items/gridLayout.cpp
     items/sideRends.cpp
     items/cardIt.cpp

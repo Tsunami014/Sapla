@@ -3,6 +3,7 @@
 #include "../main.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
+#include <QColor>
 #include <QTimer>
 #include <QHeaderView>
 
@@ -96,7 +97,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     MG->setBottomTxt("<Ctrl+Delete> to delete currently selected item, <Esc> to go back");
     MG->changeBG("dirt");
 
-    tree = new CardTree();
+    tree = new ListWidget();
     getCardTree(tree);
 
     FormWidget* formWid = new FormWidget();

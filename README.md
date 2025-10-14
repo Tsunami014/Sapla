@@ -4,9 +4,9 @@ A cool flashcard app made in QT. Flashcards are arranged in a grid and you are p
 FAQ is at the bottom.
 
 ## Storyline
-You are a wizard/witch/whatever who wants to grow a forest. But waiting 100 years for trees to grow is boring. Instead, you cast spells on the tree and once enough magic energy is absorbed in the tree it will grow! But you must be fast; otherwise the magic will slowly fade away.
+You work for a spy agency who is intercepting hackers' messages. They have tried to scramble their messages (signals to each other) as well as they could and the only way to descramble them is through hard work. But you're not the world's best agent for nothing.
 
-(It's a metaphor for your mental growth remembering flashcards)
+Remember the flashcards and you'll slowly piece together the secret messages the hackers are sending to each other and you can stop them!
 
 ## Features
 - Flashcards in a grid!

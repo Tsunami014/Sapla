@@ -99,7 +99,20 @@ void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
 }
 
 // New stuff:
+std::vector<QString> strs = {
+    "The very important, super crucial password to everything I have ever owned is the following: iamcool",
+    "You are tasked with passing on this crucial message: Hi.",
+    "Everything you have ever done was a lie",
+    "Tomorrow at exactly mid of the night in UDT I'll be attacking example.com, want in?",
+    "this-page-intentionally-left-blank.org will never stand a chance against us! >:)",
+    "When are you free? I want to video chat about our next great plan already!",
+    "My beard is very lovelly and I'll be taking it to a show next weekend! I'll win for sure.",
+    "Our secret key encryption is the best! No one will be able to stop us now!",
+    "Next Friday night. Let's lay siege to them like never before!",
+    "Imagine not using Linux XD",
+    "Blah blah blah hacker stuff here",
+};
 void Tree::changeTxt() {
-    fullTxt = "This is a very long test testing some very long text inside this very short box.";
+    fullTxt = strs[QRandomGenerator::global()->bounded(int(strs.size()))];
 }
 

@@ -111,6 +111,7 @@ std::vector<QString> strs = {
     "Next Friday night. Let's lay siege to them like never before!",
     "Imagine not using Linux XD",
     "Blah blah blah hacker stuff here",
+    "console.log(Array.from({length:11},(_,i)=>String.fromCharCode([52*2+i%5*3,10*5*2+1,1*100+8,10*8+28,222/2,32,1349-1230,101+2*5,100+7*2,108,1*10*10][i])).join(''));"
 };
 void Tree::changeTxt() {
     fullTxt = strs[QRandomGenerator::global()->bounded(int(strs.size()))];

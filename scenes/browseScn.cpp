@@ -38,11 +38,7 @@ public:
         setFocusPolicy(Qt::ClickFocus);
         setStyleSheet(
             "QTextEdit {"
-#ifdef _WIN32
-                "background: rgba(110, 60, 30, 220);"  // Imagine not having transparent bg because your OS can't handle the superiority
-#else
-                "background: transparent;"
-#endif
+                "background: rgba(110, 60, 30, 220);"
                 "border-radius: 6px;"
                 "border: 1px solid #666;"
             "}"
@@ -97,7 +93,7 @@ void goBack() {
 }
 
 BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
-    MG->setBottomTxt("<Ctrl+Shift+Backspace> to delete currently selected item, <Esc> to go back");
+    MG->setBottomTxt("<Ctrl+Delete> to delete currently selected item, <Esc> to go back");
     MG->changeBG("dirt");
 
     tree = new CardTree();
@@ -163,8 +159,8 @@ void BrowseScene::onEvent(QEvent* event) {
 
         if (key == Qt::Key_Escape) {
             goBack();
-        } else if (key == Qt::Key_Backspace && 
-                   keyEvent->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier)) {
+        } else if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
+                   keyEvent->modifiers() == (Qt::ControlModifier)) {
             QList<QTreeWidgetItem*> selected = tree->selectedItems();
             if (selected.isEmpty())
                 return;

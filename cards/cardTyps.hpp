@@ -56,3 +56,18 @@ protected:
     QString back;
 };
 
+struct SideXtra {
+    QString fullTxt(bool front) const;
+    QString prefix;
+    QString txt;
+    QString suffix;
+};
+class DoubleSidedCard : public BaseCardTyp {
+    INIT_CARD
+public:
+    DoubleSidedCard(SideXtra front, SideXtra back);
+protected:
+    SideXtra front;
+    SideXtra back;
+};
+

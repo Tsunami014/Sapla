@@ -19,9 +19,12 @@ QString tryReadLine(QTextStream& in, QString error) {
     return out;
 }
 
+// In addition to newlines and blank strings, | is escaped to a different character to use in text card splitting and stuff
+// So using | as a delimiter means you can split by | without wondering about escapes because it becomes a different character.
 QString makeSafe(QString str) {
     if (str == "") return "\\";
     str.replace("\\", "\\\\");
+    str.replace("|", "\\&");
     str.replace("\n", "\\n");
     str.replace("\r", "\\r");
     return str;
@@ -30,6 +33,7 @@ QString unSafe(QString str) {
     if (str == "\\") return "";
     str.replace("\\n", "\n");
     str.replace("\\r", "\r");
+    str.replace("\\&", "|");
     str.replace("\\\\", "\\");
     return str;
 }

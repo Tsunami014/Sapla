@@ -35,16 +35,11 @@ QString TextCard::getName() {
 }
 void TextCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::labelField(lay, "Front:");
-    Form::textField(lay, front, [=](const QString &s){
-        front = s;
+    Form::textField(lay, &front, [=](const QString &s){
         trit->setText(0, s);
-        writeCards();
     });
     Form::labelField(lay, "Back:");
-    Form::textField(lay, back, [=](const QString &s){
-        back = s;
-        writeCards();
-    });
+    Form::textField(lay, &back);
 }
 bool TextCard::canParse(const QString& header) {
     return header == "t";
@@ -61,11 +56,19 @@ void TextCard::toFile(QTextStream& out) {
 /////// DoubleSidedCard
 
 QString SideXtra::fullTxt(bool front) const {
-    if (!front) return txt;
-    return prefix + txt + suffix;
+    if (!front) return bprefix + txt + bsuffix;
+    return fprefix + txt + fsuffix;
+}
+QString SideXtra::forCard() const {
+    return QString("%1|%2|%3|%4|%5")
+        .arg(makeSafe(fprefix))
+        .arg(makeSafe(bprefix))
+        .arg(makeSafe(txt))
+        .arg(makeSafe(fsuffix))
+        .arg(makeSafe(bsuffix));
 }
 DoubleSidedCard::DoubleSidedCard(SideXtra fr, SideXtra bk) : front(fr), back(bk) {}
-BaseCardTyp* DoubleSidedCard::newBlank() { return new DoubleSidedCard({"", "", ""}, {"", "", ""}); }
+BaseCardTyp* DoubleSidedCard::newBlank() { return new DoubleSidedCard({}, {}); }
 CardGraphicItem* DoubleSidedCard::getItem() const {
     return new CardGraphicItem(Single, new TextSide(front.fullTxt(true)), new TextSide(back.fullTxt(false)));
 }
@@ -73,35 +76,24 @@ QString DoubleSidedCard::getName() {
     return front.fullTxt(true);
 }
 void DoubleSidedCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
-    Form::labelField(lay, "Front:");
-    Form::textXtraField(lay, front, [=](int side, const QString &s){
-        if (side == 0) front.prefix = s;
-        else if (side == 1) front.txt = s;
-        else if (side == 2) front.suffix = s;
+    Form::labelField(lay, "Front: (top: front, bottom: back)");
+    Form::textXtraField(lay, &front, [=](int side, const QString &s){
         trit->setText(0, getName());
-        writeCards();
     });
-    Form::labelField(lay, "Back:");
-    Form::textXtraField(lay, back, [=](int side, const QString &s){
-        if (side == 0) back.prefix = s;
-        else if (side == 1) back.txt = s;
-        else if (side == 2) back.suffix = s;
-        writeCards();
-    });
+    Form::labelField(lay, "Back: (top: front, bottom: back)");
+    Form::textXtraField(lay, &back);
 }
 bool DoubleSidedCard::canParse(const QString& header) {
     return header == "d";
 }
-SideXtra parseSide(QString& txt) {
-    int pos1 = txt.indexOf('|');
-    if (pos1 == -1) qFatal() << "Double sided card side needs 3 delimitered parts, found 0 delimiters!";
-    int pos2 = txt.indexOf('|', pos1 + 1);
-    if (pos2 == -1) qFatal() << "Double sided card side needs 3 delimitered parts, only found 1 delimiter!";
+SideXtra parseSide(const QString& txt) {
+    QStringList spl = txt.split("|");
 
-    QString pref = txt.left(pos1);
-    QString mid  = txt.mid(pos1 + 1, pos2 - pos1 - 1);
-    QString suff = txt.mid(pos2 + 1);
-    return {unSafe(pref), unSafe(mid), unSafe(suff)};
+    if (spl.size() != 5) {
+        qFatal() << "Side does not contain exactly 5 parts!";
+    }
+
+    return {unSafe(spl[0]), unSafe(spl[1]), unSafe(spl[2]), unSafe(spl[3]), unSafe(spl[4])};
 }
 BaseCardTyp* DoubleSidedCard::parse(const QString& header, QTextStream& in) {
     QString frtxt = tryReadLine(in, "DoubleSidedCard needs a front, but not provided!");
@@ -110,7 +102,7 @@ BaseCardTyp* DoubleSidedCard::parse(const QString& header, QTextStream& in) {
 }
 void DoubleSidedCard::toFile(QTextStream& out) {
     out << "d\n"
-        << makeSafe(front.prefix) << "|" << makeSafe(front.txt) << "|" << makeSafe(front.suffix) << "\n"
-        << makeSafe(back.prefix) << "|" << makeSafe(back.txt) << "|" << makeSafe(back.suffix) << "\n";
+        << front.forCard() << "\n"
+        << back.forCard() << "\n";
 }
 

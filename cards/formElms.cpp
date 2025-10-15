@@ -1,4 +1,5 @@
 #include "formElms.hpp"
+#include "getCards.hpp"
 #include <QLabel>
 #include <QTextEdit>
 
@@ -8,34 +9,54 @@ namespace Form {
         lay->addWidget(new QLabel(txt));
     }
 
-    void textField(QVBoxLayout* lay, const QString& initTxt, std::function<void(const QString&)> onChange) {
-        QTextEdit* edit = new QTextEdit(initTxt);
+    void textField(QVBoxLayout* lay, QString* initTxt, std::function<void(const QString&)> onChange, bool update) {
+        QTextEdit* edit = new QTextEdit(*initTxt);
         lay->addWidget(edit);
 
         if (onChange) {
-            QObject::connect(edit, &QTextEdit::textChanged, [edit, onChange](){
+            QObject::connect(edit, &QTextEdit::textChanged, [edit, onChange, initTxt, update](){
+                if (update) *initTxt = edit->toPlainText();
                 onChange(edit->toPlainText());
             });
         }
     }
 
-    void textXtraField(QVBoxLayout* lay, const SideXtra& init, std::function<void(int, const QString&)> onChange) {
+    void textXtraField(QVBoxLayout* lay, SideXtra* init, std::function<void(int, const QString&)> onChange, bool update) {
         QHBoxLayout* lay2 = new QHBoxLayout();
 
-        auto makeTextEdit = [&](const QString& text, int stretch, int index) {
-            QTextEdit* edit = new QTextEdit(text);
-            lay2->addWidget(edit, stretch);
-            if (onChange) {
-                QObject::connect(edit, &QTextEdit::textChanged, [edit, onChange, index]() {
-                    onChange(index, edit->toPlainText());
-                });
+        auto makeTextEdit = [&](QBoxLayout* lay, QString* text, int index, bool mid = false) {
+            QTextEdit* edit = new QTextEdit(*text);
+            qreal heiOffs;
+            int stretch;
+            if (!mid) {
+                heiOffs = 2.5;
+                stretch = 0;
+            } else {
+                heiOffs = 5;
+                stretch = 3;
             }
+            edit->setMaximumHeight(edit->fontMetrics().height()*(heiOffs+0.2) + edit->frameWidth()*2 + 8);
+            lay->addWidget(edit, stretch);
+            QObject::connect(edit, &QTextEdit::textChanged, [=]() {
+                if (update) *text = edit->toPlainText();
+                if (onChange) onChange(index, edit->toPlainText());
+                writeCards();
+            });
             return edit;
         };
 
-        QTextEdit* prefixEdit = makeTextEdit(init.prefix, 1, 0);
-        QTextEdit* txtEdit    = makeTextEdit(init.txt,    3, 1);
-        QTextEdit* suffixEdit = makeTextEdit(init.suffix, 1, 2);
+        QVBoxLayout* play = new QVBoxLayout();
+        makeTextEdit(play, &init->fprefix, -2);
+        makeTextEdit(play, &init->bprefix, -1);
+        lay2->addLayout(play, 1);
+
+        makeTextEdit(lay2, &init->txt, 0, true);
+
+        QVBoxLayout* blay = new QVBoxLayout();
+        makeTextEdit(blay, &init->fsuffix, 1);
+        makeTextEdit(blay, &init->bsuffix, 2);
+        lay2->addLayout(blay, 1);
+
 
         lay->addLayout(lay2);
     }

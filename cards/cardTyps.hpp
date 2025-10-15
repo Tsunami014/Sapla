@@ -58,9 +58,12 @@ protected:
 
 struct SideXtra {
     QString fullTxt(bool front) const;
-    QString prefix;
+    QString forCard() const;
+    QString fprefix;
+    QString bprefix;
     QString txt;
-    QString suffix;
+    QString fsuffix;
+    QString bsuffix;
 };
 class DoubleSidedCard : public BaseCardTyp {
     INIT_CARD

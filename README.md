@@ -11,8 +11,8 @@ Remember the flashcards and you'll slowly piece together the secret messages the
 ## Features
 - Flashcards in a grid!
 - Adds new flashcards with a timer
-- Grow a tree with your answers
-- Custom tree/UI/background pictures *hand drawn* by me
+- Decode a secret message with your answers
+- Custom UI svgs *hand drawn* by me
 - Browse all your flashcards, edit them, delete them or add more
 - Keybinds down the bottom of the screen for ease of use
 - Saves flashcards to a configuration file

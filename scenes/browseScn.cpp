@@ -93,6 +93,21 @@ void goBack() {
     QTimer::singleShot(0, [](){ MG->changeScene(new HomeScene()); });
 }
 
+void deleteLayout(QLayout* lay) {
+    QLayoutItem* it;
+    while ((it = lay->takeAt(0)) != nullptr) {
+        if (QWidget* wid = it->widget()) {
+            wid->setParent(nullptr);  // detach from layout
+            wid->deleteLater();
+        } else if (QLayout* lay2 = it->layout()) {
+            lay2->setParent(nullptr);
+            deleteLayout(lay2);
+            lay2->deleteLater();
+        }
+        delete it;  // Stop reason: signal SIGSEGV: address not mapped to object (fault address=0x0)
+    }
+}
+
 BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
     MG->setBottomTxt("<Ctrl+Delete> to delete currently selected item, <Esc> to go back");
     MG->changeBG("dirt");
@@ -117,14 +132,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     form->setSpacing(4);
 
     QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
-        QLayoutItem* it;
-        while ((it = form->takeAt(0)) != nullptr) {
-            if (QWidget* wid = it->widget()) {
-                wid->setParent(nullptr);  // detach from layout
-                delete wid;
-            }
-            delete it;
-        }
+        deleteLayout(form);
 
         QList<QTreeWidgetItem*> selected = tree->selectedItems();
         if (selected.isEmpty())

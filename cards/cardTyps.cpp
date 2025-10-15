@@ -76,11 +76,12 @@ QString DoubleSidedCard::getName() {
     return front.fullTxt(true);
 }
 void DoubleSidedCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
-    Form::labelField(lay, "Front: (top: front, bottom: back)");
+    Form::labelField(lay, "Side 1:");
     Form::textXtraField(lay, &front, [=](int side, const QString &s){
         trit->setText(0, getName());
     });
-    Form::labelField(lay, "Back: (top: front, bottom: back)");
+    Form::spacing(lay, 40);
+    Form::labelField(lay, "Side 2:");
     Form::textXtraField(lay, &back);
 }
 bool DoubleSidedCard::canParse(const QString& header) {

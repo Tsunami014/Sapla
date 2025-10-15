@@ -5,6 +5,10 @@
 
 namespace Form {
 
+    void spacing(QBoxLayout* lay, int amount) {
+        lay->addSpacing(amount);
+    }
+
     void labelField(QVBoxLayout* lay, const QString& txt) {
         lay->addWidget(new QLabel(txt));
     }
@@ -24,19 +28,20 @@ namespace Form {
     void textXtraField(QVBoxLayout* lay, SideXtra* init, std::function<void(int, const QString&)> onChange, bool update) {
         QHBoxLayout* lay2 = new QHBoxLayout();
 
-        auto makeTextEdit = [&](QBoxLayout* lay, QString* text, int index, bool mid = false) {
+        auto makeTextEdit = [&](QBoxLayout* lay, QString* text, const QString& label, int index, bool mid = false) {
+            auto* lab = new QLabel(label);
+            lay->addWidget(lab);
+            lab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
             QTextEdit* edit = new QTextEdit(*text);
             qreal heiOffs;
-            int stretch;
             if (!mid) {
                 heiOffs = 2.5;
-                stretch = 0;
             } else {
                 heiOffs = 5;
-                stretch = 3;
             }
             edit->setMaximumHeight(edit->fontMetrics().height()*(heiOffs+0.2) + edit->frameWidth()*2 + 8);
-            lay->addWidget(edit, stretch);
+            lay->addWidget(edit);
             QObject::connect(edit, &QTextEdit::textChanged, [=]() {
                 if (update) *text = edit->toPlainText();
                 if (onChange) onChange(index, edit->toPlainText());
@@ -46,17 +51,18 @@ namespace Form {
         };
 
         QVBoxLayout* play = new QVBoxLayout();
-        makeTextEdit(play, &init->fprefix, -2);
-        makeTextEdit(play, &init->bprefix, -1);
+        makeTextEdit(play, &init->fprefix, "Front prefx", -2);
+        makeTextEdit(play, &init->bprefix, "Back prefx", -1);
         lay2->addLayout(play, 1);
 
-        makeTextEdit(lay2, &init->txt, 0, true);
+        QVBoxLayout* tlay = new QVBoxLayout();
+        makeTextEdit(tlay, &init->txt, "Text:", 0, true);
+        lay2->addLayout(tlay, 3);
 
         QVBoxLayout* blay = new QVBoxLayout();
-        makeTextEdit(blay, &init->fsuffix, 1);
-        makeTextEdit(blay, &init->bsuffix, 2);
+        makeTextEdit(blay, &init->fsuffix, "Front suffx", 1);
+        makeTextEdit(blay, &init->bsuffix, "Back suffx", 2);
         lay2->addLayout(blay, 1);
-
 
         lay->addLayout(lay2);
     }

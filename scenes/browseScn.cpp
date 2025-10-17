@@ -3,6 +3,7 @@
 #include "../main.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
+#include "../items/base/font.hpp"
 #include <QColor>
 #include <QTimer>
 #include <QHeaderView>
@@ -75,7 +76,6 @@ public:
         );
     }
 
-protected:
     void paintEvent(QPaintEvent *ev) override {
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
@@ -126,7 +126,16 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
         });
     }
 
-    FormProxy.setWidget(formWid);
+    formWid->setFont(getFont());
+
+    auto* scroll = new QScrollArea();
+    scroll->setAttribute(Qt::WA_TranslucentBackground);
+    scroll->setWidgetResizable(true);
+    scroll->setWidget(formWid);
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    FormProxy.setWidget(scroll);
     FormProxy.setAutoFillBackground(false);
     form = new QVBoxLayout(formWid);
     form->setSpacing(4);
@@ -144,6 +153,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
         data->createForm(form, item);
         form->addStretch();
     });
+    tree->setFont(getFont());
     TreeProxy.setWidget(tree);
 
     backBtn.onClick = [](){ goBack(); };

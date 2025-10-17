@@ -1,7 +1,7 @@
 #include "formElms.hpp"
 #include "getCards.hpp"
+#include "../items/base/markdown.hpp"
 #include <QLabel>
-#include <QTextEdit>
 
 namespace Form {
 
@@ -14,13 +14,13 @@ namespace Form {
     }
 
     void textField(QVBoxLayout* lay, QString* initTxt, std::function<void(const QString&)> onChange, bool update) {
-        QTextEdit* edit = new QTextEdit(*initTxt);
+        MarkdownEdit* edit = new MarkdownEdit(*initTxt);
         lay->addWidget(edit);
 
         if (onChange) {
-            QObject::connect(edit, &QTextEdit::textChanged, [edit, onChange, initTxt, update](){
-                if (update) *initTxt = edit->toPlainText();
-                onChange(edit->toPlainText());
+            QObject::connect(edit, &MarkdownEdit::textChanged, [=](){
+                if (update) *initTxt = edit->getMarkdown();
+                onChange(edit->getMarkdown());
             });
         }
     }
@@ -33,7 +33,7 @@ namespace Form {
             lay->addWidget(lab);
             lab->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
-            QTextEdit* edit = new QTextEdit(*text);
+            MarkdownEdit* edit = new MarkdownEdit(*text);
             qreal heiOffs;
             if (!mid) {
                 heiOffs = 2.5;
@@ -42,9 +42,9 @@ namespace Form {
             }
             edit->setMaximumHeight(edit->fontMetrics().height()*(heiOffs+0.2) + edit->frameWidth()*2 + 8);
             lay->addWidget(edit);
-            QObject::connect(edit, &QTextEdit::textChanged, [=]() {
-                if (update) *text = edit->toPlainText();
-                if (onChange) onChange(index, edit->toPlainText());
+            QObject::connect(edit, &MarkdownEdit::textChanged, [=]() {
+                if (update) *text = edit->getMarkdown();
+                if (onChange) onChange(index, edit->getMarkdown());
                 writeCards();
             });
             return edit;

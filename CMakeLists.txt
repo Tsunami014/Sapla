@@ -26,6 +26,8 @@ set(SOURCES
     items/base/svgBtnItem.cpp
     items/base/svgItem.cpp
     items/base/rectIt.cpp
+    items/base/markdown.cpp
+    items/base/font.cpp
 )
 set(RESOURCES
     resources.qrc

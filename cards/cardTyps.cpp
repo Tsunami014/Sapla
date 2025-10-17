@@ -28,12 +28,13 @@ CardGraphicItem* TextCard::getItem(const FlashCard& fc) const {
     return new CardGraphicItem(Single, new TextSide(front), new TextSide(back));
 }
 QString TextCard::getName() {
-    return front;
+    QString frontCpy = front;
+    return frontCpy.replace('\n', "  ");
 }
 void TextCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::labelField(lay, "Front:");
     Form::textField(lay, &front, [=](const QString &s){
-        trit->setText(0, s);
+        trit->setText(0, getName());
     });
     Form::labelField(lay, "Back:");
     Form::textField(lay, &back);
@@ -78,7 +79,7 @@ CardGraphicItem* DoubleSidedCard::getItem(const FlashCard& fc) const {
     return new CardGraphicItem(Single, new TextSide(fr.fullTxt(true)), new TextSide(bk.fullTxt(false)));
 }
 QString DoubleSidedCard::getName() {
-    return front.fullTxt(true);
+    return front.fullTxt(true).replace('\n', "  ");
 }
 void DoubleSidedCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
     Form::labelField(lay, "Side 1:");

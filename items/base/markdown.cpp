@@ -8,7 +8,7 @@ QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
 
     // Lists
-    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$\n?)", QRegularExpression::MultilineOption);
+    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$)", QRegularExpression::MultilineOption);
     auto it = re.globalMatch(esc);
     int offs = 0;
     while (it.hasNext()) {
@@ -38,6 +38,10 @@ QString parseMarkdownHtml(QString txt) {
 
     // End
     return esc
+        // Fix spaces
+        .replace(" ", "&nbsp;")
+        .replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
+        .replace("\n", "<br/>")
         // Bold & italic
         .replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
         .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>")

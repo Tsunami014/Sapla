@@ -69,10 +69,9 @@ void initCards() {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // File does not exist, so MAKE IT EXIST.
         cards = {
-            new TextCard("What is Australia?", "A country"),
-            new TextCard("What is the meaning of life?", "42"),
-            new TextCard("What is 1 + 1?", "2"),
-            new TextCard("What is this?", "A flashcard app"),
+            new TextCard("What is **Australia**?\n    *  (This is important to know)", "A country"),
+            new TextCard("What *is* the meaning of life?", "42"),
+            new TextCard("What is 1 + 1?", "- 2\n+ You should know this!"),
             new DoubleSidedCard({"What happened i", "I", "n 2025", "?", ""}, {"When was t", "T", "his app ", "made?", "was made"})
         };
         writeCards();

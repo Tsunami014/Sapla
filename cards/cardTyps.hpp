@@ -4,32 +4,41 @@
 #include <QVBoxLayout>
 #include <QTreeWidgetItem>
 
-#define INIT_CARD \
+class FlashCard;  // Forward reference
+
+#define INIT_CARD(name) \
 public:\
+    inline static QString clsName = name;\
+    QString typeName() const override { return clsName; }\
     void createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) override;\
-    CardGraphicItem* getItem() const override;\
+    CardGraphicItem* getItem(const FlashCard& fc) const override;\
     QString getName() override;\
     static bool canParse(const QString& header);\
     static BaseCardTyp* parse(const QString& header, QTextStream& in);\
     static BaseCardTyp* newBlank();\
-    void toFile(QTextStream& out) override;
+    void toFile(QTextStream& out) override;\
 
-#define REGISTER_CARD(cls, name) \
-    CardRegistry::registry.push_back({name, &cls::canParse, &cls::parse, &cls::newBlank});
+#define REGISTER_CARD(cls) \
+    CardRegistry::registry.push_back({cls::clsName, &cls::canParse, &cls::parse, &cls::newBlank});
 
 
 class BaseCardTyp {
 public:
     virtual ~BaseCardTyp() {}
+
+    inline static QString clsName = "";
+    virtual QString typeName() const { return clsName; }
+
     virtual void createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) = 0;
-    virtual CardGraphicItem* getItem() const = 0;
+    virtual CardGraphicItem* getItem(const FlashCard& fc) const = 0;
     virtual QString getName() = 0;
+
     static bool canParse(const QString& header);
     static BaseCardTyp* parse(const QString& header, QTextStream& in);
     virtual void toFile(QTextStream& out) = 0;
     static BaseCardTyp* newBlank();
-    bool operator==(const BaseCardTyp& other) const;
-    bool operator==(const CardGraphicItem& other) const;
+
+    std::vector<FlashCard> flashCs;
 };
 
 void registerCardTypes();
@@ -48,7 +57,7 @@ namespace CardRegistry {
 
 
 class TextCard : public BaseCardTyp {
-    INIT_CARD
+    INIT_CARD("Text card")
 public:
     TextCard(QString front, QString back);
 protected:
@@ -66,11 +75,21 @@ struct SideXtra {
     QString bsuffix;
 };
 class DoubleSidedCard : public BaseCardTyp {
-    INIT_CARD
+    INIT_CARD("Text card and reverse")
 public:
     DoubleSidedCard(SideXtra front, SideXtra back);
 protected:
     SideXtra front;
     SideXtra back;
+};
+
+struct FlashCard {
+    // This is the actual flashcard you can be shown, and contains the scheduling data and everything needed.
+    const BaseCardTyp* card;
+    int idx;
+
+    CardGraphicItem* getItem() const { return card->getItem(*this); }
+    bool operator==(const FlashCard& other) const;
+    bool operator==(const CardGraphicItem& other) const;
 };
 

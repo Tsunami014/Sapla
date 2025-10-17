@@ -112,8 +112,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
     MG->setBottomTxt("<Ctrl+Delete> to delete currently selected item, <Esc> to go back");
     MG->changeBG("dirt");
 
-    tree = new ListWidget();
-    getCardTree(tree);
+    tree = getCardTree();
 
     FormWidget* formWid = new FormWidget();
     fmenu = new FixedMenuBar(formWid);
@@ -148,7 +147,7 @@ BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), back
             return;
 
         QTreeWidgetItem* item = selected.first();
-        BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
+        BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
 
         data->createForm(form, item);
         form->addStretch();
@@ -185,7 +184,7 @@ void BrowseScene::onEvent(QEvent* event) {
                 return;
 
             QTreeWidgetItem* item = selected.first();
-            BaseCardTyp* data = static_cast<BaseCardTyp*>(item->data(0, Qt::UserRole).value<void*>());
+            BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
             auto it = std::find(cards.begin(), cards.end(), data);
             if (it != cards.end()) {
                 delete *it;

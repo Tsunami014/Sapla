@@ -1,6 +1,5 @@
 #pragma once
 #include "baseScn.hpp"
-#include "../items/listWid.hpp"
 #include "../items/base/svgBtnItem.hpp"
 #include "../cards/cardTyps.hpp"
 #include <QGraphicsProxyWidget>
@@ -18,7 +17,7 @@ protected:
     SvgBtnItem backBtn;
 
     QGraphicsProxyWidget TreeProxy;
-    ListWidget* tree;
+    QTreeWidget* tree;
 
     QGraphicsProxyWidget FormProxy;
     QVBoxLayout* form;

@@ -6,7 +6,6 @@
 ListWidget::ListWidget(QWidget *parent) : QTreeWidget(parent) {
     setSortingEnabled(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
-    header()->setSectionResizeMode(QHeaderView::Stretch);
     setAttribute(Qt::WA_TranslucentBackground);
     setStyleSheet(
         "QTreeWidget::item { background: rgb(193, 154, 107); }"

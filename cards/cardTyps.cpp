@@ -4,20 +4,15 @@
 #include "../items/cardLayouts.hpp"
 
 void registerCardTypes() {
-    REGISTER_CARD(TextCard, "Text card")
-    REGISTER_CARD(DoubleSidedCard, "Text card and reverse")
+    REGISTER_CARD(TextCard)
+    REGISTER_CARD(DoubleSidedCard)
 }
 
-bool BaseCardTyp::operator==(const BaseCardTyp& other) const {
-    auto* it1 = getItem();
-    auto* it2 = other.getItem();
-    bool eq = *it1 == *it2;
-    delete it1;
-    delete it2;
-    return eq;
+bool FlashCard::operator==(const FlashCard& other) const {
+    return other.card == card && other.idx == idx;
 }
-bool BaseCardTyp::operator==(const CardGraphicItem& other) const {
-    const auto* it = getItem();
+bool FlashCard::operator==(const CardGraphicItem& other) const {
+    auto* it = getItem();
     bool eq = *it == other;
     delete it;
     return eq;
@@ -25,9 +20,11 @@ bool BaseCardTyp::operator==(const CardGraphicItem& other) const {
 
 /////// TextCard
 
-TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {}
+TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {
+    flashCs = {FlashCard{this, 0}};
+}
 BaseCardTyp* TextCard::newBlank() { return new TextCard("", ""); }
-CardGraphicItem* TextCard::getItem() const {
+CardGraphicItem* TextCard::getItem(const FlashCard& fc) const {
     return new CardGraphicItem(Single, new TextSide(front), new TextSide(back));
 }
 QString TextCard::getName() {
@@ -67,10 +64,18 @@ QString SideXtra::forCard() const {
         .arg(makeSafe(fsuffix))
         .arg(makeSafe(bsuffix));
 }
-DoubleSidedCard::DoubleSidedCard(SideXtra fr, SideXtra bk) : front(fr), back(bk) {}
+DoubleSidedCard::DoubleSidedCard(SideXtra fr, SideXtra bk) : front(fr), back(bk) {
+    flashCs = { FlashCard{this, 0}, FlashCard{this, 1} };
+}
 BaseCardTyp* DoubleSidedCard::newBlank() { return new DoubleSidedCard({}, {}); }
-CardGraphicItem* DoubleSidedCard::getItem() const {
-    return new CardGraphicItem(Single, new TextSide(front.fullTxt(true)), new TextSide(back.fullTxt(false)));
+CardGraphicItem* DoubleSidedCard::getItem(const FlashCard& fc) const {
+    SideXtra fr; SideXtra bk;
+    if (fc.idx == 0) {
+        fr = front; bk = back;
+    } else {
+        fr = back; bk = front;
+    }
+    return new CardGraphicItem(Single, new TextSide(fr.fullTxt(true)), new TextSide(bk.fullTxt(false)));
 }
 QString DoubleSidedCard::getName() {
     return front.fullTxt(true);

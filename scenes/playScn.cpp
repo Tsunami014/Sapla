@@ -49,26 +49,39 @@ void PlayScene::resetTimer() {
 int PlayScene::addAnother() {
     int cardsAmnt = cards.size();
     int idx = QRandomGenerator::global()->bounded(cardsAmnt);
+    CardGraphicItem* newItem;
     if (cardsAmnt >= main->Cols*2) {
         int tries = 0;
         while (tries < cardsAmnt) {
             auto& card = cards[idx];
+            int fcAmnt = card->flashCs.size();
+            int fcIdx = QRandomGenerator::global()->bounded(fcAmnt);
+            int tries2 = 0;
             bool good = true;
-            for (auto& it : main->grid) {
-                if (*card == *it.item) {
-                    good = false;
+            while (tries2 < fcAmnt) {
+                auto& fc = card->flashCs[fcIdx];
+                for (auto& it : main->grid) {
+                    if (fc == *it.item) {
+                        good = false;
+                        break;
+                    }
+                }
+                if (good) {
+                    newItem = fc.getItem();
                     break;
                 }
+                fcIdx = (fcIdx + 1) % fcAmnt;
+                tries2++;
             }
-            if (good) {
-                break;
-            }
+            if (good) break;
             idx = (idx + 1) % cardsAmnt;
             tries++;
         }
+    } else {
+        int fcIdx = QRandomGenerator::global()->bounded(int(cards[idx]->flashCs.size()));
+        newItem = cards[idx]->flashCs[fcIdx].getItem();
     }
 
-    CardGraphicItem* newItem = cards[idx]->getItem();
     if (!main->addItem(newItem)) {
         delete newItem;
         // Failed to add a new item; you lose some growth

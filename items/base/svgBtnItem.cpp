@@ -55,12 +55,12 @@ void SvgBtnItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidg
 
 
 
-TxtBtnItem::TxtBtnItem(const QString &svgPath, QGraphicsItem *parent) : SvgBtnItem(svgPath, parent) {
-    txt = new QGraphicsTextItem(this);
+TxtBtnItem::TxtBtnItem(const QString& svgPath, QGraphicsItem* parent) : SvgBtnItem(svgPath, parent) {
+    txt = new MarkdownGraphicsText(this);
     txt->setAcceptHoverEvents(false);
 }
 TxtBtnItem::TxtBtnItem(const QString& svgPath, const QString& text, QGraphicsItem* parent) : SvgBtnItem(svgPath, parent) {
-    txt = new QGraphicsTextItem(text, this);
+    txt = new MarkdownGraphicsText(text, this);
     txt->setAcceptHoverEvents(false);
 }
 
@@ -82,11 +82,8 @@ void TxtBtnItem::setPos(const QPointF& pos) {
     txt->setPos(pos.x() + (txt->boundingRect().width()*0.2)/2, pos.y());
 }
 void TxtBtnItem::setText(const QString& text) {
-    txt->setPlainText(text);
+    txt->setMarkdown(text);
     setRect(rect);
-}
-QString TxtBtnItem::getText() {
-    return txt->toPlainText();
 }
 void TxtBtnItem::setFont(const QFont& font) {
     txt->setFont(font);

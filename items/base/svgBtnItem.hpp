@@ -1,5 +1,6 @@
 #pragma once
 #include "svgItem.hpp"
+#include "markdown.hpp"
 
 class SvgBtnItem : public SvgGraphicItem {
 public:
@@ -27,11 +28,10 @@ public:
     void setPos(const QPointF& pos);
 
     void setText(const QString& text);  // This mucks up the pos, would not advise using unless you know you will update the rect/pos after
-    QString getText();
     void setTxtColour(const QColor& colour);
     void setFont(const QFont& font);  // This mucks up the pos, would not advise using unless you know you will update the rect/pos after
 
 protected:
-    QGraphicsTextItem* txt;
+    MarkdownGraphicsText* txt;
 };
 

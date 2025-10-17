@@ -1,5 +1,8 @@
 #pragma once
 #include <QTextEdit>
+#include <QGraphicsTextItem>
+
+QString parseMarkdownHtml(QString txt);
 
 class MarkdownEdit : public QTextEdit {
 public:
@@ -16,3 +19,11 @@ protected:
 private:
     void init();
 };
+
+class MarkdownGraphicsText : public QGraphicsTextItem {
+public:
+    MarkdownGraphicsText(QGraphicsItem* parent = nullptr);
+    MarkdownGraphicsText(const QString& text, QGraphicsItem* parent = nullptr);
+    void setMarkdown(const QString& text);
+};
+

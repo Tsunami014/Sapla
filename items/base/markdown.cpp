@@ -1,6 +1,48 @@
 #include "markdown.hpp"
 #include "font.hpp"
+#include <QTextList>
 #include <QTextBlock>
+#include <QRegularExpression>
+
+QString parseMarkdownHtml(QString txt) {
+    QString esc = txt.toHtmlEscaped();
+
+    // Lists
+    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$\n?)", QRegularExpression::MultilineOption);
+    auto it = re.globalMatch(esc);
+    int offs = 0;
+    while (it.hasNext()) {
+        QRegularExpressionMatch m = it.next();
+        QString space = m.captured(1);
+        int spaces = space.count("  ") + space.count('\t') * 2;
+        QString bullet;
+        switch (m.captured(2)[0].unicode()) {
+            case '-':
+                bullet = "‣";
+                break;
+            case '+':
+                bullet = "✦";
+                break;
+            default:
+                bullet = "•";
+        }
+
+        QString repl = QString("%1%2 %3")
+            .arg(QString("  ").repeated(spaces)).arg(bullet).arg(m.captured(3));
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        esc.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+
+    // End
+    return esc
+        // Bold & italic
+        .replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
+        .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>")
+    ;
+}
 
 class MarkdownBlockData : public QTextBlockUserData {
 public:
@@ -89,11 +131,19 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
             if (blkCurs.selectedText() != line) blkCurs.insertText(line, plainfmt);
         } else {
             // TODO: Process markdown into html
-            blkCurs.insertHtml(line);
+            blkCurs.insertHtml(parseMarkdownHtml(line));
         }
         blkCurs.endEditBlock();
 
         block = block.next();
     }
+}
+
+MarkdownGraphicsText::MarkdownGraphicsText(QGraphicsItem* parent) : QGraphicsTextItem(parent) {}
+MarkdownGraphicsText::MarkdownGraphicsText(const QString& text, QGraphicsItem* parent) : QGraphicsTextItem(parent) {
+    setMarkdown(text);
+}
+void MarkdownGraphicsText::setMarkdown(const QString& text) {
+    setHtml(parseMarkdownHtml(text));
 }
 

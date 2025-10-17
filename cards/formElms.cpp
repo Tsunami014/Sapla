@@ -57,7 +57,7 @@ namespace Form {
 
         QVBoxLayout* tlay = new QVBoxLayout();
         makeTextEdit(tlay, &init->txt, "Text:", 0, true);
-        lay2->addLayout(tlay, 3);
+        lay2->addLayout(tlay, 2);
 
         QVBoxLayout* blay = new QVBoxLayout();
         makeTextEdit(blay, &init->fsuffix, "Front suffx", 1);

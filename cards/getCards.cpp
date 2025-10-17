@@ -72,7 +72,8 @@ void initCards() {
             new TextCard("What is Australia?", "A country"),
             new TextCard("What is the meaning of life?", "42"),
             new TextCard("What is 1 + 1?", "2"),
-            new TextCard("What is this?", "A flashcard app")
+            new TextCard("What is this?", "A flashcard app"),
+            new DoubleSidedCard({"What happened i", "I", "n 2025", "?", ""}, {"When was t", "T", "his app ", "made?", "was made"})
         };
         writeCards();
         return;

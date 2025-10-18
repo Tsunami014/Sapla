@@ -29,7 +29,7 @@ Controls for things that are not obvious are down the bottom of the screen. Here
 ## Demo video
 https://github.com/user-attachments/assets/ae13948b-8609-4b25-8d62-6a1915e5a382
 
-Please note in the video I get insane odds and get the same text 3 times in a row, so I quit out of it and went back in which is why at one point the recording freezes
+Please note in the video I get insane odds and get the same text 3 times in a row, so I quit out of it and went back in which is why at one point the recording freezes. Also I'm speedrunning the cards bcos I just want to get through them to show you how it works
 
 ## Getting it
 ### The easy way

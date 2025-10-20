@@ -1,15 +1,8 @@
 #include "treeItem.hpp"
-// New imports
-#include <QPainter>
-#include <QRandomGenerator>
 
-// New swap
-//#define MAX_PHASE 5
-#define MAX_PHASE 1
+#define MAX_PHASE 5
 
 QSvgRenderer* Tree::baseRend = NULL;
-
-QString Tree::fullTxt = ""; // New
 
 Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
     if (!baseRend) baseRend = new QSvgRenderer(QStringLiteral(":/assets/treeGround.svg"));
@@ -55,34 +48,15 @@ void Tree::nextPhase() {
     ));
     isSmall = renderer->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
-    toNext = 2000;  // New
 
     if (phase == MAX_PHASE) pb.hide();
 }
 void Tree::lastPhase() {
     phase = MAX_PHASE - 1;
     nextPhase();
-    growth = toNext;  // New
 }
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
-    // All before return is new
-    painter->setPen(Qt::black);
-    int goodChars = (growth/toNext) * fullTxt.length();
-    QString res = fullTxt.sliced(0, goodChars);
-    if (goodChars > 0 && goodChars < fullTxt.length()) {
-        res = "[" + res + "]\n";
-    }
-    for (int _ = 0; _ < fullTxt.length() - goodChars; _++) {
-        int code;
-        code = QRandomGenerator::global()->bounded(33, 127);
-        res += QChar(code);
-    }
-    QTextOption opt;
-    opt.setAlignment(Qt::AlignCenter);
-    opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    painter->drawText(rect, res, opt);
-    return;
     // Because the svg is smaller than the bounding rect, and I really want to show them off
     QRectF fitR = rect.adjusted(-rect.width()*0.1, -rect.height()*0.1, rect.width()*0.1, rect.height()*0.1);
     QRectF sTreeR{
@@ -96,24 +70,5 @@ void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
         drawR = fitR;
     }
     renderer->render(painter, drawR);
-}
-
-// New stuff:
-std::vector<QString> strs = {
-    "The very important, super crucial password to everything I have ever owned is the following: iamcool",
-    "You are tasked with passing on this crucial message: Hi.",
-    "Everything you have ever done was a lie",
-    "Tomorrow at exactly mid of the night in UDT I'll be attacking example.com, want in?",
-    "this-page-intentionally-left-blank.org will never stand a chance against us! >:)",
-    "When are you free? I want to video chat about our next great plan already!",
-    "My beard is very lovelly and I'll be taking it to a show next weekend! I'll win for sure.",
-    "Our secret key encryption is the best! No one will be able to stop us now!",
-    "Next Friday night. Let's lay siege to them like never before!",
-    "Imagine not using Linux XD",
-    "Blah blah blah hacker stuff here",
-    "console.log(Array.from({length:11},(_,i)=>String.fromCharCode([52*2+i%5*3,10*5*2+1,1*100+8,10*8+28,222/2,32,1349-1230,101+2*5,100+7*2,108,1*10*10][i])).join(''));"
-};
-void Tree::changeTxt() {
-    fullTxt = strs[QRandomGenerator::global()->bounded(int(strs.size()))];
 }
 

@@ -39,6 +39,7 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
             setAcceptHoverEvents(false);
             if (hovering) {
                 hovering = false;
+                unsetCursor();
                 MScene->views()[0]->viewport()->unsetCursor();
             }
             qreal steps = 20;

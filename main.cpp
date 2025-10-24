@@ -3,8 +3,8 @@
 #include <QLabel>
 #include <QWidget>
 #include <QGraphicsView>
-#include <iostream>
 #include "main.hpp"
+#include "log.hpp"
 #include "items/base/font.hpp"
 #include "cards/cardTyps.hpp"
 #include "cards/getCards.hpp"
@@ -30,8 +30,7 @@ protected:
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setFont(getFont());
-    std::cout << getPath().toStdString() << "\n";
-    std::cout.flush();
+    Log::Debug("MAIN") << getPath();
     MScene = new BetterScene();
     MG = new MainGame();
     registerCardTypes();

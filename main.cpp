@@ -8,6 +8,7 @@
 #include "items/base/font.hpp"
 #include "cards/cardTyps.hpp"
 #include "cards/getCards.hpp"
+#include "games/getGames.hpp"
 
 BetterScene* MScene = nullptr;
 MainGame* MG = nullptr;
@@ -36,6 +37,7 @@ int main(int argc, char *argv[]) {
     MScene = new BetterScene();
     BetterView* view = new BetterView(MScene);
     MG = new MainGame();
+    loadGames();
     MG->initScene();
 
     view->showMaximized();

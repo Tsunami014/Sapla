@@ -1,8 +1,6 @@
 #pragma once
-#include "../items/gridLayout.hpp"
-#include "../items/progress.hpp"
-#include "../items/treeItem.hpp"
-#include "baseScn.hpp"
+#include "game.hpp"
+#include "items/gridLayout.hpp"
 #include <QTimer>
 #include <QGraphicsTextItem>
 
@@ -16,6 +14,7 @@ public:
     PlayScene();
     void onEvent(QEvent* event) override;
     void resize() override;
+
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();
     void removeOverlay();

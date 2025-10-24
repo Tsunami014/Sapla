@@ -1,5 +1,5 @@
 #pragma once
-#include "../items/cardIt.hpp"
+#include "../items/sideRends.hpp"
 #include <QGraphicsItem>
 #include <QVBoxLayout>
 #include <QTreeWidgetItem>
@@ -11,7 +11,7 @@ public:\
     inline static QString clsName = name;\
     QString typeName() const override { return clsName; }\
     void createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) override;\
-    CardGraphicItem* getItem(const FlashCard& fc) const override;\
+    BaseSideRend* getSide(const FlashCard& fc, int side) const override;\
     QString getName() override;\
     static bool canParse(const QString& header);\
     static BaseCardTyp* parse(const QString& header, QTextStream& in);\
@@ -30,7 +30,7 @@ public:
     virtual QString typeName() const { return clsName; }
 
     virtual void createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) = 0;
-    virtual CardGraphicItem* getItem(const FlashCard& fc) const = 0;
+    virtual BaseSideRend* getSide(const FlashCard& fc, int side) const = 0;
     virtual QString getName() = 0;
 
     static bool canParse(const QString& header);
@@ -88,8 +88,8 @@ struct FlashCard {
     const BaseCardTyp* card;
     int idx;
 
-    CardGraphicItem* getItem() const { return card->getItem(*this); }
+    BaseSideRend* getSide(int side) const { return card->getSide(*this, side); }
     bool operator==(const FlashCard& other) const;
-    bool operator==(const CardGraphicItem& other) const;
+    bool operator==(const BaseSideRend& other) const;
 };
 

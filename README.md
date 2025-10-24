@@ -49,12 +49,12 @@ Download the executable from the releases tab
         ```
 3. 
 ```bash
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel --config Release
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel --config Release
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
 #### Windows
-1. Get QT Creator (you can use `choco install qtcreator`)
-2. Build it for release there (figure out how yourself, sorry it's not as straightforward as Linux)
+Figure it out yourself. (For now)
 
 # FAQ
 ## Did it save my changes?

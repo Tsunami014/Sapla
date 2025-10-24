@@ -1,15 +1,14 @@
+#include "game.hpp"
 #include "winScn.hpp"
 #include "playScn.hpp"
-#include "homeScn.hpp"
-#include "../main.hpp"
 #include <QEvent>
 #include <QTimer>
 #include <QTextDocument>
 #include <QKeyEvent>
 
 WinScene::WinScene(Stats s) : txt(this), tr(this) {
-    MG->setBottomTxt("<Escape> to go home");
-    MG->changeBG("win");
+    ln->MG->setBottomTxt("<Escape> to go home");
+    ln->MG->changeBG("win");
     tr.lastPhase();
     txt.setPlainText(QString::fromStdString(
         "You win!\n"
@@ -24,7 +23,7 @@ WinScene::WinScene(Stats s) : txt(this), tr(this) {
 void WinScene::onEvent(QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
-        if (keyEvent->key() == Qt::Key_Escape) QTimer::singleShot(0, [this]() { MG->changeScene(new HomeScene()); });
+        if (keyEvent->key() == Qt::Key_Escape) ln->MG->changeScene(new HomeScene());
     }
 }
 

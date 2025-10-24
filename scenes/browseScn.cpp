@@ -90,7 +90,7 @@ public:
 };
 
 void goBack() {
-    QTimer::singleShot(0, [](){ MG->changeScene(new HomeScene()); });
+    MG->changeScene(new HomeScene());
 }
 
 void deleteLayout(QLayout* lay) {

@@ -1,5 +1,5 @@
 #pragma once
-#include "base/rectIt.hpp"
+#include "../game.hpp"
 #include <vector>
 #include <QString>
 #include <QSvgRenderer>

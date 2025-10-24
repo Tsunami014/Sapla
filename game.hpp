@@ -11,6 +11,7 @@ public:
     void changeBG(QString bgName);
     void resizeEvent(const QRectF& newSze);
     void changeScene(BaseScene* newScene);
+    void nextFC();
     BaseScene* curScene;
 
     void setBottomTxt(const QString& newTxt);

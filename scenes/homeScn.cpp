@@ -1,5 +1,4 @@
 #include "homeScn.hpp"
-#include "playScn.hpp"
 #include "browseScn.hpp"
 #include "../items/base/font.hpp"
 #include "../main.hpp"
@@ -19,7 +18,7 @@ HomeScene::HomeScene() : BaseScene() {
     playBtn = new TxtBtnItem(":/assets/btn.svg", "Play!", this);
     playBtn->setTxtColour(QColor(184, 115, 51));
     playBtn->onClick = []() {
-        MG->changeScene(new PlayScene());
+        MG->nextFC();
     };
     browseBtn = new TxtBtnItem(":/assets/btn.svg", "Browse cards", this);
     browseBtn->setTxtColour(QColor(184, 115, 51));

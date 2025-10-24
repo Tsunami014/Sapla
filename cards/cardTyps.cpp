@@ -1,7 +1,6 @@
 #include "cardTyps.hpp"
 #include "formElms.hpp"
 #include "getCards.hpp"
-#include "../items/cardLayouts.hpp"
 
 void registerCardTypes() {
     REGISTER_CARD(TextCard)
@@ -11,12 +10,6 @@ void registerCardTypes() {
 bool FlashCard::operator==(const FlashCard& other) const {
     return other.card == card && other.idx == idx;
 }
-bool FlashCard::operator==(const CardGraphicItem& other) const {
-    auto* it = getItem();
-    bool eq = *it == other;
-    delete it;
-    return eq;
-}
 
 /////// TextCard
 
@@ -24,8 +17,10 @@ TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {
     flashCs = {FlashCard{this, 0}};
 }
 BaseCardTyp* TextCard::newBlank() { return new TextCard("", ""); }
-CardGraphicItem* TextCard::getItem(const FlashCard& fc) const {
-    return new CardGraphicItem(Single, new TextSide(front), new TextSide(back));
+BaseSideRend* TextCard::getSide(const FlashCard& fc, int side) const {
+    QString s;
+    if (side == 1) { s = front; } else { s = back; }
+    return new TextSide(s);
 }
 QString TextCard::getName() {
     QString frontCpy = front;
@@ -69,14 +64,14 @@ DoubleSidedCard::DoubleSidedCard(SideXtra fr, SideXtra bk) : front(fr), back(bk)
     flashCs = { FlashCard{this, 0}, FlashCard{this, 1} };
 }
 BaseCardTyp* DoubleSidedCard::newBlank() { return new DoubleSidedCard({}, {}); }
-CardGraphicItem* DoubleSidedCard::getItem(const FlashCard& fc) const {
-    SideXtra fr; SideXtra bk;
+BaseSideRend* DoubleSidedCard::getSide(const FlashCard& fc, int side) const {
+    SideXtra s;
+    if (side == 1) { s = front; } else { s = back; };
     if (fc.idx == 0) {
-        fr = front; bk = back;
+        return new TextSide(s.fullTxt(true));
     } else {
-        fr = back; bk = front;
+        return new TextSide(s.fullTxt(false));
     }
-    return new CardGraphicItem(Single, new TextSide(fr.fullTxt(true)), new TextSide(bk.fullTxt(false)));
 }
 QString DoubleSidedCard::getName() {
     return front.fullTxt(true).replace('\n', "  ");

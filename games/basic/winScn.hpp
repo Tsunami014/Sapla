@@ -1,6 +1,5 @@
 #pragma once
-#include "baseScn.hpp"
-#include "../items/treeItem.hpp"
+#include "game.hpp"
 #include <QGraphicsTextItem>
 
 struct Stats; // Forward reference

@@ -1,17 +1,15 @@
 #include "playScn.hpp"
 #include "winScn.hpp"
-#include "../cards/getCards.hpp"
-#include "../main.hpp"
+#include "items/cardIt.hpp"
+#include "items/cardLayouts.hpp"
 #include <QEvent>
 #include <QKeyEvent>
 #include <QRandomGenerator>
 
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
-        MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
-        MG->changeBG("pretty");
-        s.successes = 0;
-        s.faliures = 0;
+        ln->MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
+        ln->MG->changeBG("pretty");
 
         overlay = NULL;
 
@@ -45,9 +43,10 @@ void PlayScene::resetTimer() {
     }
 }
 int PlayScene::addAnother() {
+    layout lay = Single;
     int cardsAmnt = cards.size();
     int idx = QRandomGenerator::global()->bounded(cardsAmnt);
-    CardGraphicItem* newItem;
+    FlashCard newFc;
     if (cardsAmnt >= main->Cols*2) {
         int tries = 0;
         while (tries < cardsAmnt) {
@@ -59,13 +58,13 @@ int PlayScene::addAnother() {
             while (tries2 < fcAmnt) {
                 auto& fc = card->flashCs[fcIdx];
                 for (auto& it : main->grid) {
-                    if (fc == *it.item) {
+                    if (*it.item == fc) {
                         good = false;
                         break;
                     }
                 }
                 if (good) {
-                    newItem = fc.getItem();
+                    newFc = fc;
                     break;
                 }
                 fcIdx = (fcIdx + 1) % fcAmnt;
@@ -77,11 +76,12 @@ int PlayScene::addAnother() {
         }
     } else {
         int fcIdx = QRandomGenerator::global()->bounded(int(cards[idx]->flashCs.size()));
-        newItem = cards[idx]->flashCs[fcIdx].getItem();
+        newFc = cards[idx]->flashCs[fcIdx];
     }
 
-    if (!main->addItem(newItem)) {
-        delete newItem;
+    auto* nCGI = new CardGraphicItem(lay, newFc);
+    if (!main->addItem(nCGI)) {
+        delete nCGI;
         // Failed to add a new item; you lose some growth
         tr.grow(-50);
     }
@@ -105,7 +105,7 @@ void PlayScene::onEvent(QEvent* event) {
                     } else {
                         s.successes++;
                         if (!tr.grow(50)) {
-                            QTimer::singleShot(0, [this]() { MG->changeScene(new WinScene(s)); });
+                            ln->MG->changeScene(new WinScene(s));
                         }
                     }
                     it.item->finish();

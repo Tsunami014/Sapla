@@ -1,26 +1,26 @@
 cmake_minimum_required(VERSION 3.16)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 set(APP_NAME    Sapla)
-set(APP_OUTPUT  sapla)
+set(CORE_NAME   corelib)
+set(APP_OUTPUT  Sapla)
 set(SOURCES
     main.cpp
-    game.cpp
-    cards/cardTyps.cpp
+    games/getGames.cpp
     cards/formElms.cpp
-    cards/getCards.cpp
     cards/cardTree.cpp
-    scenes/homeScn.cpp
     scenes/browseScn.cpp
-    scenes/playScn.cpp
-    scenes/winScn.cpp
+)
+set(CORELIB
+    game.cpp
+    resources.qrc
+    cards/cardTyps.cpp
+    cards/getCards.cpp
+    scenes/homeScn.cpp
+
     items/listWid.cpp
-    items/gridLayout.cpp
     items/sideRends.cpp
-    items/cardIt.cpp
     items/progress.cpp
     items/treeItem.cpp
     items/base/svgBtnItem.cpp
@@ -29,12 +29,43 @@ set(SOURCES
     items/base/markdown.cpp
     items/base/font.cpp
 )
-set(RESOURCES
-    resources.qrc
-)
+
+# Do not complain about 'not used directly' things (as they are used, just indirectly)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-Wno-unused-include-directive)
+endif()
 
 project(${APP_NAME} LANGUAGES CXX)
-find_package(Qt6 REQUIRED COMPONENTS Svg Widgets)
-add_executable(${APP_NAME} ${SOURCES} ${RESOURCES})
+find_package(Qt6 REQUIRED COMPONENTS Core Svg Widgets)
+
+add_library(${CORE_NAME} SHARED ${CORELIB})
+target_include_directories(${CORE_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
+target_link_libraries(${CORE_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
+
+add_executable(${APP_NAME} ${SOURCES})
 set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME ${APP_OUTPUT})
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Svg Qt6::Widgets)
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
+target_link_libraries(${APP_NAME} PRIVATE corelib)
+
+option(BUILD_PLUGINS "Build game plugins" ON)
+option(BUILD_BASIC_GAME "Build basic game plugin" ON)
+if (BUILD_PLUGINS AND BUILD_BASIC_GAME)
+    add_subdirectory(games/basic)
+endif()
+
+
+if(WIN32)
+    set(_qt_deploy_tool "windeployqt")
+elseif(APPLE)
+    set(_qt_deploy_tool "macdeployqt")
+elseif(UNIX)
+    set(_qt_deploy_tool "linuxdeployqt")
+endif()
+
+add_custom_command(TARGET ${APP_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo " \\> Successfully built to \\\"$<TARGET_FILE:${APP_NAME}>\\\"!"
+    COMMAND ${CMAKE_COMMAND} -E echo " \\> Plugins built are located in  \\\"${CMAKE_BINARY_DIR}/gamePlugs/\\\""
+    COMMAND ${CMAKE_COMMAND} -E echo " \\> To include all QT files, run:"
+    COMMAND ${CMAKE_COMMAND} -E echo "  ${_qt_deploy_tool} $<TARGET_FILE:${APP_NAME}>"
+)
+

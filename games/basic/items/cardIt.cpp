@@ -1,5 +1,5 @@
-#include "../main.hpp"
-#include "../scenes/playScn.hpp"
+#include "../game.hpp"
+#include "../playScn.hpp"
 #include "cardIt.hpp"
 #include "gridLayout.hpp"
 #include "overlay.hpp"
@@ -10,8 +10,16 @@ CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, Q
     lay = l;
     front = fr;
     back = bk;
+    init();
+}
+CardGraphicItem::CardGraphicItem(layout l, const FlashCard& fc, QGraphicsItem* parent) : SvgGraphicItem(l.fname, parent) {
+    lay = l;
+    front = fc.getSide(0);
+    back = fc.getSide(1);
+    init();
+}
+void CardGraphicItem::init() {
     side = 0;
-
     hovering = false;
     setAcceptHoverEvents(true);
 }
@@ -22,6 +30,10 @@ CardGraphicItem::~CardGraphicItem() {
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
     return *front == *other.front && *back == *other.back;
+}
+bool CardGraphicItem::operator==(const FlashCard& other) const {
+    CardGraphicItem nCGI(lay, other);
+    return nCGI == *this;
 }
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
@@ -45,14 +57,14 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (contains(event->pos())) {
         if (side == 0) {
-            PlayScene* curS = (PlayScene*)MG->curScene;
+            PlayScene* curS = (PlayScene*)ln->MG->curScene;
             curS->pauseTimer();
             unsetCursor();
             setParentItem(nullptr);  // So the item can be placed on the very top
             setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
             auto* overl = new Overlay();
-            MScene->addItem(overl);
+            ln->MScene->addItem(overl);
             overl->setZValue(3);
             curS->setOverlay(overl);
             side = 255;  // TODO: Animations
@@ -77,7 +89,7 @@ void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* s
     img.fill(Qt::transparent);
 
     QPainter p1(&img);
-    renderer->render(&p1);
+    renderer->render(&p1, QRectF(QPointF(0, 0), rect.size()));
     p1.end();
 
     if (hovering || zValue() == 3) {

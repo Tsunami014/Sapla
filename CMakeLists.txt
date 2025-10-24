@@ -13,6 +13,7 @@ set(SOURCES
     scenes/browseScn.cpp
 )
 set(CORELIB
+    log.cpp
     game.cpp
     resources.qrc
     cards/cardTyps.cpp

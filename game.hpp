@@ -3,6 +3,7 @@
 #include <QGraphicsTextItem>
 #include "scenes/baseScn.hpp"
 #include "items/base/svgItem.hpp"
+#include "items/base/svgBtnItem.hpp"
 
 class MainGame {
 public:
@@ -13,6 +14,7 @@ public:
     void changeScene(BaseScene* newScene);
     void nextFC();
     BaseScene* curScene;
+    std::vector<TxtBtnItem*> logs;
 
     void setBottomTxt(const QString& newTxt);
 

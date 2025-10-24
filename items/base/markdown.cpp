@@ -4,17 +4,28 @@
 #include <QTextBlock>
 #include <QRegularExpression>
 
+void replace(QString search, QString regex, std::function<QString(QRegularExpressionMatch)> replFn) {
+    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$)", QRegularExpression::MultilineOption);
+    auto it = re.globalMatch(search);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString repl = replFn(m);
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        search.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+}
+
 QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
 
+    esc.replace("\t", "    ");
+
     // Lists
-    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$)", QRegularExpression::MultilineOption);
-    auto it = re.globalMatch(esc);
-    int offs = 0;
-    while (it.hasNext()) {
-        QRegularExpressionMatch m = it.next();
-        QString space = m.captured(1);
-        int spaces = space.count("  ") + space.count('\t') * 2;
+    replace(esc, R"(^( *)([*\-+])[ \t]+(.+)$)", [](QRegularExpressionMatch m) {
         QString bullet;
         switch (m.captured(2)[0].unicode()) {
             case '-':
@@ -27,25 +38,21 @@ QString parseMarkdownHtml(QString txt) {
                 bullet = "•";
         }
 
-        QString repl = QString("%1%2 %3")
-            .arg(QString("  ").repeated(spaces)).arg(bullet).arg(m.captured(3));
+        return QString("%1%2 %3")
+            .arg(m.captured(1)).arg(bullet).arg(m.captured(3));
+    });
 
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        esc.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }
+    // Bold & italic
+    esc.replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
+       .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
 
-    // End
-    return esc
-        // Fix spaces
-        .replace(" ", "&nbsp;")
-        .replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
-        .replace("\n", "<br/>")
-        // Bold & italic
-        .replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
-        .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>")
-    ;
+    // Fix spaces at the end
+    replace(esc, R"(^ +)", [](QRegularExpressionMatch m) {
+        int count = m.capturedLength();
+        return QString("&nbsp;").repeated(count);
+    });
+    esc.replace("\n", "<br/>");
+    return esc;
 }
 
 class MarkdownBlockData : public QTextBlockUserData {

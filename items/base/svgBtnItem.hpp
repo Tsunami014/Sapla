@@ -27,6 +27,7 @@ public:
     void setRect(const QRectF& newRect) override;
     void setPos(const QPointF& pos);
 
+    void setTxtWid(qreal wid);
     void setText(const QString& text);  // This mucks up the pos, would not advise using unless you know you will update the rect/pos after
     void setTxtColour(const QColor& colour);
     void setFont(const QFont& font);  // This mucks up the pos, would not advise using unless you know you will update the rect/pos after

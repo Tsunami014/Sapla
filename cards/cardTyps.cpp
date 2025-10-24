@@ -1,6 +1,9 @@
 #include "cardTyps.hpp"
 #include "formElms.hpp"
 #include "getCards.hpp"
+#include "../log.hpp"
+
+const QString MODULE = "getCards";
 
 void registerCardTypes() {
     REGISTER_CARD(TextCard)
@@ -88,19 +91,27 @@ void DoubleSidedCard::createForm(QVBoxLayout* lay, QTreeWidgetItem* trit) {
 bool DoubleSidedCard::canParse(const QString& header) {
     return header == "d";
 }
-SideXtra parseSide(const QString& txt) {
+std::optional<SideXtra> parseSide(const QString& txt) {
     QStringList spl = txt.split("|");
 
     if (spl.size() != 5) {
-        qFatal() << "Side does not contain exactly 5 parts!";
+        Log::Error(MODULE) << "Double sided card side does not contain exactly 5 parts!";
+        return std::nullopt;
     }
 
-    return {unSafe(spl[0]), unSafe(spl[1]), unSafe(spl[2]), unSafe(spl[3]), unSafe(spl[4])};
+    return SideXtra{unSafe(spl[0]), unSafe(spl[1]), unSafe(spl[2]), unSafe(spl[3]), unSafe(spl[4])};
 }
 BaseCardTyp* DoubleSidedCard::parse(const QString& header, QTextStream& in) {
     QString frtxt = tryReadLine(in, "DoubleSidedCard needs a front, but not provided!");
+    if (frtxt.isNull()) return nullptr;
+    auto frS = parseSide(frtxt);
+    if (!frS) return nullptr;
     QString bktxt = tryReadLine(in, "DoubleSidedCard needs a back, but not provided!");
-    return new DoubleSidedCard(parseSide(frtxt), parseSide(bktxt));
+    if (bktxt.isNull()) return nullptr;
+    auto bkS = parseSide(bktxt);
+    if (!bkS) return nullptr;
+
+    return new DoubleSidedCard(*frS, *bkS);
 }
 void DoubleSidedCard::toFile(QTextStream& out) {
     out << "d\n"

@@ -64,5 +64,17 @@ void MainGame::resizeEvent(const QRectF& newSze) {
     qreal fontY = newSze.height()-fontSze*1.1;
     bottomTxt->setPos(0, newSze.y()+fontY);
     curScene->setRect({newSze.x(), newSze.y(), newSze.width(), fontY});
+
+    const int margin = 15;
+    const int edgeMargin = 30;
+    qreal y = newSze.height() - margin;
+    qreal width = newSze.width()*0.3;
+    for (auto* l : logs) {
+        l->setTxtWid(width);
+        QSizeF size = l->boundingRect().size();
+        y -= size.height(); 
+        l->setPos({newSze.right() - width - edgeMargin, y});
+        y -= margin;
+    }
 }
 

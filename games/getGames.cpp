@@ -1,7 +1,10 @@
 #include "../main.hpp"
+#include "../log.hpp"
 #include "getGames.hpp"
 #include <QStandardPaths>
 #include <QDir>
+
+const QString MODULE = "getGames";
 
 QString getGamesPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -41,14 +44,14 @@ void loadGames() {
         auto* lib = new QLibrary(file.absoluteFilePath());
         QString fname = file.fileName();
         if (!lib->load()) {
-            qDebug() << "Failed to load" << fname << ":" << lib->errorString();
+            Log::Error(MODULE) << "Failed to load" << fname << ":" << lib->errorString();
             failedGames.push_back({fname, lib->errorString()});
             delete lib;
             continue;
         }
 
         auto fail = [&](QString error) {
-            qDebug() << error;
+            Log::Error(MODULE) << error;
             lib->unload();
             failedGames.push_back({fname, error});
             delete lib;
@@ -71,7 +74,7 @@ void loadGames() {
         if (playGetter) {
             InitFn play = playGetter();
             if (play) {
-                qDebug() << "Loaded plugin:" << fname;
+                Log::Info(MODULE) << "Loaded plugin:" << fname;
                 games.emplace_back(fname, v, lib, play);
             } else {
                 fail("Register function returned null init function in " + fname);

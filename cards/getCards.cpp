@@ -1,7 +1,10 @@
 #include "getCards.hpp"
 #include "cardTyps.hpp"
+#include "../log.hpp"
 #include <QStandardPaths>
 #include <QDir>
+
+const QString MODULE = "getCards";
 
 std::vector<BaseCardTyp*> cards = {};
 
@@ -10,8 +13,10 @@ QString tryReadLine(QTextStream& in, QString error) {
     while (true) {
         out = in.readLine();
         if (out.isNull()) {
-            if (error != "") qFatal() << error;
-            else return out;
+            if (error != "") {
+                Log::Error(MODULE) << error;
+            }
+            return out;
         }
         if (out == "" || out[0] == "#") continue;
         break;
@@ -49,7 +54,7 @@ void writeCards() {
     QString fullpth = getPath();
     QFile file(fullpth);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This *should* never fail but it's still good to check
-        qCritical() << "Failed writing to file at `" << fullpth << "`!";
+        Log::Error(MODULE) << "Failed writing to file at `" << fullpth << "`!";
         return;
     }
     QTextStream out(&file);
@@ -57,7 +62,7 @@ void writeCards() {
         c->toFile(out);
     }
     file.close();
-    //qDebug() << "Successfully wrote" << cards.size() << "cards to the configuration file at:\n" << fullpth;
+    Log::Debug(MODULE) << "Successfully wrote" << cards.size() << "cards to the configuration file at:\n" << fullpth;
 }
 
 void initCards() {
@@ -93,12 +98,14 @@ void initCards() {
                     break;
                 }
             }
-            if (!done) qFatal() << "Card parser cannot be found for header: '" << line << "'!";
+            if (!done) {
+                Log::Error(MODULE) << "Card parser cannot be found for header: '" << line << "'!";
+            }
         }
         line = in.readLine();
     }
 
     file.close();
-    qDebug() << "Successfully loaded" << cards.size() << "cards!";
+    Log::Info(MODULE) << "Successfully loaded " << cards.size() << " cards!";
 }
 

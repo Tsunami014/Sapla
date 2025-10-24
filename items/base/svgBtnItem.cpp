@@ -74,6 +74,10 @@ void TxtBtnItem::setRect(const QRectF& newRect) {
     txt->setPos(newRect.x() + xtraX/2, newRect.y());
 }
 
+void TxtBtnItem::setTxtWid(qreal wid) {
+    txt->setTextWidth(wid);
+    setRect(rect);
+}
 void TxtBtnItem::setTxtColour(const QColor& colour) {
     txt->setDefaultTextColor(colour);
 }

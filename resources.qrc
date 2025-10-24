@@ -3,6 +3,11 @@
         <file>assets/btn.svg</file>
         <file>assets/backBtn.svg</file>
 
+        <file>assets/errorDiags/Debug.svg</file>
+        <file>assets/errorDiags/Info.svg</file>
+        <file>assets/errorDiags/Warning.svg</file>
+        <file>assets/errorDiags/Error.svg</file>
+
         <file>assets/bgs/dirt.svg</file>
         <file>assets/bgs/pretty.svg</file>
         <file>assets/bgs/win.svg</file>

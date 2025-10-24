@@ -32,16 +32,15 @@ int main(int argc, char *argv[]) {
     app.setFont(getFont());
     std::cout << getPath().toStdString() << "\n";
     std::cout.flush();
+    MScene = new BetterScene();
+    MG = new MainGame();
     registerCardTypes();
     initCards();
-    MScene = new BetterScene();
-    BetterView* view = new BetterView(MScene);
-    MG = new MainGame();
     loadGames();
     MG->initScene();
 
+    BetterView* view = new BetterView(MScene);
     view->showMaximized();
-
     view->show();
     return app.exec();
 }

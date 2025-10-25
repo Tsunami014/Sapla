@@ -4,7 +4,7 @@
 #include "games/getGames.hpp"
 #include "items/base/font.hpp"
 #include <QRandomGenerator>
-//#include <QTimer>
+#include <QTimer>
 
 MainGame::MainGame() {
     bg = nullptr;
@@ -26,15 +26,15 @@ void MainGame::changeBG(QString bgName) {
 }
 
 void MainGame::changeScene(BaseScene* newScene) {
-    //QTimer::singleShot(0, [=]() {
-    MScene->removeItem(curScene);
-    delete curScene;
-    MScene->views()[0]->viewport()->unsetCursor();
-    curScene = newScene;
-    curScene->setZValue(-1);
-    MScene->addItem(newScene);
-    resizeEvent(MScene->sceneRect());
-    //});
+    QTimer::singleShot(0, [=]() {
+        MScene->removeItem(curScene);
+        delete curScene;
+        MScene->views()[0]->viewport()->unsetCursor();
+        curScene = newScene;
+        curScene->setZValue(-1);
+        MScene->addItem(newScene);
+        resizeEvent(MScene->sceneRect());
+    });
 }
 
 void MainGame::nextFC() {
@@ -51,16 +51,19 @@ void MainGame::nextFC() {
 void MainGame::resizeEvent(const QRectF& newSze) {
     bg->setRect(newSze);
     curScene->setRect(newSze);
-
+    updateLogs();
+}
+void MainGame::updateLogs() {
+    QRectF rect = bg->boundingRect();
     const int margin = 15;
     const int edgeMargin = 30;
-    qreal y = newSze.height() - margin;
-    qreal width = newSze.width()*0.3;
+    qreal y = rect.height() - margin;
+    qreal width = rect.width()*0.3;
     for (auto* l : logs) {
         l->setTxtWid(width);
         QSizeF size = l->boundingRect().size();
         y -= size.height(); 
-        l->setPos({newSze.right() - width - edgeMargin, y});
+        l->setPos({rect.right() - width - edgeMargin, y});
         y -= margin;
     }
 }

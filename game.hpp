@@ -11,6 +11,7 @@ public:
     void initScene();
     void changeBG(QString bgName);
     void resizeEvent(const QRectF& newSze);
+    void updateLogs();
     void changeScene(BaseScene* newScene);
     void nextFC();
     BaseScene* curScene;

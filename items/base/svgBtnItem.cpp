@@ -68,7 +68,7 @@ void TxtBtnItem::setRect(const QRectF& newRect) {
     QRectF txtBR = txt->boundingRect();
     qreal xtraX = txtBR.width() * 0.2;
     qreal xtraY = txtBR.height() * 0.1;
-    RectMixin::setRect(QRectF(
+    SvgGraphicItem::setRect(QRectF(
         newRect.x(), newRect.y(), txtBR.width() + xtraX, txtBR.height() + xtraY
     ));
     txt->setPos(newRect.x() + xtraX/2, newRect.y());
@@ -82,7 +82,7 @@ void TxtBtnItem::setTxtColour(const QColor& colour) {
     txt->setDefaultTextColor(colour);
 }
 void TxtBtnItem::setPos(const QPointF& pos) {
-    RectMixin::setRect(QRectF(pos, rect.size()));
+    SvgGraphicItem::setRect(QRectF(pos, rect.size()));
     txt->setPos(pos.x() + (txt->boundingRect().width()*0.2)/2, pos.y());
 }
 void TxtBtnItem::setText(const QString& text) {

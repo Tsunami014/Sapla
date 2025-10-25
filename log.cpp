@@ -24,18 +24,17 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
         bool* alive = new bool(true);
         MG->logs.insert(MG->logs.begin(), this);
         onClick = [this, alive]() {
-            showLogWindow();
-            deleteMe();
-            *alive = false;
+            if (*alive) {
+                *alive = false;
+                deleteMe();
+            }
         };
 
         QTimer::singleShot(5000, [this, alive]() {
-            if (*alive) {
-                onClick = nullptr;
-                *alive = false;
-            } else {
+            if (!*alive) {
                 return;
             }
+            *alive = false;
             setAcceptHoverEvents(false);
             if (hovering) {
                 hovering = false;
@@ -51,7 +50,6 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
                 if (step++ > steps) {
                     timer->stop();
                     timer->deleteLater();
-                    delete timer;
                     deleteMe();
                 }
             });
@@ -63,10 +61,11 @@ void LogAlert::deleteMe() {
     if (it != MG->logs.end()) {
         MG->logs.erase(it);
     }
+    scene()->removeItem(this);
     if (hovering) {
         MScene->views()[0]->viewport()->unsetCursor();
     }
-    scene()->removeItem(this);
+    MG->updateLogs();
     delete this;
 }
 
@@ -77,11 +76,12 @@ namespace Log {
         logs.emplace_back(lvl, buf, mod);
         QString lname = QString::fromUtf8(lnames[lvl].data());
         QString txt = QString("%1 [%2] %3").arg(lname).arg(mod).arg(buf);
+        txt.replace("\n", "\n > ");
         switch (lvl) {
-            case DEBUG: qDebug() << txt; break;
-            case INFO: qInfo() << txt; break;
-            case WARN: qWarning() << txt; break;
-            case ERROR: qCritical() << txt; break;
+            case DEBUG: qDebug().noquote() << txt; break;
+            case INFO: qInfo().noquote() << txt; break;
+            case WARN: qWarning().noquote() << txt; break;
+            case ERROR: qCritical().noquote() << txt; break;
         }
         Level lvll = lvl;
         QTimer::singleShot(0, [lvll, txt](){
@@ -108,9 +108,12 @@ public:
 
         QString out;
         for (auto& l : Log::logs) {
-            QString colour = QString::fromUtf8(colours[l.lvl].data());
-            QString name = QString::fromUtf8(lnames[l.lvl].data());
-            out += QString("<span style='color:%1;'>%2 [%3] %4</span><br>").arg(colour).arg(name).arg(l.mod).arg(l.msg);
+            auto colour = QString::fromUtf8(colours[l.lvl].data());
+            auto name = QString::fromUtf8(lnames[l.lvl].data());
+            QString msg = l.msg;
+            msg.replace("\n", "<br>\u00A0> ");
+            out += QString("<span style='font-family: monospace;color:%1;'>%2 [%3] %4</span><br>")
+                .arg(colour).arg(name).arg(l.mod).arg(msg);
         }
         txt->setHtml(out);
 

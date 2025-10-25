@@ -23,6 +23,9 @@ public:
     void pauseTimer();
     void resumeTimer();
 
+    void dialogOpen() override;
+    void dialogClose() override;
+
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:

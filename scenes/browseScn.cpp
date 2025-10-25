@@ -8,7 +8,7 @@
 #include <QTimer>
 #include <QHeaderView>
 
-const QString HELP_TXT = "\\<Ctrl+Delete\\> to delete currently selected item, \\<Esc\\> to go back";
+const QString HELP_TXT = "&lt;Ctrl+Delete&gt; to delete currently selected item, &lt;Esc&gt; to go back";
 
 class FormWidget : public QWidget {
 public:

@@ -1,10 +1,9 @@
 #pragma once
 #include "../scenes/baseScn.hpp"
-#include "link.hpp"
 #include <QLibrary>
 
 struct Version { int from; int to; };
-using InitFn = bool (*)(const Link*);
+using InitFn = bool (*)();
 
 class GamePlugin {
 public:

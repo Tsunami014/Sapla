@@ -6,12 +6,14 @@
 #include <QKeyEvent>
 #include <QRandomGenerator>
 
-const QString HELP_TXT = "Click on card to flip, once flipped; \\<Space\\> if you got it wrong, \\<Enter\\> if right";
+const QString HELP_TXT =
+    "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
+    "Press &lt;Esc&gt; to go back to the home screen.";
 
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this), s{0, 0} {
-        *ln->help = &HELP_TXT;
-        ln->MG->changeBG("pretty");
+        helpStr = &HELP_TXT;
+        MG->changeBG("pretty");
 
         overlay = NULL;
 
@@ -31,7 +33,12 @@ PlayScene::PlayScene() :
     }
 PlayScene::~PlayScene() {
     if (overlay) {
-        removeOverlay();
+        for (auto& it : main->grid) {
+            if (it.item->side != 0) {
+                it.item->finish();
+                break;
+            }
+        }
     }
 }
 
@@ -41,6 +48,12 @@ void PlayScene::pauseTimer() {
 }
 void PlayScene::resumeTimer() {
     resetTimer();
+}
+void PlayScene::dialogOpen() {
+    pauseTimer();
+}
+void PlayScene::dialogClose() {
+    resumeTimer();
 }
 
 void PlayScene::resetTimer() {
@@ -105,18 +118,18 @@ void PlayScene::onEvent(QEvent* event) {
 
         if (key == Qt::Key_Escape) {
             auto* keyEvent = (QKeyEvent*)event;
-            if (keyEvent->key() == Qt::Key_Escape) ln->MG->changeScene(new HomeScene());
+            if (keyEvent->key() == Qt::Key_Escape) MG->changeScene(new HomeScene());
         }
         if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
-                if (it.item->side == 255) {
+                if (it.item->side != 0) {
                     if (key == Qt::Key_Space) {
                         s.faliures++;
                         tr.grow(-10);
                     } else {
                         s.successes++;
                         if (!tr.grow(50)) {
-                            ln->MG->changeScene(new WinScene(s));
+                            MG->changeScene(new WinScene(s));
                         }
                     }
                     it.item->finish();

@@ -1,6 +1,6 @@
 #pragma once
-#include "link.hpp"
 // Some includes for game plugins to use
+#include "../main.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
 // Base
@@ -26,7 +26,7 @@ extern "C" struct Version {
 };
 
 #define REGISTER_GAME(initFn, versionFrom, versionTo) \
-    extern "C" bool initWrapper(const Link* ln) { return initFn(ln); }\
-    extern "C" bool (*reg())(const Link*) { return &initWrapper; }\
+    extern "C" bool initWrapper() { return initFn(); }\
+    extern "C" bool (*reg())() { return &initWrapper; }\
     extern "C" const Version version() { return { versionFrom, versionTo }; }
 

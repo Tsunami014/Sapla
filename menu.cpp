@@ -25,9 +25,9 @@ void makeDialog(const QString& HtmlTxt, const QString& title) {
     QObject::connect(dialog, &QDialog::finished, [=](int result){
         MG->curScene->dialogClose();
     });
-    dialog->exec();
     dialogging = true;
     MG->curScene->dialogOpen();
+    dialog->exec();
 }
 
 void initMenu(QMenuBar* b) {

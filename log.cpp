@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "log.hpp"
+#include "menu.hpp"
 #include <QWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
@@ -99,36 +100,16 @@ constexpr std::string_view colours[] = {
     "#F8F46A",  // Warn
     "#F79393",  // Error
 };
-class TextWindow : public QWidget {
-public:
-    TextWindow(QWidget* parent = nullptr) : QWidget(parent) {
-        setWindowTitle("Logs");
-
-        QTextEdit* txt = new QTextEdit;
-        txt->setReadOnly(true);
-
-        QString out;
-        for (auto& l : Log::logs) {
-            auto colour = QString::fromUtf8(colours[l.lvl].data());
-            auto name = QString::fromUtf8(lnames[l.lvl].data());
-            QString msg = l.msg;
-            msg.replace("\n", "<br>\u00A0> ");
-            out += QString("<span style='font-family: monospace;color:%1;'>%2 [%3] %4</span><br>")
-                .arg(colour).arg(name).arg(l.mod).arg(msg);
-        }
-        txt->setHtml(out);
-
-        QVBoxLayout *layout = new QVBoxLayout;
-        layout->addWidget(txt);
-        setLayout(layout);
-
-        resize(500, 700);
-    }
-};
-
 void showLogWindow() {
-    TextWindow* w = new TextWindow();
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->show();
+    QString out;
+    for (auto& l : Log::logs) {
+        auto colour = QString::fromUtf8(colours[l.lvl].data());
+        auto name = QString::fromUtf8(lnames[l.lvl].data());
+        QString msg = l.msg;
+        msg.replace("\n", "<br>\u00A0> ");
+        out += QString("<span style='font-family: monospace;color:%1;'>%2 [%3] %4</span><br>")
+            .arg(colour).arg(name).arg(l.mod).arg(msg);
+    }
+    makeDialog(out, "Logs");
 }
 

@@ -16,19 +16,14 @@ QString getGamesPath() {
 std::vector<GamePlugin> games = {};
 std::vector<std::pair<QString, QString>> failedGames = {};
 
-Link* ln = nullptr;
-
 GamePlugin::GamePlugin(QString name, Version& version, QLibrary* library, InitFn playFn)
     : name(std::move(name)), vers(version), lib(library), playFn(std::move(playFn)) {}
 GamePlugin::~GamePlugin() { delete lib; }
 bool GamePlugin::run() {
-    return playFn(ln);
+    return playFn();
 }
 
 void loadGames() {
-    if (ln == nullptr) {
-        ln = new Link{ MG, &helpStr, Menues, MScene };
-    }
     games.clear();
     failedGames.clear();
 

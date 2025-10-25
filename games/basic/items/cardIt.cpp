@@ -57,14 +57,14 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (contains(event->pos())) {
         if (side == 0) {
-            PlayScene* curS = (PlayScene*)ln->MG->curScene;
+            PlayScene* curS = (PlayScene*)MG->curScene;
             curS->pauseTimer();
             unsetCursor();
             setParentItem(nullptr);  // So the item can be placed on the very top
             setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
             auto* overl = new Overlay();
-            ln->MScene->addItem(overl);
+            MScene->addItem(overl);
             overl->setZValue(3);
             curS->setOverlay(overl);
             side = 255;  // TODO: Animations

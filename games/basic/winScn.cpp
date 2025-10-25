@@ -6,11 +6,11 @@
 #include <QTextDocument>
 #include <QKeyEvent>
 
-const QString HELP_TXT = "\\<Escape\\> to go home";
+const QString HELP_TXT = "&lt;Esc&gt; to go home";
 
 WinScene::WinScene(Stats s) : txt(this), tr(this) {
-    *ln->help = &HELP_TXT;
-    ln->MG->changeBG("win");
+    helpStr = &HELP_TXT;
+    MG->changeBG("win");
     tr.lastPhase();
     txt.setPlainText(QString::fromStdString(
         "You win!\n"
@@ -25,7 +25,7 @@ WinScene::WinScene(Stats s) : txt(this), tr(this) {
 void WinScene::onEvent(QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
-        if (keyEvent->key() == Qt::Key_Escape) ln->MG->changeScene(new HomeScene());
+        if (keyEvent->key() == Qt::Key_Escape) MG->changeScene(new HomeScene());
     }
 }
 

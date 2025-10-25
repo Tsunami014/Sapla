@@ -12,6 +12,7 @@ struct Stats {
 class PlayScene : public BaseScene {
 public:
     PlayScene();
+    ~PlayScene();
     void onEvent(QEvent* event) override;
     void resize() override;
 

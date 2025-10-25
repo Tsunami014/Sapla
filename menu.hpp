@@ -4,6 +4,9 @@
 
 void initMenu(QMenuBar* bar);
 
+void makeDialog(const QString& HtmlTxt, const QString& title);
+extern bool dialogging;
+
 class _MenuBase : public QMenu {
 public:
     using QMenu::QMenu;

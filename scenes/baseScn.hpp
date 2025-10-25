@@ -12,6 +12,8 @@ public:
         rect = newRect;
         resize();
     }
+    virtual void dialogOpen() {}  // For pausing timers and such
+    virtual void dialogClose() {} // For resuming timers and such
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override {}
 };
 

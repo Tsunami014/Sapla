@@ -3,25 +3,31 @@
 #include "log.hpp"
 #include "help.hpp"
 #include "scenes/homeScn.hpp"
+#include <QDialog>
 
 QMenuBar* bar = nullptr;
 QAction* last = nullptr;
 _MenuesTyp* Menues = new _MenuesTyp;
 
-void textWindow(const QString& txt, const QString& title) {
-    QWidget* w = new QWidget();
-    w->setWindowTitle(title);
+bool dialogging = false;
+void makeDialog(const QString& HtmlTxt, const QString& title) {
+    QDialog* dialog = new QDialog;
+    dialog->setWindowTitle(title);
+    dialog->resize(500, 700);
+    dialog->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+
+    // Scrollable HTML text
     QTextEdit* txtEd = new QTextEdit;
     txtEd->setReadOnly(true);
-    txtEd->setHtml(txt);
-
-    QVBoxLayout *layout = new QVBoxLayout;
+    txtEd->setHtml(HtmlTxt);
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
     layout->addWidget(txtEd);
-    w->setLayout(layout);
-
-    w->resize(500, 700);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->show();
+    QObject::connect(dialog, &QDialog::finished, [=](int result){
+        MG->curScene->dialogClose();
+    });
+    dialog->exec();
+    dialogging = true;
+    MG->curScene->dialogOpen();
 }
 
 void initMenu(QMenuBar* b) {
@@ -65,8 +71,8 @@ void initMenu(QMenuBar* b) {
     Menues->ViewMenu = vmenu;
 
     auto* hmenu = new _MenuBase("Help");
-    hmenu->addAction("Application help", []() { textWindow(APP_HELP, "Application help"); });
-    hmenu->addAction("This screen help", []() { textWindow(*helpStr, "This screen help"); });
+    hmenu->addAction("Application help", []() { makeDialog(APP_HELP, "Application help"); });
+    hmenu->addAction("This screen help", []() { makeDialog(*helpStr, "This screen help"); });
     hmenu->addSeparator();
     hmenu->addAction("Logs", []() { showLogWindow(); });
     hmenu->insertBefore = hmenu->addSeparator();

@@ -9,7 +9,7 @@
 const QString HELP_TXT = "Click on card to flip, once flipped; \\<Space\\> if you got it wrong, \\<Enter\\> if right";
 
 PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this), s{0, 0} {
         *ln->help = &HELP_TXT;
         ln->MG->changeBG("pretty");
 
@@ -29,6 +29,11 @@ PlayScene::PlayScene() :
         resetTimer();
         timeLeft = addAnother();
     }
+PlayScene::~PlayScene() {
+    if (overlay) {
+        removeOverlay();
+    }
+}
 
 void PlayScene::pauseTimer() {
     timer.stop();
@@ -98,6 +103,10 @@ void PlayScene::onEvent(QEvent* event) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
+        if (key == Qt::Key_Escape) {
+            auto* keyEvent = (QKeyEvent*)event;
+            if (keyEvent->key() == Qt::Key_Escape) ln->MG->changeScene(new HomeScene());
+        }
         if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
                 if (it.item->side == 255) {
@@ -146,6 +155,7 @@ bool PlayScene::hasOverlay() {
 }
 void PlayScene::removeOverlay() {
     MScene->removeItem(overlay);
+    delete overlay;
     overlay = NULL;
 }
 

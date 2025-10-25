@@ -2,6 +2,7 @@
 #include "link.hpp"
 // Some includes for game plugins to use
 #include "../log.hpp"
+#include "../menu.hpp"
 // Base
 #include "../items/base/svgItem.hpp"
 #include "../items/base/svgBtnItem.hpp"

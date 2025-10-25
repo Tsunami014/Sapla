@@ -4,11 +4,6 @@
 #include <QTimer>
 #include <QGraphicsTextItem>
 
-struct Stats {
-    int successes;
-    int faliures;
-};
-
 class PlayScene : public BaseScene {
 public:
     PlayScene();
@@ -31,8 +26,6 @@ public:
 private:
     void resetTimer();
     int addAnother();
-
-    Stats s;
 
     QGraphicsRectItem* overlay;
     Tree tr;

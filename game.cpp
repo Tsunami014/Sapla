@@ -6,7 +6,7 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
-MainGame::MainGame() {
+MainGame::MainGame() : s{0, 0} {
     bg = nullptr;
 }
 void MainGame::initScene() {

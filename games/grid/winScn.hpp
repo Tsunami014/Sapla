@@ -2,11 +2,9 @@
 #include "game.hpp"
 #include <QGraphicsTextItem>
 
-struct Stats; // Forward reference
-
 class WinScene : public BaseScene {
 public:
-    WinScene(Stats stats);
+    WinScene();
     void onEvent(QEvent* event) override;
     void resize() override;
 private:

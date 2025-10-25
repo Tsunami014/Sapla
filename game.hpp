@@ -5,6 +5,11 @@
 #include "items/base/svgItem.hpp"
 #include "items/base/svgBtnItem.hpp"
 
+struct Stats {  // TODO: Save/load
+    uint32_t goods;
+    uint32_t bads;
+};
+
 class MainGame {
 public:
     MainGame();
@@ -16,6 +21,7 @@ public:
     void nextFC();
     BaseScene* curScene;
     std::vector<TxtBtnItem*> logs;
+    Stats s;
 
 private:
     SvgGraphicItem* bg;

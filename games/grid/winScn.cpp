@@ -1,6 +1,5 @@
 #include "game.hpp"
 #include "winScn.hpp"
-#include "playScn.hpp"
 #include <QEvent>
 #include <QTimer>
 #include <QTextDocument>
@@ -8,13 +7,13 @@
 
 const QString HELP_TXT = "&lt;Esc&gt; to go home";
 
-WinScene::WinScene(Stats s) : txt(this), tr(this) {
+WinScene::WinScene() : txt(this), tr(this) {
     helpStr = &HELP_TXT;
     MG->changeBG("win");
     tr.lastPhase();
     txt.setPlainText(QString::fromStdString(
         "You win!\n"
-        "You had " + std::to_string(s.successes) + " correct cards and " + std::to_string(s.faliures) + " wrong cards"
+        "So far you have " + std::to_string(MG->s.goods) + " correct cards and " + std::to_string(MG->s.bads) + " wrong cards"
     ));
     txt.setScale(2);
     QTextOption opt = txt.document()->defaultTextOption();

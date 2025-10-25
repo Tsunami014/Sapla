@@ -11,7 +11,7 @@ const QString HELP_TXT =
     "Press &lt;Esc&gt; to go back to the home screen.";
 
 PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this), s{0, 0} {
+    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         helpStr = &HELP_TXT;
         MG->changeBG("pretty");
 
@@ -124,12 +124,12 @@ void PlayScene::onEvent(QEvent* event) {
             for (auto& it : main->grid) {
                 if (it.item->side != 0) {
                     if (key == Qt::Key_Space) {
-                        s.faliures++;
+                        MG->s.bads++;
                         tr.grow(-10);
                     } else {
-                        s.successes++;
+                        MG->s.goods++;
                         if (!tr.grow(50)) {
-                            MG->changeScene(new WinScene(s));
+                            MG->changeScene(new WinScene());
                         }
                     }
                     it.item->finish();

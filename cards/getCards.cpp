@@ -62,7 +62,7 @@ void writeCards() {
         c->toFile(out);
     }
     file.close();
-    Log::Debug(MODULE) << "Successfully wrote" << cards.size() << "cards to the configuration file at:\n" << fullpth;
+    //Log::Debug(MODULE) << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth;
 }
 
 void initCards() {

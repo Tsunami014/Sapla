@@ -26,12 +26,35 @@ void textWindow(const QString& txt, const QString& title) {
 
 void initMenu(QMenuBar* b) {
     bar = b;
+    b->setStyleSheet(
+        "QMenuBar {"
+            "background: rgb(90, 40, 10);"
+        "}"
+        "QMenuBar::item {"
+            "padding: 4px;"
+            "background: rgb(70, 35, 10);"
+            "border-radius: 6px;"
+        "}"
+        "QMenuBar::item:selected {"
+            "background: rgb(110, 60, 30);"
+        "}"
+        "QMenu {"
+            "background: rgba(90,40,10,220);"
+            "border-radius: 6px;"
+        "}"
+        "QMenu::item {"
+            "border-radius: 4px;"
+            "padding: 4px;"
+        "}"
+        "QMenu::item:selected {"
+            "background: rgba(255,255,255,30);"
+        "}"
+    );
 
     auto* fmenu = new _MenuBase("File");
     fmenu->insertBefore = fmenu->addSeparator();
     bar->addMenu(fmenu);
     Menues->FileMenu = fmenu;
-    last = fmenu->menuAction();
 
     auto* vmenu = new _MenuBase("View");
     vmenu->addAction("Go home", []() {
@@ -49,18 +72,12 @@ void initMenu(QMenuBar* b) {
     hmenu->insertBefore = hmenu->addSeparator();
     Menues->HelpMenu = fmenu;
     bar->addMenu(hmenu);
+    last = hmenu->menuAction();
 }
 
-Menu::Menu(const QString& title) : _MenuBase(title, bar) {
-    last = bar->insertMenu(last, this);
-}
+Menu::Menu(const QString& title) : _MenuBase(title, bar) {}
 Menu::~Menu() {
-    QAction* act = this->menuAction();
-    if (last == act) {
-        int idx = bar->actions().indexOf(act);
-        if (idx > 0) last = bar->actions()[idx - 1];
-    }
-    bar->removeAction(act);
+    bar->removeAction(this->menuAction());
 }
 
 MenuItem::MenuItem(const QString& txt, _MenuBase* pmen)

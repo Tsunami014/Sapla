@@ -1,5 +1,6 @@
 #pragma once
 #include "baseScn.hpp"
+#include "../menu.hpp"
 #include "../items/base/svgBtnItem.hpp"
 #include "../cards/cardTyps.hpp"
 #include <QGraphicsProxyWidget>
@@ -21,8 +22,8 @@ protected:
 
     QGraphicsProxyWidget FormProxy;
     QVBoxLayout* form;
-    QMenuBar* fmenu;
 
 private:
     void addCard(BaseCardTyp* card);
+    Menu newCmenu;
 };

@@ -10,31 +10,6 @@
 
 const QString HELP_TXT = "\\<Ctrl+Delete\\> to delete currently selected item, \\<Esc\\> to go back";
 
-#ifdef _WIN32
-// Windows being JUST THAT BAD
-class FixedMenuBar : public QMenuBar {
-public:
-    using QMenuBar::QMenuBar;
-
-protected:
-    void mousePressEvent(QMouseEvent* ev) override {
-        if (QAction* act = actionAt(ev->pos())) {
-            if (QMenu* menu = act->menu()) {
-                // We have to make a new menu with the same items otherwise Windows will just not show it
-                QMenu dyn;
-                dyn.addActions(menu->actions());
-                dyn.exec(QCursor::pos());
-                ev->accept();
-                return;
-            }
-        }
-        QMenuBar::mousePressEvent(ev);
-    }
-};
-#else
-using FixedMenuBar = QMenuBar;
-#endif
-
 class FormWidget : public QWidget {
 public:
     FormWidget(QWidget *parent = nullptr) : QWidget(parent) {
@@ -48,32 +23,6 @@ public:
             "}"
             "QTextEdit:focus {"
                 "border: 2px solid #333;"
-            "}"
-            "QMenuBar {"
-                "margin: 4px;"
-                "border-top-left-radius: 10px;"
-                "border-top-right-radius: 10px;"
-                "border: 1px solid #666;"
-                "background: rgb(90, 40, 10);"
-            "}"
-            "QMenuBar::item {"
-                "padding: 4px;"
-                "background: rgb(70, 35, 10);"
-                "border-radius: 6px;"
-            "}"
-            "QMenuBar::item:selected {"
-                "background: rgb(110, 60, 30);"
-            "}"
-            "QMenu {"
-                "background: rgba(90,40,10,220);"
-                "border-radius: 6px;"
-            "}"
-            "QMenu::item {"
-                "border-radius: 4px;"
-                "padding: 4px;"
-            "}"
-            "QMenu::item:selected {"
-                "background: rgba(255,255,255,30);"
             "}"
         );
     }
@@ -110,55 +59,54 @@ void deleteLayout(QLayout* lay) {
     }
 }
 
-BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
-    helpStr = &HELP_TXT;
-    MG->changeBG("dirt");
+BrowseScene::BrowseScene()
+    : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this), newCmenu("New Card") {
+        helpStr = &HELP_TXT;
+        MG->changeBG("dirt");
 
-    tree = getCardTree();
+        tree = getCardTree();
 
-    FormWidget* formWid = new FormWidget();
-    fmenu = new FixedMenuBar(formWid);
+        for (const auto& typ : CardRegistry::registry) {
+            QAction* act = newCmenu.addAction(typ.name);
+            QObject::connect(act, &QAction::triggered, [this, typ]() {
+                addCard(typ.newBlank());
+            });
+        }
 
-    QMenu* newCmenu = fmenu->addMenu("New card");
-    for (const auto& typ : CardRegistry::registry) {
-        QAction* act = newCmenu->addAction(typ.name);
-        QObject::connect(act, &QAction::triggered, [this, typ]() {
-            addCard(typ.newBlank());
+        FormWidget* formWid = new FormWidget();
+        formWid->setFont(getFont());
+
+        auto* scroll = new QScrollArea();
+        scroll->setAttribute(Qt::WA_TranslucentBackground);
+        scroll->setWidgetResizable(true);
+        scroll->setWidget(formWid);
+        scroll->setFrameShape(QFrame::NoFrame);
+        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        FormProxy.setWidget(scroll);
+        FormProxy.setAutoFillBackground(false);
+        form = new QVBoxLayout(formWid);
+        form->setSpacing(4);
+        form->setContentsMargins(4, 4, 4, 4);
+
+        QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
+            deleteLayout(form);
+
+            QList<QTreeWidgetItem*> selected = tree->selectedItems();
+            if (selected.isEmpty())
+                return;
+
+            QTreeWidgetItem* item = selected.first();
+            BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
+
+            data->createForm(form, item);
+            form->addStretch();
         });
+        tree->setFont(getFont());
+        TreeProxy.setWidget(tree);
+
+        backBtn.onClick = [](){ goBack(); };
     }
-
-    formWid->setFont(getFont());
-
-    auto* scroll = new QScrollArea();
-    scroll->setAttribute(Qt::WA_TranslucentBackground);
-    scroll->setWidgetResizable(true);
-    scroll->setWidget(formWid);
-    scroll->setFrameShape(QFrame::NoFrame);
-    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    FormProxy.setWidget(scroll);
-    FormProxy.setAutoFillBackground(false);
-    form = new QVBoxLayout(formWid);
-    form->setSpacing(4);
-
-    QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
-        deleteLayout(form);
-
-        QList<QTreeWidgetItem*> selected = tree->selectedItems();
-        if (selected.isEmpty())
-            return;
-
-        QTreeWidgetItem* item = selected.first();
-        BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
-
-        data->createForm(form, item);
-        form->addStretch();
-    });
-    tree->setFont(getFont());
-    TreeProxy.setWidget(tree);
-
-    backBtn.onClick = [](){ goBack(); };
-}
 
 void BrowseScene::addCard(BaseCardTyp* card) {
     cards.push_back(card);
@@ -204,12 +152,10 @@ void BrowseScene::onEvent(QEvent* event) {
 }
 
 void BrowseScene::resize() {
+    qreal hWid = rect.width()/2;
     TreeProxy.setPos(0, rect.height()*0.05);
-    TreeProxy.resize(rect.width()/2, rect.height()*0.95);
-    FormProxy.setPos(rect.width()/2, 0);
-    qreal formWid = rect.width()/2;
-    FormProxy.resize(formWid, rect.height());
-    fmenu->setFixedWidth(formWid);
-    form->setContentsMargins(10, 10+fmenu->height(), 10, 10);
+    TreeProxy.resize(hWid, rect.height()*0.95);
+    FormProxy.setPos(hWid, 0);
+    FormProxy.resize(hWid, rect.height());
     backBtn.setRect({ 0, 0, rect.height()*0.05, rect.height()*0.05 });
 }

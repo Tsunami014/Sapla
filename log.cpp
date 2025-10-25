@@ -88,6 +88,7 @@ namespace Log {
             auto* la = new LogAlert(lvll, txt);
             la->setZValue(9999);
             MScene->addItem(la);
+            MG->updateLogs();
         });
     }
 }

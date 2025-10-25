@@ -49,7 +49,26 @@ cmake --build build --parallel --config Release
 2. `appimage-builder --recipe conf.yaml`
 3. The output .AppImage should be in this directory!
 #### Windows
-Figure it out yourself. (For now)
+**PLEASE NOTE: None of this even works.**
+
+This guide uses a very convoluted way to get this to work, there's probably a better way but I don't know it
+1. Open an administrator terminal
+2. `choco install -y msys2`
+3. Open another terminal and run `msys2`
+4. In that resulting terminal, run `pacman -S --needed mingw-w64-x86_64-qt6-base mingw-w64-x86_64-qt6-svg mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake cmake` (If prompted, press 'all') (Please paste with the right click menu, ctrl+v or ctrl+shift+v will break the command; to fix just press ctrl+c and paste with the right click menu)
+5. Cd to the right directory (the C drive is located at `/c/`, so the command may be e.g. `cd /c/Users/Username/Downloads/sapla/`)
+6. 
+```bash
+cmake -B build -S . -DCMAKE_PREFIX_PATH="/mingw64" -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel --config Release
+```
+##### Packaging for Windows
+If you **DON'T** have a Qt version already (Is there a directory called `C:\Qt\x.x.x`? (the xs being any number)):
+1. `pip install aqtinstall`
+2. `aqt install-qt windows desktop 6.4.2 win64_msvc2019_64 --outputdir C:\Qt`
+    - Now there is a Qt version 6.4.2
+Once you have a Qt version:
+- Run `C:\Qt\x.x.x\mingw_64\bin\windeployqt.exe --release .\build\Sapla.exe .\build\libcore.dll` in this project's root directory
 
 # FAQ
 ## Did it save my changes?

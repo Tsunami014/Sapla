@@ -1,4 +1,4 @@
-#include "main.hpp"
+#include "core.hpp"
 #include "log.hpp"
 #include "menu.hpp"
 #include <QWidget>

@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include "main.hpp"
+#include "core.hpp"
 #include "scenes/homeScn.hpp"
 #include "games/getGames.hpp"
 #include "items/base/font.hpp"

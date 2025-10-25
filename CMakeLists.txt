@@ -7,18 +7,20 @@ set(CORE_NAME   core)
 set(APP_OUTPUT  Sapla)
 set(SOURCES
     main.cpp
-    games/getGames.cpp
-    cards/formElms.cpp
-    cards/cardTree.cpp
-    scenes/browseScn.cpp
 )
 set(CORELIB
+    core.cpp
     game.cpp resources.qrc
     log.cpp  menu.cpp
     cards/cardTyps.cpp
     cards/getCards.cpp
     cards/cardList.cpp
+    cards/formElms.cpp
+    cards/cardTree.cpp
+
+    games/getGames.cpp
     scenes/homeScn.cpp
+    scenes/browseScn.cpp
 
     items/listWid.cpp
     items/sideRends.cpp
@@ -41,6 +43,7 @@ project(${APP_NAME} LANGUAGES CXX)
 find_package(Qt6 REQUIRED COMPONENTS Core Svg Widgets)
 
 add_library(${CORE_NAME} SHARED ${CORELIB})
+set_target_properties(${CORE_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_include_directories(${CORE_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
 target_link_libraries(${CORE_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
 

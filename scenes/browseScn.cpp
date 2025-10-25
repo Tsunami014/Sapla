@@ -1,6 +1,6 @@
 #include "browseScn.hpp"
 #include "homeScn.hpp"
-#include "../main.hpp"
+#include "../core.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
 #include "../cards/cardList.hpp"

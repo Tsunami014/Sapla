@@ -20,5 +20,7 @@ protected:
     }
 };
 
+int runApp(int argc, char *argv[]);
+
 extern BetterScene* MScene;
 

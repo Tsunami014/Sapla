@@ -5,3 +5,5 @@ appimage-build/*
 compile_flags.txt
 CMakeLists.txt.user
 .vscode/*
+*.log
+CMakeFiles/*

@@ -1,7 +1,7 @@
 #pragma once
 #include "link.hpp"
 // Some includes for game plugins to use
-#include "../main.hpp"
+#include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
 // Base

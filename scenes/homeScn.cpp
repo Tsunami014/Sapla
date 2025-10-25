@@ -1,7 +1,7 @@
 #include "homeScn.hpp"
 #include "browseScn.hpp"
 #include "../items/base/font.hpp"
-#include "../main.hpp"
+#include "../core.hpp"
 #include <QTextOption>
 #include <QTextDocument>
 

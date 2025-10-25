@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include "items/gridLayout.hpp"
 #include <QTimer>
+#include <QElapsedTimer>
 #include <QGraphicsTextItem>
 
 class PlayScene : public BaseScene {

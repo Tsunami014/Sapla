@@ -1,5 +1,5 @@
 #include "menu.hpp"
-#include "main.hpp"
+#include "core.hpp"
 #include "log.hpp"
 #include "help.hpp"
 #include "scenes/homeScn.hpp"

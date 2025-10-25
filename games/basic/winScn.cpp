@@ -6,8 +6,10 @@
 #include <QTextDocument>
 #include <QKeyEvent>
 
+const QString HELP_TXT = "\\<Escape\\> to go home";
+
 WinScene::WinScene(Stats s) : txt(this), tr(this) {
-    ln->MG->setBottomTxt("<Escape> to go home");
+    *ln->help = &HELP_TXT;
     ln->MG->changeBG("win");
     tr.lastPhase();
     txt.setPlainText(QString::fromStdString(

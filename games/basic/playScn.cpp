@@ -6,9 +6,11 @@
 #include <QKeyEvent>
 #include <QRandomGenerator>
 
+const QString HELP_TXT = "Click on card to flip, once flipped; \\<Space\\> if you got it wrong, \\<Enter\\> if right";
+
 PlayScene::PlayScene() : 
     BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
-        ln->MG->setBottomTxt("Click on card to flip, once flipped; <Space> if you got it wrong, <Enter> if right");
+        *ln->help = &HELP_TXT;
         ln->MG->changeBG("pretty");
 
         overlay = NULL;

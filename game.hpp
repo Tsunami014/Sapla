@@ -16,9 +16,6 @@ public:
     BaseScene* curScene;
     std::vector<TxtBtnItem*> logs;
 
-    void setBottomTxt(const QString& newTxt);
-
 private:
     SvgGraphicItem* bg;
-    QGraphicsTextItem* bottomTxt;
 };

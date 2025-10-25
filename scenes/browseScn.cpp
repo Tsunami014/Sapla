@@ -8,6 +8,8 @@
 #include <QTimer>
 #include <QHeaderView>
 
+const QString HELP_TXT = "\\<Ctrl+Delete\\> to delete currently selected item, \\<Esc\\> to go back";
+
 #ifdef _WIN32
 // Windows being JUST THAT BAD
 class FixedMenuBar : public QMenuBar {
@@ -109,7 +111,7 @@ void deleteLayout(QLayout* lay) {
 }
 
 BrowseScene::BrowseScene() : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this) {
-    MG->setBottomTxt("<Ctrl+Delete> to delete currently selected item, <Esc> to go back");
+    helpStr = &HELP_TXT;
     MG->changeBG("dirt");
 
     tree = getCardTree();

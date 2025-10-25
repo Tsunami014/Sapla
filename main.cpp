@@ -1,9 +1,11 @@
 #include <QApplication>
+#include <QMainWindow>
 #include <QScreen>
 #include <QLabel>
 #include <QWidget>
 #include <QGraphicsView>
 #include "main.hpp"
+#include "menu.cpp"
 #include "log.hpp"
 #include "items/base/font.hpp"
 #include "cards/cardTyps.hpp"
@@ -12,7 +14,7 @@
 
 BetterScene* MScene = nullptr;
 MainGame* MG = nullptr;
-
+const QString* helpStr = nullptr;
 
 class BetterView : public QGraphicsView {
 public:
@@ -31,6 +33,8 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setFont(getFont());
     Log::Debug("MAIN") << getPath();
+    QMainWindow* w = new QMainWindow;
+    initMenu(w->menuBar());
     MScene = new BetterScene();
     MG = new MainGame();
     registerCardTypes();
@@ -39,7 +43,8 @@ int main(int argc, char *argv[]) {
     MG->initScene();
 
     BetterView* view = new BetterView(MScene);
-    view->showMaximized();
-    view->show();
+    w->setCentralWidget(view);
+    w->showMaximized();
+    w->show();
     return app.exec();
 }

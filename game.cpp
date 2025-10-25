@@ -8,11 +8,6 @@
 
 MainGame::MainGame() {
     bg = nullptr;
-
-    bottomTxt = new QGraphicsTextItem("");
-    bottomTxt->setDefaultTextColor({0, 0, 0});
-    bottomTxt->setZValue(100);
-    MScene->addItem(bottomTxt);
 }
 void MainGame::initScene() {
     curScene = new HomeScene();
@@ -28,10 +23,6 @@ void MainGame::changeBG(QString bgName) {
     bg = new SvgGraphicItem(":/assets/bgs/"+bgName+".svg");
     bg->setZValue(-100);
     MScene->addItem(bg);
-}
-
-void MainGame::setBottomTxt(const QString& newTxt) {
-    bottomTxt->setPlainText(newTxt);
 }
 
 void MainGame::changeScene(BaseScene* newScene) {
@@ -59,11 +50,7 @@ void MainGame::nextFC() {
 
 void MainGame::resizeEvent(const QRectF& newSze) {
     bg->setRect(newSze);
-    qreal fontSze = newSze.height()*0.03;
-    bottomTxt->setFont(getFont(fontSze));
-    qreal fontY = newSze.height()-fontSze*1.1;
-    bottomTxt->setPos(0, newSze.y()+fontY);
-    curScene->setRect({newSze.x(), newSze.y(), newSze.width(), fontY});
+    curScene->setRect(newSze);
 
     const int margin = 15;
     const int edgeMargin = 30;

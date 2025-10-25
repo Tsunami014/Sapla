@@ -14,6 +14,7 @@ set(SOURCES
 )
 set(CORELIB
     log.cpp
+    menu.cpp
     game.cpp
     resources.qrc
     cards/cardTyps.cpp

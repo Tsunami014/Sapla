@@ -5,8 +5,10 @@
 #include <QTextOption>
 #include <QTextDocument>
 
+const QString HELP_TXT = "Just press a button to do stuff";
+
 HomeScene::HomeScene() : BaseScene() {
-    MG->setBottomTxt("");
+    helpStr = &HELP_TXT;
     MG->changeBG("pretty");
     txt = new QGraphicsTextItem(this);
     txt->setHtml("<b>Sapla</b>");

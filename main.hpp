@@ -1,4 +1,5 @@
 #pragma once
+#include <QMenuBar>
 #include <QStackedLayout>
 #include <QGraphicsScene>
 #include "game.hpp"
@@ -6,6 +7,7 @@
 #define VERSION 1
 
 extern MainGame* MG;
+extern const QString* helpStr;
 
 class BetterScene : public QGraphicsScene {
 public:

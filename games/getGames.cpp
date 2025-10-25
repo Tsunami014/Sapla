@@ -1,5 +1,6 @@
 #include "../main.hpp"
 #include "../log.hpp"
+#include "../menu.hpp"
 #include "getGames.hpp"
 #include <QStandardPaths>
 #include <QDir>
@@ -26,7 +27,7 @@ bool GamePlugin::run() {
 
 void loadGames() {
     if (ln == nullptr) {
-        ln = new Link{ MG, MScene };
+        ln = new Link{ MG, &helpStr, Menues, MScene };
     }
     games.clear();
     failedGames.clear();

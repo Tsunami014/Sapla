@@ -4,6 +4,7 @@
 #include "../log.hpp"
 #include "../menu.hpp"
 // Base
+#include "../items/base/svgRend.hpp"
 #include "../items/base/svgItem.hpp"
 #include "../items/base/svgBtnItem.hpp"
 #include "../items/base/font.hpp"

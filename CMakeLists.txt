@@ -25,8 +25,9 @@ set(CORELIB
     items/sideRends.cpp
     items/progress.cpp
     items/treeItem.cpp
-    items/base/svgBtnItem.cpp
+    items/base/svgRend.cpp
     items/base/svgItem.cpp
+    items/base/svgBtnItem.cpp
     items/base/rectIt.cpp
     items/base/markdown.cpp
     items/base/font.cpp

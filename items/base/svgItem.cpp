@@ -1,8 +1,9 @@
 #include "svgItem.hpp"
+#include "svgRend.hpp"
 #include <QPainter>
 
 SvgGraphicItem::SvgGraphicItem(const QString& svgPath, QGraphicsItem* parent) : RectItem(parent) {
-    renderer = new QSvgRenderer(svgPath);
+    renderer = new QSvgRenderer(RenderSvg(svgPath));
 }
 SvgGraphicItem::SvgGraphicItem(QGraphicsItem* parent) : RectItem(parent) {
     renderer = new QSvgRenderer();

@@ -5,7 +5,7 @@
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
     : RectItem(parent) {
         if (!MTrenderer) {
-            MTrenderer = std::make_unique<QSvgRenderer>(QString(":/assets/CardLayouts/emptyIt.svg"));
+            MTrenderer = std::make_unique<QSvgRenderer>(RenderSvg(QString(":/assets/CardLayouts/emptyIt.svg")));
         }
     }
 

@@ -1,11 +1,12 @@
 #include "treeItem.hpp"
+#include "base/svgRend.hpp"
 
 #define MAX_PHASE 5
 
 QSvgRenderer* Tree::baseRend = NULL;
 
 Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
-    if (!baseRend) baseRend = new QSvgRenderer(QStringLiteral(":/assets/treeGround.svg"));
+    if (!baseRend) baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
     phase = 0;
     growth = 0;
     toNext = 50;
@@ -43,9 +44,9 @@ bool Tree::grow(double amount) {
 }
 void Tree::nextPhase() {
     delete renderer;
-    renderer = new QSvgRenderer(QString::fromStdString(
+    renderer = new QSvgRenderer(RenderSvg(QString::fromStdString(
         ":/assets/TreeParts/phase" + std::to_string(++phase) + ".svg"
-    ));
+    )));
     isSmall = renderer->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
 

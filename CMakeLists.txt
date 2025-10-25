@@ -52,7 +52,7 @@ target_link_libraries(${APP_NAME} PRIVATE corelib)
 option(BUILD_PLUGINS "Build game plugins" ON)
 option(BUILD_BASIC_GAME "Build basic game plugin" ON)
 if (BUILD_PLUGINS AND BUILD_BASIC_GAME)
-    add_subdirectory(games/basic)
+    add_subdirectory(games/grid)
 endif()
 
 
@@ -66,7 +66,7 @@ endif()
 
 add_custom_command(TARGET ${APP_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo " \\> Successfully built to \\\"$<TARGET_FILE:${APP_NAME}>\\\"!"
-    COMMAND ${CMAKE_COMMAND} -E echo " \\> Plugins built are located in  \\\"${CMAKE_BINARY_DIR}/gamePlugs/\\\""
+    COMMAND ${CMAKE_COMMAND} -E echo " \\> Plugins built are located in \\\"${CMAKE_BINARY_DIR}/gamePlugs/\\\""
     COMMAND ${CMAKE_COMMAND} -E echo " \\> To include all QT files, run:"
     COMMAND ${CMAKE_COMMAND} -E echo "  ${_qt_deploy_tool} $<TARGET_FILE:${APP_NAME}>"
 )

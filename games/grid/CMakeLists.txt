@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(GAME_NAME   Basic)
+set(GAME_NAME GridGame)
+
 project(${GAME_NAME} LANGUAGES CXX)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg)
 

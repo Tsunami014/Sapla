@@ -133,6 +133,7 @@ void PlayScene::onEvent(QEvent* event) {
                         }
                     }
                     it.item->finish();
+                    if (tr.isDone()) break;
                     if (main->grid.empty()) {
                         int remaining = timeLeft - timeOffset;
                         int existingTime = qMin(remaining, 2000);  // Max of 2 seconds carried in from before

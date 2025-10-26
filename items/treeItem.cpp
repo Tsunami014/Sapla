@@ -13,6 +13,10 @@ Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
     nextPhase();
 }
 
+bool Tree::isDone() {
+    return phase == MAX_PHASE;
+}
+
 void Tree::setRect(const QRectF& newRect) {
     prepareGeometryChange();
     qreal hei = newRect.height()/2;

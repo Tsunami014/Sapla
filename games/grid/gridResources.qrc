@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>gridAssets/emptyIt.svg</file>
+        <file>gridAssets/smlIt.svg</file>
+    </qresource>
+</RCC>

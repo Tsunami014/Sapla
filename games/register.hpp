@@ -1,4 +1,5 @@
 #pragma once
+#include "link.hpp"
 // Some includes for game plugins to use
 #include "../main.hpp"
 #include "../log.hpp"
@@ -21,13 +22,14 @@
 #include "../game.hpp"  // to mitigate the forward reference
 #include "../scenes/homeScn.hpp"
 
-extern "C" struct Version {
-    int vFrom;
-    int vTo;
-};
+inline Registry makeRegistry(
+    int vFrom,
+    int vTo,
+    bool (*onRun)(),
+    void (*onLoad)() = +[](){},
+    void (*onUnload)() = +[](){}
+) { return Registry{onLoad, onRun, onUnload, vFrom, vTo}; }
 
-#define REGISTER_GAME(initFn, versionFrom, versionTo) \
-    extern "C" bool initWrapper() { return initFn(); }\
-    extern "C" bool (*reg())() { return &initWrapper; }\
-    extern "C" const Version version() { return { versionFrom, versionTo }; }
+#define REGISTER_GAME(reg) \
+    extern "C" Registry _register() { return reg; }
 

@@ -106,6 +106,6 @@ void initCards() {
     }
 
     file.close();
-    Log::Info(MODULE) << "Successfully loaded " << cards.size() << " cards!";
+    Log::Debug(MODULE) << "Successfully loaded " << cards.size() << " cards!";
 }
 

@@ -31,7 +31,7 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
             }
         };
 
-        QTimer::singleShot(3000, [this, alive]() {
+        QTimer::singleShot(2000, [this, alive]() {
             if (!*alive) {
                 return;
             }

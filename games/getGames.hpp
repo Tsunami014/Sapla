@@ -1,20 +1,17 @@
 #pragma once
+#include "link.hpp"
 #include "../scenes/baseScn.hpp"
 #include <QLibrary>
 
-struct Version { int from; int to; };
-using InitFn = bool (*)();
-
 class GamePlugin {
 public:
-    GamePlugin(QString name, Version& vers, QLibrary* lib, InitFn playFn);
+    GamePlugin(QString name, Registry& reg, QLibrary* lib);
     ~GamePlugin();
     QString name;
-    Version vers;
-    QLibrary* lib;
     bool run();
 private:
-    InitFn playFn;
+    Registry reg;
+    QLibrary* lib;
 };
 
 QString getGamesPath();

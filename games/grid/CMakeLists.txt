@@ -8,9 +8,9 @@ project(${GAME_NAME} LANGUAGES CXX)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg)
 
 set(SOURCES
-    game.cpp
-    playScn.cpp
-    winScn.cpp
+    game.cpp gridResources.qrc
+
+    playScn.cpp winScn.cpp
     items/cardIt.cpp
     items/gridLayout.cpp
 )

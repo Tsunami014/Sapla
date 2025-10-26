@@ -6,6 +6,7 @@ class Tree : public SvgGraphicItem {
 public:
     Tree(QGraphicsItem* parent = nullptr);
     bool grow(double amount);
+    bool isDone();
     void nextPhase();
     void lastPhase();  // Does not update toNext correctly
     void setRect(const QRectF& newRect) override;

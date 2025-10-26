@@ -44,6 +44,10 @@ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel --config Release
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
+##### Packaging for Linux
+1. `pip install appimage-builder`
+2. `appimage-builder --recipe conf.yaml`
+3. The output .AppImage should be in this directory!
 #### Windows
 Figure it out yourself. (For now)
 

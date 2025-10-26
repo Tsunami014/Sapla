@@ -81,14 +81,18 @@ void initMenu(QMenuBar* b) {
     last = hmenu->menuAction();
 }
 
-Menu::Menu(const QString& title) : _MenuBase(title, bar) {}
+Menu::Menu(const QString& title) : _MenuBase(title, bar) {
+    insertBefore = nullptr;
+    bar->insertMenu(last, this);
+}
 Menu::~Menu() {
     bar->removeAction(this->menuAction());
 }
 
 MenuItem::MenuItem(const QString& txt, _MenuBase* pmen)
     : QAction(txt, pmen), parentMen(pmen) {
-        parentMen->insertAction(pmen->insertBefore, this);
+        if (pmen->insertBefore) parentMen->insertAction(pmen->insertBefore, this);
+        else parentMen->addAction(this);
     }
 MenuItem::~MenuItem() {
     parentMen->removeAction(this);

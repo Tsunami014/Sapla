@@ -14,8 +14,8 @@ CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, Q
 }
 CardGraphicItem::CardGraphicItem(layout l, const FlashCard& fc, QGraphicsItem* parent) : SvgGraphicItem(l.fname, parent) {
     lay = l;
-    front = fc.getSide(0);
-    back = fc.getSide(1);
+    front = fc.getSide(SIDE_FRONT);
+    back = fc.getSide(SIDE_BACK);
     init();
 }
 void CardGraphicItem::init() {

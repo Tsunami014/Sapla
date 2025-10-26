@@ -16,17 +16,20 @@ void MainGame::initScene() {
 }
 
 void MainGame::changeBG(QString bgName) {
-    if (bg != nullptr) {
-        MScene->removeItem(bg);
-        delete bg;
+    QString pth = ":/assets/bgs/"+bgName+".svg";
+    if (bg == nullptr) {
+        bg = new SvgGraphicItem(pth);
+        bg->setZValue(-100);
+        MScene->addItem(bg);
+    } else {
+        bg->setSvg(pth);
     }
-    bg = new SvgGraphicItem(":/assets/bgs/"+bgName+".svg");
-    bg->setZValue(-100);
-    MScene->addItem(bg);
 }
 
 void MainGame::changeScene(BaseScene* newScene) {
     QTimer::singleShot(0, [=]() {
+        auto* view = MScene->views()[0];
+        view->setUpdatesEnabled(false);
         MScene->removeItem(curScene);
         delete curScene;
         MScene->views()[0]->viewport()->unsetCursor();
@@ -34,6 +37,8 @@ void MainGame::changeScene(BaseScene* newScene) {
         curScene->setZValue(-1);
         MScene->addItem(newScene);
         resizeEvent(MScene->sceneRect());
+        view->setUpdatesEnabled(true);
+        view->viewport()->update();
     });
 }
 
@@ -54,7 +59,7 @@ void MainGame::resizeEvent(const QRectF& newSze) {
     updateLogs();
 }
 void MainGame::updateLogs() {
-    QRectF rect = bg->boundingRect();
+    QRectF rect = MScene->sceneRect();
     const int margin = 15;
     const int edgeMargin = 30;
     qreal y = rect.height() - margin;

@@ -11,6 +11,11 @@ SvgGraphicItem::SvgGraphicItem(QGraphicsItem* parent) : RectItem(parent) {
 SvgGraphicItem::~SvgGraphicItem() {
     delete renderer;
 }
+void SvgGraphicItem::setSvg(const QString& svgPath) {
+    delete renderer;
+    renderer = new QSvgRenderer(RenderSvg(svgPath));
+    update();
+}
 
 bool SvgGraphicItem::contains(const QPointF& point) const {
     QPoint newP(point.x() - rect.x(), point.y() - rect.y());

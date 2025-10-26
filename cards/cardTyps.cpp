@@ -22,7 +22,12 @@ TextCard::TextCard(QString fr, QString bk) : front(fr), back(bk) {
 BaseCardTyp* TextCard::newBlank() { return new TextCard("", ""); }
 BaseSideRend* TextCard::getSide(const FlashCard& fc, int side) const {
     QString s;
-    if (side == 1) { s = front; } else { s = back; }
+    if (side == SIDE_FRONT) { s = front;
+    } else if (side == SIDE_BACK) { s = back;
+    } else {
+        Log::Warn("TextCard") << "Attempted to get unknown side " << side;
+        s = {};
+    }
     return new TextSide(s);
 }
 QString TextCard::getName() {
@@ -69,7 +74,12 @@ DoubleSidedCard::DoubleSidedCard(SideXtra fr, SideXtra bk) : front(fr), back(bk)
 BaseCardTyp* DoubleSidedCard::newBlank() { return new DoubleSidedCard({}, {}); }
 BaseSideRend* DoubleSidedCard::getSide(const FlashCard& fc, int side) const {
     SideXtra s;
-    if (side == 1) { s = front; } else { s = back; };
+    if (side == SIDE_FRONT) { s = front;
+    } else if (side == SIDE_BACK) { s = back;
+    } else {
+        Log::Warn("DoubleSidedCard") << "Attempted to get unknown side " << side;
+        s = {};
+    }
     if (fc.idx == 0) {
         return new TextSide(s.fullTxt(true));
     } else {

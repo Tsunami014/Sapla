@@ -4,8 +4,8 @@
 #include <QTextBlock>
 #include <QRegularExpression>
 
-void replace(QString search, QString regex, std::function<QString(QRegularExpressionMatch)> replFn) {
-    QRegularExpression re(R"(^([ \t]*)([*\-+])[ \t]+(.+)$)", QRegularExpression::MultilineOption);
+void replace(QString& search, const QString& regex, std::function<QString(QRegularExpressionMatch)> replFn) {
+    QRegularExpression re(regex, QRegularExpression::MultilineOption);
     auto it = re.globalMatch(search);
     int offs = 0;
     while (it.hasNext()) {
@@ -46,7 +46,7 @@ QString parseMarkdownHtml(QString txt) {
     esc.replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
        .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
 
-    // Fix spaces at the end
+    // Fix spaces and finish
     replace(esc, R"(^ +)", [](QRegularExpressionMatch m) {
         int count = m.capturedLength();
         return QString("&nbsp;").repeated(count);

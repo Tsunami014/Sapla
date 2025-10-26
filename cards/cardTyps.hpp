@@ -4,6 +4,9 @@
 #include <QVBoxLayout>
 #include <QTreeWidgetItem>
 
+#define SIDE_FRONT 1
+#define SIDE_BACK 2
+
 class FlashCard;  // Forward reference
 
 #define INIT_CARD(name) \

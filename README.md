@@ -18,9 +18,7 @@ FAQ is at the bottom.
 Game plugins go under `<config directory>/gamePlugs` (to find the config directory, look at `Help` > `Logs` in the app). Just drop the library there and the game will recognise it! (Unless you typed in the folder name wrong)
 
 ## Demo video
-https://github.com/user-attachments/assets/ae13948b-8609-4b25-8d62-6a1915e5a382
-
-Please note in the video I get insane odds and get the same text 3 times in a row, so I quit out of it and went back in which is why at one point the recording freezes. Also I'm speedrunning the cards bcos I just want to get through them to show you how it works
+https://github.com/user-attachments/assets/ffb0e828-e530-48c7-8332-2394af1aab48
 
 ## Getting it
 ### The easy way

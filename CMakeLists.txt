@@ -3,7 +3,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(APP_NAME    Sapla)
-set(CORE_NAME   corelib)
+set(CORE_NAME   core)
 set(APP_OUTPUT  Sapla)
 set(SOURCES
     main.cpp
@@ -17,6 +17,7 @@ set(CORELIB
     log.cpp  menu.cpp
     cards/cardTyps.cpp
     cards/getCards.cpp
+    cards/cardList.cpp
     scenes/homeScn.cpp
 
     items/listWid.cpp
@@ -46,11 +47,11 @@ target_link_libraries(${CORE_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
 add_executable(${APP_NAME} ${SOURCES})
 set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME ${APP_OUTPUT})
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
-target_link_libraries(${APP_NAME} PRIVATE corelib)
+target_link_libraries(${APP_NAME} PRIVATE core)
 
+add_subdirectory(games/builtin)
 option(BUILD_PLUGINS "Build game plugins" ON)
-option(BUILD_BASIC_GAME "Build basic game plugin" ON)
-if (BUILD_PLUGINS AND BUILD_BASIC_GAME)
+if (BUILD_PLUGINS)
     add_subdirectory(games/grid)
 endif()
 

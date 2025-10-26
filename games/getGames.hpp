@@ -9,13 +9,13 @@ public:
     ~GamePlugin();
     QString name;
     bool run();
+    bool permanent;
 private:
     Registry reg;
     QLibrary* lib;
 };
 
-QString getGamesPath();
-extern std::vector<GamePlugin> games;
+extern std::vector<GamePlugin*> games;
 extern std::vector<std::pair<QString, QString>> failedGames;
 void loadGames();
 

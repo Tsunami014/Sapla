@@ -14,8 +14,9 @@
 #include "../items/progress.hpp"
 #include "../items/treeItem.hpp"
 // Cards stuff
-#include "../cards/getCards.hpp"
 #include "../cards/cardTyps.hpp"
+#include "../cards/getCards.hpp"
+#include "../cards/cardList.hpp"
 #include "../items/sideRends.hpp"
 // Scenes
 #include "../scenes/baseScn.hpp"

@@ -32,7 +32,7 @@ protected:
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setFont(getFont());
-    Log::Info("Main") << "Configuration located at:\n" << getPath();
+    Log::Log("Main") << "Configuration located at:\n" << getPath();
     QMainWindow* w = new QMainWindow;
     initMenu(w->menuBar());
     MScene = new BetterScene();

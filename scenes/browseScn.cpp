@@ -3,6 +3,7 @@
 #include "../main.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
+#include "../cards/cardList.hpp"
 #include "../items/base/font.hpp"
 #include <QColor>
 #include <QTimer>
@@ -109,7 +110,7 @@ BrowseScene::BrowseScene()
     }
 
 void BrowseScene::addCard(BaseCardTyp* card) {
-    cards.push_back(card);
+    addCard(card);
     writeCards();
 
     auto* it = addToTree(tree, card);
@@ -135,12 +136,8 @@ void BrowseScene::onEvent(QEvent* event) {
 
             QTreeWidgetItem* item = selected.first();
             BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
-            auto it = std::find(cards.begin(), cards.end(), data);
-            if (it != cards.end()) {
-                delete *it;
-                cards.erase(it);
-                writeCards();
-            }
+            removeCard(data);
+            writeCards();
             if (QTreeWidgetItem* parent = item->parent()) {
                 parent->removeChild(item);
             } else if (QTreeWidget *tree = item->treeWidget()) {

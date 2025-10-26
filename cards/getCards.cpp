@@ -1,12 +1,11 @@
 #include "getCards.hpp"
 #include "cardTyps.hpp"
+#include "cardList.hpp"
 #include "../log.hpp"
 #include <QStandardPaths>
 #include <QDir>
 
 const QString MODULE = "getCards";
-
-std::vector<BaseCardTyp*> cards = {};
 
 QString tryReadLine(QTextStream& in, QString error) {
     QString out;
@@ -58,7 +57,8 @@ void writeCards() {
         return;
     }
     QTextStream out(&file);
-    for (auto& c : cards) {
+    auto cs = getCards();
+    for (auto& c : cs) {
         c->toFile(out);
     }
     file.close();
@@ -66,8 +66,7 @@ void writeCards() {
 }
 
 void initCards() {
-    for (auto* c : cards) delete c;
-    cards = {};
+    std::vector<BaseCardTyp*> cards = {};
     QString fullpth = getPath();
     QFile file(fullpth);
 
@@ -106,6 +105,7 @@ void initCards() {
     }
 
     file.close();
+    replaceCards(cards);
     Log::Debug(MODULE) << "Successfully loaded " << cards.size() << " cards!";
 }
 

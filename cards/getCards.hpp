@@ -9,5 +9,4 @@ QString unSafe(QString str);
 QString getPath();
 void initCards();
 void writeCards();
-extern std::vector<BaseCardTyp*> cards;
 

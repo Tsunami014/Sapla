@@ -10,8 +10,8 @@ const QString HELP_TXT =
     "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
     "Press &lt;Esc&gt; to go back to the home screen.";
 
-PlayScene::PlayScene() : 
-    BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
+PlayScene::PlayScene()
+    : BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         helpStr = &HELP_TXT;
         MG->changeBG("pretty");
 
@@ -63,43 +63,9 @@ void PlayScene::resetTimer() {
     }
 }
 int PlayScene::addAnother() {
+    const FlashCard fc = *NextFC();
     layout lay = Single;
-    int cardsAmnt = cards.size();
-    int idx = QRandomGenerator::global()->bounded(cardsAmnt);
-    FlashCard newFc;
-    if (cardsAmnt >= main->Cols*2) {
-        int tries = 0;
-        while (tries < cardsAmnt) {
-            auto& card = cards[idx];
-            int fcAmnt = card->flashCs.size();
-            int fcIdx = QRandomGenerator::global()->bounded(fcAmnt);
-            int tries2 = 0;
-            bool good = true;
-            while (tries2 < fcAmnt) {
-                auto& fc = card->flashCs[fcIdx];
-                for (auto& it : main->grid) {
-                    if (*it.item == fc) {
-                        good = false;
-                        break;
-                    }
-                }
-                if (good) {
-                    newFc = fc;
-                    break;
-                }
-                fcIdx = (fcIdx + 1) % fcAmnt;
-                tries2++;
-            }
-            if (good) break;
-            idx = (idx + 1) % cardsAmnt;
-            tries++;
-        }
-    } else {
-        int fcIdx = QRandomGenerator::global()->bounded(int(cards[idx]->flashCs.size()));
-        newFc = cards[idx]->flashCs[fcIdx];
-    }
-
-    auto* nCGI = new CardGraphicItem(lay, newFc);
+    auto* nCGI = new CardGraphicItem(lay, fc);
     if (!main->addItem(nCGI)) {
         delete nCGI;
         // Failed to add a new item; you lose some growth
@@ -122,7 +88,7 @@ void PlayScene::onEvent(QEvent* event) {
         }
         if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
-                if (it.item->side != 0) {
+                if (it.item->side == 255) {
                     if (key == Qt::Key_Space) {
                         MG->s.bads++;
                         tr.grow(-10);

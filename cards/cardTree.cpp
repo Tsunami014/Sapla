@@ -1,4 +1,5 @@
 #include "cardTree.hpp"
+#include "cardList.hpp"
 #include "../items/listWid.hpp"
 #include <QHeaderView>
 
@@ -9,7 +10,7 @@ QTreeWidget* getCardTree() {
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
-    for (auto* card : cards) {
+    for (auto* card : getCards()) {
         addToTree(tree, card);
     }
     return tree;

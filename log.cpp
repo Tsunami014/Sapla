@@ -84,13 +84,15 @@ namespace Log {
             case WARN: qWarning().noquote() << txt; break;
             case ERROR: qCritical().noquote() << txt; break;
         }
-        Level lvll = lvl;
-        QTimer::singleShot(0, [lvll, txt](){
-            auto* la = new LogAlert(lvll, txt);
-            la->setZValue(9999);
-            MScene->addItem(la);
-            MG->updateLogs();
-        });
+        if (lvl != DEBUG) {
+            Level lvll = lvl;
+            QTimer::singleShot(0, [lvll, txt](){
+                auto* la = new LogAlert(lvll, txt);
+                la->setZValue(9999);
+                MScene->addItem(la);
+                MG->updateLogs();
+            });
+        }
     }
 }
 

@@ -47,7 +47,7 @@ void MainGame::nextFC() {
     if (gSze == 0) return;
     int gidx = QRandomGenerator::global()->bounded(gSze);
     for (int _ = 0; _ < gSze; _++) {
-        bool success = games[gidx].run();
+        bool success = games[gidx]->run();
         if (success) break;
         gidx = (gidx + 1) % gSze;
     }

@@ -110,7 +110,7 @@ BrowseScene::BrowseScene()
     }
 
 void BrowseScene::addCard(BaseCardTyp* card) {
-    addCard(card);
+    CLaddCard(card);
     writeCards();
 
     auto* it = addToTree(tree, card);
@@ -136,7 +136,7 @@ void BrowseScene::onEvent(QEvent* event) {
 
             QTreeWidgetItem* item = selected.first();
             BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
-            removeCard(data);
+            CLremoveCard(data);
             writeCards();
             if (QTreeWidgetItem* parent = item->parent()) {
                 parent->removeChild(item);

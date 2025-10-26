@@ -6,7 +6,7 @@ std::vector<BaseCardTyp*> cards = {};
 std::deque<FlashCard*> fcs = {};
 std::deque<FlashCard*> doneFcs = {};
 
-void replaceCards(std::vector<BaseCardTyp*>& newCs) {
+void CLreplaceCards(std::vector<BaseCardTyp*>& newCs) {
     for (auto* c : cards) delete c;
     cards = newCs;
     fcs.clear();  // All pointers should be to the cards anyway
@@ -17,13 +17,13 @@ void replaceCards(std::vector<BaseCardTyp*>& newCs) {
         }
     }
 }
-void addCard(BaseCardTyp* newCard) {
+void CLaddCard(BaseCardTyp* newCard) {
     cards.push_back(newCard);
     for (auto& fc : newCard->flashCs) {
         doneFcs.push_back(&fc);
     }
 }
-void removeCard(BaseCardTyp* card) {
+void CLremoveCard(BaseCardTyp* card) {
     auto it = std::find(cards.begin(), cards.end(), card);
     for (auto& fc : card->flashCs) {
         fcs.erase(std::remove(fcs.begin(), fcs.end(), &fc), fcs.end());

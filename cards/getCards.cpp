@@ -105,7 +105,7 @@ void initCards() {
     }
 
     file.close();
-    replaceCards(cards);
+    CLreplaceCards(cards);
     Log::Debug(MODULE) << "Successfully loaded " << cards.size() << " cards!";
 }
 

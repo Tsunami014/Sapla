@@ -9,18 +9,21 @@ set(SOURCES
     main.cpp
 )
 set(CORELIB
-    core.cpp
-    game.cpp resources.qrc
+    core.cpp game.cpp
     log.cpp  menu.cpp
+    resources.qrc
+    games/getGames.cpp
+
     cards/cardTyps.cpp
     cards/getCards.cpp
     cards/cardList.cpp
     cards/formElms.cpp
     cards/cardTree.cpp
 
-    games/getGames.cpp
+    scenes/baseScn.cpp
     scenes/homeScn.cpp
     scenes/browseScn.cpp
+    scenes/gameView.cpp
 
     items/listWid.cpp
     items/sideRends.cpp

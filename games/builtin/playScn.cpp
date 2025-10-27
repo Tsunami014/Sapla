@@ -20,14 +20,11 @@ PlayScene::~PlayScene() {
 }
 
 void PlayScene::onEvent(QEvent* event) {
+    if (MG->handleEv(event)) return;
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
-        if (key == Qt::Key_Escape) {
-            auto* keyEvent = (QKeyEvent*)event;
-            if (keyEvent->key() == Qt::Key_Escape) MG->changeScene(new HomeScene());
-        }
         if (card->side == 255 && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             if (key == Qt::Key_Space) {
                 MG->s.bads++;

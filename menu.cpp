@@ -3,6 +3,8 @@
 #include "log.hpp"
 #include "help.hpp"
 #include "scenes/homeScn.hpp"
+#include "scenes/browseScn.hpp"
+#include "scenes/gameView.hpp"
 #include <QDialog>
 
 QMenuBar* bar = nullptr;
@@ -62,23 +64,25 @@ void initMenu(QMenuBar* b) {
     bar->addMenu(fmenu);
     Menues->FileMenu = fmenu;
 
-    auto* vmenu = new _MenuBase("View");
-    vmenu->addAction("Go home", []() {
-        MG->changeScene(new HomeScene());
-    });
-    vmenu->insertBefore = vmenu->addSeparator();
-    bar->addMenu(vmenu);
-    Menues->ViewMenu = vmenu;
+    auto* gmenu = new _MenuBase("Go To");
+    gmenu->addAction("Go home", []() { MG->changeScene(new HomeScene()); });
+    gmenu->addAction("Browse cards", []() { MG->changeScene(new BrowseScene()); });
+    gmenu->addAction("Manage games", []() { MG->changeScene(new GameViewScene()); });
+    gmenu->addSeparator();
+    gmenu->insertBefore = nullptr;
+    bar->addMenu(gmenu);
+    Menues->GotoMenu = gmenu;
+    last = gmenu->menuAction();
 
     auto* hmenu = new _MenuBase("Help");
     hmenu->addAction("Application help", []() { makeDialog(APP_HELP, "Application help"); });
     hmenu->addAction("This screen help", []() { makeDialog(*helpStr, "This screen help"); });
     hmenu->addSeparator();
-    hmenu->addAction("Logs", []() { showLogWindow(); });
     hmenu->insertBefore = hmenu->addSeparator();
+    hmenu->addAction("Logs", []() { showLogWindow(); });
+    hmenu->addSeparator();
     Menues->HelpMenu = fmenu;
     bar->addMenu(hmenu);
-    last = hmenu->menuAction();
 }
 
 Menu::Menu(const QString& title) : _MenuBase(title, bar) {

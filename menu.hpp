@@ -20,7 +20,7 @@ public:
 
 struct _MenuesTyp {
     _MenuBase* FileMenu;
-    _MenuBase* ViewMenu;
+    _MenuBase* GotoMenu;
     _MenuBase* HelpMenu;
 };
 extern _MenuesTyp* Menues;

@@ -41,10 +41,6 @@ public:
     }
 };
 
-void goBack() {
-    MG->changeScene(new HomeScene());
-}
-
 void deleteLayout(QLayout* lay) {
     QLayoutItem* it;
     while ((it = lay->takeAt(0)) != nullptr) {
@@ -106,7 +102,7 @@ BrowseScene::BrowseScene()
         tree->setFont(getFont());
         TreeProxy.setWidget(tree);
 
-        backBtn.onClick = [](){ goBack(); };
+        backBtn.onClick = [](){ MG->changeScene(new HomeScene()); };
     }
 
 void BrowseScene::addCard(BaseCardTyp* card) {
@@ -122,13 +118,12 @@ void BrowseScene::addCard(BaseCardTyp* card) {
 }
 
 void BrowseScene::onEvent(QEvent* event) {
+    if (MG->handleEv(event)) return;
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
-        if (key == Qt::Key_Escape) {
-            goBack();
-        } else if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
+        if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
                    keyEvent->modifiers() == (Qt::ControlModifier)) {
             QList<QTreeWidgetItem*> selected = tree->selectedItems();
             if (selected.isEmpty())

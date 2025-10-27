@@ -78,14 +78,11 @@ int PlayScene::addAnother() {
 }
 
 void PlayScene::onEvent(QEvent* event) {
+    if (MG->handleEv(event)) return;
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
         int key = keyEvent->key();
 
-        if (key == Qt::Key_Escape) {
-            auto* keyEvent = (QKeyEvent*)event;
-            if (keyEvent->key() == Qt::Key_Escape) MG->changeScene(new HomeScene());
-        }
         if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
             for (auto& it : main->grid) {
                 if (it.item->side == 255) {

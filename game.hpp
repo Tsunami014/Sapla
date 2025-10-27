@@ -14,11 +14,12 @@ class MainGame {
 public:
     MainGame();
     void initScene();
-    void changeBG(QString bgName);
-    void resizeEvent(const QRectF& newSze);
-    void updateLogs();
     void changeScene(BaseScene* newScene);
+    void changeBG(QString bgName);
     void nextFC();
+    void resizeEvent(const QRectF& newSze);
+    bool handleEv(QEvent* event);
+    void updateLogs();
     BaseScene* curScene;
     std::vector<TxtBtnItem*> logs;
     Stats s;

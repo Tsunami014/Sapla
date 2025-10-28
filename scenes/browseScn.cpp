@@ -1,5 +1,4 @@
 #include "browseScn.hpp"
-#include "homeScn.hpp"
 #include "../core.hpp"
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
@@ -57,7 +56,7 @@ void deleteLayout(QLayout* lay) {
 }
 
 BrowseScene::BrowseScene()
-    : BaseScene(), TreeProxy(this), FormProxy(this), backBtn(":/assets/backBtn.svg", this), newCmenu("New Card") {
+    : BaseScene(), TreeProxy(this), FormProxy(this), newCmenu("New Card") {
         helpStr = &HELP_TXT;
         MG->changeBG("dirt");
 
@@ -101,8 +100,7 @@ BrowseScene::BrowseScene()
         });
         tree->setFont(getFont());
         TreeProxy.setWidget(tree);
-
-        backBtn.onClick = [](){ MG->changeScene(new HomeScene()); };
+        TreeProxy.setPos(0, 0);
     }
 
 void BrowseScene::addCard(BaseCardTyp* card) {
@@ -145,9 +143,7 @@ void BrowseScene::onEvent(QEvent* event) {
 
 void BrowseScene::resize() {
     qreal hWid = rect.width()/2;
-    TreeProxy.setPos(0, rect.height()*0.05);
-    TreeProxy.resize(hWid, rect.height()*0.95);
+    TreeProxy.resize(hWid, rect.height());
     FormProxy.setPos(hWid, 0);
     FormProxy.resize(hWid, rect.height());
-    backBtn.setRect({ 0, 0, rect.height()*0.05, rect.height()*0.05 });
 }

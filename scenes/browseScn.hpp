@@ -15,8 +15,6 @@ public:
     void onEvent(QEvent* event) override;
 
 protected:
-    SvgBtnItem backBtn;
-
     QGraphicsProxyWidget TreeProxy;
     QTreeWidget* tree;
 

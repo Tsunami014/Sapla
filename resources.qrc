@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>assets/btn.svg</file>
-        <file>assets/backBtn.svg</file>
 
         <file>assets/errorDiags/Debug.svg</file>
         <file>assets/errorDiags/Info.svg</file>

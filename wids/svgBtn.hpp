@@ -10,8 +10,8 @@ public:
     SvgBtn(const QString& path, QWidget* parent = nullptr);
     void setSvg(const QString& path);
 
-    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
 
     void paintEvent(QPaintEvent* event) override;
@@ -21,6 +21,7 @@ signals:
 
 private:
     void init();
+    bool touching(const QPointF& pos);
     QSvgRenderer* rend;
     bool hover;
 };

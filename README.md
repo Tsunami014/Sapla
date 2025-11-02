@@ -4,7 +4,7 @@ A cool flashcard app made in QT where you grow a tree.
 FAQ is at the bottom.
 
 ## Features
-- Different flashcard 'games' - one built in, another is optional.
+- Different flashcard 'games'
 - Logging popups!
 - Regular or double sided with optional prefixes
 - Grow a tree with your answers

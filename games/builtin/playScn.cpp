@@ -41,12 +41,16 @@ void PlayScene::keyPressEvent(QKeyEvent* event) {
                 card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
                 scn.addItem(card);
             }
+            layoutIts();
         }
     }
 }
 
 void PlayScene::resizeEvent(QResizeEvent* event) {
     GameScene::resizeEvent(event);
+    layoutIts();
+}
+void PlayScene::layoutIts() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
     card->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});

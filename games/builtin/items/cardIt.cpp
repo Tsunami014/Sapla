@@ -58,8 +58,6 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         if (side == 0) {
             PlayScene* curS = (PlayScene*)MG->curScene;
             unsetCursor();
-            setParentItem(nullptr);  // So the item can be placed on the very top
-            setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
             side = 255;  // TODO: Animations
             hovering = false;

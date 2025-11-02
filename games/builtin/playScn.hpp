@@ -10,8 +10,9 @@ public:
     ~PlayScene();
 
     void keyPressEvent(QKeyEvent* event) override;
-    void resizeEvent(QResizeEvent* event) override;
+    void layoutIts();
 private:
+    void resizeEvent(QResizeEvent* event) override;
     Tree tr;
     CardGraphicItem* card;
 };

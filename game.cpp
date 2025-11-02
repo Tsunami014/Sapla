@@ -29,6 +29,7 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
     );
     bg = new SvgWidget(this);
     logLayWrap.setLayout(&logLay);
+    logLay.addStretch();
 }
 void MainGame::initScene() {
     curScene = new HomeScene();
@@ -95,10 +96,8 @@ void MainGame::fixLogs() {
     const int margin = 8;
     int w = width() / 3;
     logLayWrap.setFixedWidth(w);
-    logLayWrap.adjustSize();
 
-    int h = logLayWrap.height();
-    logLayWrap.move(width() - w - margin, height() - h - margin);
-    logLayWrap.resize(w, h);
+    logLayWrap.move(width() - w - margin, 0);
+    logLayWrap.resize(w, height());
 }
 

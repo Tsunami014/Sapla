@@ -14,6 +14,7 @@ void SvgBtn::init() {
     setWordWrap(true);
     setAlignment(Qt::AlignCenter);
     setMouseTracking(true);
+    setContentsMargins(40, 5, 40, 5);
 }
 
 void SvgBtn::enterEvent(QEnterEvent* event) {
@@ -28,24 +29,17 @@ void SvgBtn::mousePressEvent(QMouseEvent* event) {
     emit clicked();
 }
 
-constexpr int wpad = 30;
-constexpr int hpad = 0;
-QSize SvgBtn::sizeHint() const {
-    QSize base = QLabel::sizeHint();
-    return QSize(base.width() + wpad * 2, base.height() + hpad * 2);
-}
-
 void SvgBtn::setSvg(const QString& path) {
     rend->load(RenderSvg(path));
 }
 
 void SvgBtn::paintEvent(QPaintEvent* event) {
     constexpr int rPad = 5;
-    QRectF r1 = rect().adjusted(rPad, rPad, -rPad, -rPad);
-    QImage img(r1.width(), r1.height(), QImage::Format_ARGB32_Premultiplied);
+    QRectF r = rect().adjusted(rPad, rPad, -rPad, -rPad);
+    QImage img(r.width(), r.height(), QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::transparent);
     QPainter p1(&img);
-    rend->render(&p1, QRectF(QPointF(0, 0), r1.size()));
+    rend->render(&p1, QRectF(QPointF(0, 0), r.size()));
     p1.end();
 
     QPainter p(this);
@@ -63,13 +57,5 @@ void SvgBtn::paintEvent(QPaintEvent* event) {
     p.drawImage(QPointF(rPad, rPad), img);
     p.restore();
 
-    QRect r2 = contentsRect();
-    r2.adjust(wpad, hpad, -wpad, -hpad);
-
-    QTextOption option;
-    option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    option.setAlignment(alignment());
-
-    p.setPen(palette().color(foregroundRole()));
-    p.drawText(r2, text(), option);
+    QLabel::paintEvent(event);
 }

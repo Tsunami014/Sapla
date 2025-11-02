@@ -15,8 +15,6 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
     : SvgBtn(":/assets/errorDiags/"+QString::fromUtf8(lnames[lvl].data())+".svg") {
         setText(msg);
 
-        MG->logLay.addWidget(this);
-        QTimer::singleShot(0, MG, &MainGame::fixLogs);
         connect(this, &SvgBtn::clicked, this, [this]() {
             deleteMe();
         });
@@ -42,6 +40,8 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
             });
             timer->start(interval);
         });
+        MG->logLay.addWidget(this);
+        QTimer::singleShot(0, MG, &MainGame::fixLogs);
     }
 void LogAlert::deleteMe() {
     MG->logLay.removeWidget(this);

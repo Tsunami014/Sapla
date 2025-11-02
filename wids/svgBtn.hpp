@@ -14,8 +14,6 @@ public:
     void leaveEvent(QEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
 
-    QSize sizeHint() const override;
-
     void paintEvent(QPaintEvent* event) override;
 
 signals:

@@ -1,5 +1,4 @@
 #include "playScn.hpp"
-#include "winScn.hpp"
 #include "items/cardIt.hpp"
 #include <QEvent>
 #include <QKeyEvent>
@@ -9,17 +8,18 @@ const QString HELP_TXT =
     "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
     "Press &lt;Esc&gt; to go back to the home screen.";
 
-PlayScene::PlayScene() : BaseScene(), tr(this) {
+PlayScene::PlayScene() : GameScene(), tr() {
     helpStr = &HELP_TXT;
     MG->changeBG("pretty");
     card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
-    MScene->addItem(card);
+    scn.addItem(card);
+    scn.addItem(&tr);
 }
 PlayScene::~PlayScene() {
     delete card;
 }
 
-void PlayScene::onEvent(QEvent* event) {
+void PlayScene::keyPressEvent(QKeyEvent* event) {
     if (MG->handleEv(event)) return;
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = (QKeyEvent*)event;
@@ -39,14 +39,15 @@ void PlayScene::onEvent(QEvent* event) {
             if (!tr.isDone()) {
                 delete card;
                 card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
-                MScene->addItem(card);
-                resize();
+                scn.addItem(card);
             }
         }
     }
 }
 
-void PlayScene::resize() {
+void PlayScene::resizeEvent(QResizeEvent* event) {
+    GameScene::resizeEvent(event);
+    QRectF rect = view.sceneRect();
     tr.setRect(rect);
     card->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
 }

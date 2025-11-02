@@ -1,6 +1,6 @@
 #include "sideRends.hpp"
-#include "base/markdown.hpp"
-#include "base/font.hpp"
+#include "../base/markdown.hpp"
+#include "../base/font.hpp"
 #include <QTextDocument>
 
 #define EQUALS_BEGIN(DerivedType, other) \
@@ -17,7 +17,7 @@ void TextSide::render(QPainter* painter, QRectF rect) {
     QTextDocument doc;
     doc.setHtml(parseMarkdownHtml(text));
     // Set correct font
-    doc.setDefaultFont(getFont());
+    doc.setDefaultFont(getFont(1.5));
     // Set correct colour
     QTextCursor curs(&doc);
     curs.select(QTextCursor::Document);

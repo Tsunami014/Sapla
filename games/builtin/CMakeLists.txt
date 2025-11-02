@@ -3,7 +3,7 @@ set(GAME_NAME builtinGame)
 set(GAME_SOURCES
     game.cpp BIResources.qrc
 
-    playScn.cpp winScn.cpp
+    playScn.cpp
     items/cardIt.cpp
 )
 include("${CMAKE_CURRENT_LIST_DIR}/../base.cmake")

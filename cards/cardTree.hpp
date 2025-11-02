@@ -8,6 +8,6 @@ struct TreeData {
 };
 Q_DECLARE_METATYPE(TreeData)
 
-QTreeWidget* getCardTree();
+QTreeWidget* getCardTree(QWidget* parent = nullptr);
 QTreeWidgetItem* addToTree(QTreeWidget* tree, BaseCardTyp* card);
 

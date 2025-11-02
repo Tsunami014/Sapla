@@ -4,47 +4,57 @@
 #include "scenes/browseScn.hpp"
 #include "scenes/gameView.hpp"
 #include "games/getGames.hpp"
-#include "items/base/font.hpp"
+#include "base/font.hpp"
+#include "base/svgRend.hpp"
 #include <QRandomGenerator>
 #include <QTimer>
 #include <QKeyEvent>
 
-MainGame::MainGame() : s{0, 0} {
-    bg = nullptr;
+MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
+    setFont(getFont(1.5));
+    setStyleSheet(
+        "QTextEdit {"
+            "background: rgba(110, 60, 30, 220);"
+            "border-radius: 6px;"
+            "border: 1px solid #666;"
+            "margin: 4px;"
+            "padding: 4px;"
+        "}"
+        "QTextEdit:focus {"
+            "border: 2px solid #333;"
+        "}"
+        "QAbstractButton {"
+            "color: black;"
+        "}"
+    );
+    bg = new SvgWidget(this);
+    logLayWrap.setLayout(&logLay);
 }
 void MainGame::initScene() {
     curScene = new HomeScene();
-    curScene->setZValue(-1);
-    MScene->addItem(curScene);
+    setCentralWidget(curScene);
+    bg->lower();
+    logLayWrap.raise();
 }
 
 void MainGame::changeBG(QString bgName) {
     QString pth = ":/assets/bgs/"+bgName+".svg";
-    if (bg == nullptr) {
-        bg = new SvgGraphicItem(pth);
-        bg->setZValue(-100);
-        MScene->addItem(bg);
-    } else {
-        bg->setSvg(pth);
-    }
+    bg->renderer()->load(RenderSvg(pth));
 }
 
 void MainGame::changeScene(BaseScene* newScene) {
-    QTimer::singleShot(0, [=]() {
-        auto* view = MScene->views()[0];
-        view->setUpdatesEnabled(false);
-        MScene->removeItem(curScene);
-        delete curScene;
-        MScene->views()[0]->viewport()->unsetCursor();
-        curScene = newScene;
-        curScene->setZValue(-1);
-        MScene->addItem(newScene);
-        resizeEvent(MScene->sceneRect());
-        view->setUpdatesEnabled(true);
-        view->viewport()->update();
+    BaseScene* oldScene = curScene;
+    curScene = newScene;
+    QTimer::singleShot(0, this, [this, newScene]() {
+        setCentralWidget(newScene);
+        bg->lower();
+        logLayWrap.raise();
     });
 }
 
+void MainGame::showFC() {
+    nextFC();  // TODO: Make these different
+}
 void MainGame::nextFC() {
     int gSze = games.size();
     if (gSze == 0) return;
@@ -56,46 +66,39 @@ void MainGame::nextFC() {
     }
 }
 
-void MainGame::resizeEvent(const QRectF& newSze) {
-    bg->setRect(newSze);
-    curScene->setRect(newSze);
-    updateLogs();
-}
-bool MainGame::handleEv(QEvent* event) {
-    if (event->type() == QEvent::KeyPress) {
-        auto* keyEvent = (QKeyEvent*)event;
-        int key = keyEvent->key();
-
-        switch (key) {
-            case Qt::Key_Escape:
-                MG->changeScene(new HomeScene());
-                return true;
-            case Qt::Key_B:
-                MG->changeScene(new BrowseScene());
-                return true;
-            case Qt::Key_G:
-                MG->changeScene(new GameViewScene());
-                return true;
-            case Qt::Key_P:
-                MG->nextFC();
-                return true;
-        }
+bool MainGame::handleEv(QKeyEvent* event) {
+    switch (event->key()) {
+        case Qt::Key_Escape:
+            MG->changeScene(new HomeScene());
+            return true;
+        case Qt::Key_B:
+            MG->changeScene(new BrowseScene());
+            return true;
+        case Qt::Key_G:
+            MG->changeScene(new GameViewScene());
+            return true;
+        case Qt::Key_P:
+            MG->showFC();
+            return true;
     }
     return false;
 }
 
-void MainGame::updateLogs() {
-    QRectF rect = MScene->sceneRect();
-    const int margin = 15;
-    const int edgeMargin = 30;
-    qreal y = rect.height() - margin;
-    qreal width = rect.width()*0.3;
-    for (auto* l : logs) {
-        l->setTxtWid(width);
-        QSizeF size = l->boundingRect().size();
-        y -= size.height(); 
-        l->setPos({rect.right() - width - edgeMargin, y});
-        y -= margin;
-    }
+void MainGame::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    bg->setGeometry(rect());
+    fixLogs();
+    bg->lower();
+    logLayWrap.raise();
+}
+void MainGame::fixLogs() {
+    const int margin = 8;
+    int w = width() / 3;
+    logLayWrap.setFixedWidth(w);
+    logLayWrap.adjustSize();
+
+    int h = logLayWrap.height();
+    logLayWrap.move(width() - w - margin, height() - h - margin);
+    logLayWrap.resize(w, h);
 }
 

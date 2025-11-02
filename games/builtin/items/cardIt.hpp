@@ -1,7 +1,7 @@
 #pragma once
 #include "../game.hpp"
 
-class CardGraphicItem : public SvgGraphicItem {
+class CardGraphicItem : public RectItem {
 public:
     CardGraphicItem(const QString& fname, BaseSideRend* front, BaseSideRend* back, QGraphicsItem* parent = nullptr);   
     CardGraphicItem(const QString& fname, const FlashCard& fc, QGraphicsItem* parent = nullptr);   
@@ -21,6 +21,8 @@ protected:
     void init();
     BaseSideRend* front;
     BaseSideRend* back;
+
+    QSvgRenderer rend;
 
     bool hovering;
 };

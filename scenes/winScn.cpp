@@ -1,0 +1,32 @@
+#include "winScn.hpp"
+#include "../core.hpp"
+#include "../items/treeItem.hpp"
+#include "../base/svgWid.hpp"
+#include <QEvent>
+#include <QLabel>
+#include <QTimer>
+#include <QTextDocument>
+#include <QKeyEvent>
+#include <QHBoxLayout>
+
+const QString HELP_TXT = "&lt;Esc&gt; to go home";
+
+WinScene::WinScene() {
+    helpStr = &HELP_TXT;
+    MG->changeBG("win");
+
+    auto* tr = new SvgWidget(this);
+    tr->renderer()->load(rendTreePhase(-1));
+    auto* lab = new QLabel(this);
+    lab->setText(QString::fromStdString("<h1>"
+        "You win!\n"
+        "So far you have " + std::to_string(MG->s.goods) + " correct cards and " + std::to_string(MG->s.bads) + " wrong cards"
+    "</h1>"));
+    lab->setAlignment(Qt::AlignCenter);
+    lab->setWordWrap(true);
+
+    auto* lay = new QHBoxLayout(this);
+    lay->addWidget(lab, 2);
+    lay->addWidget(tr, 1);
+}
+

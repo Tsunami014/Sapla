@@ -1,5 +1,6 @@
 #pragma once
-#include "items/base/svgBtnItem.hpp"
+#include "wids/svgBtn.hpp"
+#include <QString>
 
 namespace Log {
     enum Level { DEBUG, INFO, WARN, ERROR };
@@ -37,7 +38,7 @@ namespace Log {
 
 void showLogWindow();
 
-class LogAlert : public TxtBtnItem {
+class LogAlert : public SvgBtn {
 public:
     LogAlert(Log::Level lvl, QString msg);
     void deleteMe();

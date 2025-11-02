@@ -14,6 +14,20 @@ set(CORELIB
     resources.qrc
     games/getGames.cpp
 
+    base/font.cpp
+    base/markdown.cpp
+    base/rectIt.cpp
+    base/svgRend.cpp
+    base/svgWid.hpp
+
+    wids/listWid.cpp
+    wids/svgBtn.cpp
+    wids/svgPic.cpp
+
+    items/sideRends.cpp
+    items/progress.cpp
+    items/treeItem.cpp
+
     cards/cardTyps.cpp
     cards/getCards.cpp
     cards/cardList.cpp
@@ -21,20 +35,11 @@ set(CORELIB
     cards/cardTree.cpp
 
     scenes/baseScn.cpp
+    scenes/gameScn.cpp
     scenes/homeScn.cpp
+    scenes/winScn.cpp
     scenes/browseScn.cpp
     scenes/gameView.cpp
-
-    items/listWid.cpp
-    items/sideRends.cpp
-    items/progress.cpp
-    items/treeItem.cpp
-    items/base/svgRend.cpp
-    items/base/svgItem.cpp
-    items/base/svgBtnItem.cpp
-    items/base/rectIt.cpp
-    items/base/markdown.cpp
-    items/base/font.cpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)
@@ -58,7 +63,7 @@ target_link_libraries(${APP_NAME} PRIVATE core)
 add_subdirectory(games/builtin)
 option(BUILD_PLUGINS "Build game plugins" ON)
 if (BUILD_PLUGINS)
-    add_subdirectory(games/grid)
+    #add_subdirectory(games/grid)
 endif()
 
 

@@ -1,12 +1,20 @@
 #include "treeItem.hpp"
-#include "base/svgRend.hpp"
+#include "../base/svgRend.hpp"
 
 #define MAX_PHASE 5
 
 QSvgRenderer* Tree::baseRend = NULL;
 
-Tree::Tree(QGraphicsItem* parent) : SvgGraphicItem(parent), pb(this) {
+QByteArray rendTreePhase(int phase) {
+    if (phase == -1) phase = MAX_PHASE;
+    return RenderSvg(QString::fromStdString(
+        ":/assets/TreeParts/phase" + std::to_string(phase) + ".svg"
+    ));
+}
+
+Tree::Tree(QGraphicsItem* parent) : RectItem(parent), pb(this) {
     if (!baseRend) baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
+    treeRend = nullptr;
     phase = 0;
     growth = 0;
     toNext = 50;
@@ -47,18 +55,13 @@ bool Tree::grow(double amount) {
     return true;
 }
 void Tree::nextPhase() {
-    delete renderer;
-    renderer = new QSvgRenderer(RenderSvg(QString::fromStdString(
-        ":/assets/TreeParts/phase" + std::to_string(++phase) + ".svg"
-    )));
-    isSmall = renderer->defaultSize().height() == 16;
+    if (treeRend) delete treeRend;
+    treeRend = new QSvgRenderer(rendTreePhase(++phase));
+    isSmall = treeRend->defaultSize().height() == 16;
     toNext = ((toNext - 50)/100 + 1)*100 + 50;
 
     if (phase == MAX_PHASE) pb.hide();
-}
-void Tree::lastPhase() {
-    phase = MAX_PHASE - 1;
-    nextPhase();
+    update();
 }
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
@@ -74,6 +77,6 @@ void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
     } else {
         drawR = fitR;
     }
-    renderer->render(painter, drawR);
+    treeRend->render(painter, drawR);
 }
 

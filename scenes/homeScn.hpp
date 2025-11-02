@@ -1,15 +1,9 @@
 #pragma once
 #include "baseScn.hpp"
-#include "../items/base/svgBtnItem.hpp"
+#include <QLabel>
 
 class HomeScene : public BaseScene {
 public:
     HomeScene();
-    void resize() override;
-
-private:
-    QGraphicsTextItem* txt;
-    TxtBtnItem* playBtn;
-    TxtBtnItem* browseBtn;
 };
 

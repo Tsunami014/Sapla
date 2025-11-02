@@ -63,7 +63,7 @@ public:
 MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
 MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(parent) { init(); setMarkdown(text); }
 void MarkdownEdit::init() {
-    setFont(getFont());
+    setFont(getFont(1));
 }
 
 void MarkdownEdit::setMarkdown(const QString& text) {

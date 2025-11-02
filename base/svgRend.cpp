@@ -1,5 +1,5 @@
 #include "svgRend.hpp"
-#include "../../log.hpp"
+#include "../log.hpp"
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -46,7 +46,7 @@ QByteArray RenderSvg(const QString& svgPath) {
             for (const QString &cls : classAttr.split(' ', Qt::SkipEmptyParts)) {
                 if (colours.contains(cls)) {
                     QString looking4;
-                    if (cls[0] == "s") {
+                    if (cls[0] == 's') {
                         looking4 = "stroke";
                     } else {
                         looking4 = "fill";

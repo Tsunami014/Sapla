@@ -1,29 +1,37 @@
 #pragma once
-#include <QGraphicsView>
-#include <QGraphicsTextItem>
+#include <QMainWindow>
+#include <QStackedLayout>
+#include "base/svgWid.hpp"
 #include "scenes/baseScn.hpp"
-#include "items/base/svgItem.hpp"
-#include "items/base/svgBtnItem.hpp"
+#include "wids/svgBtn.hpp"
 
 struct Stats {  // TODO: Save/load
     uint32_t goods;
     uint32_t bads;
 };
 
-class MainGame {
+class MainGame : public QMainWindow {
+    Q_OBJECT
 public:
     MainGame();
     void initScene();
+
     void changeScene(BaseScene* newScene);
     void changeBG(QString bgName);
-    void nextFC();
-    void resizeEvent(const QRectF& newSze);
-    bool handleEv(QEvent* event);
-    void updateLogs();
-    BaseScene* curScene;
-    std::vector<TxtBtnItem*> logs;
+
+    bool handleEv(QKeyEvent* event);
+    void resizeEvent(QResizeEvent *event);
+    void fixLogs();
+
     Stats s;
+    QVBoxLayout logLay;
+    BaseScene* curScene;
+
+public slots:
+    void nextFC();
+    void showFC();
 
 private:
-    SvgGraphicItem* bg;
+    SvgWidget* bg;
+    QWidget logLayWrap;
 };

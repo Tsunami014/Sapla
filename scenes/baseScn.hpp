@@ -1,15 +1,16 @@
 #pragma once
-#include "../items/base/rectIt.hpp"
+#include <QWidget>
 
-class BaseScene : public RectItem {
+class BaseScene : public QWidget {
+    Q_OBJECT
 public:
-    BaseScene() : RectItem() {}
-    ~BaseScene() {}
-    virtual void onEvent(QEvent* event);
-    virtual void resize() {}  // Has the updated 'rect', no need for arguments
-    void setRect(const QRectF& newRect) final;
+    BaseScene();
+    //~BaseScene() {}
+//     void paintEvent(QPaintEvent*) override {}
+//     void resizeEvent(QResizeEvent *event) override {};
+    void keyPressEvent(QKeyEvent* event) override;
+public slots:
     virtual void dialogOpen() {}  // For pausing timers and such
     virtual void dialogClose() {} // For resuming timers and such
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override {}
 };
 

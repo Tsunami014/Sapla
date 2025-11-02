@@ -1,44 +1,56 @@
 #include "homeScn.hpp"
 #include "browseScn.hpp"
-#include "../items/base/font.hpp"
+#include "gameView.hpp"
+#include "../base/font.hpp"
+#include "../wids/svgBtn.hpp"
 #include "../core.hpp"
+#include <QLabel>
 #include <QTextOption>
-#include <QTextDocument>
+#include <QBoxLayout>
 
 const QString HELP_TXT = "Just press a button to do stuff";
 
 HomeScene::HomeScene() : BaseScene() {
     helpStr = &HELP_TXT;
     MG->changeBG("pretty");
-    txt = new QGraphicsTextItem(this);
-    txt->setHtml("<b>Sapla</b>");
-    txt->setDefaultTextColor(QColor(149, 69, 53));
-    QTextOption opt = txt->document()->defaultTextOption();
-    opt.setAlignment(Qt::AlignHCenter);
-    txt->document()->setDefaultTextOption(opt);
 
-    playBtn = new TxtBtnItem(":/assets/btn.svg", "Play!", this);
-    playBtn->setTxtColour(QColor(184, 115, 51));
-    playBtn->onClick = []() {
-        MG->nextFC();
-    };
-    browseBtn = new TxtBtnItem(":/assets/btn.svg", "Browse cards", this);
-    browseBtn->setTxtColour(QColor(184, 115, 51));
-    browseBtn->onClick = []() {
-        MG->changeScene(new BrowseScene());
-    };
+    auto* lay = new QVBoxLayout(this);
+    lay->addStretch(1);
+    auto* txt = new QLabel(this);
+    txt->setFont(getFont(2));
+    txt->setText("<h1>Sapla</h1>");
+    txt->setStyleSheet("color: #954535;");
+    txt->setAlignment(Qt::AlignHCenter);
+    lay->addWidget(txt, 2);
+
+    auto* playBtn = new SvgBtn(":/assets/btn.svg", this);
+    playBtn->setFont(getFont(3));
+    playBtn->setText("Play!");
+    playBtn->setStyleSheet("color: #B87333;");
+    connect(playBtn, &QAbstractButton::clicked, this, [](){ MG->nextFC(); });
+    auto* hlay1 = new QHBoxLayout();
+    hlay1->addStretch();
+    hlay1->addWidget(playBtn);
+    hlay1->addStretch();
+
+    auto* browseBtn = new SvgBtn(":/assets/btn.svg", this);
+    browseBtn->setFont(getFont(3));
+    browseBtn->setText("Browse cards");
+    browseBtn->setStyleSheet("color: #B87333;");
+    connect(browseBtn, &QAbstractButton::clicked, this, [](){ MG->changeScene(new BrowseScene()); });
+    auto* GVBtn = new SvgBtn(":/assets/btn.svg", this);
+    GVBtn->setFont(getFont(3));
+    GVBtn->setText("Manage games");
+    GVBtn->setStyleSheet("color: #B87333;");
+    connect(GVBtn, &QAbstractButton::clicked, this, [](){ MG->changeScene(new GameViewScene()); });
+    auto* hlay2 = new QHBoxLayout();
+    hlay2->addStretch();
+    hlay2->addWidget(browseBtn);
+    hlay2->addWidget(GVBtn);
+    hlay2->addStretch();
+
+    lay->addLayout(hlay1, 1);
+    lay->addLayout(hlay2, 1);
+    lay->addStretch(2);
 }
 
-void HomeScene::resize() {
-    txt->setFont(getFont(rect.height()*0.2));
-    txt->setTextWidth(rect.width());
-
-    playBtn->setFont(getFont(rect.height()*0.1));
-    playBtn->setPos(QPointF(
-        (rect.width() - playBtn->boundingRect().width())/2, rect.height() * 0.35
-    ));
-    browseBtn->setFont(getFont(rect.height()*0.1));
-    browseBtn->setPos(QPointF(
-        (rect.width() - browseBtn->boundingRect().width())/2, rect.height() * 0.36 + playBtn->boundingRect().height()
-    ));
-}

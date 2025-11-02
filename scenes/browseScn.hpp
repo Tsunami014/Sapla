@@ -1,9 +1,7 @@
 #pragma once
 #include "baseScn.hpp"
 #include "../menu.hpp"
-#include "../items/base/svgBtnItem.hpp"
 #include "../cards/cardTyps.hpp"
-#include <QGraphicsProxyWidget>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -11,14 +9,10 @@
 class BrowseScene : public BaseScene {
 public:
     BrowseScene();
-    void resize() override;
-    void onEvent(QEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 protected:
-    QGraphicsProxyWidget TreeProxy;
     QTreeWidget* tree;
-
-    QGraphicsProxyWidget FormProxy;
     QVBoxLayout* form;
 
 private:

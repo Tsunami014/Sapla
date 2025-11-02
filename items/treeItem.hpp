@@ -1,14 +1,16 @@
 #pragma once
-#include "base/svgItem.hpp"
+#include "../base/rectIt.hpp"
 #include "progress.hpp"
+#include <QSvgRenderer>
 
-class Tree : public SvgGraphicItem {
+QByteArray rendTreePhase(int phase);
+
+class Tree : public RectItem {
 public:
     Tree(QGraphicsItem* parent = nullptr);
     bool grow(double amount);
     bool isDone();
     void nextPhase();
-    void lastPhase();  // Does not update toNext correctly
     void setRect(const QRectF& newRect) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
@@ -17,6 +19,7 @@ protected:
     double toNext;
     ProgressBarItem pb;
     static QSvgRenderer* baseRend;
+    QSvgRenderer* treeRend;
 
 private:
     int phase;

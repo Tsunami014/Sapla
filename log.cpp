@@ -1,12 +1,9 @@
 #include "core.hpp"
 #include "log.hpp"
 #include "menu.hpp"
-#include <QWidget>
-#include <QTextEdit>
-#include <QVBoxLayout>
 #include <QTimer>
-#include <QGraphicsScene>
-#include <QPropertyAnimation>
+#include <QVBoxLayout>
+#include <QGraphicsOpacityEffect>
 
 constexpr std::string_view lnames[] = {
     "Debug",
@@ -15,39 +12,28 @@ constexpr std::string_view lnames[] = {
     "Error",
 };
 LogAlert::LogAlert(Log::Level lvl, QString msg)
-    : TxtBtnItem(":/assets/errorDiags/"+QString::fromUtf8(lnames[lvl].data())+".svg", msg) {
-        setTxtColour(Qt::black);
-        QTextOption opt;
-        opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-        opt.setAlignment(Qt::AlignHCenter);
-        txt->document()->setDefaultTextOption(opt);
+    : SvgBtn(":/assets/errorDiags/"+QString::fromUtf8(lnames[lvl].data())+".svg") {
+        setText(msg);
 
-        bool* alive = new bool(true);
-        MG->logs.insert(MG->logs.begin(), this);
-        onClick = [this, alive]() {
-            if (*alive) {
-                *alive = false;
-                deleteMe();
-            }
-        };
+        MG->logLay.addWidget(this);
+        MG->fixLogs();
+        connect(this, &QAbstractButton::clicked, this, [this]() {
+            deleteMe();
+        });
 
-        QTimer::singleShot(2000, [this, alive]() {
-            if (!*alive) {
-                return;
-            }
-            *alive = false;
-            setAcceptHoverEvents(false);
-            if (hovering) {
-                hovering = false;
-                unsetCursor();
-                MScene->views()[0]->viewport()->unsetCursor();
-            }
+        QTimer::singleShot(3000, this, [this]() {
+            QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
+            unsetCursor();
+
+            QGraphicsOpacityEffect* opac = new QGraphicsOpacityEffect(this);
+            opac->setOpacity(1);
+            setGraphicsEffect(opac);
             qreal steps = 20;
-            qreal interval = 1000.0 / steps;
+            qreal interval = 500.0 / steps;
             int step = 0;
             QTimer* timer = new QTimer();
             QObject::connect(timer, &QTimer::timeout, [=]() mutable {
-                setOpacity(1.0 - (qreal(step) / steps));
+                opac->setOpacity(1.0 - (qreal(step) / steps));
                 if (step++ > steps) {
                     timer->stop();
                     timer->deleteLater();
@@ -58,16 +44,9 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
         });
     }
 void LogAlert::deleteMe() {
-    auto it = std::find(MG->logs.begin(), MG->logs.end(), this);
-    if (it != MG->logs.end()) {
-        MG->logs.erase(it);
-    }
-    scene()->removeItem(this);
-    if (hovering) {
-        MScene->views()[0]->viewport()->unsetCursor();
-    }
-    MG->updateLogs();
-    delete this;
+    MG->logLay.removeWidget(this);
+    deleteLater();
+    MG->fixLogs();
 }
 
 
@@ -87,10 +66,7 @@ namespace Log {
         if (lvl != DEBUG) {
             Level lvll = lvl;
             QTimer::singleShot(0, [lvll, txt](){
-                auto* la = new LogAlert(lvll, txt);
-                la->setZValue(9999);
-                MScene->addItem(la);
-                MG->updateLogs();
+                MG->logLay.addWidget(new LogAlert(lvll, txt));
             });
         }
     }

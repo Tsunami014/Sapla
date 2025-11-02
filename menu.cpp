@@ -6,6 +6,7 @@
 #include "scenes/browseScn.hpp"
 #include "scenes/gameView.hpp"
 #include <QDialog>
+#include <QTextEdit>
 
 QMenuBar* bar = nullptr;
 QAction* last = nullptr;
@@ -76,12 +77,15 @@ void initMenu(QMenuBar* b) {
 
     auto* hmenu = new _MenuBase("Help");
     hmenu->addAction("Application help", []() { makeDialog(APP_HELP, "Application help"); });
-    hmenu->addAction("This screen help", []() { makeDialog(*helpStr, "This screen help"); });
+    hmenu->addAction("This screen help", []() {
+        if (helpStr) makeDialog(*helpStr, "This screen help");
+        else makeDialog("No help avaliable for this screen", "This screen help");
+    });
     hmenu->addSeparator();
     hmenu->insertBefore = hmenu->addSeparator();
     hmenu->addAction("Logs", []() { showLogWindow(); });
     hmenu->addSeparator();
-    Menues->HelpMenu = fmenu;
+    Menues->HelpMenu = hmenu;
     bar->addMenu(hmenu);
 }
 

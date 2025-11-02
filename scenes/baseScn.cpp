@@ -1,12 +1,12 @@
 #include "baseScn.hpp"
 #include "../core.hpp"
 
-void BaseScene::onEvent(QEvent* event) {
-    MG->handleEv(event);
+BaseScene::BaseScene() : QWidget(MG) {
+    setFocusPolicy(Qt::StrongFocus);
+    setAttribute(Qt::WA_TranslucentBackground);
 }
-void BaseScene::setRect(const QRectF& newRect) {
-    prepareGeometryChange();
-    rect = newRect;
-    resize();
+
+void BaseScene::keyPressEvent(QKeyEvent* event) {
+    MG->handleEv(event);
 }
 

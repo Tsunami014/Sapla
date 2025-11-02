@@ -3,10 +3,12 @@
 #include "../cards/cardTree.hpp"
 #include "../cards/getCards.hpp"
 #include "../cards/cardList.hpp"
-#include "../items/base/font.hpp"
+#include "../base/font.hpp"
 #include <QColor>
 #include <QTimer>
 #include <QHeaderView>
+#include <QScrollArea>
+#include <QKeyEvent>
 
 const QString HELP_TXT = "&lt;Ctrl+Delete&gt; to delete currently selected item, &lt;Esc&gt; to go back";
 
@@ -15,16 +17,6 @@ public:
     FormWidget(QWidget *parent = nullptr) : QWidget(parent) {
         setAttribute(Qt::WA_TranslucentBackground);
         setFocusPolicy(Qt::ClickFocus);
-        setStyleSheet(
-            "QTextEdit {"
-                "background: rgba(110, 60, 30, 220);"
-                "border-radius: 6px;"
-                "border: 1px solid #666;"
-            "}"
-            "QTextEdit:focus {"
-                "border: 2px solid #333;"
-            "}"
-        );
     }
 
     void paintEvent(QPaintEvent *ev) override {
@@ -56,12 +48,11 @@ void deleteLayout(QLayout* lay) {
 }
 
 BrowseScene::BrowseScene()
-    : BaseScene(), TreeProxy(this), FormProxy(this), newCmenu("New Card") {
+    : BaseScene(), newCmenu("New Card") {
         helpStr = &HELP_TXT;
         MG->changeBG("dirt");
 
-        tree = getCardTree();
-
+        tree = getCardTree(this);
         for (const auto& typ : CardRegistry::registry) {
             QAction* act = newCmenu.addAction(typ.name);
             QObject::connect(act, &QAction::triggered, [this, typ]() {
@@ -69,9 +60,7 @@ BrowseScene::BrowseScene()
             });
         }
 
-        FormWidget* formWid = new FormWidget();
-        formWid->setFont(getFont());
-
+        FormWidget* formWid = new FormWidget(this);
         auto* scroll = new QScrollArea();
         scroll->setAttribute(Qt::WA_TranslucentBackground);
         scroll->setWidgetResizable(true);
@@ -79,8 +68,6 @@ BrowseScene::BrowseScene()
         scroll->setFrameShape(QFrame::NoFrame);
         scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        FormProxy.setWidget(scroll);
-        FormProxy.setAutoFillBackground(false);
         form = new QVBoxLayout(formWid);
         form->setSpacing(4);
         form->setContentsMargins(4, 4, 4, 4);
@@ -98,9 +85,10 @@ BrowseScene::BrowseScene()
             data->createForm(form, item);
             form->addStretch();
         });
-        tree->setFont(getFont());
-        TreeProxy.setWidget(tree);
-        TreeProxy.setPos(0, 0);
+
+        auto* mLay = new QHBoxLayout(this);
+        mLay->addWidget(tree);
+        mLay->addWidget(scroll);
     }
 
 void BrowseScene::addCard(BaseCardTyp* card) {
@@ -115,35 +103,25 @@ void BrowseScene::addCard(BaseCardTyp* card) {
     tree->setCurrentItem(it);
 }
 
-void BrowseScene::onEvent(QEvent* event) {
+void BrowseScene::keyPressEvent(QKeyEvent* event) {
     if (MG->handleEv(event)) return;
-    if (event->type() == QEvent::KeyPress) {
-        auto* keyEvent = (QKeyEvent*)event;
-        int key = keyEvent->key();
+    int key = event->key();
+    if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
+               event->modifiers() == (Qt::ControlModifier)) {
+        QList<QTreeWidgetItem*> selected = tree->selectedItems();
+        if (selected.isEmpty())
+            return;
 
-        if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
-                   keyEvent->modifiers() == (Qt::ControlModifier)) {
-            QList<QTreeWidgetItem*> selected = tree->selectedItems();
-            if (selected.isEmpty())
-                return;
-
-            QTreeWidgetItem* item = selected.first();
-            BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
-            CLremoveCard(data);
-            writeCards();
-            if (QTreeWidgetItem* parent = item->parent()) {
-                parent->removeChild(item);
-            } else if (QTreeWidget *tree = item->treeWidget()) {
-                tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
-            }
-            delete item;
+        QTreeWidgetItem* item = selected.first();
+        BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
+        CLremoveCard(data);
+        writeCards();
+        if (QTreeWidgetItem* parent = item->parent()) {
+            parent->removeChild(item);
+        } else if (QTreeWidget *tree = item->treeWidget()) {
+            tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
         }
+        delete item;
     }
 }
 
-void BrowseScene::resize() {
-    qreal hWid = rect.width()/2;
-    TreeProxy.resize(hWid, rect.height());
-    FormProxy.setPos(hWid, 0);
-    FormProxy.resize(hWid, rect.height());
-}

@@ -4,12 +4,12 @@
 #include <QCursor>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(const QString& fname, BaseSideRend* fr, BaseSideRend* bk, QGraphicsItem* parent) : SvgGraphicItem(fname, parent) {
+CardGraphicItem::CardGraphicItem(const QString& fname, BaseSideRend* fr, BaseSideRend* bk, QGraphicsItem* parent) : RectItem(parent), rend(RenderSvg(fname)) {
     front = fr;
     back = bk;
     init();
 }
-CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& fc, QGraphicsItem* parent) : SvgGraphicItem(fname, parent) {
+CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& fc, QGraphicsItem* parent) : RectItem(parent), rend(RenderSvg(fname)) {
     front = fc.getSide(SIDE_FRONT);
     back = fc.getSide(SIDE_BACK);
     init();
@@ -47,7 +47,7 @@ void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
         hovering = false;
     }
     if (oldHover != hovering) { update(); }
-    SvgGraphicItem::hoverMoveEvent(event);
+    RectItem::hoverMoveEvent(event);
 }
 void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     hovering = false;
@@ -77,7 +77,7 @@ void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* s
     img.fill(Qt::transparent);
 
     QPainter p1(&img);
-    renderer->render(&p1, QRectF(QPointF(0, 0), rect.size()));
+    rend.render(&p1, QRectF(QPointF(0, 0), rect.size()));
     p1.end();
 
     if (hovering || zValue() == 3) {
@@ -88,9 +88,9 @@ void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* s
         p2.fillRect(outline.rect(), Qt::yellow);
         p2.end();
 
-        painter->drawImage(QPointF(rect.left()-2, rect.top()-2), outline.scaled(rect.width()+4, rect.height()+4, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        painter->drawImage(QPointF(-2, -2), outline.scaled(rect.width()+4, rect.height()+4, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     }
-    painter->drawImage(rect.topLeft(), img);
+    painter->drawImage(QPointF(0, 0), img);
 
     if (side == 0) {
         front->render(painter, rect);

@@ -3,7 +3,7 @@ set(GAME_NAME gridGame)
 set(GAME_SOURCES
     game.cpp gridResources.qrc
 
-    playScn.cpp winScn.cpp
+    playScn.cpp
     items/cardIt.cpp
     items/gridLayout.cpp
 )

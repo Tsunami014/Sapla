@@ -1,9 +1,9 @@
 #include "cardTree.hpp"
 #include "cardList.hpp"
-#include "../items/listWid.hpp"
+#include "../wids/listWid.hpp"
 #include <QHeaderView>
 
-QTreeWidget* getCardTree() {
+QTreeWidget* getCardTree(QWidget* parent) {
     auto* tree = new ListWidget();
     tree->setColumnCount(2);
     tree->setHeaderLabels({"Name", "Type"});

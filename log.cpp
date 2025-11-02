@@ -16,8 +16,8 @@ LogAlert::LogAlert(Log::Level lvl, QString msg)
         setText(msg);
 
         MG->logLay.addWidget(this);
-        MG->fixLogs();
-        connect(this, &QAbstractButton::clicked, this, [this]() {
+        QTimer::singleShot(0, MG, &MainGame::fixLogs);
+        connect(this, &SvgBtn::clicked, this, [this]() {
             deleteMe();
         });
 

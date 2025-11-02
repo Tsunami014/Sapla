@@ -1,27 +1,28 @@
 #pragma once
-#include <QAbstractButton>
 #include <QSvgRenderer>
 #include <QLabel>
 
-class SvgBtn : public QAbstractButton {
+class SvgBtn : public QLabel
+{
     Q_OBJECT
 public:
+    SvgBtn(QWidget* parent = nullptr);
     SvgBtn(const QString& path, QWidget* parent = nullptr);
-    bool hasHeightForWidth() const override { return true; };
-    int heightForWidth(int w) const override;
+    void setSvg(const QString& path);
+
+    void enterEvent(QEnterEvent* event) override;
+    void leaveEvent(QEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+
     QSize sizeHint() const override;
 
-    void setText(const QString& txt) {
-        QAbstractButton::setText(txt);
-        updateGeometry();    update();
-    }
+    void paintEvent(QPaintEvent* event) override;
 
-    void setFont(const QFont& f) {
-        QAbstractButton::setFont(f);
-        updateGeometry();  update();
-    }
-protected:
-    void paintEvent(QPaintEvent*) override;
+signals:
+    void clicked();
+
+private:
+    void init();
     QSvgRenderer* rend;
+    bool hover;
 };
-

@@ -27,7 +27,7 @@ HomeScene::HomeScene() : BaseScene() {
     playBtn->setFont(getFont(3));
     playBtn->setText("Play!");
     playBtn->setStyleSheet("color: #B87333;");
-    connect(playBtn, &QAbstractButton::clicked, this, [](){ MG->nextFC(); });
+    connect(playBtn, &SvgBtn::clicked, this, [](){ MG->nextFC(); });
     auto* hlay1 = new QHBoxLayout();
     hlay1->addStretch();
     hlay1->addWidget(playBtn);
@@ -37,12 +37,12 @@ HomeScene::HomeScene() : BaseScene() {
     browseBtn->setFont(getFont(3));
     browseBtn->setText("Browse cards");
     browseBtn->setStyleSheet("color: #B87333;");
-    connect(browseBtn, &QAbstractButton::clicked, this, [](){ MG->changeScene(new BrowseScene()); });
+    connect(browseBtn, &SvgBtn::clicked, this, [](){ MG->changeScene(new BrowseScene()); });
     auto* GVBtn = new SvgBtn(":/assets/btn.svg", this);
     GVBtn->setFont(getFont(3));
     GVBtn->setText("Manage games");
     GVBtn->setStyleSheet("color: #B87333;");
-    connect(GVBtn, &QAbstractButton::clicked, this, [](){ MG->changeScene(new GameViewScene()); });
+    connect(GVBtn, &SvgBtn::clicked, this, [](){ MG->changeScene(new GameViewScene()); });
     auto* hlay2 = new QHBoxLayout();
     hlay2->addStretch();
     hlay2->addWidget(browseBtn);

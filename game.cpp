@@ -23,7 +23,7 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
         "QTextEdit:focus {"
             "border: 2px solid #333;"
         "}"
-        "QAbstractButton {"
+        "SvgBtn {"
             "color: black;"
         "}"
     );

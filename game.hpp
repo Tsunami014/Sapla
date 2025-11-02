@@ -10,6 +10,7 @@ struct Stats {  // TODO: Save/load
     uint32_t bads;
 };
 
+class Flicker; // forward ref
 class MainGame : public QMainWindow {
     Q_OBJECT
 public:
@@ -34,4 +35,5 @@ public slots:
 private:
     SvgWidget* bg;
     QWidget logLayWrap;
+    Flicker* f;
 };

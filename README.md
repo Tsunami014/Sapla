@@ -18,7 +18,7 @@ FAQ is at the bottom.
 Game plugins go under `<config directory>/gamePlugs` (to find the config directory, look at `Help` > `Logs` in the app). Just drop the library there and the game will recognise it! (Unless you typed in the folder name wrong)
 
 ## Demo video
-https://github.com/user-attachments/assets/ffb0e828-e530-48c7-8332-2394af1aab48
+https://github.com/user-attachments/assets/1586a44f-7a0c-40e6-874f-7d7741fc6cbd
 
 ## Getting it
 ### The easy way

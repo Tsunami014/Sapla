@@ -4,6 +4,7 @@
 #include "base/svgWid.hpp"
 #include "scenes/baseScn.hpp"
 #include "wids/svgBtn.hpp"
+#include "wids/ovrlWrap.hpp"
 
 struct Stats {  // TODO: Save/load
     uint32_t goods;
@@ -26,6 +27,7 @@ public:
 
     Stats s;
     QVBoxLayout logLay;
+    OverlayWrapper logLayWrap;
     BaseScene* curScene;
 
 public slots:
@@ -34,6 +36,5 @@ public slots:
 
 private:
     SvgWidget* bg;
-    QWidget logLayWrap;
     Flicker* f;
 };

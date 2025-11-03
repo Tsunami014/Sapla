@@ -20,6 +20,7 @@ set(CORELIB
     base/svgRend.cpp
     base/svgWid.hpp
 
+    wids/ovrlWrap.cpp
     wids/listWid.cpp
     wids/svgBtn.cpp
     wids/svgPic.cpp

@@ -10,26 +10,6 @@
 #include <QTimer>
 #include <QKeyEvent>
 
-class Flicker : public QWidget {
-public:
-    Flicker(QWidget* parent = nullptr) : QWidget(parent) {
-        setAttribute(Qt::WA_TransparentForMouseEvents);
-        setAttribute(Qt::WA_TranslucentBackground);
-        QTimer* timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this](){ update(); });
-        timer->start(16);
-    }
-
-protected:
-    void paintEvent(QPaintEvent*) override {
-        QPainter painter(this);
-        int grayness = QRandomGenerator::global()->bounded(40, 60);
-        int a = QRandomGenerator::global()->bounded(50, 80);
-        QColor color(grayness, grayness, grayness, a);
-        painter.fillRect(rect(), color);
-    }
-};
-
 MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
     setFont(getFont(1.5));
     setStyleSheet(
@@ -49,9 +29,6 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
     );
     bg = new SvgWidget(this);
     logLayWrap.setLayout(&logLay);
-    f = new Flicker(this);
-    f->show();
-    f->raise();
     logLay.addStretch();
 }
 void MainGame::initScene() {
@@ -59,7 +36,6 @@ void MainGame::initScene() {
     setCentralWidget(curScene);
     bg->lower();
     logLayWrap.raise();
-    f->raise();
 }
 
 void MainGame::changeBG(QString bgName) {
@@ -74,7 +50,7 @@ void MainGame::changeScene(BaseScene* newScene) {
         setCentralWidget(newScene);
         bg->lower();
         logLayWrap.raise();
-        f->raise();
+        logLayWrap.clearForwarding();
     });
 }
 
@@ -116,8 +92,6 @@ void MainGame::resizeEvent(QResizeEvent *event) {
     fixLogs();
     bg->lower();
     logLayWrap.raise();
-    f->setGeometry(rect());
-    f->raise();
 }
 void MainGame::fixLogs() {
     const int margin = 8;

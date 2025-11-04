@@ -9,6 +9,7 @@
 #include "../base/markdown.hpp"
 #include "../base/rectIt.hpp"
 #include "../base/svgRend.hpp"
+#include "../base/svgUtils.hpp"
 // UI
 #include "../items/progress.hpp"
 #include "../items/treeItem.hpp"

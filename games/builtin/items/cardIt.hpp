@@ -1,11 +1,13 @@
 #pragma once
 #include "../game.hpp"
 
-class CardGraphicItem : public RectItem {
+class CardGraphicItem : public RectItem, public SvgUtils {
 public:
     CardGraphicItem(const QString& fname, BaseSideRend* front, BaseSideRend* back, QGraphicsItem* parent = nullptr);   
     CardGraphicItem(const QString& fname, const FlashCard& fc, QGraphicsItem* parent = nullptr);   
     ~CardGraphicItem();
+
+    QRect getRect() override { return rect.toRect(); }
 
     bool operator==(const CardGraphicItem& other) const;
     bool operator==(const FlashCard& other) const;
@@ -21,9 +23,5 @@ protected:
     void init();
     BaseSideRend* front;
     BaseSideRend* back;
-
-    QSvgRenderer rend;
-
-    bool hovering;
 };
 

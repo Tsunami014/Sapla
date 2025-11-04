@@ -18,6 +18,7 @@ set(CORELIB
     base/markdown.cpp
     base/rectIt.cpp
     base/svgRend.cpp
+    base/svgUtils.cpp
     base/svgWid.hpp
 
     wids/ovrlWrap.cpp

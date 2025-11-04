@@ -1,14 +1,15 @@
 #pragma once
+#include "../base/svgUtils.hpp"
 #include <QSvgRenderer>
 #include <QLabel>
 
-class SvgBtn : public QLabel
-{
+class SvgBtn : public QLabel, public SvgUtils {
     Q_OBJECT
 public:
     SvgBtn(QWidget* parent = nullptr);
     SvgBtn(const QString& path, QWidget* parent = nullptr);
-    void setSvg(const QString& path);
+
+    QRect getRect() override { return rect(); }
 
     void leaveEvent(QEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -21,7 +22,4 @@ signals:
 
 private:
     void init();
-    bool touching(const QPointF& pos);
-    QSvgRenderer* rend;
-    bool hover;
 };

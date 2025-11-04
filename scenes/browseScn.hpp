@@ -9,7 +9,7 @@
 class BrowseScene : public BaseScene {
 public:
     BrowseScene();
-    void keyPressEvent(QKeyEvent* event) override;
+    bool keyEv(QKeyEvent* event) override;
 
 protected:
     QTreeWidget* tree;

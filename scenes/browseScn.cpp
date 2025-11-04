@@ -103,14 +103,14 @@ void BrowseScene::addCard(BaseCardTyp* card) {
     tree->setCurrentItem(it);
 }
 
-void BrowseScene::keyPressEvent(QKeyEvent* event) {
-    if (MG->handleEv(event)) return;
+bool BrowseScene::keyEv(QKeyEvent* event) {
+    if (MG->handleEv(event)) return true;
     int key = event->key();
     if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
                event->modifiers() == (Qt::ControlModifier)) {
         QList<QTreeWidgetItem*> selected = tree->selectedItems();
         if (selected.isEmpty())
-            return;
+            return true;
 
         QTreeWidgetItem* item = selected.first();
         BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
@@ -122,6 +122,8 @@ void BrowseScene::keyPressEvent(QKeyEvent* event) {
             tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
         }
         delete item;
+        return true;
     }
+    return false;
 }
 

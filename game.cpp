@@ -78,16 +78,16 @@ void MainGame::nextFC() {
 bool MainGame::handleEv(QKeyEvent* event) {
     switch (event->key()) {
         case Qt::Key_Escape:
-            MG->changeScene(new HomeScene());
+            changeScene(new HomeScene());
             return true;
         case Qt::Key_B:
-            MG->changeScene(new BrowseScene());
+            changeScene(new BrowseScene());
             return true;
         case Qt::Key_G:
-            MG->changeScene(new GameViewScene());
+            changeScene(new GameViewScene());
             return true;
         case Qt::Key_P:
-            MG->showFC();
+            showFC();
             return true;
     }
     return false;

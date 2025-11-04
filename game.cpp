@@ -9,6 +9,7 @@
 #include <QRandomGenerator>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QApplication>
 
 MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
     setFont(getFont(1.5));
@@ -45,12 +46,18 @@ void MainGame::changeBG(QString bgName) {
 
 void MainGame::changeScene(BaseScene* newScene) {
     BaseScene* oldScene = curScene;
+    logLayWrap.clearForwarding();
     curScene = newScene;
+
+    if (QWidget* w = QApplication::widgetAt(QCursor::pos())) {
+        QEvent leaveEv(QEvent::Leave);
+        QCoreApplication::sendEvent(w, &leaveEv);
+    }
     QTimer::singleShot(0, this, [this, newScene]() {
         setCentralWidget(newScene);
         bg->lower();
         logLayWrap.raise();
-        logLayWrap.clearForwarding();
+
     });
 }
 

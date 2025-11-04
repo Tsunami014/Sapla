@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include <QPointer>
 
 
 // NOTE: This entire class was chatGPT'd. Saved me about 10 hours
@@ -22,7 +23,7 @@ private:
 
     void handleLeaveAll();
 
-    QWidget* hoverTarget_ = nullptr;
-    QWidget* pressTarget_ = nullptr;
+    QPointer<QWidget> hoverTarget_ = nullptr;
+    QPointer<QWidget> pressTarget_ = nullptr;
 };
 

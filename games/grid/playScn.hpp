@@ -5,12 +5,11 @@
 #include <QElapsedTimer>
 #include <QGraphicsTextItem>
 
-class PlayScene : public BaseScene {
+class PlayScene : public GameScene {
 public:
     PlayScene();
     ~PlayScene();
-    void onEvent(QEvent* event) override;
-    void resize() override;
+    bool keyEv(QKeyEvent* event) override;
 
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();
@@ -25,6 +24,7 @@ public:
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
+    void resizeEvent(QResizeEvent* event) override;
     void resetTimer();
     int addAnother();
 

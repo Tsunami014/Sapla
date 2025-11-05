@@ -55,7 +55,6 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (touching(event->pos())) {
         if (side == 0) {
-            PlayScene* curS = (PlayScene*)MG->curScene;
             unsetCursor();
             setZValue(4);
             side = 255;  // TODO: Animations

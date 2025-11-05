@@ -6,23 +6,18 @@
 #include <QCursor>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, QGraphicsItem* parent) : SvgGraphicItem(l.fname, parent) {
-    lay = l;
-    front = fr;
-    back = bk;
-    init();
-}
-CardGraphicItem::CardGraphicItem(layout l, const FlashCard& fc, QGraphicsItem* parent) : SvgGraphicItem(l.fname, parent) {
-    lay = l;
-    front = fc.getSide(SIDE_FRONT);
-    back = fc.getSide(SIDE_BACK);
-    init();
-}
-void CardGraphicItem::init() {
-    side = 0;
-    hovering = false;
-    setAcceptHoverEvents(true);
-}
+CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, QGraphicsItem* parent)
+    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0) {
+        setAcceptHoverEvents(true);
+        front = fr;
+        back = bk;
+    }
+CardGraphicItem::CardGraphicItem(layout l, const FlashCard& fc, QGraphicsItem* parent)
+    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0) {
+        setAcceptHoverEvents(true);
+        front = fc.getSide(SIDE_FRONT);
+        back = fc.getSide(SIDE_BACK);
+    }
 CardGraphicItem::~CardGraphicItem() {
     delete front;
     delete back;
@@ -37,21 +32,21 @@ bool CardGraphicItem::operator==(const FlashCard& other) const {
 }
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
-    bool oldHover = hovering;
+    bool oldHover = hover;
     if (contains(event->pos()) && !((PlayScene*)MG->curScene)->hasOverlay()) {
-        hovering = true;
+        hover = true;
         setCursor(Qt::PointingHandCursor);
     } else {
-        if (hovering) {
+        if (hover) {
             unsetCursor();
         }
-        hovering = false;
+        hover = false;
     }
-    if (oldHover != hovering) { update(); }
-    SvgGraphicItem::hoverMoveEvent(event);
+    if (oldHover != hover) { update(); }
+    RectItem::hoverMoveEvent(event);
 }
 void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
-    hovering = false;
+    hover = false;
     update();
 }
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
@@ -64,11 +59,11 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
             auto* overl = new Overlay();
-            MScene->addItem(overl);
+            curS->scn.addItem(overl);
             overl->setZValue(3);
             curS->setOverlay(overl);
             side = 255;  // TODO: Animations
-            hovering = false;
+            hover = false;
             curS->main->updateAllChildren();
         }
     }
@@ -84,33 +79,14 @@ void CardGraphicItem::finish() {
     curS->main->updateAllChildren();
 }
 
-void CardGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
-    QImage img(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
-    img.fill(Qt::transparent);
-
-    QPainter p1(&img);
-    renderer->render(&p1, QRectF(QPointF(0, 0), rect.size()));
-    p1.end();
-
-    if (hovering || zValue() == 3) {
-        // Create a colorized outline version
-        QImage outline = img;
-        QPainter p2(&outline);
-        p2.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        p2.fillRect(outline.rect(), Qt::yellow);
-        p2.end();
-
-        painter->drawImage(QPointF(rect.left()-2, rect.top()-2), outline.scaled(rect.width()+4, rect.height()+4, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    }
-    painter->drawImage(rect.topLeft(), img);
+void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
+    paintSvg(p);
 
     if (side == 0) {
-        if (!((PlayScene*)MG->curScene)->hasOverlay()) {
-            front->render(painter, rect);
-        }
+        front->render(p, rect);
     } else {
         if (side == 255) {
-            back->render(painter, rect);
+            back->render(p, rect);
         } else {
             // TODO: Partial flipped states
         }

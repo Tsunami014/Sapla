@@ -18,39 +18,33 @@ PlayScene::PlayScene() : GameScene(), tr() {
 PlayScene::~PlayScene() {
     delete card;
 }
+bool PlayScene::keyEv(QKeyEvent* event) {
+    if (MG->handleEv(event)) return true;
+    int key = event->key();
 
-void PlayScene::keyPressEvent(QKeyEvent* event) {
-    if (MG->handleEv(event)) return;
-    if (event->type() == QEvent::KeyPress) {
-        auto* keyEvent = (QKeyEvent*)event;
-        int key = keyEvent->key();
-
-        if (card->side == 255 && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
-            if (key == Qt::Key_Space) {
-                MG->s.bads++;
-                tr.grow(-10);
-            } else {
-                MG->s.goods++;
-                if (!tr.grow(50)) {
-                    MG->changeScene(new WinScene());
-                }
+    if (card->side == 255 && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
+        if (key == Qt::Key_Space) {
+            MG->s.bads++;
+            tr.grow(-10);
+        } else {
+            MG->s.goods++;
+            if (!tr.grow(50)) {
+                MG->changeScene(new WinScene());
             }
-            card->finish();
-            if (!tr.isDone()) {
-                delete card;
-                card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
-                scn.addItem(card);
-            }
-            layoutIts();
         }
+        card->finish();
+        if (!tr.isDone()) {
+            delete card;
+            card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
+            scn.addItem(card);
+        }
+        resize();
+        return true;
     }
+    return false;
 }
 
-void PlayScene::resizeEvent(QResizeEvent* event) {
-    GameScene::resizeEvent(event);
-    layoutIts();
-}
-void PlayScene::layoutIts() {
+void PlayScene::resize() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
     card->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});

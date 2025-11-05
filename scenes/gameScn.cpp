@@ -14,5 +14,6 @@ void GameScene::resizeEvent(QResizeEvent* event) {
     view.setGeometry(rect());
     view.setSceneRect(0, 0, width(), height());
     view.resetTransform();
+    resize();
 }
 

@@ -1,5 +1,4 @@
 #include "playScn.hpp"
-#include "winScn.hpp"
 #include "items/cardIt.hpp"
 #include "items/cardLayouts.hpp"
 #include <QEvent>
@@ -11,7 +10,7 @@ const QString HELP_TXT =
     "Press &lt;Esc&gt; to go back to the home screen.";
 
 PlayScene::PlayScene()
-    : BaseScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
+    : GameScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
         helpStr = &HELP_TXT;
         MG->changeBG("pretty");
 
@@ -77,41 +76,41 @@ int PlayScene::addAnother() {
     return 2000 + QRandomGenerator::global()->bounded(4001);  // Random between 2 and 6 seconds
 }
 
-void PlayScene::onEvent(QEvent* event) {
-    if (MG->handleEv(event)) return;
-    if (event->type() == QEvent::KeyPress) {
-        auto* keyEvent = (QKeyEvent*)event;
-        int key = keyEvent->key();
+bool PlayScene::keyEv(QKeyEvent* event) {
+    if (MG->handleEv(event)) return true;
+    int key = event->key();
 
-        if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
-            for (auto& it : main->grid) {
-                if (it.item->side == 255) {
-                    if (key == Qt::Key_Space) {
-                        MG->s.bads++;
-                        tr.grow(-10);
-                    } else {
-                        MG->s.goods++;
-                        if (!tr.grow(50)) {
-                            MG->changeScene(new WinScene());
-                        }
+    if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
+        for (auto& it : main->grid) {
+            if (it.item->side == 255) {
+                if (key == Qt::Key_Space) {
+                    MG->s.bads++;
+                    tr.grow(-10);
+                } else {
+                    MG->s.goods++;
+                    if (!tr.grow(50)) {
+                        MG->changeScene(new WinScene());
                     }
-                    it.item->finish();
-                    if (tr.isDone()) break;
-                    if (main->grid.empty()) {
-                        int remaining = timeLeft - timeOffset;
-                        int existingTime = qMin(remaining, 2000);  // Max of 2 seconds carried in from before
-                        int fixedOffs = qMin(int(timeOffset), 3000);  // Max of 3 seconds of already completed time from before
-                        timeOffset = fixedOffs;
-                        timeLeft = existingTime + addAnother() + fixedOffs;
-                    }
-                    break;
                 }
+                it.item->finish();
+                if (tr.isDone()) break;
+                if (main->grid.empty()) {
+                    int remaining = timeLeft - timeOffset;
+                    int existingTime = qMin(remaining, 2000);  // Max of 2 seconds carried in from before
+                    int fixedOffs = qMin(int(timeOffset), 3000);  // Max of 3 seconds of already completed time from before
+                    timeOffset = fixedOffs;
+                    timeLeft = existingTime + addAnother() + fixedOffs;
+                }
+                break;
             }
+            return true;
         }
     }
+    return false;
 }
 
-void PlayScene::resize() {
+void PlayScene::resizeEvent(QResizeEvent* event) {
+    QRectF rect = view.sceneRect();
     tr.setRect(rect);
     main->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
     if (overlay != NULL) {
@@ -125,13 +124,13 @@ void PlayScene::resize() {
 
 void PlayScene::setOverlay(QGraphicsRectItem* ovl) {
     overlay = ovl;
-    overlay->setRect(rect);
+    overlay->setRect(view.sceneRect());
 }
 bool PlayScene::hasOverlay() {
     return overlay != NULL;
 }
 void PlayScene::removeOverlay() {
-    MScene->removeItem(overlay);
+    scn.removeItem(overlay);
     delete overlay;
     overlay = NULL;
 }

@@ -73,7 +73,6 @@ void initMenu(QMenuBar* b) {
     gmenu->insertBefore = nullptr;
     bar->addMenu(gmenu);
     Menues->GotoMenu = gmenu;
-    last = gmenu->menuAction();
 
     auto* hmenu = new _MenuBase("Help");
     hmenu->addAction("Application help", []() { makeDialog(APP_HELP, "Application help"); });
@@ -85,8 +84,9 @@ void initMenu(QMenuBar* b) {
     hmenu->insertBefore = hmenu->addSeparator();
     hmenu->addAction("Logs", []() { showLogWindow(); });
     hmenu->addSeparator();
-    Menues->HelpMenu = hmenu;
     bar->addMenu(hmenu);
+    Menues->HelpMenu = hmenu;
+    last = hmenu->menuAction();
 }
 
 Menu::Menu(const QString& title) : _MenuBase(title, bar) {
@@ -95,6 +95,12 @@ Menu::Menu(const QString& title) : _MenuBase(title, bar) {
 }
 Menu::~Menu() {
     bar->removeAction(this->menuAction());
+}
+MenuAction::MenuAction(const QString& title) : QAction(title, bar) {
+    bar->insertAction(last, this);
+}
+MenuAction::~MenuAction() {
+    bar->removeAction(this);
 }
 
 MenuItem::MenuItem(const QString& txt, _MenuBase* pmen)

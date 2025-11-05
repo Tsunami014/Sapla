@@ -18,7 +18,7 @@ const QString* helpStr = nullptr;
 int runApp(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setFont(getFont(1));
-    Log::Log("Main") << "Configuration located at:\n" << getPath();
+    Log::Debug("Main") << "Configuration located at:\n" << getPath();
     MG = new MainGame();
     initMenu(MG->menuBar());
     registerCardTypes();

@@ -3,6 +3,9 @@
 #include "../scenes/baseScn.hpp"
 #include <QLibrary>
 
+const extern QString suffix;
+QString getGamesPath();
+
 class GamePlugin {
 public:
     GamePlugin(QString name, Registry& reg, QLibrary* lib);

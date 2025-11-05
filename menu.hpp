@@ -17,6 +17,11 @@ public:
     Menu(const QString& title);
     ~Menu();
 };
+class MenuAction : public QAction {
+public:
+    MenuAction(const QString& title);
+    ~MenuAction();
+};
 
 struct _MenuesTyp {
     _MenuBase* FileMenu;

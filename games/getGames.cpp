@@ -9,6 +9,14 @@
 
 const QString MODULE = "getGames";
 
+#if defined(Q_OS_WIN)
+const QString suffix = ".dll";
+#elif defined(Q_OS_MAC)
+const QString suffix = ".dylib";
+#else
+const QString suffix = ".so";
+#endif
+
 QString getGamesPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/gamePlugs";
     QDir().mkpath(path);
@@ -29,7 +37,6 @@ bool tryLoad(const QFileInfo& file) {
     if (regFn) {
         Registry reg = regFn();
         games.push_back(new GamePlugin(fname, reg, lib));
-        Log::Info(MODULE) << "Loaded game plugin: " << fname;
         return true;
     } else {
         QString error = "No '_register' function found in "+fname;
@@ -55,14 +62,6 @@ bool GamePlugin::run() {
 }
 
 void loadGames() {
-#if defined(Q_OS_WIN)
-    QString suffix = ".dll";
-#elif defined(Q_OS_MAC)
-    QString suffix = ".dylib";
-#else
-    QString suffix = ".so";
-#endif
-
     if (games.size() == 0) {
         QFileInfo BIlib(QCoreApplication::applicationDirPath()+"/libbuiltinGame"+suffix);
         if (tryLoad(BIlib)) {
@@ -83,5 +82,7 @@ void loadGames() {
     for (const QFileInfo& file : files) {
         tryLoad(file);
     }
+
+    Log::Info(MODULE) << "Loaded " << games.size() << " game(s) successfully and " << failedGames.size() << " game(s) unsuccessfully!";
 }
 

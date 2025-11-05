@@ -8,6 +8,7 @@ class OverlayWrapper : public QWidget {
 public:
     OverlayWrapper(QWidget* parent = nullptr) : QWidget(parent) {
         setMouseTracking(true);
+        unsetCursor();
     }
 
     // Call this when changing scenes (or if the overlay hides)
@@ -15,6 +16,7 @@ public:
 
 protected:
     bool event(QEvent* ev) override;
+    QWidget* getEventTarget(QWidget* w);
 
 private:
     void forwardMouse(QWidget* target, QMouseEvent* src, const QPoint& globalPos);

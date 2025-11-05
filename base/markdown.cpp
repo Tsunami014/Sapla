@@ -141,7 +141,6 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
         )) {
             if (blkCurs.selectedText() != line) blkCurs.insertText(line, plainfmt);
         } else {
-            // TODO: Process markdown into html
             blkCurs.insertHtml(parseMarkdownHtml(line));
         }
         blkCurs.endEditBlock();

@@ -2,26 +2,36 @@
 #include "../core.hpp"
 #include <QMouseEvent>
 #include <QCoreApplication>
+#include <QAbstractScrollArea>
+
+QWidget* OverlayWrapper::getEventTarget(QWidget* w) {
+    if (!w) return nullptr;
+    if (auto* scrollArea = qobject_cast<QAbstractScrollArea*>(w)) {
+        return scrollArea->viewport();
+    }
+    return w;
+}
 
 void OverlayWrapper::clearForwarding() {
     // End hover on last target
     if (hoverTarget_ && hoverTarget_ != pressTarget_) {
         QEvent leaveEv(QEvent::Leave);
-        QCoreApplication::sendEvent(hoverTarget_, &leaveEv);
+        QCoreApplication::sendEvent(getEventTarget(hoverTarget_), &leaveEv);
     }
     // Safety: ensure any pressed target gets a release
     if (pressTarget_) {
         const QPoint gpos = QCursor::pos();
+        QWidget* evTarget = getEventTarget(pressTarget_);
         QMouseEvent relEv(
             QEvent::MouseButtonRelease,
-            pressTarget_->mapFromGlobal(gpos),
-            pressTarget_->window()->mapFromGlobal(gpos),
+            evTarget->mapFromGlobal(gpos),
+            evTarget->window()->mapFromGlobal(gpos),
             gpos,
             Qt::NoButton,
             Qt::NoButton,
             Qt::NoModifier
         );
-        QCoreApplication::sendEvent(pressTarget_, &relEv);
+        QCoreApplication::sendEvent(evTarget, &relEv);
     }
     hoverTarget_ = nullptr;
     pressTarget_ = nullptr;
@@ -44,6 +54,9 @@ bool OverlayWrapper::event(QEvent* ev) {
             QWidget* scene = MG->curScene;
             QWidget* under = scene->childAt(scene->mapFromGlobal(globalPos));
             if (!under) under = scene;
+
+            if (under)
+                setCursor(under->cursor());
 
             if (ev->type() == QEvent::MouseButtonPress) {
                 transitionHover(under);
@@ -94,9 +107,25 @@ bool OverlayWrapper::event(QEvent* ev) {
 }
 
 void OverlayWrapper::forwardMouse(QWidget* target, QMouseEvent* src, const QPoint& globalPos) {
-    const QPointF localPos = target->mapFromGlobal(globalPos);
-    const QPointF windowPos = target->window()->mapFromGlobal(globalPos);
-    QMouseEvent fwd(
+    QWidget* evTarget = getEventTarget(target);
+    if (!evTarget) return;
+
+    if (src->type() == QEvent::MouseButtonPress) {
+        if ((target->focusPolicy() & Qt::ClickFocus)) {
+            for (QWidget* p = target->parentWidget(); p; p = p->parentWidget()) {
+                if (p->focusPolicy() & Qt::ClickFocus) { target = p; break; }
+            }
+        }
+        target->setFocus(Qt::MouseFocusReason);
+        if (QWidget* win = target->window()) {
+            win->activateWindow();
+        }
+    }
+
+    const QPointF localPos  = evTarget->mapFromGlobal(globalPos);
+    const QPointF windowPos = evTarget->window()->mapFromGlobal(globalPos);
+
+    auto* fwd = new QMouseEvent(
         src->type(),
         localPos,
         windowPos,
@@ -105,18 +134,18 @@ void OverlayWrapper::forwardMouse(QWidget* target, QMouseEvent* src, const QPoin
         src->buttons(),
         src->modifiers()
     );
-    QCoreApplication::sendEvent(target, &fwd);
+    QCoreApplication::postEvent(evTarget, fwd);
 }
 
 void OverlayWrapper::transitionHover(QWidget* newTarget) {
     if (newTarget == hoverTarget_) return;
     if (hoverTarget_) {
         QEvent leaveEv(QEvent::Leave);
-        QCoreApplication::sendEvent(hoverTarget_, &leaveEv);
+        QCoreApplication::sendEvent(getEventTarget(hoverTarget_), &leaveEv);
     }
     if (newTarget) {
         QEvent enterEv(QEvent::Enter);
-        QCoreApplication::sendEvent(newTarget, &enterEv);
+        QCoreApplication::sendEvent(getEventTarget(newTarget), &enterEv);
     }
     hoverTarget_ = newTarget;
 }
@@ -124,22 +153,22 @@ void OverlayWrapper::transitionHover(QWidget* newTarget) {
 void OverlayWrapper::handleLeaveAll() {
     if (hoverTarget_) {
         QEvent leaveEv(QEvent::Leave);
-        QCoreApplication::sendEvent(hoverTarget_, &leaveEv);
+        QCoreApplication::sendEvent(getEventTarget(hoverTarget_), &leaveEv);
         hoverTarget_ = nullptr;
     }
     if (pressTarget_) {
         const QPoint gpos = QCursor::pos();
+        QWidget* evTarget = getEventTarget(pressTarget_);
         QMouseEvent relEv(
             QEvent::MouseButtonRelease,
-            pressTarget_->mapFromGlobal(gpos),
-            pressTarget_->window()->mapFromGlobal(gpos),
+            evTarget->mapFromGlobal(gpos),
+            evTarget->window()->mapFromGlobal(gpos),
             gpos,
             Qt::NoButton,
             Qt::NoButton,
             Qt::NoModifier
         );
-        QCoreApplication::sendEvent(pressTarget_, &relEv);
+        QCoreApplication::sendEvent(evTarget, &relEv);
         pressTarget_ = nullptr;
     }
 }
-

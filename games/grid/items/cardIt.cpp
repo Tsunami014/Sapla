@@ -33,7 +33,7 @@ bool CardGraphicItem::operator==(const FlashCard& other) const {
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     bool oldHover = hover;
-    if (contains(event->pos()) && !((PlayScene*)MG->curScene)->hasOverlay()) {
+    if (touching(event->pos()) && !((PlayScene*)MG->curScene)->hasOverlay()) {
         hover = true;
         setCursor(Qt::PointingHandCursor);
     } else {
@@ -43,18 +43,16 @@ void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
         hover = false;
     }
     if (oldHover != hover) { update(); }
-    RectItem::hoverMoveEvent(event);
 }
 void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     hover = false;
     update();
 }
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (contains(event->pos())) {
+    if (touching(event->pos())) {
         if (side == 0) {
             PlayScene* curS = (PlayScene*)MG->curScene;
             curS->pauseTimer();
-            unsetCursor();
             setParentItem(nullptr);  // So the item can be placed on the very top
             setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
@@ -63,7 +61,9 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             overl->setZValue(3);
             curS->setOverlay(overl);
             side = 255;  // TODO: Animations
-            hover = false;
+            unsetCursor();
+            hover = true;
+            setAcceptHoverEvents(false);
             curS->main->updateAllChildren();
         }
     }
@@ -73,17 +73,19 @@ void CardGraphicItem::finish() {
     PlayScene* curS = (PlayScene*)MG->curScene;
     curS->removeOverlay();
     curS->main->removeItem(this);
+    curS->scn.removeItem(this);
     curS->main->update();
-    scene()->removeItem(this);
-    curS->resumeTimer();
     curS->main->updateAllChildren();
+    curS->resumeTimer();
 }
 
 void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
     paintSvg(p);
 
     if (side == 0) {
-        front->render(p, rect);
+        if (!((PlayScene*)MG->curScene)->hasOverlay()) {
+            front->render(p, rect);
+        }
     } else {
         if (side == 255) {
             back->render(p, rect);

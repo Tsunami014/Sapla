@@ -10,9 +10,13 @@ const QString HELP_TXT =
     "Press &lt;Esc&gt; to go back to the home screen.";
 
 PlayScene::PlayScene()
-    : GameScene(), main(new GLayoutGraphicItem(this)), pb(this), tr(this) {
+    : GameScene(), main(new GLayoutGraphicItem()), pb(), tr() {
         helpStr = &HELP_TXT;
         MG->changeBG("pretty");
+
+        scn.addItem(main);
+        scn.addItem(&pb);
+        scn.addItem(&tr);
 
         overlay = NULL;
 
@@ -34,11 +38,13 @@ PlayScene::~PlayScene() {
     if (overlay) {
         for (auto& it : main->grid) {
             if (it.item->side != 0) {
-                it.item->finish();
+                scn.removeItem(it.item);
                 break;
             }
         }
     }
+    scn.removeItem(main);
+    delete main;
 }
 
 void PlayScene::pauseTimer() {
@@ -63,7 +69,7 @@ void PlayScene::resetTimer() {
 }
 int PlayScene::addAnother() {
     const FlashCard fc = *NextFC();
-    layout lay = Single;
+    auto lay = Single;
     auto* nCGI = new CardGraphicItem(lay, fc);
     if (!main->addItem(nCGI)) {
         delete nCGI;
@@ -109,7 +115,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     return false;
 }
 
-void PlayScene::resizeEvent(QResizeEvent* event) {
+void PlayScene::resize() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
     main->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
@@ -130,8 +136,10 @@ bool PlayScene::hasOverlay() {
     return overlay != NULL;
 }
 void PlayScene::removeOverlay() {
-    scn.removeItem(overlay);
-    delete overlay;
-    overlay = NULL;
+    if (overlay) {
+        scn.removeItem(overlay);
+        delete overlay;
+        overlay = NULL;
+    }
 }
 

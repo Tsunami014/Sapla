@@ -58,6 +58,7 @@ void MainGame::changeScene(BaseScene* newScene) {
         bg->lower();
         logLayWrap.raise();
 
+        QCursor::setPos(QCursor::pos());  // Force cursor update
     });
 }
 

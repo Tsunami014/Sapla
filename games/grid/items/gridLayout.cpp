@@ -77,10 +77,8 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
         } else {
             hei = 2;
         }
-        it.item->setRect(QRectF(
-            nrect.x() + colWid * it.x, nrect.y() + rowHei * it.y, 
-            colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei
-        ));
+        it.item->setRect({0, 0, colWid * qMax(it.lay.botWid, it.lay.topWid), rowHei * hei});
+        it.item->setPos(nrect.x() + colWid * it.x, nrect.y() + rowHei * it.y);
     }
 }
 

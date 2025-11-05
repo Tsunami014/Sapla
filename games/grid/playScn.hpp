@@ -24,7 +24,7 @@ public:
     GLayoutGraphicItem* main;
     int timeLeft;  // in ms
 private:
-    void resizeEvent(QResizeEvent* event) override;
+    void resize() override;
     void resetTimer();
     int addAnother();
 

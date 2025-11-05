@@ -65,7 +65,7 @@ target_link_libraries(${APP_NAME} PRIVATE core)
 add_subdirectory(games/builtin)
 option(BUILD_PLUGINS "Build game plugins" ON)
 if (BUILD_PLUGINS)
-    #add_subdirectory(games/grid)
+    add_subdirectory(games/grid)
 endif()
 
 

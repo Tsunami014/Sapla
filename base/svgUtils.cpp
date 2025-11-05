@@ -3,16 +3,10 @@
 #include <QTimer>
 #include <QCursor>
 #include <QPainter>
+#include <QGraphicsView>
 
-SvgUtils::SvgUtils(const QString& path) : rend(RenderSvg(path)) {
-    hover = false;
-    QTimer::singleShot(0, [this](){
-        hover = touching(QCursor::pos());
-    });
-}
-SvgUtils::SvgUtils() : rend() {
-    hover = false;
-}
+SvgUtils::SvgUtils(const QString& path) : rend(RenderSvg(path)), hover(false) {}
+SvgUtils::SvgUtils() : rend(), hover(false) {}
 
 void SvgUtils::setSvg(const QString& path) {
     rend.load(RenderSvg(path));
@@ -20,16 +14,16 @@ void SvgUtils::setSvg(const QString& path) {
 
 bool SvgUtils::touching(const QPointF& pos) {
     QRect r = getRect();
-    QImage img(r.size(), QImage::Format_ARGB32_Premultiplied);
-    if (pos.x() < 0 || pos.y() < 0 || pos.x() >= img.width() || pos.y() >= img.height())
+    if (pos.x() < 0 || pos.y() < 0 || pos.x() >= r.width() || pos.y() >= r.height())
         return false;
+    QImage img(r.size(), QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::transparent);
     // Paint the svg onto the image
     QPainter p(&img);
-    rend.render(&p, r);
+    rend.render(&p, QRectF({0, 0}, r.size()));
     p.end();
     // Find the colour at the pixel of the mouse
-    QColor color = img.pixelColor({int(pos.x()), int(pos.y())});
+    QColor color = img.pixelColor(pos.toPoint());
     return color.alpha() != 0; // Find if it's transparent
 }
 
@@ -54,9 +48,9 @@ void SvgUtils::paintSvg(QPainter* painter, const QRect& r) {
         p2.fillRect(outline.rect(), Qt::yellow);
         p2.end();
 
-        painter->drawImage(QPoint(-2, -2), outline.scaled(r.width()+4, r.height()+4, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        painter->drawImage(QPoint(r.x()-2, r.y()-2), outline.scaled(r.width()+4, r.height()+4, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     }
-    painter->drawImage(QPoint(0, 0), img);
+    painter->drawImage(r.topLeft(), img);
     if (hover) {
         painter->restore();
     }

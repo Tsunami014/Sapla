@@ -1,0 +1,40 @@
+#!/bin/bash
+rm -rf AppDir
+
+mkdir -p AppDir/usr/bin
+cp build/Sapla AppDir/usr/bin/Sapla
+cp build/libcore.so AppDir/usr/bin/libcore.so
+cp build/libbuiltinGame.so AppDir/usr/bin/libbuiltinGame.so
+
+mkdir -p AppDir/usr/lib
+ldd build/libcore.so | awk '/=>/ { print $(NF-1) }' | while read lib; do
+    if [[ -f "$lib" ]]; then
+        cp -u "$lib" AppDir/usr/lib/
+    fi
+done
+
+cat <<EOF > AppDir/Sapla.desktop
+[Desktop Entry]
+Type=Application
+Name=Sapla
+Exec=Sapla
+Icon=Sapla
+Categories=Utility;
+EOF
+cp icon.png AppDir/Sapla.png
+
+cat <<'EOF' > AppDir/AppRun
+#!/usr/bin/env bash
+exec $APPDIR/usr/bin/Sapla
+EOF
+chmod +x AppDir/AppRun
+
+rm $(ls | grep Sapla*.AppImage)
+if ! command -v appimagetool &>/dev/null; then
+    echo "ERROR: appimagetool not found. Install it first, then run this again."
+    exit 1
+fi
+appimagetool AppDir
+chmod +x $(ls | grep Sapla*.AppImage)
+echo "Done! AppImage built."
+

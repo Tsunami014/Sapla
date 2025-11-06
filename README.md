@@ -39,13 +39,13 @@ Download the executable from the releases tab
 3. 
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel --config Release
+cmake --build build --parallel
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
 ##### Packaging for Linux
-1. `pip install appimage-builder`
-2. `appimage-builder --recipe conf.yaml`
-3. The output .AppImage should be in this directory!
+```bash
+./makeAppIm
+```
 #### Windows
 You're on your own
 # FAQ

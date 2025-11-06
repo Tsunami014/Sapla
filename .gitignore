@@ -1,6 +1,5 @@
 build/*
 AppDir/*
-appimage-build/*
 *.AppImage
 compile_flags.txt
 CMakeLists.txt.user

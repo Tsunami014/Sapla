@@ -2,6 +2,7 @@
 #include "../core.hpp"
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QApplication>
 
 BaseScene::BaseScene() : QWidget(MG) {
     setFocusPolicy(Qt::StrongFocus);
@@ -35,6 +36,12 @@ bool BaseScene::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         auto* ke = static_cast<QKeyEvent*>(event);
 
+        if (QWidget* modal = QApplication::activeModalWidget()) {
+            if (ke->key() == Qt::Key_Escape) {
+                modal->close();
+            }
+            return true;
+        }
         if (isTextInput(qApp->focusObject()) && ke->key() != Qt::Key_Escape) {
             return QWidget::eventFilter(obj, event);
         }

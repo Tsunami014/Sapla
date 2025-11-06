@@ -20,24 +20,27 @@ GameViewScene::GameViewScene()
         connect(&m, &QAction::triggered, this, &GameViewScene::loadF);
 
         auto* li = new ListWidget(this);
-        li->setHeaderHidden(true);
+        li->setColumnCount(2);
+        li->setHeaderLabels({"Status", "Name"});
+        li->sortByColumn(1, Qt::AscendingOrder);
         li->setRootIsDecorated(false);
         li->setIndentation(0);
         li->setItemsExpandable(false);
 
+        QString dir = getGamesPath();
         for (auto& fg : failedGames) {
-            auto* it = new QTreeWidgetItem(QStringList("💔 "+fg.first));
-            it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{"Game loaded with error:\n"+fg.second, false}));
+            auto* it = new QTreeWidgetItem(QStringList({"💔", fg.first}));
+            it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+fg.first+"\nGame loaded with error:\n"+fg.second, false}));
             li->addTopLevelItem(it);
         }
         for (auto* g : games) {
-            auto* it = new QTreeWidgetItem(QStringList("💖 "+g->name));
-            it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{"Game loaded successfully!", true}));
+            auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
+            it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+g->name+"\nGame loaded successfully!", true}));
             li->addTopLevelItem(it);
         }
 
         auto* txt = new QTextEdit(this);
-        txt->setDisabled(true);
+        txt->setReadOnly(true);
 
         auto* sideLay = new QVBoxLayout();
         sideLay->addWidget(txt);

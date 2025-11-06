@@ -13,6 +13,21 @@ struct ListData {
 };
 Q_DECLARE_METATYPE(ListData)
 
+const QString MODULE = "GameBrowser";
+
+void movFile(QString fromName, QString toName) {
+    if (!QFile(fromName).rename(toName)) {
+        // Fallback (e.g. when moving to a different drive)
+        if (!QFile::copy(fromName, toName)) {
+            Log::Error(MODULE) << "Unknown error when moving `" << fromName << "` to `" << toName << "` - copy faliure!";
+            return;
+        }
+        if (!QFile::remove(fromName)) {
+            Log::Warn(MODULE) << "Unknown error when moving `" << fromName << "` to `" << toName << "` - old file delete faliure! (File still loaded into plugin dir tho)";
+        }
+    }
+}
+
 GameViewScene::GameViewScene()
     : BaseScene(), m("Load game") {
         qRegisterMetaType<ListData>("GVSData");
@@ -29,10 +44,29 @@ GameViewScene::GameViewScene()
 
         fillTree();
 
-        auto* txt = new QTextEdit(this);
+        txt = new QTextEdit(this);
         txt->setReadOnly(true);
 
+        auto* disBtn = new SvgBtn(":/assets/btn.svg", this);
+        disBtn->setText("Toggle disabled");
+        connect(disBtn, &SvgBtn::clicked, this, [=](){
+            QTreeWidgetItem* sel = li->currentItem();
+            if (sel) {
+                QString frpth = getGamesPath()+"/"+sel->text(1);
+                QString topth;
+                if (frpth.endsWith(".dis")) {
+                    topth = frpth.sliced(0, frpth.size()-4);
+                } else {
+                    topth = frpth + ".dis";
+                }
+
+                movFile(frpth, topth);
+                reset();
+            }
+        });
+
         auto* sideLay = new QVBoxLayout();
+        sideLay->addWidget(disBtn);
         sideLay->addWidget(txt);
 
         QWidget::connect(li, &QTreeWidget::itemSelectionChanged, [=](){
@@ -48,9 +82,21 @@ GameViewScene::GameViewScene()
         mainLay->addLayout(sideLay, 1);
     }
 
+void GameViewScene::reset() {
+    loadGames();
+    fillTree();
+    li->clearSelection();
+    txt->setText("");
+}
+
 void GameViewScene::fillTree() {
     li->clear();
-    QString dir = getGamesPath();
+    QString dir = getGamesPath()+"/";
+    for (auto& dg : disabldGames) {
+        auto* it = new QTreeWidgetItem(QStringList({"🤎", dg}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+dg+"\nGame disabled", false}));
+        li->addTopLevelItem(it);
+    }
     for (auto& fg : failedGames) {
         auto* it = new QTreeWidgetItem(QStringList({"💔", fg.first}));
         it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+fg.first+"\nGame loaded with error:\n"+fg.second, false}));
@@ -64,7 +110,6 @@ void GameViewScene::fillTree() {
 }
 
 void GameViewScene::loadF() {
-    const QString MODULE = "GameLoadDialog";
     const QString filter = QString("Game plugin files (*%1)").arg(suffix);
     QStringList fnames = QFileDialog::getOpenFileNames(this, "Load game plugin file", QDir::homePath(), filter);
     QStringList deletes;
@@ -123,23 +168,14 @@ void GameViewScene::loadF() {
             }
         }
         if (deletes.contains(fromName)) {
-            if (!QFile(fromName).rename(toName)) {
-                // Fallback (e.g. when moving to a different drive)
-                if (!QFile::copy(fromName, toName)) {
-                    Log::Error(MODULE) << "Unknown error when moving `" << fromName << "` to `" << toName << "` - copy faliure!";
-                }
-                if (!QFile::remove(fromName)) {
-                    Log::Warn(MODULE) << "Unknown error when moving `" << fromName << "` to `" << toName << "` - old file delete faliure! (File still loaded into plugin dir tho)";
-                }
-            }
+            movFile(fromName, toName);
         } else {
             if (!QFile::copy(fromName, toName)) {
                 Log::Error(MODULE) << "Unknown error when copying `" << fromName << "` to `" << toName << "`!";
             }
         }
     }
-    Log::Info(MODULE) << "Successfully copied/moved " << fnames.size() << " game plugins!";
-    loadGames();
-    fillTree();
+    Log::Info(MODULE) << "Copied/moved " << fnames.size() << " game plugins!";
+    reset();
 }
 

@@ -16,6 +16,7 @@ const QString suffix = ".dylib";
 #else
 const QString suffix = ".so";
 #endif
+const QString disabl = "dis";
 
 QString getGamesPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/gamePlugs";
@@ -50,6 +51,7 @@ bool tryLoad(const QFileInfo& file) {
 
 std::vector<GamePlugin*> games = {};
 std::vector<std::pair<QString, QString>> failedGames = {};
+std::vector<QString> disabldGames;
 
 GamePlugin::GamePlugin(QString nme, Registry& r, QLibrary* library)
     : name(std::move(nme)), reg(r), lib(library) { reg.loadFn(); permanent = false; }
@@ -76,11 +78,16 @@ void loadGames() {
         games.push_back(g);
     }
     failedGames.clear();
+    disabldGames.clear();
 
     QDir dir(getGamesPath());
-    QFileInfoList files = dir.entryInfoList(QStringList{"*"+suffix}, QDir::Files);
+    QFileInfoList files = dir.entryInfoList(QStringList{"*"+suffix, "*"+suffix+"."+disabl}, QDir::Files);
     for (const QFileInfo& file : files) {
-        tryLoad(file);
+        if (file.suffix() == disabl) {
+            disabldGames.push_back(file.fileName());
+        } else {
+            tryLoad(file);
+        }
     }
 
     Log::Info(MODULE) << "Loaded " << games.size() << " game(s) successfully and " << failedGames.size() << " game(s) unsuccessfully!";

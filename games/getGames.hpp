@@ -20,5 +20,6 @@ private:
 
 extern std::vector<GamePlugin*> games;
 extern std::vector<std::pair<QString, QString>> failedGames;
+extern std::vector<QString> disabldGames;
 void loadGames();
 

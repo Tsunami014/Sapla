@@ -26,7 +26,7 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
             "border: 2px solid #333;"
         "}"
         "SvgBtn {"
-            "color: black;"
+            "color: #B87333;"
         "}"
         "QTreeWidget::item { background: rgb(193, 154, 107); }"
         "QTreeWidget {"

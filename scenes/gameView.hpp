@@ -2,6 +2,7 @@
 #include "baseScn.hpp"
 #include "../menu.hpp"
 #include <QTreeWidget>
+#include <QTextEdit>
 
 class GameViewScene : public BaseScene {
 public:
@@ -11,6 +12,8 @@ public slots:
 private:
     MenuAction m;
     void fillTree();
+    void reset();
     QTreeWidget* li;
+    QTextEdit* txt;
 };
 

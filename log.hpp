@@ -36,6 +36,9 @@ namespace Log {
     inline Log Error(QString module) { return Log(module, ERROR); }
 }
 
+/** DeBug Log - for debugging purposes ONLY - do not use in production - instead use Log::Debug(module) */
+inline Log::Log DBL() { return Log::Info("DEBUG"); }
+
 void showLogWindow();
 
 class LogAlert : public SvgBtn {

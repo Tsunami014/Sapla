@@ -55,10 +55,14 @@ void PlayScene::resumeTimer() {
     resetTimer();
 }
 void PlayScene::dialogOpen() {
-    pauseTimer();
+    if (!hasOverlay()) {
+        pauseTimer();
+    }
 }
 void PlayScene::dialogClose() {
-    resumeTimer();
+    if (!hasOverlay()) {
+        resumeTimer();
+    }
 }
 
 void PlayScene::resetTimer() {

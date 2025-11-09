@@ -31,9 +31,7 @@ void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
         hover = true;
         setCursor(Qt::PointingHandCursor);
     } else {
-        if (hover) {
-            unsetCursor();
-        }
+        unsetCursor();
         hover = false;
     }
     if (oldHover != hover) { update(); }
@@ -43,24 +41,23 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     update();
 }
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (touching(event->pos())) {
-        if (side == 0) {
-            PlayScene* curS = (PlayScene*)MG->curScene;
-            curS->pauseTimer();
-            onTop = true;
-            setParentItem(nullptr);  // So the item can be placed on the very top
-            setPos(mapToScene(QPointF(0, 0)));
-            setZValue(4);
-            auto* overl = new Overlay();
-            curS->scn.addItem(overl);
-            overl->setZValue(3);
-            curS->setOverlay(overl);
-            side = 255;  // TODO: Animations
-            unsetCursor();
-            hover = true;
-            setAcceptHoverEvents(false);
-            curS->main->updateAllChildren();
-        }
+    PlayScene* curS = (PlayScene*)MG->curScene;
+    if (curS->hasOverlay()) return;
+    if (side == 0 && touching(event->pos())) {
+        curS->pauseTimer();
+        onTop = true;
+        setParentItem(nullptr);  // So the item can be placed on the very top
+        setPos(mapToScene(QPointF(0, 0)));
+        setZValue(4);
+        auto* overl = new Overlay();
+        curS->scn.addItem(overl);
+        overl->setZValue(3);
+        curS->setOverlay(overl);
+        side = 255;  // TODO: Animations
+        unsetCursor();
+        hover = true;
+        setAcceptHoverEvents(false);
+        curS->main->updateAllChildren();
     }
 }
 

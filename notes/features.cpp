@@ -6,9 +6,11 @@ const QString MODULE = "CardFeature";
 constexpr auto MO = QRegularExpression::MultilineOption;
 
 INIT_FEAT(SingleSideFeat)
+INIT_FEAT(DoubleSideFeat)
 
 void registerNoteFeatures() {
     REGISTER_FEAT(SingleSideFeat);
+    REGISTER_FEAT(DoubleSideFeat);
 }
 
 
@@ -31,6 +33,30 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) {
 QString SingleSideFeat::markup(QString& line) {
     if (QRegularExpression(R"(\s*---\s*)").match(line).hasMatch()) {
         return "───";
+    }
+    return line;
+}
+
+FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) {
+    int amnt = txt.count(QRegularExpression(R"(^\s*===\s*$)", MO));
+    if (amnt == 0) return std::nullopt;
+    if (amnt != 1) {
+        Log::Warn(MODULE) << "Found multiple `===` - there should only be 1!";
+        return std::nullopt;
+    }
+    if (QRegularExpression(R"(^\s*---\s*$)", MO).match(txt).hasMatch()) {
+        Log::Warn(MODULE) << "Found both `---` and `===` in the same card!";
+        return std::nullopt;
+    }
+    std::vector<FlashCard> l{};
+    QStringList parts = txt.split("===", Qt::SkipEmptyParts);
+    l.emplace_back(parent, parts[0], parts[1]);
+    l.emplace_back(parent, parts[1], parts[0]);
+    return l;
+}
+QString DoubleSideFeat::markup(QString& line) {
+    if (QRegularExpression(R"(\s*===\s*)").match(line).hasMatch()) {
+        return "═══";
     }
     return line;
 }

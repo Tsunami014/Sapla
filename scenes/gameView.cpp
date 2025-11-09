@@ -11,6 +11,7 @@ struct ListData {
     QString path;
     QString text;
     bool working;
+    bool isBI;
 };
 Q_DECLARE_METATYPE(ListData)
 
@@ -54,6 +55,23 @@ GameViewScene::GameViewScene()
             QTreeWidgetItem* sel = li->currentItem();
             if (sel) {
                 ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
+                if (dat.isBI) {
+                    QString fpth = getDisBIGPath();
+                    if (QFile::exists(fpth)) {
+                        if (!QFile::remove(fpth)) {
+                            Log::Warn(MODULE) << "Unknown error when deleting built-in game disabled file indicator at `" << fpth << "`";
+                        }
+                    } else {
+                        QFile file(fpth);
+                        if (file.open(QIODevice::WriteOnly)) {
+                            file.close();
+                        } else {
+                            Log::Warn(MODULE) << "Unknown error when creating built-in game disabled file indicator at `" << fpth << "`";
+                        }
+                    }
+                    reset();
+                    return;
+                }
                 QString frpth = dat.path;
                 QString topth;
                 if (frpth.endsWith(".dis")) {
@@ -62,6 +80,7 @@ GameViewScene::GameViewScene()
                     topth = frpth + ".dis";
                 }
 
+                clearGames();
                 movFile(frpth, topth);
                 reset();
             }
@@ -94,18 +113,18 @@ void GameViewScene::reset() {
 void GameViewScene::fillTree() {
     li->clear();
     for (auto& dg : disabldGames) {
-        auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.first}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.second, "Game disabled", false}));
+        auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.name}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.path, "Game disabled", false, dg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto& fg : failedGames) {
         auto* it = new QTreeWidgetItem(QStringList({"💔", fg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.path, "Game loaded with error:\n"+fg.error, false}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.path, "Game loaded with error:\n"+fg.error, false, fg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto* g : games) {
         auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->path, "Game loaded successfully!", true}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->path, "Game loaded successfully!", true, g->isBI}));
         li->addTopLevelItem(it);
     }
 }

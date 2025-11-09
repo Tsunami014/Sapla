@@ -5,6 +5,7 @@
 
 const extern QString suffix;
 QString getGamesPath();
+QString getDisBIGPath();
 
 class GamePlugin {
 public:
@@ -13,7 +14,7 @@ public:
     QString name;
     QString path;
     bool run();
-    bool permanent;
+    bool isBI;
 private:
     Registry reg;
     QLibrary* lib;
@@ -23,10 +24,17 @@ struct FailedGame {
     QString name;
     QString error;
     QString path;
+    bool isBI;
+};
+struct DisabldGame {
+    QString name;
+    QString path;
+    bool isBI;
 };
 
 extern std::vector<GamePlugin*> games;
 extern std::vector<FailedGame> failedGames;
-extern std::vector<std::pair<QString, QString>> disabldGames;
+extern std::vector<DisabldGame> disabldGames;
+void clearGames();
 void loadGames();
 

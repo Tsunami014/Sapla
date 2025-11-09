@@ -4,21 +4,27 @@ A cool flashcard app made in QT where you grow a tree.
 FAQ is at the bottom.
 
 ## Features
-- Different flashcard 'games'
-- Logging popups!
-- Regular or double sided with optional prefixes
+### Notes & cards
+- Simple custom notes which generate flashcards
+- Browse all your notes, edit them, delete them or add more
+- Markdown support - and reveals text underneath on selection
+- Regular or double sided cards
+- Saves notes to a configuration file automatically
+### Gameplay
+- Different flashcard 'games' - currently, a regular game and a grid game
+- Disable games
 - Grow a tree with your answers
+### App
+- Logging with popups
 - Custom UI svgs *hand drawn* by me
 - Responsive layout
-- Browse all your flashcards, edit them, delete them or add more
 - Menu with help information for ease of use
-- Saves flashcards to a configuration file automatically
 
 ## Usage instructions
-Game plugins go under `<config directory>/gamePlugs` (to find the config directory, look at `Help` > `Logs` in the app). Just drop the library there and the game will recognise it! (Unless you typed in the folder name wrong)
+If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-https://github.com/user-attachments/assets/1586a44f-7a0c-40e6-874f-7d7741fc6cbd
+
 
 ## Getting it
 ### The easy way

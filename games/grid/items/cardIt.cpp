@@ -7,7 +7,7 @@
 #include <QGraphicsSceneHoverEvent>
 
 CardGraphicItem::CardGraphicItem(layout l, const FlashCard& flashc, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0), fc(flashc),
+    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0), fc(flashc), onTop(false),
       front(parseMarkdownHtml(fc.front)), back(parseMarkdownHtml(fc.back)), txt() {
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);
@@ -47,6 +47,7 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         if (side == 0) {
             PlayScene* curS = (PlayScene*)MG->curScene;
             curS->pauseTimer();
+            onTop = true;
             setParentItem(nullptr);  // So the item can be placed on the very top
             setPos(mapToScene(QPointF(0, 0)));
             setZValue(4);
@@ -85,9 +86,11 @@ void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, Q
     }
     paintSvg(p);
 
-    txt.resize(rect.size().toSize());
-    p->save();
-    p->translate(rect.topLeft());
-    txt.render(p);
-    p->restore();
+    if (onTop || !((PlayScene*)MG->curScene)->hasOverlay()) {
+        txt.resize(rect.size().toSize());
+        p->save();
+        p->translate(rect.topLeft());
+        txt.render(p);
+        p->restore();
+    }
 }

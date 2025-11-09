@@ -136,7 +136,7 @@ bool PlayScene::hasOverlay() {
     return overlay != NULL;
 }
 void PlayScene::removeOverlay() {
-    if (overlay) {
+    if (hasOverlay()) {
         scn.removeItem(overlay);
         delete overlay;
         overlay = NULL;

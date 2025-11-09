@@ -19,6 +19,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
     layout lay;
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
+    bool onTop;
 protected:
     const FlashCard& fc;
     QLabel txt;

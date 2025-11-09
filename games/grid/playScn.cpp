@@ -90,7 +90,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
     int key = event->key();
 
-    if (overlay != NULL && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
+    if (hasOverlay() && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
                 if (key == Qt::Key_Space) {
@@ -105,7 +105,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
                     }
                 }
                 it.item->finish();
-                if (tr.isDone()) break;
+                if (tr.isDone()) return true;
                 if (main->grid.empty()) {
                     int remaining = timeLeft - timeOffset;
                     int existingTime = qMin(remaining, 2000);  // Max of 2 seconds carried in from before
@@ -113,9 +113,8 @@ bool PlayScene::keyEv(QKeyEvent* event) {
                     timeOffset = fixedOffs;
                     timeLeft = existingTime + addAnother() + fixedOffs;
                 }
-                break;
+                return true;
             }
-            return true;
         }
     }
     return false;

@@ -99,7 +99,9 @@ bool PlayScene::keyEv(QKeyEvent* event) {
                 } else {
                     MG->s.goods++;
                     if (!tr.grow(50)) {
+                        it.item->finish();
                         MG->changeScene(new WinScene());
+                        return true;
                     }
                 }
                 it.item->finish();

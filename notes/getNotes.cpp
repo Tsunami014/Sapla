@@ -58,33 +58,32 @@ void writeNotes() {
         return;
     }
     QTextStream out(&file);
-    for (auto& n : notesL) {
-        out << makeSafe(n.contents()) << "\n";
+    for (auto* n : notesL) {
+        out << makeSafe(n->contents()) << "\n";
     }
     file.close();
     //Log::Debug(MODULE) << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth;
 }
 
 void initNotes() {
-    notesL.clear();
     QString fullpth = getPath();
     QFile file(fullpth);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // File does not exist, so MAKE IT EXIST.
         notesL = {
-            Note("What is **Australia**?\n"
+            new Note("What is **Australia**?\n"
                  "    *  (This is important to know)\n"
                  "---\n"
                  "A country"),
-            Note("What *is* the meaning of life?\n"
+            new Note("What *is* the meaning of life?\n"
                  "---\n"
                  "42"),
-            Note("What is 1 + 1?\n"
+            new Note("What is 1 + 1?\n"
                  "---\n"
                  "- 2\n"
                  "+ You should know this!"),
-            Note("What happened in 2025?\n"
+            new Note("What happened in 2025?\n"
                  "===\n"
                  "This app was made")
         };
@@ -98,7 +97,7 @@ void initNotes() {
         if (line == "" || line[0] == "#") {
             // Nothing or comment
         } else {
-            notesL.emplace_back(unSafe(line));
+            notesL.push_back(new Note(unSafe(line)));
         }
         line = in.readLine();
     }

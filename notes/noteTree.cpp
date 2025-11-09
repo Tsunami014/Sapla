@@ -10,8 +10,8 @@ QTreeWidget* getNoteTree(QWidget* parent) {
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
-    for (auto& note : notesL) {
-        addToTree(tree, &note);
+    for (auto* note : notesL) {
+        addToTree(tree, note);
     }
     return tree;
 }

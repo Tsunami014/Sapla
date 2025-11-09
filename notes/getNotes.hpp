@@ -4,7 +4,7 @@
 #include <QString>
 #include <QTextStream>
 
-inline std::vector<Note> notesL;
+inline std::vector<Note*> notesL;
 
 QString tryReadLine(QTextStream& in, QString error = "");
 QString makeSafe(QString str);

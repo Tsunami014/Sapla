@@ -33,6 +33,7 @@ BrowseScene::BrowseScene()
             Note* n = static_cast<TreeData*>(it->data(0, Qt::UserRole).value<void*>())->note;
             n->setContents(te->getMarkdown());
             it->setText(0, n->title());
+            writeNotes();
         });
         auto* scroll = new QScrollArea();
         scroll->setAttribute(Qt::WA_TranslucentBackground);
@@ -62,10 +63,10 @@ BrowseScene::BrowseScene()
         mLay->addWidget(scroll);
 
         connect(&m, &QAction::triggered, this, [=](){
-            auto* n = new Note("");
-            notesL.push_back(*n);
-            auto* it = addToTree(tree, n);
+            notesL.emplace_back("");
+            auto* it = addToTree(tree, &notesL.back());
             tree->setCurrentItem(it);
+            writeNotes();
 
             tree->sortItems(
                 tree->header()->sortIndicatorSection(),

@@ -70,6 +70,10 @@ MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
 MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(parent) { init(); setMarkdown(text); }
 void MarkdownEdit::init() {
     setFont(getFont(1));
+    connect(this, &QTextEdit::selectionChanged, this, [this](){
+        QSignalBlocker blocker(this);
+        updateTxt(false, false);
+    });
 }
 
 void MarkdownEdit::setMarkdown(const QString& text) {

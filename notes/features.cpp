@@ -31,7 +31,7 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) {
         return std::nullopt;
     }
     std::vector<FlashCard> l{};
-    QStringList parts = txt.split("---", Qt::SkipEmptyParts);
+    QStringList parts = txt.split("---");
     l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]));
     return l;
 }
@@ -54,7 +54,7 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) {
         return std::nullopt;
     }
     std::vector<FlashCard> l{};
-    QStringList parts = txt.split("===", Qt::SkipEmptyParts);
+    QStringList parts = txt.split("===");
     QString first = trimNL(parts[0]);
     QString second = trimNL(parts[1]);
     l.emplace_back(parent, first, second);

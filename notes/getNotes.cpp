@@ -1,11 +1,10 @@
-#include "getCards.hpp"
-#include "cardTyps.hpp"
+#include "getNotes.hpp"
 #include "cardList.hpp"
 #include "../log.hpp"
 #include <QStandardPaths>
 #include <QDir>
 
-const QString MODULE = "getCards";
+const QString MODULE = "getNotes";
 
 QString tryReadLine(QTextStream& in, QString error) {
     QString out;
@@ -23,21 +22,23 @@ QString tryReadLine(QTextStream& in, QString error) {
     return out;
 }
 
-// In addition to newlines and blank strings, | is escaped to a different character to use in text card splitting and stuff
-// So using | as a delimiter means you can split by | without wondering about escapes because it becomes a different character.
 QString makeSafe(QString str) {
     if (str == "") return "\\";
     str.replace("\\", "\\\\");
-    str.replace("|", "\\&");
-    str.replace("\n", "\\n");
+    str.replace("\x03", "\\3");
+    str.replace("\n", "\x03");
     str.replace("\r", "\\r");
+    str.replace("---", "\\-");
+    str.replace("===", "\\=");
     return str;
 }
 QString unSafe(QString str) {
     if (str == "\\") return "";
-    str.replace("\\n", "\n");
+    str.replace("\x03", "\n");
     str.replace("\\r", "\r");
-    str.replace("\\&", "|");
+    str.replace("\\3", "\x03");
+    str.replace("\\-", "---");
+    str.replace("\\=", "===");
     str.replace("\\\\", "\\");
     return str;
 }
@@ -49,7 +50,7 @@ QString getPath() {
     return path + "/savedata.txt";
 }
 
-void writeCards() {
+void writeNotes() {
     QString fullpth = getPath();
     QFile file(fullpth);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This *should* never fail but it's still good to check
@@ -57,55 +58,52 @@ void writeCards() {
         return;
     }
     QTextStream out(&file);
-    auto cs = getCards();
-    for (auto& c : cs) {
-        c->toFile(out);
+    for (auto& n : notesL) {
+        out << makeSafe(n.contents()) << "\n";
     }
     file.close();
     //Log::Debug(MODULE) << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth;
 }
 
-void initCards() {
-    std::vector<BaseCardTyp*> cards = {};
+void initNotes() {
+    notesL.clear();
     QString fullpth = getPath();
     QFile file(fullpth);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // File does not exist, so MAKE IT EXIST.
-        cards = {
-            new TextCard("What is **Australia**?\n    *  (This is important to know)", "A country"),
-            new TextCard("What *is* the meaning of life?", "42"),
-            new TextCard("What is 1 + 1?", "- 2\n+ You should know this!"),
-            new DoubleSidedCard({"What happened i", "I", "n 2025", "?", ""}, {"When was t", "T", "his app ", "made?", "was made"})
+        notesL = {
+            Note("What is **Australia**?\n"
+                 "    *  (This is important to know)\n"
+                 "---\n"
+                 "A country"),
+            Note("What *is* the meaning of life?\n"
+                 "---\n"
+                 "42"),
+            Note("What is 1 + 1?\n"
+                 "---\n"
+                 "- 2\n"
+                 "+ You should know this!"),
+            Note("What happened in 2025?\n"
+                 "===\n"
+                 "This app was made")
         };
-        writeCards();
+        writeNotes();
         return;
     }
 
     QTextStream in(&file);
     QString line = in.readLine();
     while (!line.isNull()) {
-        BaseCardTyp* newC;
         if (line == "" || line[0] == "#") {
             // Nothing or comment
         } else {
-            bool done = false;
-            for (auto& typ : CardRegistry::registry) {
-                if (typ.canParse(line)) {
-                    cards.push_back(typ.parse(line, in));
-                    done = true;
-                    break;
-                }
-            }
-            if (!done) {
-                Log::Error(MODULE) << "Card parser cannot be found for header: '" << line << "'!";
-            }
+            notesL.emplace_back(unSafe(line));
         }
         line = in.readLine();
     }
 
     file.close();
-    CLreplaceCards(cards);
-    Log::Debug(MODULE) << "Successfully loaded " << cards.size() << " cards!";
+    Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " cards!";
 }
 

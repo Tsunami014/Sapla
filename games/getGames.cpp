@@ -1,7 +1,6 @@
 #include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
-#include "builtin/game.hpp"
 #include "getGames.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
@@ -29,7 +28,7 @@ bool tryLoad(const QFileInfo& file) {
     QString fname = file.fileName();
     if (!lib->load()) {
         Log::Error(MODULE) << "Failed to load " << fname << ": " << lib->errorString();
-        failedGames.push_back({fname, lib->errorString()});
+        failedGames.push_back({fname, lib->errorString(), file.path()});
         delete lib;
         return false;
     }
@@ -37,24 +36,24 @@ bool tryLoad(const QFileInfo& file) {
     auto regFn = reinterpret_cast<Registry (*)()>(lib->resolve("_register"));
     if (regFn) {
         Registry reg = regFn();
-        games.push_back(new GamePlugin(fname, reg, lib));
+        games.push_back(new GamePlugin(fname, reg, lib, file.path()));
         return true;
     } else {
         QString error = "No '_register' function found in "+fname;
         Log::Error(MODULE) << error;
         lib->unload();
-        failedGames.push_back({fname, error});
+        failedGames.push_back({fname, error, file.path()});
         delete lib;
         return false;
     }
 }
 
 std::vector<GamePlugin*> games = {};
-std::vector<std::pair<QString, QString>> failedGames = {};
-std::vector<QString> disabldGames;
+std::vector<FailedGame> failedGames = {};
+std::vector<std::pair<QString, QString>> disabldGames;
 
-GamePlugin::GamePlugin(QString nme, Registry& r, QLibrary* library)
-    : name(std::move(nme)), reg(r), lib(library) { reg.loadFn(); permanent = false; }
+GamePlugin::GamePlugin(QString nme, Registry& r, QLibrary* library, QString pth)
+    : name(std::move(nme)), reg(r), lib(library), path(pth) { reg.loadFn(); permanent = false; }
 GamePlugin::~GamePlugin() {
     reg.unloadFn();
     //delete lib;
@@ -65,11 +64,22 @@ bool GamePlugin::run() {
 
 void loadGames() {
     if (games.size() == 0) {
-        QFileInfo BIlib(QCoreApplication::applicationDirPath()+"/libbuiltinGame"+suffix);
-        if (tryLoad(BIlib)) {
-            games[0]->permanent = true;
+        const QString biGameNam = "libbuiltinGame"+suffix;
+        QString fpth = QCoreApplication::applicationDirPath()+"/"+biGameNam;
+        if (!QFile::exists(fpth)) {
+            fpth = fpth+"."+disabl;
+            if (!QFile::exists(fpth)) {
+                Log::Warn(MODULE) << "Could not locate built-in game!";
+            } else {
+                disabldGames.push_back({biGameNam+"."+disabl, fpth});
+            }
         } else {
-            Log::Warn(MODULE) << "Could not load built-in game!";
+            QFileInfo BIlib(fpth);
+            if (tryLoad(BIlib)) {
+                games[0]->permanent = true;
+            } else {
+                Log::Warn(MODULE) << "Error when loading built-in game!";
+            }
         }
     } else {
         for (int i = 1; i < games.size(); i++) delete games[i];
@@ -84,7 +94,7 @@ void loadGames() {
     QFileInfoList files = dir.entryInfoList(QStringList{"*"+suffix, "*"+suffix+"."+disabl}, QDir::Files);
     for (const QFileInfo& file : files) {
         if (file.suffix() == disabl) {
-            disabldGames.push_back(file.fileName());
+            disabldGames.push_back({file.fileName(), file.path()});
         } else {
             tryLoad(file);
         }

@@ -1,28 +1,27 @@
-#include "cardTree.hpp"
-#include "cardList.hpp"
+#include "noteTree.hpp"
+#include "getNotes.hpp"
 #include "../wids/listWid.hpp"
 #include <QHeaderView>
 
-QTreeWidget* getCardTree(QWidget* parent) {
+QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    tree->setColumnCount(2);
-    tree->setHeaderLabels({"Name", "Type"});
+    tree->setColumnCount(1);
+    tree->setHeaderLabels({"Name"});
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
-    for (auto* card : getCards()) {
-        addToTree(tree, card);
+    for (auto& note : notesL) {
+        addToTree(tree, &note);
     }
     return tree;
 }
 
-QTreeWidgetItem* addToTree(QTreeWidget* tree, BaseCardTyp* card) {
+QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* note) {
     QTreeWidgetItem* item = new QTreeWidgetItem(tree);
-    item->setText(0, card->getName());
-    item->setText(1, card->typeName());
+    item->setText(0, note->title());
 
     item->setData(0, Qt::UserRole, QVariant::fromValue<void*>(
-        new TreeData{card, true}
+        new TreeData{note}
     ));
     //item->setIcon(0, QIcon(":/icons/file.png"));
 

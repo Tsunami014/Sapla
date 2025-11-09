@@ -26,15 +26,14 @@ set(CORELIB
     wids/svgBtn.cpp
     wids/svgPic.cpp
 
-    items/sideRends.cpp
     items/progress.cpp
     items/treeItem.cpp
 
-    cards/cardTyps.cpp
-    cards/getCards.cpp
-    cards/cardList.cpp
-    cards/formElms.cpp
-    cards/cardTree.cpp
+    notes/note.cpp
+    notes/features.cpp
+    notes/getNotes.cpp
+    notes/noteTree.cpp
+    notes/cardList.cpp
 
     scenes/baseScn.cpp
     scenes/gameScn.cpp

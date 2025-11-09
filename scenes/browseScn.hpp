@@ -1,7 +1,7 @@
 #pragma once
 #include "baseScn.hpp"
 #include "../menu.hpp"
-#include "../cards/cardTyps.hpp"
+#include "../notes/note.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -16,6 +16,5 @@ protected:
     QVBoxLayout* form;
 
 private:
-    void addCard(BaseCardTyp* card);
-    Menu newCmenu;
+    MenuAction m;
 };

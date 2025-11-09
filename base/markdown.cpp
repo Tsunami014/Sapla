@@ -1,5 +1,6 @@
 #include "markdown.hpp"
 #include "font.hpp"
+#include "../notes/features.hpp"
 #include <QTextList>
 #include <QTextBlock>
 #include <QRegularExpression>
@@ -45,6 +46,11 @@ QString parseMarkdownHtml(QString txt) {
     // Bold & italic
     esc.replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
        .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
+
+    // Now parse all the features
+    for (auto& f : Feats) {
+        esc = f->markup(esc);
+    }
 
     // Fix spaces and finish
     replace(esc, R"(^ +)", [](QRegularExpressionMatch m) {

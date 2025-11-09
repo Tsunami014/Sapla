@@ -16,10 +16,10 @@
 #include "../wids/svgBtn.hpp"
 #include "../wids/svgPic.hpp"
 // Cards stuff
-#include "../cards/cardTyps.hpp"
-#include "../cards/getCards.hpp"
-#include "../cards/cardList.hpp"
-#include "../items/sideRends.hpp"
+#include "../notes/note.hpp"
+#include "../notes/features.hpp"
+#include "../notes/getNotes.hpp"
+#include "../notes/cardList.hpp"
 // Scenes
 #include "../scenes/gameScn.hpp"
 #include "../game.hpp"  // to mitigate the forward reference

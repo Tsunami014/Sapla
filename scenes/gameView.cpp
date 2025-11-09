@@ -8,6 +8,7 @@
 #include <QMessageBox>
 
 struct ListData {
+    QString path;
     QString text;
     bool working;
 };
@@ -52,7 +53,8 @@ GameViewScene::GameViewScene()
         connect(disBtn, &SvgBtn::clicked, this, [=](){
             QTreeWidgetItem* sel = li->currentItem();
             if (sel) {
-                QString frpth = getGamesPath()+"/"+sel->text(1);
+                ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
+                QString frpth = dat.path;
                 QString topth;
                 if (frpth.endsWith(".dis")) {
                     topth = frpth.sliced(0, frpth.size()-4);
@@ -73,7 +75,7 @@ GameViewScene::GameViewScene()
             QTreeWidgetItem* sel = li->currentItem();
             if (sel) {
                 ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
-                txt->setText(dat.text);
+                txt->setText(dat.path + "\n" + dat.text);
             }
         });
 
@@ -91,20 +93,19 @@ void GameViewScene::reset() {
 
 void GameViewScene::fillTree() {
     li->clear();
-    QString dir = getGamesPath()+"/";
     for (auto& dg : disabldGames) {
-        auto* it = new QTreeWidgetItem(QStringList({"🤎", dg}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+dg+"\nGame disabled", false}));
+        auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.first}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.second, "Game disabled", false}));
         li->addTopLevelItem(it);
     }
     for (auto& fg : failedGames) {
-        auto* it = new QTreeWidgetItem(QStringList({"💔", fg.first}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+fg.first+"\nGame loaded with error:\n"+fg.second, false}));
+        auto* it = new QTreeWidgetItem(QStringList({"💔", fg.name}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.path, "Game loaded with error:\n"+fg.error, false}));
         li->addTopLevelItem(it);
     }
     for (auto* g : games) {
         auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dir+g->name+"\nGame loaded successfully!", true}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->path, "Game loaded successfully!", true}));
         li->addTopLevelItem(it);
     }
 }

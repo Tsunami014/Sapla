@@ -1,12 +1,16 @@
 #pragma once
+#include "note.hpp"
 #include <vector>
-#include "cardTyps.hpp"
+#include <QString>
+#include <QTextStream>
+
+inline std::vector<Note> notesL;
 
 QString tryReadLine(QTextStream& in, QString error = "");
 QString makeSafe(QString str);
 QString unSafe(QString str);
 
 QString getPath();
-void initCards();
-void writeCards();
+void initNotes();
+void writeNotes();
 

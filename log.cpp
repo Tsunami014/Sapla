@@ -3,6 +3,7 @@
 #include "menu.hpp"
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QApplication>
 #include <QGraphicsOpacityEffect>
 
 constexpr std::string_view lnames[] = {
@@ -53,7 +54,6 @@ void LogAlert::deleteMe() {
 namespace Log {
     std::vector<LogType> logs = {};
     Log::~Log() {
-        logs.emplace_back(lvl, buf, mod);
         QString lname = QString::fromUtf8(lnames[lvl].data());
         QString txt = QString("%1 [%2] %3").arg(lname).arg(mod).arg(buf);
         txt.replace("\n", "\n > ");
@@ -63,11 +63,14 @@ namespace Log {
             case WARN: qWarning().noquote() << txt; break;
             case ERROR: qCritical().noquote() << txt; break;
         }
-        if (lvl != DEBUG) {
-            Level lvll = lvl;
-            QTimer::singleShot(0, [lvll, txt](){
-                MG->logLay.addWidget(new LogAlert(lvll, txt));
-            });
+        if (!QApplication::closingDown()) {
+            logs.emplace_back(lvl, buf, mod);
+            if (lvl != DEBUG) {
+                Level lvll = lvl;
+                QTimer::singleShot(0, [lvll, txt](){
+                    MG->logLay.addWidget(new LogAlert(lvll, txt));
+                });
+            }
         }
     }
 }

@@ -4,9 +4,7 @@
 
 class CardGraphicItem : public RectItem, public SvgUtils {
 public:
-    CardGraphicItem(layout lay, BaseSideRend* front, BaseSideRend* back, QGraphicsItem* parent = nullptr);   
     CardGraphicItem(layout lay, const FlashCard& fc, QGraphicsItem* parent = nullptr);   
-    ~CardGraphicItem();
 
     QRect getRect() override { return rect.toRect(); }
 
@@ -22,7 +20,6 @@ public:
     layout lay;
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
 protected:
-    BaseSideRend* front;
-    BaseSideRend* back;
+    const FlashCard& fc;
 };
 

@@ -1,8 +1,9 @@
 #include "browseScn.hpp"
 #include "../core.hpp"
-#include "../cards/cardTree.hpp"
-#include "../cards/getCards.hpp"
-#include "../cards/cardList.hpp"
+#include "../notes/noteTree.hpp"
+#include "../notes/getNotes.hpp"
+#include "../notes/cardList.hpp"
+#include "../base/markdown.hpp"
 #include "../base/font.hpp"
 #include <QColor>
 #include <QTimer>
@@ -12,96 +13,66 @@
 
 const QString HELP_TXT = "&lt;Ctrl+Delete&gt; to delete currently selected item, &lt;Esc&gt; to go back";
 
-class FormWidget : public QWidget {
-public:
-    FormWidget(QWidget *parent = nullptr) : QWidget(parent) {
-        setAttribute(Qt::WA_TranslucentBackground);
-        setFocusPolicy(Qt::ClickFocus);
-    }
-
-    void paintEvent(QPaintEvent *ev) override {
-        QPainter p(this);
-        p.setRenderHint(QPainter::Antialiasing);
-
-        QPainterPath pth;
-        pth.setFillRule(Qt::WindingFill);
-        QRectF r = rect().adjusted(4.0, 4.0, -4.0, -4.0);
-        pth.addRoundedRect(r, 10.0, 10.0);
-        pth.addRect(r.adjusted(0, 10, 0, 0));
-        p.fillPath(pth, QColor(140, 70, 45, 130));
-    }
-};
-
-void deleteLayout(QLayout* lay) {
-    QLayoutItem* it;
-    while ((it = lay->takeAt(0)) != nullptr) {
-        if (QWidget* wid = it->widget()) {
-            wid->setParent(nullptr);  // detach from layout
-            wid->deleteLater();
-        } else if (QLayout* lay2 = it->layout()) {
-            lay2->setParent(nullptr);
-            deleteLayout(lay2);
-            lay2->deleteLater();
-        }
-        delete it;  // Stop reason: signal SIGSEGV: address not mapped to object (fault address=0x0)
-    }
-}
-
 BrowseScene::BrowseScene()
-    : BaseScene(), newCmenu("New Card") {
+    : BaseScene(), m("New card") {
         helpStr = &HELP_TXT;
         MG->changeBG("dirt");
 
-        tree = getCardTree(this);
-        for (const auto& typ : CardRegistry::registry) {
-            QAction* act = newCmenu.addAction(typ.name);
-            QObject::connect(act, &QAction::triggered, [this, typ]() {
-                addCard(typ.newBlank());
-            });
-        }
+        tree = getNoteTree(this);
 
-        FormWidget* formWid = new FormWidget(this);
+        auto* te = new MarkdownEdit(this);
+        te->setDisabled(true);
+        QObject::connect(te, &MarkdownEdit::textChanged, [=](){
+            QList<QTreeWidgetItem*> selected = tree->selectedItems();
+            if (selected.size() != 1) {
+                te->setText("");
+                te->setDisabled(true);
+                return;
+            }
+            QTreeWidgetItem* it = selected.first();
+            Note* n = static_cast<TreeData*>(it->data(0, Qt::UserRole).value<void*>())->note;
+            n->setContents(te->getMarkdown());
+            it->setText(0, n->title());
+        });
         auto* scroll = new QScrollArea();
         scroll->setAttribute(Qt::WA_TranslucentBackground);
         scroll->setWidgetResizable(true);
-        scroll->setWidget(formWid);
+        scroll->setWidget(te);
         scroll->setFrameShape(QFrame::NoFrame);
         scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        form = new QVBoxLayout(formWid);
-        form->setSpacing(4);
-        form->setContentsMargins(4, 4, 4, 4);
 
-        QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [&](){
-            deleteLayout(form);
-
+        QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, [=](){
             QList<QTreeWidgetItem*> selected = tree->selectedItems();
-            if (selected.isEmpty())
+            if (selected.isEmpty()) {
+                te->setMarkdown("");
+                te->setDisabled(true);
                 return;
+            }
 
             QTreeWidgetItem* item = selected.first();
-            BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
+            Note* n = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
 
-            data->createForm(form, item);
-            form->addStretch();
+            te->setMarkdown(n->contents());
+            te->setDisabled(false);
         });
 
         auto* mLay = new QHBoxLayout(this);
         mLay->addWidget(tree);
         mLay->addWidget(scroll);
+
+        connect(&m, &QAction::triggered, this, [=](){
+            auto* n = new Note("");
+            notesL.push_back(*n);
+            auto* it = addToTree(tree, n);
+            tree->setCurrentItem(it);
+
+            tree->sortItems(
+                tree->header()->sortIndicatorSection(),
+                tree->header()->sortIndicatorOrder()
+            );
+        });
     }
-
-void BrowseScene::addCard(BaseCardTyp* card) {
-    CLaddCard(card);
-    writeCards();
-
-    auto* it = addToTree(tree, card);
-    tree->sortItems(
-        tree->header()->sortIndicatorSection(),
-        tree->header()->sortIndicatorOrder()
-    );
-    tree->setCurrentItem(it);
-}
 
 bool BrowseScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
@@ -113,9 +84,9 @@ bool BrowseScene::keyEv(QKeyEvent* event) {
             return true;
 
         QTreeWidgetItem* item = selected.first();
-        BaseCardTyp* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->card;
-        CLremoveCard(data);
-        writeCards();
+        Note* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
+        notesL.erase(std::remove(notesL.begin(), notesL.end(), *data), notesL.end());
+        writeNotes();
         if (QTreeWidgetItem* parent = item->parent()) {
             parent->removeChild(item);
         } else if (QTreeWidget *tree = item->treeWidget()) {

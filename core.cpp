@@ -8,8 +8,8 @@
 #include "menu.hpp"
 #include "log.hpp"
 #include "base/font.hpp"
-#include "cards/cardTyps.hpp"
-#include "cards/getCards.hpp"
+#include "notes/features.hpp"
+#include "notes/getNotes.hpp"
 #include "games/getGames.hpp"
 
 MainGame* MG = nullptr;
@@ -21,8 +21,8 @@ int runApp(int argc, char *argv[]) {
     Log::Debug("Main") << "Configuration located at:\n" << getPath();
     MG = new MainGame();
     initMenu(MG->menuBar());
-    registerCardTypes();
-    initCards();
+    registerNoteFeatures();
+    initNotes();
     loadGames();
     MG->initScene();
 

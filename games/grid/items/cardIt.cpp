@@ -6,29 +6,16 @@
 #include <QCursor>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(layout l, BaseSideRend* fr, BaseSideRend* bk, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0) {
+CardGraphicItem::CardGraphicItem(layout l, const FlashCard& flashc, QGraphicsItem* parent)
+    : RectItem(parent), SvgUtils(l.fname), lay(l), fc(flashc), side(0) {
         setAcceptHoverEvents(true);
-        front = fr;
-        back = bk;
     }
-CardGraphicItem::CardGraphicItem(layout l, const FlashCard& fc, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(l.fname), lay(l), side(0) {
-        setAcceptHoverEvents(true);
-        front = fc.getSide(SIDE_FRONT);
-        back = fc.getSide(SIDE_BACK);
-    }
-CardGraphicItem::~CardGraphicItem() {
-    delete front;
-    delete back;
-}
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
-    return *front == *other.front && *back == *other.back;
+    return fc == other.fc;
 }
 bool CardGraphicItem::operator==(const FlashCard& other) const {
-    CardGraphicItem nCGI(lay, other);
-    return nCGI == *this;
+    return fc == other;
 }
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
@@ -82,13 +69,14 @@ void CardGraphicItem::finish() {
 void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
     paintSvg(p);
 
+    QTextOption opts;
+    opts.setAlignment(Qt::AlignHCenter);
+    opts.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
     if (side == 0) {
-        if (!((PlayScene*)MG->curScene)->hasOverlay()) {
-            front->render(p, rect);
-        }
+        p->drawText(rect, fc.front, opts);
     } else {
         if (side == 255) {
-            back->render(p, rect);
+            p->drawText(rect, fc.back, opts);
         } else {
             // TODO: Partial flipped states
         }

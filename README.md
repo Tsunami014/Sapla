@@ -24,7 +24,7 @@ FAQ is at the bottom.
 If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-
+https://github.com/user-attachments/assets/362476fb-26d2-4674-b388-c7c49d7d35d3
 
 ## Getting it
 ### The easy way

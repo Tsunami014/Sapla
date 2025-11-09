@@ -111,7 +111,14 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
     bool hasSel = curs.hasSelection();
     QTextDocument* doc = document();
     int sBlk = doc->findBlock(curs.selectionStart()).blockNumber();
-    int eBlk = doc->findBlock(curs.selectionEnd()).blockNumber();
+    int eBlk;
+    if (hasSel) {
+        int selEndPos = curs.selectionEnd();
+        if (selEndPos > curs.selectionStart()) selEndPos = selEndPos - 1;
+        eBlk = doc->findBlock(selEndPos).blockNumber();
+    } else {
+        eBlk = doc->findBlock(curs.selectionEnd()).blockNumber();
+    }
 
     QTextCharFormat plainfmt;
     plainfmt.setFont(document()->defaultFont());
@@ -145,7 +152,9 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
             (!hasSel && bnum == curs.blockNumber()) ||
             (hasSel && bnum >= sBlk && bnum <= eBlk)
         )) {
-            if (blkCurs.selectedText() != line) blkCurs.insertText(line, plainfmt);
+            if (blkCurs.selectedText() != line) {
+                blkCurs.insertText(line, plainfmt);
+            }
         } else {
             blkCurs.insertHtml(parseMarkdownHtml(line));
         }

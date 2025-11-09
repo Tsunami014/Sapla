@@ -13,6 +13,11 @@ void registerNoteFeatures() {
     REGISTER_FEAT(DoubleSideFeat);
 }
 
+QString trimNL(const QString& orig) {
+    QString nstr = orig;
+    return nstr.remove(QRegularExpression(R"(^\n+|\n+$)"));
+}
+
 
 FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) {
     int amnt = txt.count(QRegularExpression(R"(^\s*---\s*$)", MO));
@@ -27,7 +32,7 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) {
     }
     std::vector<FlashCard> l{};
     QStringList parts = txt.split("---", Qt::SkipEmptyParts);
-    l.emplace_back(parent, parts[0], parts[1]);
+    l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]));
     return l;
 }
 QString SingleSideFeat::markup(QString& line) {
@@ -50,8 +55,10 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) {
     }
     std::vector<FlashCard> l{};
     QStringList parts = txt.split("===", Qt::SkipEmptyParts);
-    l.emplace_back(parent, parts[0], parts[1]);
-    l.emplace_back(parent, parts[1], parts[0]);
+    QString first = trimNL(parts[0]);
+    QString second = trimNL(parts[1]);
+    l.emplace_back(parent, first, second);
+    l.emplace_back(parent, second, first);
     return l;
 }
 QString DoubleSideFeat::markup(QString& line) {

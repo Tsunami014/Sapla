@@ -21,5 +21,8 @@ public:
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
 protected:
     const FlashCard& fc;
+    QLabel txt;
+    QString front;
+    QString back;
 };
 

@@ -164,6 +164,7 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
     }
 }
 
+
 MarkdownGraphicsText::MarkdownGraphicsText(QGraphicsItem* parent) : QGraphicsTextItem(parent) {}
 MarkdownGraphicsText::MarkdownGraphicsText(const QString& text, QGraphicsItem* parent) : QGraphicsTextItem(parent) {
     setMarkdown(text);

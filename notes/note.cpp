@@ -79,8 +79,7 @@ QString Note::contents() const {
     return orig;
 }
 QString Note::title() {
-    QString titl = orig;
-    return titl.replace("\n", " ");
+    return orig.simplified();
 }
 
 FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk) : front(fr), back(bk) {

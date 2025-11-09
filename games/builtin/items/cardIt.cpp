@@ -5,9 +5,17 @@
 #include <QGraphicsSceneHoverEvent>
 
 CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& flashc, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(fname), fc(flashc) {
+    : RectItem(parent), SvgUtils(fname), side(0), fc(flashc),
+      front(parseMarkdownHtml(fc.front)), back(parseMarkdownHtml(fc.back)), txt() {
         side = 0;
         setAcceptHoverEvents(true);
+        txt.setTextFormat(Qt::RichText);
+        txt.setWordWrap(true);
+        txt.setAlignment(Qt::AlignCenter);
+        txt.setMargin(4);
+        txt.setStyleSheet("color: black;");
+        txt.setAttribute(Qt::WA_TranslucentBackground);
+        txt.setFont(getFont(1.5));
     }
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
@@ -52,18 +60,20 @@ void CardGraphicItem::finish() {
 }
 
 void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
-    paintSvg(p);
-
-    QTextOption opts;
-    opts.setAlignment(Qt::AlignHCenter);
-    opts.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
     if (side == 0) {
-        p->drawText(rect, fc.front, opts);
+        txt.setText(front);
     } else {
         if (side == 255) {
-            p->drawText(rect, fc.back, opts);
+            txt.setText(back);
         } else {
             // TODO: Partial flipped states
         }
     }
+    paintSvg(p);
+
+    txt.resize(rect.size().toSize());
+    p->save();
+    p->translate(rect.topLeft());
+    txt.render(p);
+    p->restore();
 }

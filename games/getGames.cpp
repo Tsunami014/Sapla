@@ -106,6 +106,8 @@ void loadGames() {
         }
     }
 
-    Log::Info(MODULE) << "Loaded " << games.size() << " game(s) successfully and " << failedGames.size() << " game(s) unsuccessfully!";
+    Log::Info(MODULE) << "Loaded games:\n" << games.size() << " successfully\n"
+                                           << failedGames.size() << " unsuccessfully\n"
+                                           << disabldGames.size() << " disabled!";
 }
 

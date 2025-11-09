@@ -1,5 +1,6 @@
 #include "browseScn.hpp"
 #include "../core.hpp"
+#include "../help.hpp"
 #include "../notes/noteTree.hpp"
 #include "../notes/getNotes.hpp"
 #include "../notes/cardList.hpp"
@@ -10,11 +11,9 @@
 #include <QScrollArea>
 #include <QKeyEvent>
 
-const QString HELP_TXT = "&lt;Ctrl+Delete&gt; to delete currently selected item, &lt;Esc&gt; to go back";
-
 BrowseScene::BrowseScene()
     : BaseScene(), m("New card") {
-        helpStr = &HELP_TXT;
+        helpStr = &BROWSE_HELP;
         MG->changeBG("dirt");
 
         tree = getNoteTree(this);

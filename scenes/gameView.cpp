@@ -1,5 +1,6 @@
 #include "gameView.hpp"
 #include "../core.hpp"
+#include "../help.hpp"
 #include "../log.hpp"
 #include "../games/getGames.hpp"
 #include "../wids/listWid.hpp"
@@ -33,6 +34,7 @@ void movFile(QString fromName, QString toName) {
 GameViewScene::GameViewScene()
     : BaseScene(), m("Load game") {
         qRegisterMetaType<ListData>("GVSData");
+        helpStr = &GAMEVIEW_HELP;
         MG->changeBG("dirt");
         connect(&m, &QAction::triggered, this, &GameViewScene::loadF);
 

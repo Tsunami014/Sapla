@@ -106,6 +106,9 @@ void MarkdownEdit::mousePressEvent(QMouseEvent* event) {
 void MarkdownEdit::focusOutEvent(QFocusEvent *event) {
     QSignalBlocker blocker(this);
     QTextEdit::focusOutEvent(event);
+    QTextCursor c = textCursor();
+    c.clearSelection();
+    setTextCursor(c);
     updateTxt(false, false);
 }
 

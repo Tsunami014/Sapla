@@ -4,6 +4,20 @@
 
 QString parseMarkdownHtml(QString txt);
 
+
+class SaveCursor : public QObject {
+public:
+    SaveCursor(QTextEdit* parent);
+    ~SaveCursor();
+private:
+    QTextEdit* edit;
+    using Point = std::pair<int, int>;
+    Point save(int thing);
+    int load(Point saved);
+    Point anchor;
+    Point pos;
+};
+
 class MarkdownEdit : public QTextEdit {
 public:
     MarkdownEdit(QWidget* parent = nullptr);

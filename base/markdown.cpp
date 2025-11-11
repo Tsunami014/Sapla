@@ -64,7 +64,27 @@ QString parseMarkdownHtml(QString txt) {
 class MarkdownBlockData : public QTextBlockUserData {
 public:
     QString orig;
+    bool plain;
 };
+
+SaveCursor::SaveCursor(QTextEdit* parent) : QObject(parent), edit(parent) {
+    QTextCursor curs = edit->textCursor();
+    anchor = save(curs.anchor());
+    pos = save(curs.position());
+}
+SaveCursor::~SaveCursor() {
+    QTextCursor ncurs(edit->document());
+    ncurs.setPosition(load(anchor));
+    ncurs.setPosition(load(pos), QTextCursor::KeepAnchor);
+    edit->setTextCursor(ncurs);
+}
+SaveCursor::Point SaveCursor::save(int thing) {
+    QTextBlock blk = edit->document()->findBlock(thing);
+    return {blk.blockNumber(), thing - blk.position()};
+}
+int SaveCursor::load(Point saved) {
+    return edit->document()->findBlockByNumber(saved.first).position() + saved.second;
+}
 
 MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
 MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(parent) { init(); setMarkdown(text); }
@@ -72,6 +92,7 @@ void MarkdownEdit::init() {
     setFont(getFont(1));
     connect(this, &QTextEdit::selectionChanged, this, [this](){
         QSignalBlocker blocker(this);
+        SaveCursor savCurs(this);
         updateTxt(false, false);
     });
 }
@@ -83,10 +104,16 @@ void MarkdownEdit::setMarkdown(const QString& text) {
     update();
 }
 QString MarkdownEdit::getMarkdown() {
-    QSignalBlocker blocker(this);
-    updateTxt(false, true);
-    QString txt = toPlainText();
-    updateTxt(false, false);
+    QString txt = "";
+    QTextBlock block = document()->begin();
+    while (block.isValid()) {
+        int bnum = block.blockNumber();
+        auto* data = static_cast<MarkdownBlockData*>(block.userData());
+        if (data) {
+            txt += data->orig + "\n";
+        }
+        block = block.next();
+    }
     return txt;
 }
 
@@ -101,6 +128,7 @@ void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
 void MarkdownEdit::mousePressEvent(QMouseEvent* event) {
     QSignalBlocker blocker(this);
     QTextEdit::mousePressEvent(event);
+    SaveCursor savCurs(this);
     updateTxt(false, false);
 }
 void MarkdownEdit::focusOutEvent(QFocusEvent *event) {
@@ -136,36 +164,49 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
     while (block.isValid()) {
         int bnum = block.blockNumber();
         auto* data = static_cast<MarkdownBlockData*>(block.userData());
-        if (!data) {
+        bool newData = !data;
+        if (newData) {
             data = new MarkdownBlockData();
             block.setUserData(data);
         }
 
-        if (save) data->orig = block.text();
-        QString line = data->orig;
-        QTextCursor blkCurs(block);
-
-        int start = block.position();
-        int len = block.length() - 1;
-        blkCurs.setPosition(start);
-        if (len > 0) {
-            blkCurs.setPosition(start + len, QTextCursor::KeepAnchor);
-        } else {
-            blkCurs.setPosition(start);  // If empty line have a zero length selection
+        if (newData || (save && block.text() != data->orig)) {
+            data->orig = block.text();
+            data->plain = true;
         }
+        QString line = data->orig;
 
-        blkCurs.beginEditBlock();
-        if (focus && (orig ||
+        bool plain = focus && (orig ||
             (!hasSel && bnum == curs.blockNumber()) ||
             (hasSel && bnum >= sBlk && bnum <= eBlk)
+        );
+
+        if (!(
+            // If it is supposed to be plain and already is and is the correct text, skip
+            (plain && data->plain && line == block.text()) ||
+            // If it is supposed to be parsed and already is, skip (users shouldn't be able to edit parsed data)
+            (!plain && !data->plain)
         )) {
-            if (blkCurs.selectedText() != line) {
-                blkCurs.insertText(line, plainfmt);
+            data->plain = plain;
+            QTextCursor blkCurs(block);
+
+            int start = block.position();
+            int len = block.length() - 1;
+            blkCurs.setPosition(start);
+            if (len > 0) {
+                blkCurs.setPosition(start + len, QTextCursor::KeepAnchor);
+            } else {
+                blkCurs.setPosition(start);  // If empty line have a zero length selection
             }
-        } else {
-            blkCurs.insertHtml(parseMarkdownHtml(line));
+
+            blkCurs.beginEditBlock();
+            if (plain) {
+                blkCurs.insertText(line, plainfmt);
+            } else {
+                blkCurs.insertHtml(parseMarkdownHtml(line));
+            }
+            blkCurs.endEditBlock();
         }
-        blkCurs.endEditBlock();
 
         block = block.next();
     }

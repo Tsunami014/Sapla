@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QScrollArea>
 #include <QKeyEvent>
+#include <QTextBlock>
 
 BrowseScene::BrowseScene()
     : BaseScene(), m("New card") {
@@ -31,9 +32,20 @@ BrowseScene::BrowseScene()
         scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
         bar = new Topbar(this);
-        connect(bar, &Topbar::onBtnPush, this, [=](){
+        connect(bar, &Topbar::onBtnPush, this, [=](const QString& apply){
             if (!te->isEnabled()) return;
             te->setFocus();
+            auto c = te->textCursor();
+            int pos = apply.indexOf("$CURS$");
+            if (pos != -1) {
+                QString apply2 = apply;
+                apply2.remove(pos, 6);
+                c.insertText(apply2);
+                c.setPosition(c.position() - apply.length() + pos);
+            } else {
+                c.insertText(apply);
+            }
+            te->lastCol = c.position() - c.block().position();
         });
 
         auto* vLay = new QVBoxLayout();

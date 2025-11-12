@@ -42,7 +42,7 @@ QString SingleSideFeat::markup(QString& line) {
     return line;
 }
 std::vector<BtnFeatures> SingleSideFeat::btns() {
-    return {{"---", "\n---\n$CURS$", std::nullopt, "Single sided note", 
+    return {{"---", "\n---\n", std::nullopt, "Single sided note", 
         "Separates the card into a front and a back.\n"
         "This creates a single sided card, where the front is above the line and the back is below."
     }};
@@ -74,7 +74,7 @@ QString DoubleSideFeat::markup(QString& line) {
     return line;
 }
 std::vector<BtnFeatures> DoubleSideFeat::btns() {
-    return {{"===", "\n===\n$CURS$", std::nullopt, "Double sided note", 
+    return {{"===", "\n===\n", std::nullopt, "Double sided note", 
         "Separates the card into 2 sides.\n"
         "This creates 2 cards: one where the top is on the front and the bottom is on the back, and another the other way around."
     }};

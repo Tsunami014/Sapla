@@ -1,5 +1,9 @@
 #include "topbar.hpp"
+#include "../core.hpp"
+#include "../menu.hpp"
 #include "../notes/features.hpp"
+#include <QDialog>
+#include <QTextEdit>
 
 Topbar::Topbar(QWidget* parent) : QWidget(parent) {
     auto* mainLay = new QVBoxLayout(this);
@@ -12,7 +16,7 @@ Topbar::Topbar(QWidget* parent) : QWidget(parent) {
     gridLay = new QGridLayout(grid);
     settingsBtn = new SvgBtn(":/assets/btn2.svg", this);
     settingsBtn->setText("⚙️");
-    // connect(settingsBtn, &SvgBtn::clicked, this, &Topbar::);
+    connect(settingsBtn, &SvgBtn::clicked, this, &Topbar::makeSettings);
     settings = Btns{settingsBtn, "Edit the settings for this bar"};
 
     mainLay->addLayout(barLay);
@@ -30,7 +34,8 @@ void Topbar::createItems() {
             newB->setText(b.label);
             newB->setToolTip(b.context);
             QString apply = b.apply;
-            connect(newB, &SvgBtn::clicked, this, [this, apply](){ onBtnPush(apply); });
+            QString help = b.help;
+            connect(newB, &SvgBtn::clicked, this, [this, apply, help](){ onBtnPush(apply, help); });
             btns.push_back({newB, b.help});
             if (b.shortcut) {
                 auto found = cuts.find(b.shortcut->key);
@@ -73,5 +78,46 @@ void Topbar::toggleXpanded() {
     xpanded = !xpanded;
     grid->setVisible(xpanded);
     xpandBtn->setText(xpanded ? "▲" : "▼");
+}
+
+Topbar* Topbar::clone() const {
+    auto* copy = new Topbar(parentWidget());
+    if (xpanded) copy->toggleXpanded();
+    return copy;
+}
+
+void Topbar::makeSettings() {
+    QDialog* dialog = new QDialog;
+    dialog->setWindowTitle("Top bar settings");
+    dialog->resize(500, 700);
+    dialog->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+    dialog->setStyleSheet(
+        "background-color: #CEAE9B;"
+        "color: black;"
+        "border-radius: 6px;"
+    );
+
+    auto* txtArea = new QTextEdit(dialog);
+    txtArea->setReadOnly(true);
+
+    auto* newTB = clone();
+    newTB->setParent(dialog);
+    newTB->toggleXpanded();
+    newTB->xpandBtn->setEnabled(false);
+    newTB->settingsBtn->setEnabled(false);
+    connect(newTB, &Topbar::onBtnPush, this, [=](const QString& apply, const QString help){
+        txtArea->setText(help);
+    });
+
+    auto* lay = new QVBoxLayout(dialog);
+    lay->addWidget(newTB, 3);
+    lay->addWidget(txtArea, 1);
+
+    dialogging = true;
+    MG->curScene->dialogOpen();
+    QObject::connect(dialog, &QDialog::finished, [=](int result){
+        MG->curScene->dialogClose();
+    });
+    dialog->exec();
 }
 

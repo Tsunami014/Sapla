@@ -19,11 +19,12 @@ class Topbar : public QWidget {
     Q_OBJECT
 public:
     Topbar(QWidget* parent = nullptr);
+    Topbar* clone() const;
     void close();
     inline void resizeEvent(QResizeEvent* ev) override { resize(); QWidget::resizeEvent(ev); }
 
 signals:
-    void onBtnPush(const QString& apply);
+    void onBtnPush(const QString& apply, const QString& helpstr);
 
 protected:
     void createItems();
@@ -41,6 +42,7 @@ protected:
 
 private slots:
     void toggleXpanded();
+    void makeSettings();
 
 private:
     void resize();

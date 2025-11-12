@@ -31,6 +31,10 @@ BrowseScene::BrowseScene()
         scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
         bar = new Topbar(this);
+        connect(bar, &Topbar::onBtnPush, this, [=](){
+            if (!te->isEnabled()) return;
+            te->setFocus();
+        });
 
         auto* vLay = new QVBoxLayout();
         vLay->addWidget(bar);

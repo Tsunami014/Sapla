@@ -89,6 +89,7 @@ int SaveCursor::load(Point saved) {
 MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
 MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(parent) { init(); setMarkdown(text); }
 void MarkdownEdit::init() {
+    lastCol = -1;
     setFont(getFont(1));
     connect(this, &QTextEdit::selectionChanged, this, [this](){
         QSignalBlocker blocker(this);
@@ -137,18 +138,31 @@ void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
     emit textChanged();
 }
 void MarkdownEdit::mousePressEvent(QMouseEvent* event) {
-    QSignalBlocker blocker(this);
     QTextEdit::mousePressEvent(event);
+    QSignalBlocker blocker(this);
     SaveCursor savCurs(this);
     updateTxt(false, false);
 }
 void MarkdownEdit::focusOutEvent(QFocusEvent *event) {
-    QSignalBlocker blocker(this);
     QTextEdit::focusOutEvent(event);
+    QSignalBlocker blocker(this);
     QTextCursor c = textCursor();
     c.clearSelection();
+    lastCol = c.position() - c.block().position();
     setTextCursor(c);
     updateTxt(false, false);
+}
+void MarkdownEdit::focusInEvent(QFocusEvent *event) {
+    QTextEdit::focusInEvent(event);
+    QSignalBlocker blocker(this);
+    updateTxt(false, false);
+    if (lastCol != -1) {
+        QTextCursor c = textCursor();
+        int newPos = c.block().position() + qMin(lastCol, c.block().length() - 1);
+        c.setPosition(newPos);
+        setTextCursor(c);
+        lastCol = -1;
+    }
 }
 
 void MarkdownEdit::updateTxt(bool save, bool orig) {

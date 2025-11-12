@@ -28,10 +28,12 @@ public:
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void focusOutEvent(QFocusEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
 protected:
     void updateTxt(bool save, bool orig);
 private:
     void init();
+    int lastCol = -1;
 };
 
 class MarkdownGraphicsText : public QGraphicsTextItem {

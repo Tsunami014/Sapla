@@ -22,9 +22,11 @@ public:
     void close();
     inline void resizeEvent(QResizeEvent* ev) override { resize(); QWidget::resizeEvent(ev); }
 
+signals:
+    void onBtnPush(const QString& apply);
+
 protected:
     void createItems();
-    void onBtnPush(const QString& apply);
 
     QHBoxLayout* barLay;
     QGridLayout* gridLay;

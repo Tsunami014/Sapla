@@ -43,9 +43,6 @@ void Topbar::createItems() {
     btns.push_back(settings);
 }
 
-void Topbar::onBtnPush(const QString& apply) {
-}
-
 void Topbar::resize() {
     int hei = xpandBtn->fontMetrics().height() * 1.5;
     int wid = hei * 2;

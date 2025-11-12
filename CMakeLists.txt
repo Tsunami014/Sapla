@@ -21,6 +21,7 @@ set(CORELIB
     base/svgUtils.cpp
     base/svgWid.hpp
 
+    wids/topbar.cpp
     wids/ovrlWrap.cpp
     wids/listWid.cpp
     wids/svgBtn.cpp

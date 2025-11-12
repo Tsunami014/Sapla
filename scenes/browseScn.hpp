@@ -2,6 +2,7 @@
 #include "baseScn.hpp"
 #include "../menu.hpp"
 #include "../notes/note.hpp"
+#include "../wids/topbar.hpp"
 #include "../base/markdown.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
@@ -21,6 +22,7 @@ protected:
     QTreeWidget* tree;
     QVBoxLayout* form;
     MarkdownEdit* te;
+    Topbar* bar;
 
 private:
     MenuAction m;

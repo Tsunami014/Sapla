@@ -15,6 +15,7 @@
 #include "../items/treeItem.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../wids/svgPic.hpp"
+#include "../wids/topbar.hpp"
 // Cards stuff
 #include "../notes/note.hpp"
 #include "../notes/features.hpp"

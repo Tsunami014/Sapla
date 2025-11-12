@@ -17,6 +17,7 @@ BrowseScene::BrowseScene()
         MG->changeBG("dirt");
 
         tree = getNoteTree(this);
+        QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, this, &BrowseScene::selectionChange);
 
         te = new MarkdownEdit(this);
         te->setDisabled(true);
@@ -29,11 +30,15 @@ BrowseScene::BrowseScene()
         scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-        QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, this, &BrowseScene::selectionChange);
+        bar = new Topbar(this);
+
+        auto* vLay = new QVBoxLayout();
+        vLay->addWidget(bar);
+        vLay->addWidget(scroll);
 
         auto* mLay = new QHBoxLayout(this);
         mLay->addWidget(tree);
-        mLay->addWidget(scroll);
+        mLay->addLayout(vLay);
 
         connect(&m, &QAction::triggered, this, &BrowseScene::newNote);
     }

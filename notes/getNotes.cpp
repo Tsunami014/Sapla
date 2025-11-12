@@ -83,9 +83,9 @@ void initNotes() {
                  "---\n"
                  "- 2\n"
                  "+ You should know this!"),
-            new Note("What happened in 2025?\n"
+            new Note("[[What happened i:I]]n 2025[[?:]]\n"
                  "===\n"
-                 "This app was made")
+                 "[[When was t:T]]his app was made[[?:]]")
         };
         writeNotes();
         return;

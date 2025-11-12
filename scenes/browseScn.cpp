@@ -36,7 +36,7 @@ BrowseScene::BrowseScene()
             if (!te->isEnabled()) return;
             te->setFocus();
             auto c = te->textCursor();
-            int pos = apply.indexOf("$CURS$");
+            int pos = apply.indexOf("$CUR$");
             if (pos != -1) {
                 QString apply2 = apply;
                 apply2.remove(pos, 6);

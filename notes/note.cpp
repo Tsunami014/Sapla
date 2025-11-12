@@ -1,6 +1,7 @@
 #include "note.hpp"
 #include "cardList.hpp"
 #include "features.hpp"
+#include "../base/markdown.hpp"
 #include <unordered_set>
 #include <QApplication>
 
@@ -84,6 +85,21 @@ QString Note::title() {
 
 FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk) : front(fr), back(bk) {
     parent = p;
+}
+QString FlashCard::getSide(Side s) const {
+    QString txt;
+    switch (s) {
+        case SIDE_FRONT:
+            txt = front;
+            break;
+        case SIDE_BACK:
+            txt = back;
+            break;
+    }
+    for (auto& f : Feats) {
+        txt = f->replacements(txt, s);
+    }
+    return parseMarkdownHtml(txt);
 }
 
 bool FlashCard::operator==(const FlashCard& other) const {

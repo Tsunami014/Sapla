@@ -6,7 +6,7 @@
 
 CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& flashc, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(flashc),
-      front(parseMarkdownHtml(fc.front)), back(parseMarkdownHtml(fc.back)), txt() {
+      front(fc.getSide(SIDE_FRONT)), back(fc.getSide(SIDE_BACK)), txt() {
         side = 0;
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);

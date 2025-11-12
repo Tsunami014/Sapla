@@ -49,7 +49,7 @@ void Topbar::createItems() {
 }
 
 void Topbar::resize() {
-    int hei = xpandBtn->fontMetrics().height() * 1.5;
+    int hei = xpandBtn->fontMetrics().height() * 1.6;
     int wid = hei * 2;
     int fatness = wid * 1.05;  // layout width
     int maxWid = rect().width();

@@ -118,6 +118,17 @@ QString MarkdownEdit::getMarkdown() {
 }
 
 void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
+    bool undo = event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Z;
+    bool redo = (event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Y) ||
+        (event->modifiers() & Qt::ControlModifier & Qt::ShiftModifier && event->key() == Qt::Key_Z);
+    // TODO: Undo and redo
+    if (redo) {
+        event->accept();
+        return;
+    } else if (undo) {
+        event->accept();
+        return;
+    }
     QSignalBlocker blocker(this);
     updateTxt(false, true);
     QTextEdit::keyPressEvent(event);

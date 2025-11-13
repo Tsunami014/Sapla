@@ -44,7 +44,6 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     PlayScene* curS = (PlayScene*)MG->curScene;
     if (curS->hasOverlay()) return;
     if (side == 0 && touching(event->pos())) {
-        curS->pauseTimer();
         onTop = true;
         setParentItem(nullptr);  // So the item can be placed on the very top
         setPos(mapToScene(QPointF(0, 0)));
@@ -68,7 +67,6 @@ void CardGraphicItem::finish() {
     curS->scn.removeItem(this);
     curS->main->update();
     curS->main->updateAllChildren();
-    curS->resumeTimer();
 }
 
 void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {

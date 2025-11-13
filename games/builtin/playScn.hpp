@@ -4,14 +4,16 @@
 #include <QTimer>
 #include <QGraphicsTextItem>
 
-class PlayScene : public GameScene {
+class PlayScene : public GraphicGameScene {
 public:
     PlayScene();
     ~PlayScene();
 
     bool keyEv(QKeyEvent* event) override;
+    void resume() override;
     void resize() override;
 private:
-    Tree tr;
+    bool done;
+    Tree& tr;
     CardGraphicItem* card;
 };

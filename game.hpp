@@ -2,7 +2,7 @@
 #include <QMainWindow>
 #include <QStackedLayout>
 #include "base/svgWid.hpp"
-#include "scenes/baseScn.hpp"
+#include "scenes/gameScn.hpp"
 #include "wids/svgBtn.hpp"
 #include "wids/ovrlWrap.hpp"
 
@@ -35,4 +35,6 @@ public slots:
 
 private:
     SvgWidget* bg;
+    GameScene* curGame;
+    BaseScene* pendingScn;
 };

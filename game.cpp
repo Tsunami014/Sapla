@@ -11,7 +11,8 @@
 #include <QKeyEvent>
 #include <QApplication>
 
-MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this) {
+MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
+    pendingScn = nullptr;
     setFont(getFont(1.5));
     setStyleSheet(
         "QTextEdit {"
@@ -68,21 +69,42 @@ void MainGame::changeScene(BaseScene* newScene) {
     logLayWrap.clearForwarding();
     curScene = newScene;
 
+    GameScene* game = dynamic_cast<GameScene*>(oldScene);
+    if (game != nullptr && curGame != game) {
+        if (curGame != nullptr) curGame->deleteLater();
+        oldScene->setParent(nullptr);
+        curGame = game;
+    }
+
     if (QWidget* w = QApplication::widgetAt(QCursor::pos())) {
         QEvent leaveEv(QEvent::Leave);
         QCoreApplication::sendEvent(w, &leaveEv);
     }
-    QTimer::singleShot(0, this, [this, newScene]() {
-        setCentralWidget(newScene);
-        bg->lower();
-        logLayWrap.raise();
 
-        QCursor::setPos(QCursor::pos());  // Force cursor update
-    });
+    if (!pendingScn) {
+        QTimer::singleShot(0, this, [this]() {
+            setCentralWidget(pendingScn);
+            pendingScn = nullptr;
+            bg->lower();
+            logLayWrap.raise();
+
+            QCursor::setPos(QCursor::pos());  // Force cursor update
+        });
+    } else {
+        if (curGame != pendingScn) {
+            pendingScn->deleteLater();
+        }
+    }
+    pendingScn = newScene;
 }
 
 void MainGame::showFC() {
-    nextFC();  // TODO: Make these different
+    if (curGame != nullptr) {
+        changeScene(curGame);
+        curGame->resume();
+    } else {
+        nextFC();
+    }
 }
 void MainGame::nextFC() {
     int gSze = games.size();

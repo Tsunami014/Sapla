@@ -7,14 +7,25 @@ QByteArray rendTreePhase(int phase);
 
 class Tree : public RectItem {
 public:
-    Tree(QGraphicsItem* parent = nullptr);
     bool grow(double amount);
     bool isDone();
     void nextPhase();
     void setRect(const QRectF& newRect) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
+    static Tree& getTree() {
+        static Tree inst;
+        return inst;
+    }
+
+    // Stop copying or moving
+    Tree(const Tree&) = delete;
+    Tree& operator=(const Tree&) = delete;
+    Tree(Tree&&) = delete;
+    Tree& operator=(Tree&&) = delete;
+
 protected:
+    Tree();
     double growth;
     double toNext;
     ProgressBarItem pb;

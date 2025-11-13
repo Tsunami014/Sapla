@@ -1,5 +1,7 @@
 #include "treeItem.hpp"
+#include "../core.hpp"
 #include "../base/svgRend.hpp"
+#include "../scenes/winScn.hpp"
 
 #define MAX_PHASE 5
 
@@ -12,7 +14,7 @@ QByteArray rendTreePhase(int phase) {
     ));
 }
 
-Tree::Tree(QGraphicsItem* parent) : RectItem(parent), pb(this) {
+Tree::Tree() : RectItem(), pb(this) {
     if (!baseRend) baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
     treeRend = nullptr;
     phase = 0;
@@ -47,12 +49,13 @@ bool Tree::grow(double amount) {
     if (growth >= toNext) {
         growth -= toNext;
         if (phase+1 >= MAX_PHASE) {
-            return false;
+            MG->changeScene(new WinScene());
+            return true;
         }
         nextPhase();
     }
     pb.setValue(growth/toNext);
-    return true;
+    return false;
 }
 void Tree::nextPhase() {
     if (treeRend) delete treeRend;

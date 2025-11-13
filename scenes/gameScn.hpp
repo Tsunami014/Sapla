@@ -5,9 +5,15 @@
 
 class GameScene : public BaseScene {
 public:
-    GameScene();
+    GameScene() {}
+    virtual void resume() {}
+};
+class GraphicGameScene : public BaseScene {
+public:
+    GraphicGameScene();
     QGraphicsScene scn;
     QGraphicsView view;
+    virtual void resume() {}
 protected:
     void resizeEvent(QResizeEvent* event) override;
     virtual void resize() {}

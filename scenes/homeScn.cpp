@@ -26,7 +26,7 @@ HomeScene::HomeScene() : BaseScene() {
     auto* playBtn = new SvgBtn(":/assets/btn.svg", this);
     playBtn->setFont(getFont(3));
     playBtn->setText("Play!");
-    connect(playBtn, &SvgBtn::clicked, this, [](){ MG->nextFC(); });
+    connect(playBtn, &SvgBtn::clicked, this, [](){ MG->showFC(); });
     auto* hlay1 = new QHBoxLayout();
     hlay1->addStretch();
     hlay1->addWidget(playBtn);

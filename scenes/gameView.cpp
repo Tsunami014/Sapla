@@ -9,6 +9,7 @@
 #include <QMessageBox>
 
 struct ListData {
+    QString name;
     QString path;
     QString text;
     bool working;
@@ -88,9 +89,36 @@ GameViewScene::GameViewScene()
             }
         });
 
+        auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
+        delBtn->setText("Delete game");
+        delBtn->setStyleSheet("color: red;");
+        connect(delBtn, &SvgBtn::clicked, this, [=](){
+            QTreeWidgetItem* sel = li->currentItem();
+            if (sel) {
+                ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
+                if (dat.isBI) {
+                    Log::Warn(MODULE) << "Cannot delete built-in game!";
+                } else {
+                    auto reply = QMessageBox::question(this, "Are you sure?", 
+                            QString("Are you sure you want to delete game \"%1\"?").arg(dat.name),
+                        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+                    if (reply == QMessageBox::Yes) {
+                        clearGames();
+                        if (!QFile::remove(dat.path)) {
+                            Log::Warn(MODULE) << "Unknown error when deleting game plugin `" << dat.path << "`!";
+                            return;
+                        }
+                        reset();
+                        Log::Info(MODULE) << "Deleted game plugin \"" + dat.name + "\"!";
+                    }
+                }
+            }
+        });
+
         auto* sideLay = new QVBoxLayout();
         sideLay->addWidget(disBtn);
         sideLay->addWidget(txt);
+        sideLay->addWidget(delBtn);
 
         QWidget::connect(li, &QTreeWidget::itemSelectionChanged, [=](){
             QTreeWidgetItem* sel = li->currentItem();
@@ -116,17 +144,17 @@ void GameViewScene::fillTree() {
     li->clear();
     for (auto& dg : disabldGames) {
         auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.path, "Game disabled", false, dg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.name, dg.path, "Game disabled", false, dg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto& fg : failedGames) {
         auto* it = new QTreeWidgetItem(QStringList({"💔", fg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.path, "Game loaded with error:\n"+fg.error, false, fg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.name, fg.path, "Game loaded with error:\n"+fg.error, false, fg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto* g : games) {
         auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->path, "Game loaded successfully!", true, g->isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->name, g->path, "Game loaded successfully!", true, g->isBI}));
         li->addTopLevelItem(it);
     }
 }

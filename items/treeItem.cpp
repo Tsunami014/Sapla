@@ -17,6 +17,9 @@ QByteArray rendTreePhase(int phase) {
 Tree::Tree() : RectItem(), pb(this) {
     if (!baseRend) baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
     treeRend = nullptr;
+    restart();
+}
+void Tree::restart() {
     phase = 0;
     growth = 0;
     toNext = 50;
@@ -41,7 +44,8 @@ void Tree::setRect(const QRectF& newRect) {
     });
 }
 
-bool Tree::grow(double amount) {
+bool Tree::grow(double amount, bool canChangePhase) {
+    if (growth + amount >= toNext && !canChangePhase) return false;
     growth += amount;
     if (growth < 0) {
         growth = 0;
@@ -50,6 +54,7 @@ bool Tree::grow(double amount) {
         growth -= toNext;
         if (phase+1 >= MAX_PHASE) {
             MG->changeScene(new WinScene());
+            restart();
             return true;
         }
         nextPhase();

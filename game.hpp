@@ -6,6 +6,7 @@
 #include "wids/svgBtn.hpp"
 #include "wids/ovrlWrap.hpp"
 
+class FlashCard;  // Forward reference
 struct Stats {  // TODO: Save/load
     uint32_t goods;
     uint32_t bads;
@@ -24,6 +25,7 @@ public:
     void resizeEvent(QResizeEvent *event);
     void fixLogs();
 
+    bool cardFin(const FlashCard& card, bool correct);
     Stats s;
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;

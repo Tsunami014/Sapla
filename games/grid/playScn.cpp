@@ -9,11 +9,16 @@ const QString HELP_TXT =
     "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
     "Press &lt;Esc&gt; to go back to the home screen.";
 
-PlayScene::PlayScene()
-    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(Tree::getTree()) {
+void PlayScene::resume() {
+        if (main->grid.empty()) {
+            MG->nextFC();
+            return;
+        }
         helpStr = &HELP_TXT;
         MG->changeBG("pretty");
-
+}
+PlayScene::PlayScene()
+    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(Tree::getTree()) {
         scn.addItem(main);
         scn.addItem(&tr);
 
@@ -29,6 +34,7 @@ PlayScene::PlayScene()
             }
         }
         main->update();
+        resume();
     }
 PlayScene::~PlayScene() {
     if (tr.scene() == &scn) {
@@ -47,26 +53,13 @@ bool PlayScene::keyEv(QKeyEvent* event) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
                 it.item->finish();
-                if (key == Qt::Key_Space) {
-                    MG->s.bads++;
-                    tr.grow(-10);
-                } else {
-                    MG->s.goods++;
-                    if (tr.grow(50)) {
-                        return true;
-                    }
-                }
+                if (MG->cardFin(it.item->fc, key != Qt::Key_Space)) return true;
                 resume();  // Only for checking if empty
                 return true;
             }
         }
     }
     return false;
-}
-void PlayScene::resume() {
-    if (main->grid.empty()) {
-        MG->nextFC();
-    }
 }
 
 void PlayScene::resize() {

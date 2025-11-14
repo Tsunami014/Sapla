@@ -5,4 +5,5 @@
 class WinScene : public BaseScene {
 public:
     WinScene();
+    bool keyEv(QKeyEvent* event) override;
 };

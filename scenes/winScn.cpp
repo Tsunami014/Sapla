@@ -9,7 +9,7 @@
 #include <QKeyEvent>
 #include <QHBoxLayout>
 
-const QString HELP_TXT = "&lt;Esc&gt; to go home";
+const QString HELP_TXT = "&lt;Esc&gt; to resume playing";
 
 WinScene::WinScene() {
     helpStr = &HELP_TXT;
@@ -19,7 +19,7 @@ WinScene::WinScene() {
     tr->renderer()->load(rendTreePhase(-1));
     auto* lab = new QLabel(this);
     lab->setText(QString::fromStdString("<h1>"
-        "You win!\n"
+        "You successfully grew the tree!<br>"
         "So far you have " + std::to_string(MG->s.goods) + " correct cards and " + std::to_string(MG->s.bads) + " wrong cards"
     "</h1>"));
     lab->setAlignment(Qt::AlignCenter);
@@ -28,5 +28,12 @@ WinScene::WinScene() {
     auto* lay = new QHBoxLayout(this);
     lay->addWidget(lab, 2);
     lay->addWidget(tr, 1);
+}
+bool WinScene::keyEv(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
+        MG->showFC();
+        return true;
+    }
+    return MG->handleEv(event);
 }
 

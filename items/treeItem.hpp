@@ -7,11 +7,12 @@ QByteArray rendTreePhase(int phase);
 
 class Tree : public RectItem {
 public:
-    bool grow(double amount);
+    bool grow(double amount, bool canChangePhase = true);
     bool isDone();
     void nextPhase();
     void setRect(const QRectF& newRect) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
+    void restart();
 
     static Tree& getTree() {
         static Tree inst;

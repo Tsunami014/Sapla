@@ -4,6 +4,8 @@
 #include "scenes/browseScn.hpp"
 #include "scenes/gameView.hpp"
 #include "games/getGames.hpp"
+#include "notes/note.hpp"
+#include "items/treeItem.hpp"
 #include "base/font.hpp"
 #include "base/svgRend.hpp"
 #include <QRandomGenerator>
@@ -131,6 +133,14 @@ void MainGame::nextFC() {
         if (success) break;
         gidx = (gidx + 1) % gSze;
     }
+}
+
+bool MainGame::cardFin(const FlashCard& card, bool correct) {
+    if (correct) s.goods++;
+    else s.bads++;
+
+    int grow = correct ? 20 : 50;
+    return Tree::getTree().grow(grow, correct);
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {

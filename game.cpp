@@ -12,7 +12,10 @@
 #include <QApplication>
 
 MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
+    sceneStash = new QWidget(this);
+    sceneStash->hide();
     pendingScn = nullptr;
+    resume = false;
     setFont(getFont(1.5));
     setStyleSheet(
         "QTextEdit {"
@@ -64,34 +67,48 @@ void MainGame::changeBG(QString bgName) {
     bg->renderer()->load(RenderSvg(pth));
 }
 
-void MainGame::changeScene(BaseScene* newScene) {
-    BaseScene* oldScene = curScene;
+void MainGame::changeScene(BaseScene* newScene, bool resm) {
+    GameScene* newGame = dynamic_cast<GameScene*>(newScene);
+    if (!newGame) {
+        GameScene* game = dynamic_cast<GameScene*>(curScene);
+        if (game && game != newScene) {
+            game->hide();
+            game->setParent(sceneStash);
+            curGame = game;
+        }
+    } else {
+        if (curGame && curGame != newGame) {
+            curGame->deleteLater();
+        }
+        curGame = newGame;
+    }
     logLayWrap.clearForwarding();
-    curScene = newScene;
 
-    GameScene* game = dynamic_cast<GameScene*>(oldScene);
-    if (game != nullptr && curGame != game) {
-        if (curGame != nullptr) curGame->deleteLater();
-        oldScene->setParent(nullptr);
-        curGame = game;
-    }
-
-    if (QWidget* w = QApplication::widgetAt(QCursor::pos())) {
-        QEvent leaveEv(QEvent::Leave);
-        QCoreApplication::sendEvent(w, &leaveEv);
-    }
-
+    resume = resm && newGame;
     if (!pendingScn) {
+        if (QWidget* w = QApplication::widgetAt(QCursor::pos())) {
+            QEvent leaveEv(QEvent::Leave);
+            QCoreApplication::sendEvent(w, &leaveEv);
+        }
         QTimer::singleShot(0, this, [this]() {
             setCentralWidget(pendingScn);
+            if (!pendingScn->isVisible()) pendingScn->show();
+            curScene = pendingScn;
+            BaseScene* nscn = pendingScn;
             pendingScn = nullptr;
+            if (resume) {
+                if (auto* ngame = dynamic_cast<GameScene*>(nscn)) {
+                    ngame->resume();
+                }
+                resume = false;
+            }
             bg->lower();
             logLayWrap.raise();
 
             QCursor::setPos(QCursor::pos());  // Force cursor update
         });
     } else {
-        if (curGame != pendingScn) {
+        if (pendingScn && curGame != pendingScn) {
             pendingScn->deleteLater();
         }
     }
@@ -100,8 +117,7 @@ void MainGame::changeScene(BaseScene* newScene) {
 
 void MainGame::showFC() {
     if (curGame != nullptr) {
-        changeScene(curGame);
-        curGame->resume();
+        changeScene(curGame, true);
     } else {
         nextFC();
     }

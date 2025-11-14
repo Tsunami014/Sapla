@@ -17,7 +17,7 @@ public:
     MainGame();
     void initScene();
 
-    void changeScene(BaseScene* newScene);
+    void changeScene(BaseScene* newScene, bool resume = false);
     void changeBG(QString bgName);
 
     bool handleEv(QKeyEvent* event);
@@ -35,6 +35,8 @@ public slots:
 
 private:
     SvgWidget* bg;
-    GameScene* curGame;
-    BaseScene* pendingScn;
+    QPointer<GameScene> curGame;
+    QPointer<BaseScene> pendingScn;
+    QWidget* sceneStash;
+    bool resume;
 };

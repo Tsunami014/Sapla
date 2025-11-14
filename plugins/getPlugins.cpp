@@ -1,12 +1,12 @@
 #include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
-#include "getGames.hpp"
+#include "getPlugins.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
 #include <QDir>
 
-const QString MODULE = "getGames";
+const QString MODULE = "getPlugins";
 
 #if defined(Q_OS_WIN)
 const QString suffix = ".dll";
@@ -17,12 +17,12 @@ const QString suffix = ".so";
 #endif
 const QString disabl = "dis";
 
-QString getGamesPath() {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/gamePlugs";
+QString getPlugsPath() {
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/plugs";
     QDir().mkpath(path);
     return path;
 }
-QString getDisBIGPath() {
+QString getBIDisPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(path);
     return path + "/BIDisabled";
@@ -33,7 +33,7 @@ bool tryLoad(const QFileInfo& file) {
     QString fname = file.fileName();
     if (!lib->load()) {
         Log::Error(MODULE) << "Failed to load " << fname << ": " << lib->errorString();
-        failedGames.push_back({fname, lib->errorString(), file.filePath(), false});
+        failedPlugs.push_back({fname, lib->errorString(), file.filePath(), false});
         delete lib;
         return false;
     }
@@ -41,73 +41,73 @@ bool tryLoad(const QFileInfo& file) {
     auto regFn = reinterpret_cast<Registry (*)()>(lib->resolve("_register"));
     if (regFn) {
         Registry reg = regFn();
-        games.push_back(new GamePlugin(fname, reg, lib, file.filePath()));
+        plugs.push_back(new Plugin(fname, reg, lib, file.filePath()));
         return true;
     } else {
         QString error = "No '_register' function found in "+fname;
         Log::Error(MODULE) << error;
         lib->unload();
-        failedGames.push_back({fname, error, file.filePath(), false});
+        failedPlugs.push_back({fname, error, file.filePath(), false});
         delete lib;
         return false;
     }
 }
 
-std::vector<GamePlugin*> games = {};
-std::vector<FailedGame> failedGames = {};
-std::vector<DisabldGame> disabldGames;
+std::vector<Plugin*> plugs = {};
+std::vector<FailedPlug> failedPlugs = {};
+std::vector<DisabldPlug> disabldPlugs;
 
-GamePlugin::GamePlugin(QString nme, Registry& r, QLibrary* library, QString pth)
+Plugin::Plugin(QString nme, Registry& r, QLibrary* library, QString pth)
     : name(std::move(nme)), reg(r), lib(library), path(pth) { reg.loadFn(); isBI = false; }
-GamePlugin::~GamePlugin() {
+Plugin::~Plugin() {
     reg.unloadFn();
     lib->unload();
     delete lib;
 }
-bool GamePlugin::run() {
+bool Plugin::run() {
     return reg.runFn();
 }
 
-void clearGames() {
-    for (int i = 1; i < games.size(); i++) delete games[i];
-    games.clear();
-    failedGames.clear();
-    disabldGames.clear();
+void clearPlugins() {
+    for (int i = 1; i < plugs.size(); i++) delete plugs[i];
+    plugs.clear();
+    failedPlugs.clear();
+    disabldPlugs.clear();
 }
 
-void loadGames() {
-    clearGames();
+void loadPlugins() {
+    clearPlugins();
 
-    const QString biGameNam = "libbuiltinGame"+suffix;
-    QString fpth = QCoreApplication::applicationDirPath()+"/"+biGameNam;
+    const QString biPlugNam = "libbuiltin"+suffix;
+    QString fpth = QCoreApplication::applicationDirPath()+"/"+biPlugNam;
     if (!QFile::exists(fpth)) {
-        Log::Warn(MODULE) << "Could not locate built-in game!";
+        Log::Warn(MODULE) << "Could not locate built-in plugin!";
     } else {
-        if (QFile::exists(getDisBIGPath())) {
-            disabldGames.push_back({biGameNam, fpth, true});
+        if (QFile::exists(getBIDisPath())) {
+            disabldPlugs.push_back({biPlugNam, fpth, true});
         } else {
             QFileInfo BIlib(fpth);
             if (tryLoad(BIlib)) {
-                games.back()->isBI = true;
+                plugs.back()->isBI = true;
             } else {
-                Log::Warn(MODULE) << "Error when loading built-in game!";
-                failedGames.back().isBI = true;
+                Log::Warn(MODULE) << "Error when loading built-in plugin!";
+                failedPlugs.back().isBI = true;
             }
         }
     }
 
-    QDir dir(getGamesPath());
+    QDir dir(getPlugsPath());
     QFileInfoList files = dir.entryInfoList(QStringList{"*"+suffix, "*"+suffix+"."+disabl}, QDir::Files);
     for (const QFileInfo& file : files) {
         if (file.suffix() == disabl) {
-            disabldGames.push_back({file.fileName(), file.filePath(), false});
+            disabldPlugs.push_back({file.fileName(), file.filePath(), false});
         } else {
             tryLoad(file);
         }
     }
 
-    Log::Info(MODULE) << "Loaded games:\n" << games.size() << " successfully\n"
-                                           << failedGames.size() << " unsuccessfully\n"
-                                           << disabldGames.size() << " disabled!";
+    Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"
+                                             << failedPlugs.size() << " unsuccessfully\n"
+                                             << disabldPlugs.size() << " disabled!";
 }
 

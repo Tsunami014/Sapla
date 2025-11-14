@@ -1,8 +1,8 @@
-#include "gameView.hpp"
+#include "pluginView.hpp"
 #include "../core.hpp"
 #include "../help.hpp"
 #include "../log.hpp"
-#include "../games/getGames.hpp"
+#include "../plugins/getPlugins.hpp"
 #include "../wids/listWid.hpp"
 #include <QTextEdit>
 #include <QFileDialog>
@@ -17,7 +17,7 @@ struct ListData {
 };
 Q_DECLARE_METATYPE(ListData)
 
-const QString MODULE = "GameBrowser";
+const QString MODULE = "PluginBrowser";
 
 void movFile(QString fromName, QString toName) {
     if (!QFile(fromName).rename(toName)) {
@@ -32,12 +32,12 @@ void movFile(QString fromName, QString toName) {
     }
 }
 
-GameViewScene::GameViewScene()
-    : BaseScene(), m("Load game") {
-        qRegisterMetaType<ListData>("GVSData");
-        helpStr = &GAMEVIEW_HELP;
+PlugViewScene::PlugViewScene()
+    : BaseScene(), m("Load plugin") {
+        qRegisterMetaType<ListData>("PVSData");
+        helpStr = &PLUGVIEW_HELP;
         MG->changeBG("dirt");
-        connect(&m, &QAction::triggered, this, &GameViewScene::loadF);
+        connect(&m, &QAction::triggered, this, &PlugViewScene::loadF);
 
         li = new ListWidget(this);
         li->setColumnCount(2);
@@ -59,17 +59,17 @@ GameViewScene::GameViewScene()
             if (sel) {
                 ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
                 if (dat.isBI) {
-                    QString fpth = getDisBIGPath();
+                    QString fpth = getBIDisPath();
                     if (QFile::exists(fpth)) {
                         if (!QFile::remove(fpth)) {
-                            Log::Warn(MODULE) << "Unknown error when deleting built-in game disabled file indicator at `" << fpth << "`";
+                            Log::Warn(MODULE) << "Unknown error when deleting built-in plugin disabled file indicator at `" << fpth << "`";
                         }
                     } else {
                         QFile file(fpth);
                         if (file.open(QIODevice::WriteOnly)) {
                             file.close();
                         } else {
-                            Log::Warn(MODULE) << "Unknown error when creating built-in game disabled file indicator at `" << fpth << "`";
+                            Log::Warn(MODULE) << "Unknown error when creating built-in plugin disabled file indicator at `" << fpth << "`";
                         }
                     }
                     reset();
@@ -83,33 +83,33 @@ GameViewScene::GameViewScene()
                     topth = frpth + ".dis";
                 }
 
-                clearGames();
+                clearPlugins();
                 movFile(frpth, topth);
                 reset();
             }
         });
 
         auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
-        delBtn->setText("Delete game");
+        delBtn->setText("Delete plugin");
         delBtn->setStyleSheet("color: red;");
         connect(delBtn, &SvgBtn::clicked, this, [=](){
             QTreeWidgetItem* sel = li->currentItem();
             if (sel) {
                 ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
                 if (dat.isBI) {
-                    Log::Warn(MODULE) << "Cannot delete built-in game!";
+                    Log::Warn(MODULE) << "Cannot delete built-in plugin!";
                 } else {
                     auto reply = QMessageBox::question(this, "Are you sure?", 
-                            QString("Are you sure you want to delete game \"%1\"?").arg(dat.name),
+                            QString("Are you sure you want to delete plugin \"%1\"?").arg(dat.name),
                         QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
                     if (reply == QMessageBox::Yes) {
-                        clearGames();
+                        clearPlugins();
                         if (!QFile::remove(dat.path)) {
-                            Log::Warn(MODULE) << "Unknown error when deleting game plugin `" << dat.path << "`!";
+                            Log::Warn(MODULE) << "Unknown error when deleting plugin `" << dat.path << "`!";
                             return;
                         }
                         reset();
-                        Log::Info(MODULE) << "Deleted game plugin \"" + dat.name + "\"!";
+                        Log::Info(MODULE) << "Deleted plugin \"" + dat.name + "\"!";
                     }
                 }
             }
@@ -133,35 +133,35 @@ GameViewScene::GameViewScene()
         mainLay->addLayout(sideLay, 1);
     }
 
-void GameViewScene::reset() {
-    loadGames();
+void PlugViewScene::reset() {
+    loadPlugins();
     fillTree();
     li->clearSelection();
     txt->setText("");
 }
 
-void GameViewScene::fillTree() {
+void PlugViewScene::fillTree() {
     li->clear();
-    for (auto& dg : disabldGames) {
+    for (auto& dg : disabldPlugs) {
         auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.name, dg.path, "Game disabled", false, dg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.name, dg.path, "Plugin disabled", false, dg.isBI}));
         li->addTopLevelItem(it);
     }
-    for (auto& fg : failedGames) {
+    for (auto& fg : failedPlugs) {
         auto* it = new QTreeWidgetItem(QStringList({"💔", fg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.name, fg.path, "Game loaded with error:\n"+fg.error, false, fg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.name, fg.path, "Plugin loaded with error:\n"+fg.error, false, fg.isBI}));
         li->addTopLevelItem(it);
     }
-    for (auto* g : games) {
+    for (auto* g : plugs) {
         auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->name, g->path, "Game loaded successfully!", true, g->isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->name, g->path, "Plugin loaded successfully!", true, g->isBI}));
         li->addTopLevelItem(it);
     }
 }
 
-void GameViewScene::loadF() {
-    const QString filter = QString("Game plugin files (*%1)").arg(suffix);
-    QStringList fnames = QFileDialog::getOpenFileNames(this, "Load game plugin file", QDir::homePath(), filter);
+void PlugViewScene::loadF() {
+    const QString filter = QString("Plugin files (*%1)").arg(suffix);
+    QStringList fnames = QFileDialog::getOpenFileNames(this, "Load plugin file", QDir::homePath(), filter);
     QStringList deletes;
     enum runOs { GOING, Yall, Nall, EndAll };
     runOs opt = GOING;
@@ -210,7 +210,7 @@ void GameViewScene::loadF() {
     }
     for (const QString& fromName : fnames) {
         QFileInfo inf(fromName);
-        QString toName = getGamesPath() + "/" + inf.fileName();
+        QString toName = getPlugsPath() + "/" + inf.fileName();
         if (QFile::exists(toName)) {
             if (!QFile::remove(toName)) {
                 Log::Error(MODULE) << "Unknown error when deleting existing file `" << toName << "`!";
@@ -225,7 +225,7 @@ void GameViewScene::loadF() {
             }
         }
     }
-    Log::Info(MODULE) << "Copied/moved " << fnames.size() << " game plugins!";
+    Log::Info(MODULE) << "Copied/moved " << fnames.size() << " plugins!";
     reset();
 }
 

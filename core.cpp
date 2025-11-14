@@ -10,7 +10,7 @@
 #include "base/font.hpp"
 #include "notes/features.hpp"
 #include "notes/getNotes.hpp"
-#include "games/getGames.hpp"
+#include "plugins/getPlugins.hpp"
 
 MainGame* MG = nullptr;
 const QString* helpStr = nullptr;
@@ -23,7 +23,7 @@ int runApp(int argc, char *argv[]) {
     initMenu(MG->menuBar());
     registerNoteFeatures();
     initNotes();
-    loadGames();
+    loadPlugins();
     MG->initScene();
 
     MG->showMaximized();

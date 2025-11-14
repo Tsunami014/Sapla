@@ -1,6 +1,6 @@
 #pragma once
 #include "link.hpp"
-// Some includes for game plugins to use
+// Some includes for plugins to use
 #include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
@@ -35,6 +35,6 @@ inline Registry makeRegistry(
     void (*onUnload)() = +[](){}
 ) { return Registry{onLoad, onRun, onUnload, vFrom, vTo}; }
 
-#define REGISTER_GAME(reg) \
+#define REGISTER_PLUG(reg) \
     extern "C" Registry _register() { return reg; }
 

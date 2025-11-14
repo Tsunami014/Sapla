@@ -2,8 +2,8 @@
 #include "core.hpp"
 #include "scenes/homeScn.hpp"
 #include "scenes/browseScn.hpp"
-#include "scenes/gameView.hpp"
-#include "games/getGames.hpp"
+#include "scenes/pluginView.hpp"
+#include "plugins/getPlugins.hpp"
 #include "notes/note.hpp"
 #include "items/treeItem.hpp"
 #include "base/font.hpp"
@@ -125,11 +125,11 @@ void MainGame::showFC() {
     }
 }
 void MainGame::nextFC() {
-    int gSze = games.size();
+    int gSze = plugs.size();
     if (gSze == 0) return;
     int gidx = QRandomGenerator::global()->bounded(gSze);
     for (int _ = 0; _ < gSze; _++) {
-        bool success = games[gidx]->run();
+        bool success = plugs[gidx]->run();
         if (success) break;
         gidx = (gidx + 1) % gSze;
     }
@@ -152,7 +152,7 @@ bool MainGame::handleEv(QKeyEvent* event) {
             changeScene(new BrowseScene());
             return true;
         case Qt::Key_G:
-            changeScene(new GameViewScene());
+            changeScene(new PlugViewScene());
             return true;
         case Qt::Key_P:
             showFC();

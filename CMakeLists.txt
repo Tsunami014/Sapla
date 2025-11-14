@@ -12,7 +12,7 @@ set(CORELIB
     core.cpp game.cpp
     log.cpp  menu.cpp
     resources.qrc
-    games/getGames.cpp
+    plugins/getPlugins.cpp
 
     base/font.cpp
     base/markdown.cpp
@@ -41,7 +41,7 @@ set(CORELIB
     scenes/homeScn.cpp
     scenes/winScn.cpp
     scenes/browseScn.cpp
-    scenes/gameView.cpp
+    scenes/pluginView.cpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)
@@ -62,15 +62,15 @@ set_target_properties(${APP_NAME} PROPERTIES OUTPUT_NAME ${APP_OUTPUT})
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Svg Qt6::Widgets)
 target_link_libraries(${APP_NAME} PRIVATE core)
 
-add_subdirectory(games/builtin)
-option(BUILD_PLUGINS "Build game plugins" ON)
+add_subdirectory(plugins/builtin)
+option(BUILD_PLUGINS "Build plugins" ON)
 if (BUILD_PLUGINS)
-    add_subdirectory(games/grid)
+    add_subdirectory(plugins/grid)
 endif()
 
 
 add_custom_command(TARGET ${APP_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo " \\> Successfully built to \\\"$<TARGET_FILE:${APP_NAME}>\\\"!"
-    COMMAND ${CMAKE_COMMAND} -E echo " \\> Plugins built are located in \\\"${CMAKE_BINARY_DIR}/gamePlugs/\\\""
+    COMMAND ${CMAKE_COMMAND} -E echo " \\> Plugins built are located in \\\"${CMAKE_BINARY_DIR}/outPlugs/\\\""
 )
 

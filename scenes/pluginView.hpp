@@ -4,9 +4,9 @@
 #include <QTreeWidget>
 #include <QTextEdit>
 
-class GameViewScene : public BaseScene {
+class PlugViewScene : public BaseScene {
 public:
-    GameViewScene();
+    PlugViewScene();
 public slots:
     void loadF();
 private:

@@ -1,6 +1,6 @@
 #include "homeScn.hpp"
 #include "browseScn.hpp"
-#include "gameView.hpp"
+#include "pluginView.hpp"
 #include "../base/font.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../core.hpp"
@@ -38,8 +38,8 @@ HomeScene::HomeScene() : BaseScene() {
     connect(browseBtn, &SvgBtn::clicked, this, [](){ MG->changeScene(new BrowseScene()); });
     auto* GVBtn = new SvgBtn(":/assets/btn.svg", this);
     GVBtn->setFont(getFont(3));
-    GVBtn->setText("Manage games");
-    connect(GVBtn, &SvgBtn::clicked, this, [](){ MG->changeScene(new GameViewScene()); });
+    GVBtn->setText("Manage plugins");
+    connect(GVBtn, &SvgBtn::clicked, this, [](){ MG->changeScene(new PlugViewScene()); });
     auto* hlay2 = new QHBoxLayout();
     hlay2->addStretch();
     hlay2->addWidget(browseBtn);

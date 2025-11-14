@@ -27,15 +27,15 @@ const QString BROWSE_HELP =
     "</ul>"
 ;
 
-const QString GAMEVIEW_HELP = 
-"<p>Select games to view information about them and disable them.</p>"
-"<p>Press the 'Load game' button to load one or more games from your hard drive."
+const QString PLUGVIEW_HELP = 
+"<p>Select plugins to view information about them and disable them.</p>"
+"<p>Press the 'Load plugin' button to load one or more plugins from your hard drive."
     "This gives you the option to move them or to copy them (move gets rid of the original file, copy keeps the original).</p>"
 "<h2>Status types</h2>"
     "<ul>"
-        "<li>🤎 - the game is disabled</li>"
-        "<li>💔 - the game failed to load</li>"
-        "<li>💖 - the game loaded successfully!</li>"
+        "<li>🤎 - the plugin is disabled</li>"
+        "<li>💔 - the plugin failed to load</li>"
+        "<li>💖 - the plugin loaded successfully!</li>"
     "</ul>"
 ;
 

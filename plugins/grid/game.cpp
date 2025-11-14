@@ -17,5 +17,5 @@ void unload() {
     Q_CLEANUP_RESOURCE(gridResources);
 }
 
-REGISTER_GAME(makeRegistry(1, 1, init, load, unload))
+REGISTER_PLUG(makeRegistry(1, 1, init, load, unload))
 

@@ -4,7 +4,7 @@
 #include "help.hpp"
 #include "scenes/homeScn.hpp"
 #include "scenes/browseScn.hpp"
-#include "scenes/gameView.hpp"
+#include "scenes/pluginView.hpp"
 #include <QDialog>
 #include <QTextEdit>
 
@@ -68,7 +68,7 @@ void initMenu(QMenuBar* b) {
     auto* gmenu = new _MenuBase("Go To");
     gmenu->addAction("Go home", []() { MG->changeScene(new HomeScene()); });
     gmenu->addAction("Browse cards", []() { MG->changeScene(new BrowseScene()); });
-    gmenu->addAction("Manage games", []() { MG->changeScene(new GameViewScene()); });
+    gmenu->addAction("Manage plugins", []() { MG->changeScene(new PlugViewScene()); });
     gmenu->addSeparator();
     gmenu->insertBefore = nullptr;
     bar->addMenu(gmenu);

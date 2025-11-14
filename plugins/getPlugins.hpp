@@ -4,13 +4,13 @@
 #include <QLibrary>
 
 const extern QString suffix;
-QString getGamesPath();
-QString getDisBIGPath();
+QString getPlugsPath();
+QString getBIDisPath();
 
-class GamePlugin {
+class Plugin {
 public:
-    GamePlugin(QString name, Registry& reg, QLibrary* lib, QString pth);
-    ~GamePlugin();
+    Plugin(QString name, Registry& reg, QLibrary* lib, QString pth);
+    ~Plugin();
     QString name;
     QString path;
     bool run();
@@ -20,21 +20,21 @@ private:
     QLibrary* lib;
 };
 
-struct FailedGame {
+struct FailedPlug {
     QString name;
     QString error;
     QString path;
     bool isBI;
 };
-struct DisabldGame {
+struct DisabldPlug {
     QString name;
     QString path;
     bool isBI;
 };
 
-extern std::vector<GamePlugin*> games;
-extern std::vector<FailedGame> failedGames;
-extern std::vector<DisabldGame> disabldGames;
-void clearGames();
-void loadGames();
+extern std::vector<Plugin*> plugs;
+extern std::vector<FailedPlug> failedPlugs;
+extern std::vector<DisabldPlug> disabldPlugs;
+void clearPlugins();
+void loadPlugins();
 

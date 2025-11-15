@@ -19,7 +19,7 @@ WinScene::WinScene() {
     tr->renderer()->load(rendTreePhase(-1));
     auto* lab = new QLabel(this);
     lab->setText(QString::fromStdString("<h1>"
-        "You successfully grew the tree!<br>"
+        "You successfully mapped the constellation!<br>"
         "So far you have " + std::to_string(MG->s.goods) + " correct cards and " + std::to_string(MG->s.bads) + " wrong cards"
     "</h1>"));
     lab->setAlignment(Qt::AlignCenter);

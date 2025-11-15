@@ -1,5 +1,5 @@
 # Sapla
-A cool flashcard app made in QT where you grow a tree.
+A cool flashcard app made in QT where you map out a constellation!
 
 FAQ is at the bottom.
 
@@ -8,23 +8,24 @@ FAQ is at the bottom.
 - Simple custom notes which generate flashcards
 - Browse all your notes, edit them, delete them or add more
 - Markdown support - and reveals text underneath on selection
-- Regular or double sided cards
+- Regular or double sided cards with hidden text!
 - Saves notes to a configuration file automatically
 ### Gameplay
-- Different flashcard 'games' - currently, a regular game and a grid game
-- Disable games
-- Grow a tree with your answers
+- Map out a constellation with your answers
+### Games
+- Different short flashcard 'games' - currently, a regular game and a grid game
+- Import/disable/delete games
 ### App
 - Logging with popups
 - Custom UI svgs *hand drawn* by me
 - Responsive layout
 - Menu with help information for ease of use
+- Responsive menu
 
 ## Usage instructions
 If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-https://github.com/user-attachments/assets/362476fb-26d2-4674-b388-c7c49d7d35d3
 
 ## Getting it
 ### The easy way

@@ -17,14 +17,11 @@ const QString BROWSE_HELP =
 "<h2>How to use</h2>"
     "<p>You can select notes on the left and edit their contents on the right</p>"
     "<p>Press the 'New note' button in the title to make a new note</p>"
-    "<p>Notes can contain things in them (see below) that create cards."
+    "<p>Notes can contain things in them that create cards or that affect the text."
         "By default, notes create 0 cards so don't expect them to do stuff unless you add things to them</p>"
-"<h2>Things in notes</h2>"
-    "<ul>"
-        "<li>Basic markdown is supported, with multiple different bullet point types!</li>"
-        "<li>--- makes the text above this be the front of a flashcard and the text below on the back side</li>"
-        "<li>=== does the same thing, except it creates 2 flashcards instead of 1, with the second being a reverse</li>"
-    "</ul>"
+    "<p>Things you can add to your notes are in a layout above the note. "
+        "Pressing the arrow expands/contracts to see extra (but currently there aren't enough for there to show any extra). "
+        "Pressing the settings button allows you to see all of them at once, and clicking on each will reveal details and help for if you are unsure of what they do.</p>"
 ;
 
 const QString PLUGVIEW_HELP = 

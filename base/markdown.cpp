@@ -111,7 +111,10 @@ QString MarkdownEdit::getMarkdown() {
         int bnum = block.blockNumber();
         auto* data = static_cast<MarkdownBlockData*>(block.userData());
         if (data) {
-            txt += data->orig + "\n";
+            txt += data->orig;
+            if (block.next().isValid()) {
+                txt += "\n";
+            }
         }
         block = block.next();
     }

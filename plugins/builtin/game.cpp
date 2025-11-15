@@ -8,13 +8,14 @@ bool init() {
 
 void load() {
     Q_INIT_RESOURCE(BIResources);
-
-    colours["fBICardBg1"] = "#5D7B5E";
-    colours["fBICardBg2"] = "#B7C8A9";
+}
+void loadCols() {
+    colours["fBICardBg1"] = getCol("faded", {-10, -33, -13});
+    colours["fBICardBg2"] = getCol("faded", {80, 44, 62});
 }
 void unload() {
     Q_CLEANUP_RESOURCE(BIResources);
 }
 
-REGISTER_PLUG(makeRegistry(1, 1, init, load, unload))
+REGISTER_PLUG(makeRegistry(1, 1, init, load, unload, loadCols))
 

@@ -32,8 +32,9 @@ inline Registry makeRegistry(
     int vTo,
     bool (*onRun)(),
     void (*onLoad)() = +[](){},
-    void (*onUnload)() = +[](){}
-) { return Registry{onLoad, onRun, onUnload, vFrom, vTo}; }
+    void (*onUnload)() = +[](){},
+    void (*loadCols)() = +[](){}
+) { return Registry{onLoad, loadCols, onRun, onUnload, vFrom, vTo}; }
 
 #define REGISTER_PLUG(reg) \
     extern "C" Registry _register() { return reg; }

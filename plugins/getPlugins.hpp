@@ -14,6 +14,7 @@ public:
     QString name;
     QString path;
     bool run();
+    void loadCols();
     bool isBI;
 private:
     Registry reg;

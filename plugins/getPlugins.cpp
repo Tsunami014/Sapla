@@ -1,6 +1,7 @@
 #include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
+#include "../base/svgRend.hpp"
 #include "getPlugins.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
@@ -67,6 +68,9 @@ Plugin::~Plugin() {
 bool Plugin::run() {
     return reg.runFn();
 }
+void Plugin::loadCols() {
+    return reg.loadColsFn();
+}
 
 void clearPlugins() {
     for (int i = 1; i < plugs.size(); i++) delete plugs[i];
@@ -106,6 +110,10 @@ void loadPlugins() {
         }
     }
 
+    initColours();
+    for (auto* p : plugs) {
+        p->loadCols();
+    }
     Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"
                                              << failedPlugs.size() << " unsuccessfully\n"
                                              << disabldPlugs.size() << " disabled!";

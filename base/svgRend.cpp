@@ -3,29 +3,59 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QRandomGenerator>
 
-_colourMapTyp colours = {
-    // Backgrounds
-    {"sBgTrees",  "#26432F"},
-    {"fBgLight",  "#56B75D"},
-    {"fBgDark",   "#216E3B"},
-    {"sFarTrees", "#436253"},
-    {"fFarTrees", "#699C6B"},
-    // The tree
-    {"ftreeDark",   "#0F2B0D"},
-    {"ftreeLight",  "#24682A"},
-    {"ftreeHl",     "#588642"},
-    {"ftreeShadow", "#20471C"},
-    {"ftreeShadow2","#2F5325"},
-    // Tree base
-    {"fbaseOuter", "#4E533A"},
-    {"fbaseInner", "#24311E"},
+const QString MODULE = "SvgRenderer";
+
+_colourMapTyp pallete = {
+    {"light",  "#56B75D"},
+    {"dark",   "#20471C"},
+    {"shadow", "#436253"},
+    {"faded", "#699C6B"},
 };
+
+QString getCol(QString palleteCol, std::tuple<int, int, int> offsets, int diff) {
+    if (!pallete.contains(palleteCol)) {
+        Log::Error(MODULE) << "Could not find pallete colour " << palleteCol;
+    }
+    QColor c(pallete[palleteCol]);
+
+    int hdiff = diff/2;
+    auto wiggle = [hdiff](int v) {
+        int delta = QRandomGenerator::global()->bounded(-hdiff, hdiff);
+        int out = v + delta;
+        return std::clamp(out, 0, 255);
+    };
+    int r = wiggle(c.red()   + std::get<0>(offsets));
+    int g = wiggle(c.green() + std::get<1>(offsets));
+    int b = wiggle(c.blue()  + std::get<2>(offsets));
+    return QColor(r, g, b).name(QColor::HexRgb);
+}
+
+_colourMapTyp colours = {};
+
+void initColours() {
+    // Backgrounds
+    colours["sBgTrees"] = getCol("dark",   {6, -5, 20});
+    colours["fBgLight"] = getCol("light",  {0, 0, 0});
+    colours["fBgDark"]  = getCol("shadow", {-34, 12, -24});
+    colours["sFarTrees"]= getCol("shadow", {0, 0, 0});
+    colours["fFarTrees"]= getCol("faded",  {0, 0, 0});
+    // The tree
+    colours["ftreeDark"]   = getCol("dark",  {-17, -28, -15});
+    colours["ftreeLight"]  = getCol("dark",  {4, 34, 14});
+    colours["ftreeHl"]     = getCol("shadow",{21, 36, -17});
+    colours["ftreeShadow"] = getCol("dark",  {0, 0, 0});
+    colours["ftreeShadow2"]= getCol("dark",  {15, 12, 9});
+    // Tree base
+    colours["fbaseOuter"] = getCol("shadow", {10, -15, -25});
+    colours["fbaseInner"] = getCol("dark",   {4, -22, 2});
+}
 
 QByteArray RenderSvg(const QString& svgPath) {
     QFile file(svgPath);
     if (!file.open(QIODevice::ReadOnly)) {
-        Log::Warn("SvgRenderer") << "Could not open SVG: " << svgPath;
+        Log::Warn(MODULE) << "Could not open SVG: " << svgPath;
         return {};
     }
 

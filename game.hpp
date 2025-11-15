@@ -12,11 +12,16 @@ struct Stats {  // TODO: Save/load
     uint32_t bads;
 };
 
+struct spareCols {
+    QString ListWid;
+};
+
 class MainGame : public QMainWindow {
     Q_OBJECT
 public:
     MainGame();
     void initScene();
+    void initStyles();
 
     void changeScene(BaseScene* newScene, bool resume = false);
     void changeBG(QString bgName);
@@ -30,6 +35,7 @@ public:
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;
     BaseScene* curScene;
+    spareCols cols;
 
 public slots:
     void nextFC();

@@ -114,6 +114,7 @@ void loadPlugins() {
     for (auto* p : plugs) {
         p->loadCols();
     }
+    MG->initStyles();
     Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"
                                              << failedPlugs.size() << " unsuccessfully\n"
                                              << disabldPlugs.size() << " disabled!";

@@ -35,30 +35,6 @@ void makeDialog(const QString& HtmlTxt, const QString& title) {
 
 void initMenu(QMenuBar* b) {
     bar = b;
-    b->setStyleSheet(
-        "QMenuBar {"
-            "background: rgb(90, 40, 10);"
-        "}"
-        "QMenuBar::item {"
-            "padding: 4px;"
-            "background: rgb(70, 35, 10);"
-            "border-radius: 6px;"
-        "}"
-        "QMenuBar::item:selected {"
-            "background: rgb(110, 60, 30);"
-        "}"
-        "QMenu {"
-            "background: rgba(90,40,10,220);"
-            "border-radius: 6px;"
-        "}"
-        "QMenu::item {"
-            "border-radius: 4px;"
-            "padding: 4px;"
-        "}"
-        "QMenu::item:selected {"
-            "background: rgba(255,255,255,30);"
-        "}"
-    );
 
     auto* fmenu = new _MenuBase("File");
     fmenu->insertBefore = fmenu->addSeparator();

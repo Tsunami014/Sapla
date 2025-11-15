@@ -19,40 +19,6 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
     pendingScn = nullptr;
     resume = false;
     setFont(getFont(1.5));
-    setStyleSheet(
-        "QTextEdit {"
-            "color: white;"
-            "background: rgba(110, 60, 30, 220);"
-            "border-radius: 6px;"
-            "border: 1px solid #666;"
-            "margin: 4px;"
-            "padding: 4px;"
-        "}"
-        "QTextEdit:focus {"
-            "border: 2px solid #333;"
-        "}"
-        "SvgBtn {"
-            "color: #B87333;"
-        "}"
-        "QTreeWidget::item { background: rgb(193, 154, 107); }"
-        "QTreeWidget {"
-            "color: rgb(70, 35, 10);"
-            "border: 1px solid #333;"
-            "padding: 4px;"
-        "}"
-        "QTreeWidget::item:selected {"
-            "background-color: rgba(210, 125, 45, 200);"
-        "}"
-        "QTreeWidget::item:hover {"
-            "background-color: rgba(185, 115, 50, 140);"
-        "}"
-        "QHeaderView::section {"
-            "background-color: rgb(90, 40, 10);"
-            "border-top-left-radius: 10px;"
-            "border-top-right-radius: 10px;"
-            "padding: 4px;"
-        "}"
-    );
     bg = new SvgWidget(this);
     logLayWrap.setLayout(&logLay);
     logLay.addStretch();

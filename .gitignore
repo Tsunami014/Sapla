@@ -6,3 +6,5 @@ CMakeLists.txt.user
 .vscode/*
 *.log
 CMakeFiles/*
+*.old/*
+*.old

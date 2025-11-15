@@ -8,10 +8,20 @@
 const QString MODULE = "SvgRenderer";
 
 _colourMapTyp pallete = {
+    {"light",  "#8090D9"},
+    {"dark",   "#0D0D1A"},
+    {"shadow", "#2E2E4D"},
+    {"faded",  "#5A5A7D"},
+    {"alight", "#9D769D"},
+    {"adark",  "#554422"}
+/*
     {"light",  "#56B75D"},
     {"dark",   "#20471C"},
     {"shadow", "#436253"},
-    {"faded", "#699C6B"},
+    {"faded",  "#699C6B"},
+    {"alight", "#B87333"},
+    {"adark",  "#5A280A"}
+*/
 };
 
 QString getCol(QString palleteCol, std::tuple<int, int, int> offsets, int diff) {
@@ -20,10 +30,11 @@ QString getCol(QString palleteCol, std::tuple<int, int, int> offsets, int diff) 
     }
     QColor c(pallete[palleteCol]);
 
-    int hdiff = diff/2;
-    auto wiggle = [hdiff](int v) {
-        int delta = QRandomGenerator::global()->bounded(-hdiff, hdiff);
-        int out = v + delta;
+    int qdiff = diff/4;
+    int hdiff = QRandomGenerator::global()->bounded(-qdiff, qdiff);
+    auto wiggle = [hdiff, qdiff](int v) {
+        int delta = QRandomGenerator::global()->bounded(-qdiff, qdiff);
+        int out = v + hdiff + delta;
         return std::clamp(out, 0, 255);
     };
     int r = wiggle(c.red()   + std::get<0>(offsets));

@@ -1,4 +1,6 @@
 #include "listWid.hpp"
+#include "../base/svgRend.hpp"
+#include "../core.hpp"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QHeaderView>
@@ -14,7 +16,7 @@ bool ListWidget::viewportEvent(QEvent *event) {
     if (event->type() == QEvent::Paint) {
         QPaintEvent *pe = static_cast<QPaintEvent*>(event);
         QPainter p(viewport());
-        p.fillRect(pe->rect(), QColor(140, 68, 44, 128));
+        p.fillRect(pe->rect(), QColor(MG->cols.ListWid));
     }
     return QTreeWidget::viewportEvent(event);
 }

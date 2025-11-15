@@ -9,7 +9,8 @@ set(SOURCES
     main.cpp
 )
 set(CORELIB
-    core.cpp game.cpp
+    core.cpp
+    game.cpp styles.cpp
     log.cpp  menu.cpp
     resources.qrc
     plugins/getPlugins.cpp

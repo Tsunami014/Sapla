@@ -2,6 +2,7 @@
 #include "browseScn.hpp"
 #include "pluginView.hpp"
 #include "../base/font.hpp"
+#include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../core.hpp"
 #include <QLabel>
@@ -19,7 +20,7 @@ HomeScene::HomeScene() : BaseScene() {
     auto* txt = new QLabel(this);
     txt->setFont(getFont(2));
     txt->setText("<h1>Sapla</h1>");
-    txt->setStyleSheet("color: #954535;");
+    txt->setStyleSheet(QString("color: %1;").arg(getCol("adark", {10, 5, 10})));
     txt->setAlignment(Qt::AlignHCenter);
     lay->addWidget(txt, 2);
 

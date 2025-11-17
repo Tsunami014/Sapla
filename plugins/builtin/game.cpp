@@ -10,8 +10,8 @@ void load() {
     Q_INIT_RESOURCE(BIResources);
 }
 void loadCols() {
-    colours["fBICardBg1"] = getCol("faded", {-10, -33, -13});
-    colours["fBICardBg2"] = getCol("faded", {80, 44, 62});
+    colours["fBICardBg1"] = getCol("faded", -50);
+    colours["fBICardBg2"] = getCol("faded", 120);
 }
 void unload() {
     Q_CLEANUP_RESOURCE(BIResources);

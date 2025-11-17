@@ -20,7 +20,7 @@ HomeScene::HomeScene() : BaseScene() {
     auto* txt = new QLabel(this);
     txt->setFont(getFont(2));
     txt->setText("<h1>Sapla</h1>");
-    txt->setStyleSheet(QString("color: %1;").arg(getCol("adark", {10, 5, 10})));
+    txt->setStyleSheet(QString("color: %1;").arg(getCol("alight", -10)));
     txt->setAlignment(Qt::AlignHCenter);
     lay->addWidget(txt, 2);
 

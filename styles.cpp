@@ -55,13 +55,13 @@ void MainGame::initStyles() {
         "QMenu::item:selected {"
             "background: rgba(255,255,255,30);"
         "}"
-        ).arg(getCol("alight", {-5, -5, -5}))
-         .arg(getCol("alight", {-12, 12, 12}, 20))  // Different (and more greyish)
-         .arg(getCol("alight", {18, 18, 18}))  // A bit lighter
-         .arg(getCol("alight", {-15, -15, -15}))  // A bit darker
-         .arg(getCol("alight", {-30, -30, -30}))
-         .arg(getCol("adark",  {0, 0, 0}))
-         .arg(getCol("adark",  {-22, -22, -15}))  // Darker
+        ).arg(getCol("alight", -5))
+         .arg(getCol("alight", -5, -5, 20))  // Different (and more greyish)
+         .arg(getCol("alight", 10))  // A bit lighter
+         .arg(getCol("alight", 0, -8))  // A bit darker
+         .arg(getCol("adark",  -10))
+         .arg(getCol("adark"))
+         .arg(getCol("adark",  -15))  // Darker
     );
-    cols.ListWid = getCol("alight", {-18, -30, 0});
+    cols.ListWid = getCol("alight", -20);
 }

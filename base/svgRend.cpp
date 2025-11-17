@@ -8,23 +8,15 @@
 const QString MODULE = "SvgRenderer";
 
 _colourMapTyp pallete = {
-    {"light",  "#8090D9"},
-    {"dark",   "#0D0D1A"},
-    {"shadow", "#2E2E4D"},
-    {"faded",  "#5A5A7D"},
-    {"alight", "#9D769D"},
-    {"adark",  "#554422"}
-/*
     {"light",  "#56B75D"},
     {"dark",   "#20471C"},
     {"shadow", "#436253"},
     {"faded",  "#699C6B"},
     {"alight", "#B87333"},
     {"adark",  "#5A280A"}
-*/
 };
 
-QString getCol(QString palleteCol, std::tuple<int, int, int> offsets, int diff) {
+QString getCol(QString palleteCol, int avgOffs, int offset, int diff) {
     if (!pallete.contains(palleteCol)) {
         Log::Error(MODULE) << "Could not find pallete colour " << palleteCol;
     }
@@ -35,32 +27,45 @@ QString getCol(QString palleteCol, std::tuple<int, int, int> offsets, int diff) 
     auto wiggle = [hdiff, qdiff](int v) {
         int delta = QRandomGenerator::global()->bounded(-qdiff, qdiff);
         int out = v + hdiff + delta;
-        return std::clamp(out, 0, 255);
+        return out;
     };
-    int r = wiggle(c.red()   + std::get<0>(offsets));
-    int g = wiggle(c.green() + std::get<1>(offsets));
-    int b = wiggle(c.blue()  + std::get<2>(offsets));
-    return QColor(r, g, b).name(QColor::HexRgb);
+    int r = wiggle(c.red()   + offset);
+    int g = wiggle(c.green() + offset);
+    int b = wiggle(c.blue()  + offset);
+
+    if (avgOffs != 0) {
+        int tot = r + g + b;
+        if (tot != 0) {
+            qreal off = avgOffs;
+            r += off / tot * r;
+            g += off / tot * g;
+            b += off / tot * b;
+        }
+    }
+
+    QColor col(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255));
+    QString chex = col.name(QColor::HexRgb);
+    return chex;
 }
 
 _colourMapTyp colours = {};
 
 void initColours() {
     // Backgrounds
-    colours["sBgTrees"] = getCol("dark",   {6, -5, 20});
-    colours["fBgLight"] = getCol("light",  {0, 0, 0});
-    colours["fBgDark"]  = getCol("shadow", {-34, 12, -24});
-    colours["sFarTrees"]= getCol("shadow", {0, 0, 0});
-    colours["fFarTrees"]= getCol("faded",  {0, 0, 0});
+    colours["sBgTrees"] = getCol("dark", 20);
+    colours["fBgLight"] = getCol("light");
+    colours["fBgDark"]  = getCol("shadow", -40);
+    colours["sFarTrees"]= getCol("shadow");
+    colours["fFarTrees"]= getCol("faded");
     // The tree
-    colours["ftreeDark"]   = getCol("dark",  {-17, -28, -15});
-    colours["ftreeLight"]  = getCol("dark",  {4, 34, 14});
-    colours["ftreeHl"]     = getCol("shadow",{21, 36, -17});
-    colours["ftreeShadow"] = getCol("dark",  {0, 0, 0});
-    colours["ftreeShadow2"]= getCol("dark",  {15, 12, 9});
+    colours["ftreeDark"]   = getCol("dark", -50);
+    colours["ftreeLight"]  = getCol("dark", 50);
+    colours["ftreeHl"]     = getCol("shadow", 50);
+    colours["ftreeShadow"] = getCol("dark");
+    colours["ftreeShadow2"]= getCol("dark", 30);
     // Tree base
-    colours["fbaseOuter"] = getCol("shadow", {10, -15, -25});
-    colours["fbaseInner"] = getCol("dark",   {4, -22, 2});
+    colours["fbaseOuter"] = getCol("shadow", -30);
+    colours["fbaseInner"] = getCol("dark", -20);
 }
 
 QByteArray RenderSvg(const QString& svgPath) {

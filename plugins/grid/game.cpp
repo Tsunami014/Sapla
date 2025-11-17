@@ -10,9 +10,9 @@ void load() {
     Q_INIT_RESOURCE(gridResources);
 }
 void loadCols() {
-    colours["fGridIt"]   = getCol("faded", {78, 44, 62});
-    colours["fGridItBg"] = getCol("faded", {-12, -33, -12});
-    colours["fEmpTIt"]   = getCol("dark",  {15, 10, 15});
+    colours["fGridIt"]   = getCol("faded", 120);
+    colours["fGridItBg"] = getCol("faded", 60);
+    colours["fEmpTIt"]   = getCol("dark",  30);
 }
 void unload() {
     Q_CLEANUP_RESOURCE(gridResources);

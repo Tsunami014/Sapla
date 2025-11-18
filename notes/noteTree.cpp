@@ -5,8 +5,8 @@
 
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    tree->setColumnCount(1);
-    tree->setHeaderLabels({"Name"});
+    tree->setColumnCount(2);
+    tree->setHeaderLabels({"Name", "Cards"});
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
@@ -16,15 +16,29 @@ QTreeWidget* getNoteTree(QWidget* parent) {
     return tree;
 }
 
+void updateItem(QTreeWidgetItem* it, Note* note) {
+    it->setText(0, note->title());
+
+    int cards = note->getNumCards();
+    it->setData(1, Qt::DisplayRole, QVariant(cards));
+
+    //item->setIcon(0, QIcon(":/icons/file.png"));
+}
+
 QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* note) {
     QTreeWidgetItem* item = new QTreeWidgetItem(tree);
-    item->setText(0, note->title());
+    updateItem(item, note);
 
     item->setData(0, Qt::UserRole, QVariant::fromValue<void*>(
         new TreeData{note}
     ));
-    //item->setIcon(0, QIcon(":/icons/file.png"));
-
     return item;
+}
+
+void updateNoteOnTree(QTreeWidgetItem* it, QString nc) {
+    Note* n = static_cast<TreeData*>(it->data(0, Qt::UserRole).value<void*>())->note;
+    n->setContents(nc);
+
+    updateItem(it, n);
 }
 

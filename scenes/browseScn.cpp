@@ -57,10 +57,7 @@ void BrowseScene::typed() {
         te->setDisabled(true);
         return;
     }
-    QTreeWidgetItem* it = selected.first();
-    Note* n = static_cast<TreeData*>(it->data(0, Qt::UserRole).value<void*>())->note;
-    n->setContents(te->getMarkdown());
-    it->setText(0, n->title());
+    updateNoteOnTree(selected.first(), te->getMarkdown());
     writeNotes();
 }
 void BrowseScene::selectionChange() {

@@ -18,6 +18,8 @@ public:
     Note(Note&& other) noexcept;
     Note& operator=(Note&& other) noexcept;
 
+    int getNumCards();
+
     void setContents(QString newContents);
     QString contents() const;
     QString title();

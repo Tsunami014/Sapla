@@ -59,6 +59,11 @@ Note& Note::operator=(Note&& other) noexcept {
     return *this;
 }
 
+
+int Note::getNumCards() {
+    return cards.size();
+}
+
 void Note::ridCards() {
     for (auto& item : cards)
         CLremoveCard(&item);

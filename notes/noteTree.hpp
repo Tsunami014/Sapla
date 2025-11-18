@@ -9,4 +9,5 @@ Q_DECLARE_METATYPE(TreeData)
 
 QTreeWidget* getNoteTree(QWidget* parent = nullptr);
 QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* card);
+void updateNoteOnTree(QTreeWidgetItem* it, QString newContents);
 

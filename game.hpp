@@ -44,7 +44,5 @@ public slots:
 private:
     SvgWidget* bg;
     QPointer<GameScene> curGame;
-    QPointer<BaseScene> pendingScn;
     QWidget* sceneStash;
-    bool resume;
 };

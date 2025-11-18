@@ -33,6 +33,11 @@ void MainGame::changeBG(QString bgName) {
     bg->renderer()->load(RenderSvg(pth));
 }
 
+void MainGame::removeGame() {
+    if (curGame) curGame->deleteLater();
+    curGame = nullptr;
+}
+
 void MainGame::changeScene(BaseScene* newScene, bool resm) {
     GameScene* newGame = dynamic_cast<GameScene*>(newScene);
     if (newGame) {

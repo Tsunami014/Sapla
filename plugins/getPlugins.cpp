@@ -115,6 +115,7 @@ void loadPlugins() {
         p->loadCols();
     }
     MG->initStyles();
+    MG->removeGame();
     Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"
                                              << failedPlugs.size() << " unsuccessfully\n"
                                              << disabldPlugs.size() << " disabled!";

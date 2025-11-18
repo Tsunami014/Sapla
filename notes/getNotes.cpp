@@ -1,5 +1,6 @@
 #include "getNotes.hpp"
 #include "cardList.hpp"
+#include "../core.hpp"
 #include "../log.hpp"
 #include <QStandardPaths>
 #include <QDir>
@@ -62,6 +63,7 @@ void writeNotes() {
         out << makeSafe(n->contents()) << "\n";
     }
     file.close();
+    MG->removeGame();
     //Log::Debug(MODULE) << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth;
 }
 

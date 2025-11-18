@@ -23,6 +23,7 @@ public:
     void initScene();
     void initStyles();
 
+    void removeGame();
     void changeScene(BaseScene* newScene, bool resume = false);
     void changeBG(QString bgName);
 

@@ -54,18 +54,18 @@ void initColours() {
     // Backgrounds
     colours["sBgTrees"] = getCol("dark", 20);
     colours["fBgLight"] = getCol("light");
-    colours["fBgDark"]  = getCol("shadow", -40);
+    colours["fBgDark"]  = getCol("shadow", -50);
     colours["sFarTrees"]= getCol("shadow");
     colours["fFarTrees"]= getCol("faded");
     // The tree
     colours["ftreeDark"]   = getCol("dark", -50);
     colours["ftreeLight"]  = getCol("dark", 50);
-    colours["ftreeHl"]     = getCol("shadow", 50);
+    colours["ftreeHl"]     = getCol("shadow", 70);
     colours["ftreeShadow"] = getCol("dark");
-    colours["ftreeShadow2"]= getCol("dark", 30);
+    colours["ftreeShadow2"]= getCol("dark", 30, 10);
     // Tree base
     colours["fbaseOuter"] = getCol("shadow", -30);
-    colours["fbaseInner"] = getCol("dark", -20);
+    colours["fbaseInner"] = getCol("dark", -15);
 }
 
 QByteArray RenderSvg(const QString& svgPath) {

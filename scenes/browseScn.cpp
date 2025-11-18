@@ -5,7 +5,6 @@
 #include "../notes/getNotes.hpp"
 #include "../notes/cardList.hpp"
 #include "../base/font.hpp"
-#include <QColor>
 #include <QTimer>
 #include <QHeaderView>
 #include <QKeyEvent>

@@ -12,7 +12,7 @@ void load() {
 void loadCols() {
     colours["fGridIt"]   = getCol("faded", 120);
     colours["fGridItBg"] = getCol("faded", 60);
-    colours["fEmpTIt"]   = getCol("dark",  30);
+    colours["fEmpTIt"]   = getCol("dark",  42);
 }
 void unload() {
     Q_CLEANUP_RESOURCE(gridResources);

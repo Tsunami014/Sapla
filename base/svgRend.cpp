@@ -17,6 +17,9 @@ _colourMapTyp pallete = {
 };
 
 QString getCol(QString palleteCol, int avgOffs, int offset, int diff) {
+    return getQCol(palleteCol, avgOffs, offset, diff).name(QColor::HexRgb);
+}
+QColor getQCol(QString palleteCol, int avgOffs, int offset, int diff) {
     if (!pallete.contains(palleteCol)) {
         Log::Error(MODULE) << "Could not find pallete colour " << palleteCol;
     }
@@ -43,29 +46,27 @@ QString getCol(QString palleteCol, int avgOffs, int offset, int diff) {
         }
     }
 
-    QColor col(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255));
-    QString chex = col.name(QColor::HexRgb);
-    return chex;
+    return QColor(std::clamp(r, 0, 255), std::clamp(g, 0, 255), std::clamp(b, 0, 255));
 }
 
 _colourMapTyp colours = {};
 
 void initColours() {
     // Backgrounds
-    colours["sBgTrees"] = getCol("dark", 20);
+    colours["sBgTrees"] = getCol("dark", 42);
     colours["fBgLight"] = getCol("light");
-    colours["fBgDark"]  = getCol("shadow", -50);
+    colours["fBgDark"]  = getCol("shadow", -60);
     colours["sFarTrees"]= getCol("shadow");
     colours["fFarTrees"]= getCol("faded");
     // The tree
-    colours["ftreeDark"]   = getCol("dark", -50);
+    colours["ftreeDark"]   = getCol("dark", -60);
     colours["ftreeLight"]  = getCol("dark", 50);
     colours["ftreeHl"]     = getCol("shadow", 70);
     colours["ftreeShadow"] = getCol("dark");
-    colours["ftreeShadow2"]= getCol("dark", 30, 10);
+    colours["ftreeShadow2"]= getCol("dark", 30, 20);
     // Tree base
-    colours["fbaseOuter"] = getCol("shadow", -30);
-    colours["fbaseInner"] = getCol("dark", -15);
+    colours["fbaseOuter"] = getCol("shadow", -42);
+    colours["fbaseInner"] = getCol("dark", -42);
 }
 
 QByteArray RenderSvg(const QString& svgPath) {

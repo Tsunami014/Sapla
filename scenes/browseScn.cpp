@@ -8,7 +8,6 @@
 #include <QColor>
 #include <QTimer>
 #include <QHeaderView>
-#include <QScrollArea>
 #include <QKeyEvent>
 #include <QTextBlock>
 
@@ -23,13 +22,6 @@ BrowseScene::BrowseScene()
         te = new MarkdownEdit(this);
         te->setDisabled(true);
         QObject::connect(te, &MarkdownEdit::textChanged, this, &BrowseScene::typed);
-        auto* scroll = new QScrollArea();
-        scroll->setAttribute(Qt::WA_TranslucentBackground);
-        scroll->setWidgetResizable(true);
-        scroll->setWidget(te);
-        scroll->setFrameShape(QFrame::NoFrame);
-        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
         bar = new Topbar(this);
         connect(bar, &Topbar::onBtnPush, this, [=](const QString& apply){
@@ -50,7 +42,7 @@ BrowseScene::BrowseScene()
 
         auto* vLay = new QVBoxLayout();
         vLay->addWidget(bar);
-        vLay->addWidget(scroll);
+        vLay->addWidget(te);
 
         auto* mLay = new QHBoxLayout(this);
         mLay->addWidget(tree);

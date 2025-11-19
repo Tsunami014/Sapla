@@ -1,9 +1,12 @@
 #include "note.hpp"
 #include "cardList.hpp"
 #include "features.hpp"
+#include "../log.hpp"
 #include "../base/markdown.hpp"
 #include <unordered_set>
 #include <QApplication>
+
+const QString MODULE = "Note";
 
 Note::Note(QString conts) {
     setContents(conts);
@@ -73,6 +76,21 @@ void Note::ridCards() {
 void Note::setContents(QString nc) {
     orig = nc;
     ridCards();
+    std::vector<QString> dominants;
+    for (auto& f : Feats) {
+        if (f->dominance(nc)) {
+            dominants.push_back(f->getName());
+        }
+    }
+    if (dominants.size() > 1) {
+        auto logger = Log::Warn(MODULE);
+        logger << "Found multiple dominant features on note where there should only be one: " << dominants.back();
+        dominants.pop_back();
+        for (auto& d : dominants) {
+            logger << ", " << d;
+        }
+        return;
+    }
     for (auto& f : Feats) {
         if (auto fcs = f->getFlashCards(this, nc)) {
             std::move(fcs->begin(), fcs->end(), std::back_inserter(cards));

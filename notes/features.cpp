@@ -19,14 +19,10 @@ QString trimNL(const QString& orig) {
 
 
 FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
-    int amnt = txt.count(QRegularExpression(R"(^\s*---\s*$)", MO));
+    int amnt = txt.count(QRegularExpression("^ *--- *$", MO));
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
         Log::Warn(MODULE) << "Found multiple `---` - there should only be 1!";
-        return std::nullopt;
-    }
-    if (QRegularExpression(R"(^\s*===\s*$)", MO).match(txt).hasMatch()) {
-        Log::Warn(MODULE) << "Found both `---` and `===` in the same card!";
         return std::nullopt;
     }
     std::vector<FlashCard> l{};
@@ -34,8 +30,11 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]));
     return l;
 }
+bool SingleSideFeat::dominance(const QString& txt) const {
+    return QRegularExpression(QString("^ *%1 *$").arg(getName()), MO).match(txt).hasMatch();
+}
 QString SingleSideFeat::markup(QString& line) const {
-    if (QRegularExpression(R"(\s*---\s*)").match(line).hasMatch()) {
+    if (QRegularExpression(" *--- *").match(line).hasMatch()) {
         return "───";
     }
     return line;
@@ -47,15 +46,11 @@ std::vector<BtnFeatures> SingleSideFeat::btns() const {
     }};
 }
 
-FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt)  const{
-    int amnt = txt.count(QRegularExpression(R"(^\s*===\s*$)", MO));
+FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
+    int amnt = txt.count(QRegularExpression("^ *=== *$", MO));
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
         Log::Warn(MODULE) << "Found multiple `===` - there should only be 1!";
-        return std::nullopt;
-    }
-    if (QRegularExpression(R"(^\s*---\s*$)", MO).match(txt).hasMatch()) {
-        Log::Warn(MODULE) << "Found both `---` and `===` in the same card!";
         return std::nullopt;
     }
     std::vector<FlashCard> l{};
@@ -67,7 +62,7 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt)  c
     return l;
 }
 QString DoubleSideFeat::markup(QString& line) const {
-    if (QRegularExpression(R"(\s*===\s*)").match(line).hasMatch()) {
+    if (QRegularExpression(" *=== *").match(line).hasMatch()) {
         return "═══";
     }
     return line;

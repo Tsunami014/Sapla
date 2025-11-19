@@ -83,5 +83,5 @@ void MainGame::initStyles() {
          .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
     );
     cols.ListWid = getCol("alight", -42, 10);
-    setFont(getFont(1.5));
+    setFont(getFont(1.2));
 }

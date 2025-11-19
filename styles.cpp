@@ -8,7 +8,12 @@ static QString rgba(const QColor& c, double a) {
 }
 
 void MainGame::initStyles() {
-    setStyleSheet(QString(
+    QString globals = QString(
+        "color: %1;"
+    )
+        .arg(getCol("alight", 100, 150, 10)) // %1 - color
+    ;
+    QString treeWidAndMenu = QString(
         "QTreeWidget::item { background: %1; }"
         "QTreeWidget {"
             "border: 1px solid #333;"
@@ -47,10 +52,23 @@ void MainGame::initStyles() {
         "}"
         "QMenu::item:hover { background: %2; }"
         "QMenu::item:selected { background: %3; }"
-
+    )   // QTreeWidget/some of QMenuBar
+         .arg(getCol("alight", -20, -10)) // %1 - item
+         .arg(getCol("alight", -10, -5))  // %2 - item hover
+         .arg(getCol("alight", 0, 5))   // %3 - item select
+         .arg(getCol("adark", -10, 10)) // %4 - header
+        // QMenuBar overrides
+         .arg(getCol("adark", 50, 20))  // %5 - item
+         .arg(getCol("adark", 30, 10, 10)) // %6 - header
+    ;
+    setStyleSheet(QString(
+        "QWidget {"
+            + globals +
+        "}"
+        + treeWidAndMenu +
         "QTextEdit {"
             "color: white;"
-            "background-color: %7;"
+            "background-color: %1;"
             "border-radius: 6px;"
             "border: 1px solid #666;"
             "margin: 4px;"
@@ -59,25 +77,11 @@ void MainGame::initStyles() {
         "QTextEdit:focus {"
             "border: 2px solid #333;"
         "}"
-        "QLabel { color: %8; }"
+        "QLabel { color: %2; }"
         )
-         // QTreeWidget/some of QMenuBar
-         .arg(getCol("alight", -20, -10)) // %1 - item
-         .arg(getCol("alight", -10, -5))  // %2 - item hover
-         .arg(getCol("alight", 0, 5))   // %3 - item select
-         .arg(getCol("adark", -10, 10)) // %4 - header
-         // QMenuBar overrides
-         .arg(getCol("adark", 50, 20))  // %5 - item
-         .arg(getCol("adark", 30, 10, 10)) // %6 - header
-         // Misc
-         .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %7 - QTextEdit bg
-         .arg(getCol("adark", -100, 70))  // %8 - QLabel text colour
+         .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
+         .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
     );
-    QColor txtCol = getQCol("alight", 100, 150, 10);
-    QPalette palette = qApp->palette();
-    palette.setColor(QPalette::WindowText, txtCol);
-    palette.setColor(QPalette::Text, txtCol);
-    qApp->setPalette(palette);
     cols.ListWid = getCol("alight", -42, 10);
-    qApp->setFont(getFont(1.5));
+    setFont(getFont(1.5));
 }

@@ -28,7 +28,8 @@ public:
     void changeBG(QString bgName);
 
     bool handleEv(QKeyEvent* event);
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
     void fixLogs();
 
     bool cardFin(const FlashCard& card, bool correct);

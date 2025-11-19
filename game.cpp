@@ -19,6 +19,8 @@ MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
     bg = new SvgWidget(this);
     logLayWrap.setLayout(&logLay);
     logLay.addStretch();
+    setFont(getFont(1.5));
+    qApp->installEventFilter(this);
 }
 void MainGame::initScene() {
     curScene = new HomeScene();
@@ -134,3 +136,13 @@ void MainGame::fixLogs() {
     logLayWrap.resize(w, height());
 }
 
+bool MainGame::eventFilter(QObject *obj, QEvent *event) {
+    // Update widget font
+    if (event->type() == QEvent::Polish || event->type() == QEvent::PolishRequest) {
+        QWidget* w = qobject_cast<QWidget*>(obj);
+        if (w && !w->testAttribute(Qt::WA_SetFont)) {
+            w->setFont(font());
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}

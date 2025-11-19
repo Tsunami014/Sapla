@@ -29,9 +29,12 @@ public:
     void mousePressEvent(QMouseEvent* event) override;
     void focusOutEvent(QFocusEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
-    int lastCol = -1;
+
+    void insertMarkdown(QString txt, QString cursSub = "");
+    void refresh();
 protected:
     void updateTxt(bool save, bool orig);
+    int lastCol = -1;
 private:
     void init();
 };

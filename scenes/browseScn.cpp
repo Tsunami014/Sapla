@@ -24,19 +24,7 @@ BrowseScene::BrowseScene()
 
         bar = new Topbar(this);
         connect(bar, &Topbar::onBtnPush, this, [=](const QString& apply){
-            if (!te->isEnabled()) return;
-            te->setFocus();
-            auto c = te->textCursor();
-            int pos = apply.indexOf("$CUR$");
-            if (pos != -1) {
-                QString apply2 = apply;
-                apply2.remove(pos, 6);
-                c.insertText(apply2);
-                c.setPosition(c.position() - apply.length() + pos);
-            } else {
-                c.insertText(apply);
-            }
-            te->lastCol = c.position() - c.block().position();
+            te->insertMarkdown(apply, "$CUR$");
         });
 
         auto* vLay = new QVBoxLayout();

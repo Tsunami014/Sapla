@@ -167,6 +167,41 @@ void MarkdownEdit::focusInEvent(QFocusEvent *event) {
         lastCol = -1;
     }
 }
+void MarkdownEdit::insertMarkdown(QString txt, QString cursSub) {
+    if (!isEnabled()) return;
+    setFocus();
+    QSignalBlocker blocker(this);
+    QTextCursor c = textCursor();
+    if (lastCol != -1) {
+        int newPos = c.block().position() + qMin(lastCol, c.block().length() - 1);
+        c.setPosition(newPos);
+    }
+    updateTxt(false, true);
+    int pos;
+    if (cursSub != "") {
+        pos = txt.indexOf(cursSub);
+    } else {
+        pos = -1;
+    }
+    if (pos != -1) {
+        c.insertText(txt.left(pos));
+        int finalPos = c.position();
+        c.insertText(txt.mid(pos + 6));
+
+        c.setPosition(finalPos);
+    } else {
+        c.insertText(txt);
+    }
+    setTextCursor(c);
+    lastCol = c.position() - c.block().position();
+    updateTxt(true, false);
+    blocker.unblock();
+    emit textChanged();
+}
+void MarkdownEdit::refresh() {
+    QSignalBlocker blocker(this);
+    updateTxt(false, false);
+}
 
 void MarkdownEdit::updateTxt(bool save, bool orig) {
     QTextCursor curs = textCursor();

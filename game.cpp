@@ -16,7 +16,6 @@
 MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
     sceneStash = new QWidget(this);
     sceneStash->hide();
-    setFont(getFont(1.5));
     bg = new SvgWidget(this);
     logLayWrap.setLayout(&logLay);
     logLay.addStretch();

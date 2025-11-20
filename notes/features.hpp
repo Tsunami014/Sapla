@@ -1,10 +1,12 @@
 #pragma once
 #include <QString>
+#include <QRegularExpression>
 #include "note.hpp"
 #include "../wids/topbar.hpp"
 
 using FeatReturnTyp = std::optional<std::vector<FlashCard>>;
 struct FeatRegistry {
+    const int Order = 0;
     virtual const QString getName() const = 0;
     virtual FeatReturnTyp getFlashCards(Note* parent, const QString& txt) const { return std::nullopt; }
     virtual bool dominance(const QString& txt) const { return false; }
@@ -25,6 +27,16 @@ void registerNoteFeatures();
 #define Feat_btns          std::vector<BtnFeatures> btns() const override
 
 
+extern const QRegularExpression templDefRe;
+extern const QRegularExpression templApplyRe;
+struct TemplateFeat : FeatRegistry {
+    const int Order = -999;
+    Feat_name { return "%%"; };
+    Feat_dominance;
+    Feat_replacements;
+    Feat_btns;
+};
+
 struct SingleSideFeat : FeatRegistry {
     Feat_name { return "---"; };
     Feat_getFlashCards;
@@ -32,9 +44,10 @@ struct SingleSideFeat : FeatRegistry {
     Feat_markup;
     Feat_btns;
 };
-struct DoubleSideFeat : public SingleSideFeat {
+struct DoubleSideFeat : FeatRegistry {
     Feat_name { return "==="; };
     Feat_getFlashCards;
+    Feat_dominance;
     Feat_markup;
     Feat_btns;
 };

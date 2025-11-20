@@ -9,17 +9,42 @@ void registerNoteFeatures() {
     REGISTER_FEAT(SingleSideFeat);
     REGISTER_FEAT(DoubleSideFeat);
     REGISTER_FEAT(HiddenFeat);
+
+    std::stable_sort(Feats.begin(), Feats.end(), [](const std::unique_ptr<FeatRegistry>& a, const std::unique_ptr<FeatRegistry>& b) {
+        return a->Order < b->Order;
+    });
 }
 
 QString trimNL(const QString& orig) {
     QString nstr = orig;
-    return nstr.remove(QRegularExpression(R"(^\n+|\n+$)"));
+    static const QRegularExpression re(R"(^\n+|\n+$)");
+    return nstr.remove(re);
 }
 
 
+const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *$)", QRegularExpression::MultilineOption);
+const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", QRegularExpression::MultilineOption);
+bool TemplateFeat::dominance(const QString& txt) const {
+    return templDefRe.match(txt).hasMatch();
+}
+QString TemplateFeat::replacements(QString& txt, Side s) const {
+    return txt.replace(templApplyRe, "");
+}
+std::vector<BtnFeatures> TemplateFeat::btns() const {
+    return {
+           {"%||%", "%|$CUR$|%", std::nullopt, "Template definition",
+            "Defines a note template\n"
+            "See this screen help for more info"
+        }, {"%%", "%%$CUR$%%", std::nullopt, "Template usage",
+            "Uses a template for the note\n"
+            "See this screen help for more info"
+        }
+    };
+}
 
+const QRegularExpression ssfRe("^ *--- *$", MO);
 FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
-    int amnt = txt.count(QRegularExpression("^ *--- *$", MO));
+    int amnt = txt.count(ssfRe);
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
         Log::Warn(MODULE) << "Found multiple `---` - there should only be 1!";
@@ -31,10 +56,11 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     return l;
 }
 bool SingleSideFeat::dominance(const QString& txt) const {
-    return QRegularExpression(QString("^ *%1 *$").arg(getName()), MO).match(txt).hasMatch();
+    return ssfRe.match(txt).hasMatch();
 }
 QString SingleSideFeat::markup(QString& line) const {
-    if (QRegularExpression(" *--- *").match(line).hasMatch()) {
+    static const QRegularExpression re(" *--- *");
+    if (re.match(line).hasMatch()) {
         return "───";
     }
     return line;
@@ -46,8 +72,9 @@ std::vector<BtnFeatures> SingleSideFeat::btns() const {
     }};
 }
 
+const QRegularExpression dsfRe("^ *=== *$", MO);
 FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
-    int amnt = txt.count(QRegularExpression("^ *=== *$", MO));
+    int amnt = txt.count(dsfRe);
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
         Log::Warn(MODULE) << "Found multiple `===` - there should only be 1!";
@@ -61,8 +88,12 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     l.emplace_back(parent, second, first);
     return l;
 }
+bool DoubleSideFeat::dominance(const QString& txt) const {
+    return dsfRe.match(txt).hasMatch();
+}
 QString DoubleSideFeat::markup(QString& line) const {
-    if (QRegularExpression(" *=== *").match(line).hasMatch()) {
+    static const QRegularExpression re(" *=== *");
+    if (re.match(line).hasMatch()) {
         return "═══";
     }
     return line;
@@ -77,16 +108,18 @@ std::vector<BtnFeatures> DoubleSideFeat::btns() const {
 
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     QString repl;
+    QRegularExpression re;
     if (s == SIDE_BACK) {
-        repl = R"([^:\[\]]*:([^:\[\]]*))";
+        static const QRegularExpression realre(R"(\[\[[^:\[\]]*:([^:\[\]]*)\]\])");
+        re = realre;
     } else {
-        repl = R"(([^:\[\]]*):[^:\[\]]*)";
+        static const QRegularExpression realre(R"(\[\[([^:\[\]]*):[^:\[\]]*\]\])");
+        re = realre;
     }
-    auto re = QRegularExpression(QString(R"(\[\[%1\]\])").arg(repl));
     return txt.replace(re, "\\1");
 }
 QString HiddenFeat::markup(QString& line) const {
-    auto re = QRegularExpression(R"(\[\[([^\[\]:]*):([^\[\]:]*)\]\])");
+    static const QRegularExpression re(R"(\[\[([^\[\]:]*):([^\[\]:]*)\]\])");
     QString grey = "style='color:#D5D0D5;'";
     return line.replace(re, QString("<b %1>[[</b>\\1<span %1>:</span>\\2<b %1>]]</b>").arg(grey));
 }

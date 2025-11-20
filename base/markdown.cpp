@@ -5,8 +5,12 @@
 #include <QTextBlock>
 #include <QRegularExpression>
 
-void replace(QString& search, const QString& regex, std::function<QString(QRegularExpressionMatch)> replFn) {
-    QRegularExpression re(regex, QRegularExpression::MultilineOption);
+
+#define STATIC_RE(pattern) ([]() -> const QRegularExpression& { \
+    static const QRegularExpression re(pattern, QRegularExpression::MultilineOption); \
+    return re; \
+}())
+void replace(QString& search, const QRegularExpression& re, std::function<QString(QRegularExpressionMatch)> replFn) {
     auto it = re.globalMatch(search);
     int offs = 0;
     while (it.hasNext()) {
@@ -23,10 +27,12 @@ void replace(QString& search, const QString& regex, std::function<QString(QRegul
 QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
 
-    esc.replace("\t", "    ");
+    esc.replace("\t", "    ")
+       .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
+    ;
 
     // Lists
-    replace(esc, R"(^( *)([*\-+])[ \t]+(.+)$)", [](QRegularExpressionMatch m) {
+    replace(esc, STATIC_RE(R"(^( *)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
         QString bullet;
         switch (m.captured(2)[0].unicode()) {
             case '-':
@@ -44,8 +50,8 @@ QString parseMarkdownHtml(QString txt) {
     });
 
     // Bold & italic
-    esc.replace(QRegularExpression(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
-       .replace(QRegularExpression(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
+    esc.replace(STATIC_RE(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
 
     // Now parse all the features
     for (auto& f : Feats) {
@@ -53,11 +59,11 @@ QString parseMarkdownHtml(QString txt) {
     }
 
     // Fix spaces and finish
-    replace(esc, R"(^ +)", [](QRegularExpressionMatch m) {
-        int count = m.capturedLength();
-        return QString("&nbsp;").repeated(count);
-    });
-    esc.replace("\n", "<br/>");
+    int i = 0;
+    while (i < esc.size() && esc.at(i) == ' ') i++;
+    esc = QString("&nbsp;").repeated(i) + esc.mid(i)
+        .replace("\n", "<br/>")
+        .replace("\\", "");  // Get rid of backslashes that are only there for escaping stuff (the \\ was handled at the start)
     return esc;
 }
 

@@ -64,6 +64,7 @@ void BrowseScene::selectionChange() {
 }
 void BrowseScene::newNote() {
     auto* n = new Note("");
+    n->updateCards();
     notesL.push_back(n);
     auto* it = addToTree(tree, n);
     tree->setCurrentItem(it);

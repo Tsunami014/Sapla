@@ -38,6 +38,7 @@ QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* note) {
 void updateNoteOnTree(QTreeWidgetItem* it, QString nc) {
     Note* n = static_cast<TreeData*>(it->data(0, Qt::UserRole).value<void*>())->note;
     n->setContents(nc);
+    n->updateCards();
 
     updateItem(it, n);
 }

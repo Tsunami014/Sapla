@@ -51,6 +51,12 @@ QString getPath() {
     return path + "/savedata.txt";
 }
 
+void updateNoteCards() {
+    for (auto* n : notesL) {
+        n->updateCards();
+    }
+}
+
 void writeNotes() {
     QString fullpth = getPath();
     QFile file(fullpth);
@@ -89,6 +95,7 @@ void initNotes() {
                  "===\n"
                  "[[When was t:T]]his app was made[[?:]]")
         };
+        updateNoteCards();
         writeNotes();
         return;
     }
@@ -105,6 +112,7 @@ void initNotes() {
     }
 
     file.close();
+    updateNoteCards();
     Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " cards!";
 }
 

@@ -5,60 +5,44 @@
 #include "../base/markdown.hpp"
 #include <unordered_set>
 #include <QApplication>
+#include <QRegularExpression>
 
 const QString MODULE = "Note";
+
+std::map<QString, QString> globalTemplates = {};
 
 Note::Note(QString conts) {
     setContents(conts);
 }
 Note::~Note() {
     if (!QApplication::closingDown()) {  // If it is closing down this will fail
-        ridCards();
+        reset();
     }
 }
 bool Note::operator==(const Note& other) const {
     return orig == other.orig;
 }
-// Copy constructor
-Note::Note(const Note& other) : orig(other.orig) {
-    // Deep-copy cards
-    cards = other.cards;
-    for (auto& c : cards) {
-        c.parent = this;
-        CLaddCard(&c);
-    }
-}
-// Copy assignment
-Note& Note::operator=(const Note& other) {
-    if (this == &other) return *this;
-    // Unregister existing
-    ridCards();
-    orig = other.orig;
-    cards = other.cards;
-    for (auto& c : cards) {
-        c.parent = this;
-        CLaddCard(&c);
-    }
-    return *this;
-}
 // Move constructor
 Note::Note(Note&& other) noexcept : orig(std::move(other.orig)),
-                                    cards(std::move(other.cards)) {
+                                    cards(std::move(other.cards)),
+                                    templates(std::move(other.templates)) {
     for (auto& c : cards) {
         c.parent = this;
     }
     other.cards.clear();
+    other.templates.clear();
 }
 // Move assignment
 Note& Note::operator=(Note&& other) noexcept {
     if (this == &other) return *this;
-    ridCards();
     orig = std::move(other.orig);
     cards = std::move(other.cards);
+    templates = std::move(other.templates);
     for (auto& c : cards) {
         c.parent = this;
     }
     other.cards.clear();
+    other.templates.clear();
     return *this;
 }
 
@@ -66,19 +50,69 @@ Note& Note::operator=(Note&& other) noexcept {
 int Note::getNumCards() {
     return cards.size();
 }
+int Note::getNumTemplates() {
+    return templates.size();
+}
 
-void Note::ridCards() {
+void Note::reset() {
     for (auto& item : cards)
         CLremoveCard(&item);
 
     cards.clear();
+    for (auto& t : templates) {
+        globalTemplates.erase(t);
+    }
+    templates.clear();
 }
-void Note::setContents(QString nc) {
+void Note::setContents(const QString& nc) {
     orig = nc;
-    ridCards();
+    reset();
+    auto it = templDefRe.globalMatch(orig);
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString title = m.captured(1);
+        globalTemplates[title] = m.captured(2);
+        templates.push_back(title);
+    }
+}
+void Note::updateCards() {
+    QString conts = orig;
+    {
+        auto it = templDefRe.globalMatch(orig);
+        int offs = 0;
+        while (it.hasNext()) {
+            auto m = it.next();
+            int start = m.capturedStart(0) + offs;
+            int end = m.capturedEnd(0) + offs;
+            conts.replace(start, end - start, "");
+            offs -= (end - start);
+        }
+    } {
+        auto it = templApplyRe.globalMatch(orig);
+        int offs = 0;
+        while (it.hasNext()) {
+            auto m = it.next();
+
+            QString name = m.captured(1);
+            if (globalTemplates.find(name) == globalTemplates.end()) {
+                Log::Warn(MODULE) << "Unknown template name: " << name;
+                continue;
+            }
+            QString templ = globalTemplates[name];
+            QStringList gs = m.capturedTexts().sliced(2);
+            for (auto& g : gs) {
+                templ = templ.arg(g);
+            }
+
+            int start = m.capturedStart(0) + offs;
+            int end = m.capturedEnd(0) + offs;
+            conts.replace(start, end - start, templ);
+            offs += templ.length() - (end - start);
+        }
+    }
     std::vector<QString> dominants;
     for (auto& f : Feats) {
-        if (f->dominance(nc)) {
+        if (f->dominance(conts)) {
             dominants.push_back(f->getName());
         }
     }
@@ -92,7 +126,7 @@ void Note::setContents(QString nc) {
         return;
     }
     for (auto& f : Feats) {
-        if (auto fcs = f->getFlashCards(this, nc)) {
+        if (auto fcs = f->getFlashCards(this, conts)) {
             std::move(fcs->begin(), fcs->end(), std::back_inserter(cards));
         }
     }

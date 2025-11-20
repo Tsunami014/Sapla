@@ -23,6 +23,7 @@ void MainGame::initStyles() {
         "QTreeWidget::item:selected { background-color: %3; }"
         "QHeaderView::section {"
             "background-color: %4;"
+            "border: none;"
             "padding: 4px;"
         "}"
         "QHeaderView::section:first {"

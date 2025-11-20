@@ -5,8 +5,8 @@
 
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    tree->setColumnCount(2);
-    tree->setHeaderLabels({"Name", "Cards"});
+    tree->setColumnCount(3);
+    tree->setHeaderLabels({"Name", "Cards", "Templates"});
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
@@ -18,9 +18,8 @@ QTreeWidget* getNoteTree(QWidget* parent) {
 
 void updateItem(QTreeWidgetItem* it, Note* note) {
     it->setText(0, note->title());
-
-    int cards = note->getNumCards();
-    it->setData(1, Qt::DisplayRole, QVariant(cards));
+    it->setData(1, Qt::DisplayRole, QVariant(note->getNumCards()));
+    it->setData(2, Qt::DisplayRole, QVariant(note->getNumTemplates()));
 
     //item->setIcon(0, QIcon(":/icons/file.png"));
 }

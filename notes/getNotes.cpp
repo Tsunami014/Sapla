@@ -1,4 +1,5 @@
 #include "getNotes.hpp"
+#include "defaultNotes.hpp"
 #include "cardList.hpp"
 #include "../core.hpp"
 #include "../log.hpp"
@@ -79,22 +80,10 @@ void initNotes() {
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // File does not exist, so MAKE IT EXIST.
-        notesL = {
-            new Note("What is **Australia**?\n"
-                 "    *  (This is important to know)\n"
-                 "---\n"
-                 "A country"),
-            new Note("What *is* the meaning of life?\n"
-                 "---\n"
-                 "42"),
-            new Note("What is 1 + 1?\n"
-                 "---\n"
-                 "- 2\n"
-                 "+ You should know this!"),
-            new Note("[[What happened i:I]]n 2025[[?:]]\n"
-                 "===\n"
-                 "[[When was t:T]]his app was made[[?:]]")
-        };
+        notesL = {};
+        for (auto& n : defNotes) {
+            notesL.push_back(new Note(n));
+        }
         updateNoteCards();
         writeNotes();
         return;

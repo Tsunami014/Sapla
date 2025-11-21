@@ -29,6 +29,7 @@ QString parseMarkdownHtml(QString txt) {
 
     esc.replace("\t", "    ")
        .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
+       .replace("\\n", "\n")
     ;
 
     // Lists

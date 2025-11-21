@@ -106,22 +106,14 @@ std::vector<BtnFeatures> DoubleSideFeat::btns() const {
 }
 
 
+const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)(?<!\\):((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
-    QString repl;
-    QRegularExpression re;
-    if (s == SIDE_BACK) {
-        static const QRegularExpression realre(R"(\[\[[^:\[\]]*:([^:\[\]]*)\]\])");
-        re = realre;
-    } else {
-        static const QRegularExpression realre(R"(\[\[([^:\[\]]*):[^:\[\]]*\]\])");
-        re = realre;
-    }
-    return txt.replace(re, "\\1");
+    QString repl = s == SIDE_BACK ? "\\2" : "\\1";
+    return txt.replace(hiddenRe, repl);
 }
 QString HiddenFeat::markup(QString& line) const {
-    static const QRegularExpression re(R"(\[\[([^\[\]:]*):([^\[\]:]*)\]\])");
     QString grey = "style='color:#D5D0D5;'";
-    return line.replace(re, QString("<b %1>[[</b>\\1<span %1>:</span>\\2<b %1>]]</b>").arg(grey));
+    return line.replace(hiddenRe, QString("<b %1>[[</b>\\1<span %1>:</span>\\2<b %1>]]</b>").arg(grey));
 }
 std::vector<BtnFeatures> HiddenFeat::btns() const {
     return {{"[[:]]", "[[$CUR$:]]", std::nullopt, "Hidden sides", 

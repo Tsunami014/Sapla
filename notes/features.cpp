@@ -14,7 +14,7 @@ void registerNoteFeatures() {
     REGISTER_FEAT(TemplateFeat);
 
     std::stable_sort(Feats.begin(), Feats.end(), [](const std::unique_ptr<FeatRegistry>& a, const std::unique_ptr<FeatRegistry>& b) {
-        return a->Order < b->Order;
+        return a->order() < b->order();
     });
 }
 

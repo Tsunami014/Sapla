@@ -6,7 +6,7 @@
 
 using FeatReturnTyp = std::optional<std::vector<FlashCard>>;
 struct FeatRegistry {
-    const int Order = 0;
+    virtual int order() const { return 0; }
     virtual const QString getName() const = 0;
     virtual FeatReturnTyp getFlashCards(Note* parent, const QString& txt) const { return std::nullopt; }
     virtual bool dominance(const QString& txt) const { return false; }
@@ -19,6 +19,7 @@ inline std::vector<std::unique_ptr<FeatRegistry>> Feats;
 #define REGISTER_FEAT(nam) Feats.push_back(std::make_unique<nam>())
 void registerNoteFeatures();
 
+#define Feat_order(ordr)   int order() const override { return ordr; }
 #define Feat_name          inline const QString getName() const override
 #define Feat_getFlashCards FeatReturnTyp getFlashCards(Note* parent, const QString& txt) const override
 #define Feat_dominance     bool dominance(const QString& txt) const override
@@ -30,7 +31,7 @@ void registerNoteFeatures();
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatRegistry {
-    const int Order = -999;
+    Feat_order(-999)
     Feat_name { return "%%"; };
     Feat_dominance;
     Feat_replacements;

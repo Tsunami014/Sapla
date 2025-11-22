@@ -66,8 +66,7 @@ bool SingleSideFeat::dominance(const QString& txt) const {
     return ssfRe.match(txt).hasMatch();
 }
 QString SingleSideFeat::markup(QString& line) const {
-    static const QRegularExpression re(" *--- *");
-    if (re.match(line).hasMatch()) {
+    if (ssfRe.match(line).hasMatch()) {
         return "───";
     }
     return line;
@@ -99,8 +98,7 @@ bool DoubleSideFeat::dominance(const QString& txt) const {
     return dsfRe.match(txt).hasMatch();
 }
 QString DoubleSideFeat::markup(QString& line) const {
-    static const QRegularExpression re(" *=== *");
-    if (re.match(line).hasMatch()) {
+    if (dsfRe.match(line).hasMatch()) {
         return "═══";
     }
     return line;

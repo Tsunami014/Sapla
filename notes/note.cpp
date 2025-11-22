@@ -88,7 +88,7 @@ void Note::updateCards() {
             offs -= (end - start);
         }
     } {
-        auto it = templApplyRe.globalMatch(orig);
+        auto it = templApplyRe.globalMatch(conts);
         int offs = 0;
         while (it.hasNext()) {
             auto m = it.next();

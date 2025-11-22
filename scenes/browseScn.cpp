@@ -87,18 +87,40 @@ bool BrowseScene::keyEv(QKeyEvent* event) {
 
         QTreeWidgetItem* item = selected.first();
         QSignalBlocker block(tree);
+
+        QTreeWidgetItem* parent = item->parent();
+        int idx; int maxlen;
+        if (parent) {
+            idx = parent->indexOfChild(item);
+            maxlen = parent->childCount();
+        } else {
+            idx = tree->indexOfTopLevelItem(item);
+            maxlen = tree->topLevelItemCount();
+        }
+        bool nxt = maxlen > 1;
+        if (nxt && idx == maxlen-1) idx--;
+
         Note* data = static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
         notesL.erase(std::remove(notesL.begin(), notesL.end(), data), notesL.end());
         delete data;
         writeNotes();
-        if (QTreeWidgetItem* parent = item->parent()) {
+        QTreeWidgetItem* nxtSel;
+        if (parent) {
             parent->removeChild(item);
+            if (nxt) nxtSel = parent->child(idx);
         } else if (QTreeWidget *tree = item->treeWidget()) {
             tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
+            if (nxt) nxtSel = tree->topLevelItem(idx);
         }
-        tree->clearSelection();
-        te->setMarkdown("");
-        te->setDisabled(true);
+
+        if (nxt) {
+            tree->setCurrentItem(nxtSel);
+            selectionChange();
+        } else {
+            tree->clearSelection();
+            te->setMarkdown("");
+            te->setDisabled(true);
+        }
         delete item;
         return true;
     }

@@ -3,24 +3,39 @@ A cool flashcard app made in QT where you map out a constellation!
 
 FAQ is at the bottom.
 
+## How it works
+You define 'notes' which generate 'cards' based on the content.
+
+The cards are created when features are added such as `---` for separating notes into single sided cards or `===` for double sided cards
+
+There are example cards to help you
+
 ## Features
 ### Notes & cards
-- Simple custom notes which generate flashcards
+- Many different card features!
+- An accordian bar with card features on it and a settings page to see help texts for each
+- Example cards to help
 - Browse all your notes, edit them, delete them or add more
 - Markdown support - and reveals text underneath on selection
-- Regular or double sided cards with hidden text!
-- Saves notes to a configuration file automatically
+- Saves notes to a configuration file automatically as you type
 ### Gameplay
-- Map out a constellation with your answers
-### Games
-- Different short flashcard 'games' - currently, a regular game and a grid game
-- Import/disable/delete games
+- Grow a tree with your answers
+- Different short flashcard 'games' to test your knowledge in different ways
 ### App
-- Logging with popups
-- Custom UI svgs *hand drawn* by me
+- Neat logging with popups and a log view
+- Custom UI svgs *hand drawn* by me that change colour based on the theme
 - Responsive layout
-- Menu with help information for ease of use
-- Responsive menu
+- Help information for ease of use
+- Menu with updating items
+### Customisability
+- Ease of plugin creation through the extensable code structure
+- Import/disable/remove plugins
+- Plugins can add new games, features or change the colour scheme
+#### Plugins
+- Built in plugin which comes with the app, which adds
+    - A simple flashcard game - just a regular flashcard
+- Grid plugin, which adds
+    - A flashcard game - multiple flashcards in a grid you have to work through
 
 ## Usage instructions
 If you need help on anything, look at the `help > this screen help` or `help > application help`

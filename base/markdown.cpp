@@ -193,7 +193,7 @@ void MarkdownEdit::insertMarkdown(QString txt, QString cursSub) {
     if (pos != -1) {
         c.insertText(txt.left(pos));
         int finalPos = c.position();
-        c.insertText(txt.mid(pos + 6));
+        c.insertText(txt.mid(pos + cursSub.length()));
 
         c.setPosition(finalPos);
     } else {

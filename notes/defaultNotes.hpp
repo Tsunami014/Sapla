@@ -37,12 +37,11 @@ QStringList defNotes = {
      "---\n"
      "%%highlight Yes!%%",
 
-    "Testing backslashes:\n"
+    "Testing:\n"
      "[\\[broken via backslash]]\n"
      "\\* broken again\n"
      "---\n"
      "Actual backslash: \\\\\n"
      "Fake newline: \\n"
-     "<- fake newline (try typing here)\n"
-     "Rules for backslashes: place it wherever it works (usually on the *inside* not the outside)",
+     "<- fake newline (try typing here)\n",
 };

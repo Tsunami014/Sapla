@@ -34,6 +34,7 @@ struct TemplateFeat : FeatRegistry {
     Feat_name { return "%%"; };
     Feat_dominance;
     Feat_replacements;
+    Feat_markup;
     Feat_btns;
 };
 

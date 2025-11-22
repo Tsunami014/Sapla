@@ -92,11 +92,7 @@ void Topbar::makeSettings() {
     dialog->setWindowTitle("Top bar settings");
     dialog->resize(500, 700);
     dialog->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
-    dialog->setStyleSheet(QString(
-        "background-color: %1;"
-        "color: black;"
-        "border-radius: 6px;"
-    ).arg(getCol("alight", 30, 30)));
+    MG->styliseDialog(dialog);
 
     auto* txtArea = new QTextEdit(dialog);
     txtArea->setReadOnly(true);

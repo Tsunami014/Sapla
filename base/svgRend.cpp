@@ -55,7 +55,7 @@ void initColours() {
     // Backgrounds
     colours["sBgTrees"] = getCol("dark", 42);
     colours["fBgLight"] = getCol("light");
-    colours["fBgDark"]  = getCol("shadow", -60);
+    colours["fBgDark"]  = getCol("shadow", -20, 10);
     colours["sFarTrees"]= getCol("shadow");
     colours["fFarTrees"]= getCol("faded");
     // The tree

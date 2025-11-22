@@ -12,8 +12,10 @@ struct Stats {  // TODO: Save/load
     uint32_t bads;
 };
 
-struct spareCols {
-    QString ListWid;
+struct spareStyls {
+    QString listWidCol;
+    QString dialogStyl;
+    QString logBgCol;
 };
 
 class MainGame : public QMainWindow {
@@ -22,6 +24,7 @@ public:
     MainGame();
     void initScene();
     void initStyles();
+    void styliseDialog(QDialog* dialog, const QString& xtraStyl = "");
 
     void removeGame();
     void changeScene(BaseScene* newScene, bool resume = false);
@@ -37,7 +40,7 @@ public:
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;
     BaseScene* curScene;
-    spareCols cols;
+    spareStyls styls;
 
 public slots:
     void nextFC();

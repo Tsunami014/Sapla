@@ -1,6 +1,7 @@
 #include "core.hpp"
 #include "log.hpp"
 #include "menu.hpp"
+#include "base/svgRend.hpp"
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QApplication>
@@ -75,7 +76,7 @@ namespace Log {
     }
 }
 
-constexpr std::string_view colours[] = {
+constexpr std::string_view cols[] = {
     "#7AA2F7",  // Debug
     "#8AEA8A",  // Info
     "#F8F46A",  // Warn
@@ -84,13 +85,14 @@ constexpr std::string_view colours[] = {
 void showLogWindow() {
     QString out;
     for (auto& l : Log::logs) {
-        auto colour = QString::fromUtf8(colours[l.lvl].data());
+        auto colour = QString::fromUtf8(cols[l.lvl].data());
         auto name = QString::fromUtf8(lnames[l.lvl].data());
         QString msg = l.msg;
         msg.replace("\n", "<br>\u00A0> ");
         out += QString("<span style='font-family: monospace;color:%1;'>%2 [%3] %4</span><br>")
             .arg(colour).arg(name).arg(l.mod).arg(msg);
     }
-    makeDialog(out, "Logs");
+    QString col = QString("background-color: %1;").arg(MG->styls.logBgCol);
+    makeDialog(out, "Logs", col);
 }
 

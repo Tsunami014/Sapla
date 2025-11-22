@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "base/svgRend.hpp"
 #include "base/font.hpp"
+#include <QDialog>
 
 static QString rgba(const QColor& c, double a) {
     return QString("rgba(%1,%2,%3,%4)")
@@ -62,11 +63,7 @@ void MainGame::initStyles() {
          .arg(getCol("adark", 50, 20))  // %5 - item
          .arg(getCol("adark", 30, 10, 10)) // %6 - header
     ;
-    setStyleSheet(QString(
-        "QWidget {"
-            + globals +
-        "}"
-        + treeWidAndMenu +
+    QString textEdit = QString(
         "QTextEdit {"
             "color: white;"
             "background-color: %1;"
@@ -79,10 +76,30 @@ void MainGame::initStyles() {
             "border: 2px solid #333;"
         "}"
         "QLabel { color: %2; }"
-        )
+    )
          .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
          .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
+    ;
+    setStyleSheet(
+        "QWidget {" + globals + "}" +
+        treeWidAndMenu +
+        textEdit
     );
-    cols.ListWid = getCol("alight", -42, 10);
+
+    styls.dialogStyl = QString(
+        "background-color: %1;"
+        "color: %2;"
+        "border-radius: 6px;"
+    )
+        .arg(getCol("faded", -100, 111)) // %1 - bg colour
+        .arg(getCol("adark", 100, -70)) // %2 - text colour
+    ;
+    styls.listWidCol = getCol("alight", -42, 10);
+    styls.logBgCol = getCol("shadow", -200, 20);
+
     setFont(getFont(1.2));
+}
+void MainGame::styliseDialog(QDialog* dialog, const QString& xtraStyl) {
+    dialog->setStyleSheet(styls.dialogStyl + xtraStyl);
+    dialog->setFont(font());
 }

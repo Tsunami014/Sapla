@@ -16,7 +16,7 @@ bool ListWidget::viewportEvent(QEvent *event) {
     if (event->type() == QEvent::Paint) {
         QPaintEvent *pe = static_cast<QPaintEvent*>(event);
         QPainter p(viewport());
-        p.fillRect(pe->rect(), QColor(MG->cols.ListWid));
+        p.fillRect(pe->rect(), QColor(MG->styls.listWidCol));
     }
     return QTreeWidget::viewportEvent(event);
 }

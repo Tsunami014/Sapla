@@ -13,11 +13,12 @@ QAction* last = nullptr;
 _MenuesTyp* Menues = new _MenuesTyp;
 
 bool dialogging = false;
-void makeDialog(const QString& HtmlTxt, const QString& title) {
+void makeDialog(const QString& HtmlTxt, const QString& title, const QString& xtraStyle) {
     QDialog* dialog = new QDialog;
     dialog->setWindowTitle(title);
     dialog->resize(500, 700);
     dialog->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+    MG->styliseDialog(dialog, xtraStyle);
 
     // Scrollable HTML text
     QTextEdit* txtEd = new QTextEdit;

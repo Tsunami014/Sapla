@@ -10,10 +10,18 @@ QTreeWidget* getNoteTree(QWidget* parent) {
     tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
+    resetNoteTree(tree);
+    return tree;
+}
+void resetNoteTree(QTreeWidget* tree) {
+    tree->clear();
     for (auto* note : notesL) {
         addToTree(tree, note);
     }
-    return tree;
+    tree->sortItems(
+        tree->header()->sortIndicatorSection(),
+        tree->header()->sortIndicatorOrder()
+    );
 }
 
 void updateItem(QTreeWidgetItem* it, Note* note) {

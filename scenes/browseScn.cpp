@@ -9,9 +9,33 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QTextBlock>
+#include <QPushButton>
+#include <QMessageBox>
+
+bool BrowseScene::doubleCheck(QString prompt) {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Are you sure?");
+    msgBox.setText(QString("Are you sure you want to %1?").arg(prompt));
+    QAbstractButton* ybtn = msgBox.addButton("Yes", QMessageBox::YesRole);
+    msgBox.setDefaultButton(msgBox.addButton("No", QMessageBox::NoRole));
+
+    msgBox.exec();
+    if (msgBox.clickedButton() == ybtn) {
+        QMessageBox msgBox2;
+        msgBox2.setWindowTitle("Are you REALLY sure?");
+        msgBox2.setText(QString("Are you REALLY sure you want to %1?").arg(prompt));
+        msgBox2.setDefaultButton(msgBox2.addButton("No", QMessageBox::YesRole));
+        QAbstractButton* ybtn2 = msgBox2.addButton("Yes", QMessageBox::NoRole);
+        msgBox2.exec();
+        return msgBox2.clickedButton() == ybtn2;
+    }
+    return false;
+}
 
 BrowseScene::BrowseScene()
-    : BaseScene(), m("New card") {
+    : BaseScene(), m("New card"),
+    clearIt("Clear notes", Menues->FileMenu),
+    resetIt("Reset notes to default", Menues->FileMenu) {
         helpStr = &BROWSE_HELP;
         MG->changeBG("dirt");
 
@@ -36,6 +60,21 @@ BrowseScene::BrowseScene()
         mLay->addLayout(vLay);
 
         connect(&m, &QAction::triggered, this, &BrowseScene::newNote);
+        connect(&clearIt, &QAction::triggered, this, [this](){
+            if (doubleCheck("delete all your notes")) {
+                for (auto* n : notesL) delete n;
+                notesL.clear();
+                tree->clear();
+                selectionChange();
+            }
+        });
+        connect(&resetIt, &QAction::triggered, this, [this](){
+            if (doubleCheck("delete all your notes and replace them with the defaults")) {
+                loadDefaultNotes();
+                resetNoteTree(tree);
+                selectionChange();
+            }
+        });
     }
 
 void BrowseScene::typed() {

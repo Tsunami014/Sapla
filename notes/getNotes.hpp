@@ -7,6 +7,8 @@
 inline std::vector<Note*> notesL;
 void updateNoteCards();
 
+void loadDefaultNotes();
+
 QString tryReadLine(QTextStream& in, QString error = "");
 QString makeSafe(QString str);
 QString unSafe(QString str);

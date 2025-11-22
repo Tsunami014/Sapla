@@ -58,6 +58,16 @@ void updateNoteCards() {
     }
 }
 
+void loadDefaultNotes() {
+    for (auto* n : notesL) delete n;
+    notesL.clear();
+    for (auto& n : defNotes) {
+        notesL.push_back(new Note(n));
+    }
+    updateNoteCards();
+    writeNotes();
+}
+
 void writeNotes() {
     QString fullpth = getPath();
     QFile file(fullpth);
@@ -79,13 +89,8 @@ void initNotes() {
     QFile file(fullpth);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // File does not exist, so MAKE IT EXIST.
-        notesL = {};
-        for (auto& n : defNotes) {
-            notesL.push_back(new Note(n));
-        }
-        updateNoteCards();
-        writeNotes();
+        // File does not exist, so MAKE IT EXIST by loading the default notes (which also saves them)
+        loadDefaultNotes();
         return;
     }
 
@@ -102,6 +107,6 @@ void initNotes() {
 
     file.close();
     updateNoteCards();
-    Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " cards!";
+    Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " notes!";
 }
 

@@ -26,4 +26,7 @@ protected:
 
 private:
     MenuAction m;
+    MenuItem resetIt;
+    MenuItem clearIt;
+    bool doubleCheck(QString prompt);
 };

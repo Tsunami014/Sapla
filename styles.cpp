@@ -91,8 +91,8 @@ void MainGame::initStyles() {
         "color: %2;"
         "border-radius: 6px;"
     )
-        .arg(getCol("faded", -100, 111)) // %1 - bg colour
-        .arg(getCol("adark", 100, -70)) // %2 - text colour
+        .arg(getCol("alight", -200, 111)) // %1 - bg colour
+        .arg(getCol("dark", 100, -70)) // %2 - text colour
     ;
     styls.listWidCol = getCol("alight", -42, 10);
     styls.logBgCol = getCol("shadow", -200, 20);

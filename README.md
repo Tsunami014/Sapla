@@ -41,7 +41,7 @@ There are example cards to help you
 If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-https://github.com/user-attachments/assets/a30b6bb1-142f-4a65-9167-34c621133685
+https://github.com/user-attachments/assets/a18e07e6-ed2a-49d4-93ad-ae491ef6e19b
 
 ## Getting it
 ### The easy way

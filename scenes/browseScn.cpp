@@ -33,7 +33,7 @@ bool BrowseScene::doubleCheck(QString prompt) {
 }
 
 BrowseScene::BrowseScene()
-    : BaseScene(), m("New card"),
+    : BaseScene(), m("New note"),
     clearIt("Clear notes", Menues->FileMenu),
     resetIt("Reset notes to default", Menues->FileMenu) {
         helpStr = &BROWSE_HELP;

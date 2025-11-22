@@ -4,7 +4,7 @@ rm -rf AppDir
 mkdir -p AppDir/usr/bin
 cp build/Sapla AppDir/usr/bin/Sapla
 cp build/libcore.so AppDir/usr/bin/libcore.so
-cp build/libbuiltinGame.so AppDir/usr/bin/libbuiltinGame.so
+cp build/libbuiltin.so AppDir/usr/bin/libbuiltin.so
 
 mkdir -p AppDir/usr/lib
 ldd build/libcore.so | awk '/=>/ { print $(NF-1) }' | while read lib; do

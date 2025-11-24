@@ -98,7 +98,7 @@ bool MainGame::cardFin(const FlashCard& card, bool correct) {
     if (correct) s.goods++;
     else s.bads++;
 
-    int grow = correct ? 20 : 50;
+    int grow = correct ? 50 : 20;
     return Tree::getTree().grow(grow, correct);
 }
 

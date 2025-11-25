@@ -18,5 +18,6 @@ auto r = RegistryBuilder()
     .addStyl(loadCols)
     .addPlay(init);
 
-REGISTER_PLUG(r, 1, 1)
-
+REGISTER_PLUG(r.build(
+    "Contains a grid game - flashcards aligned on a grid!"
+    ), 9, 9)

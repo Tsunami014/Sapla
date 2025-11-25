@@ -13,6 +13,7 @@ public:
     ~Plugin();
     QString name;
     QString path;
+    QString desc;
     bool isBI;
 private:
     Registry reg;

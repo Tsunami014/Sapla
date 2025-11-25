@@ -19,8 +19,12 @@ struct Registry {
     BFnArray onPlay;
     VFnArray onStyl;
 
-    int vFrom;
-    int vTo;
+    const char* desc;
+};
+
+struct Version {
+    int from;
+    int to;
 };
 
 }

@@ -39,19 +39,34 @@ bool tryLoad(const QFileInfo& file) {
         delete lib;
         return false;
     }
+    auto fail = [&](QString error){
+        Log::Error(MODULE) << error;
+        lib->unload();
+        failedPlugs.push_back({fname, error, file.filePath(), false});
+        delete lib;
+        return false;
+    };
 
+    auto verFn = reinterpret_cast<Version (*)()>(lib->resolve("_versions"));
+    if (verFn) {
+        Version ver = verFn();
+        if (ver.from > VERSION || ver.to < VERSION) {
+            return fail(QString(
+"Incorrect version! \
+Plugin requires versions in range %1 - %2, but this app is version %3!")
+                .arg(ver.from).arg(ver.to).arg(VERSION)
+            );
+        }
+    } else {
+        return fail("No '_versions' function found in "+fname);
+    }
     auto regFn = reinterpret_cast<Registry (*)()>(lib->resolve("_register"));
     if (regFn) {
         Registry reg = regFn();
         plugs.push_back(new Plugin(fname, reg, lib, file.filePath()));
         return true;
     } else {
-        QString error = "No '_register' function found in "+fname;
-        Log::Error(MODULE) << error;
-        lib->unload();
-        failedPlugs.push_back({fname, error, file.filePath(), false});
-        delete lib;
-        return false;
+        return fail("No '_register' function found in "+fname);
     }
 }
 
@@ -65,6 +80,7 @@ Plugin::Plugin(QString nme, Registry& r, QLibrary* library, QString pth)
     : name(std::move(nme)), reg(r), lib(library), path(pth) {
         sync(reg.onStyl, PlugFns->stylFns);
         sync(reg.onPlay, PlugFns->playFns);
+        desc = QString::fromUtf8(reg.desc);
         isBI = false;
     }
 Plugin::~Plugin() {

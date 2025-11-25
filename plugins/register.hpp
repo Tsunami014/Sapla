@@ -44,19 +44,19 @@ struct RegistryBuilder {
     _makeFns(Play, BoolFn)
     _makeFns(Styl, VoidFn)
 
-    Registry _build(int vFrom, int vTo) {
+    Registry build(const char* desc) {
         return Registry{
             { LoadFns.data(),   int(LoadFns.size()) },
             { UnloadFns.data(), int(UnloadFns.size()) },
             { PlayFns.data(),   int(PlayFns.size()) },
             { StylFns.data(),   int(StylFns.size()) },
-            vFrom,
-            vTo
+            desc,
         };
     }
 };
 #undef _makeFns
 
-#define REGISTER_PLUG(reg, vFrom, vTo) \
-    extern "C" Registry _register() { return reg._build(vFrom, vTo); }
+#define REGISTER_PLUG(build, vFrom, vTo) \
+    extern "C" Registry _register() { return build; }\
+    extern "C" Version _versions() { return  { vFrom, vTo }; }
 

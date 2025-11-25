@@ -12,6 +12,7 @@ struct ListData {
     QString name;
     QString path;
     QString text;
+    QString desc;
     bool working;
     bool isBI;
 };
@@ -124,12 +125,13 @@ PlugViewScene::PlugViewScene()
             QTreeWidgetItem* sel = li->currentItem();
             if (sel) {
                 ListData dat = sel->data(0, Qt::UserRole).value<ListData>();
-                txt->setText(dat.path + "\n" + dat.text);
+                txt->setHtml(
+    "<b>"+dat.text+"</b><br><i>"+dat.path.toHtmlEscaped()+"</i><br><br>" + dat.desc);
             }
         });
 
         auto* mainLay = new QHBoxLayout(this);
-        mainLay->addWidget(li, 4);
+        mainLay->addWidget(li, 2);
         mainLay->addLayout(sideLay, 1);
     }
 
@@ -144,17 +146,20 @@ void PlugViewScene::fillTree() {
     li->clear();
     for (auto& dg : disabldPlugs) {
         auto* it = new QTreeWidgetItem(QStringList({"🤎", dg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{dg.name, dg.path, "Plugin disabled", false, dg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(
+            ListData{dg.name, dg.path, "Plugin disabled.", "", false, dg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto& fg : failedPlugs) {
         auto* it = new QTreeWidgetItem(QStringList({"💔", fg.name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{fg.name, fg.path, "Plugin loaded with error:\n"+fg.error, false, fg.isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(
+            ListData{fg.name, fg.path, "Plugin failed to load!", fg.error.toHtmlEscaped(), false, fg.isBI}));
         li->addTopLevelItem(it);
     }
     for (auto* g : plugs) {
         auto* it = new QTreeWidgetItem(QStringList({"💖", g->name}));
-        it->setData(0, Qt::UserRole, QVariant::fromValue(ListData{g->name, g->path, "Plugin loaded successfully!", true, g->isBI}));
+        it->setData(0, Qt::UserRole, QVariant::fromValue(
+            ListData{g->name, g->path, "Plugin loaded successfully!", g->desc, true, g->isBI}));
         li->addTopLevelItem(it);
     }
 }

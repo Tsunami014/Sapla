@@ -3,7 +3,7 @@
 #include <QStackedLayout>
 #include "game.hpp"
 
-#define VERSION 1
+const int VERSION = 9;
 
 extern MainGame* MG;
 extern const QString* helpStr;

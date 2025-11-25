@@ -17,5 +17,7 @@ auto r = RegistryBuilder()
     .addStyl(loadCols)
     .addPlay(init);
 
-REGISTER_PLUG(r, 1, 1)
-
+REGISTER_PLUG(r.build(
+"The built-in plugin\n\
+This contains a single game where a single flashcard is shown."
+    ), 9, 9)

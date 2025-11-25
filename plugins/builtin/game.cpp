@@ -6,16 +6,16 @@ bool init() {
     return true;
 }
 
-void load() {
-    Q_INIT_RESOURCE(BIResources);
-}
 void loadCols() {
     colours["fBICardBg1"] = getCol("faded", -50);
     colours["fBICardBg2"] = getCol("faded", 120);
 }
-void unload() {
-    Q_CLEANUP_RESOURCE(BIResources);
-}
 
-REGISTER_PLUG(makeRegistry(1, 1, init, load, unload, loadCols))
+auto r = RegistryBuilder()
+    .addLoad([](){ Q_INIT_RESOURCE(BIResources); })
+    .addUnload([](){ Q_CLEANUP_RESOURCE(BIResources); })
+    .addStyl(loadCols)
+    .addPlay(init);
+
+REGISTER_PLUG(r, 1, 1)
 

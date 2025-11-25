@@ -67,6 +67,7 @@ add_subdirectory(plugins/builtin)
 option(BUILD_PLUGINS "Build plugins" ON)
 if (BUILD_PLUGINS)
     add_subdirectory(plugins/grid)
+    add_subdirectory(plugins/winter)
 endif()
 
 

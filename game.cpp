@@ -84,11 +84,12 @@ void MainGame::showFC() {
     }
 }
 void MainGame::nextFC() {
-    int gSze = plugs.size();
+    auto games = PlugFns->playFns;
+    int gSze = games.size();
     if (gSze == 0) return;
     int gidx = QRandomGenerator::global()->bounded(gSze);
     for (int _ = 0; _ < gSze; _++) {
-        bool success = plugs[gidx]->run();
+        bool success = games[gidx]();
         if (success) break;
         gidx = (gidx + 1) % gSze;
     }

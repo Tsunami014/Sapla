@@ -27,15 +27,36 @@
 #include "../scenes/homeScn.hpp"
 #include "../scenes/winScn.hpp"
 
-inline Registry makeRegistry(
-    int vFrom,
-    int vTo,
-    bool (*onRun)(),
-    void (*onLoad)() = +[](){},
-    void (*onUnload)() = +[](){},
-    void (*loadCols)() = +[](){}
-) { return Registry{onLoad, loadCols, onRun, onUnload, vFrom, vTo}; }
+#define _makeFns(name, typ) \
+    std::vector<typ> name##Fns; \
+    RegistryBuilder& add##name(typ fn) { \
+        name##Fns.push_back(fn); \
+        return *this; \
+    } \
+    RegistryBuilder& add##name##s(std::vector<typ> fns) { \
+        name##Fns.insert(name##Fns.end(), fns.begin(), fns.end()); \
+        return *this; \
+    }
 
-#define REGISTER_PLUG(reg) \
-    extern "C" Registry _register() { return reg; }
+struct RegistryBuilder {
+    _makeFns(Load, VoidFn)
+    _makeFns(Unload, VoidFn)
+    _makeFns(Play, BoolFn)
+    _makeFns(Styl, VoidFn)
+
+    Registry _build(int vFrom, int vTo) {
+        return Registry{
+            { LoadFns.data(),   int(LoadFns.size()) },
+            { UnloadFns.data(), int(UnloadFns.size()) },
+            { PlayFns.data(),   int(PlayFns.size()) },
+            { StylFns.data(),   int(StylFns.size()) },
+            vFrom,
+            vTo
+        };
+    }
+};
+#undef _makeFns
+
+#define REGISTER_PLUG(reg, vFrom, vTo) \
+    extern "C" Registry _register() { return reg._build(vFrom, vTo); }
 

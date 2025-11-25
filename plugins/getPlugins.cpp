@@ -5,6 +5,7 @@
 #include "getPlugins.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
+#include <QRandomGenerator>
 #include <QDir>
 
 const QString MODULE = "getPlugins";
@@ -54,22 +55,24 @@ bool tryLoad(const QFileInfo& file) {
     }
 }
 
+_PFuncs* PlugFns = new _PFuncs();
 std::vector<Plugin*> plugs = {};
 std::vector<FailedPlug> failedPlugs = {};
 std::vector<DisabldPlug> disabldPlugs;
 
+#define sync(from, to) to.insert(to.end(), from.fns, from.fns + from.count)
 Plugin::Plugin(QString nme, Registry& r, QLibrary* library, QString pth)
-    : name(std::move(nme)), reg(r), lib(library), path(pth) { reg.loadFn(); isBI = false; }
+    : name(std::move(nme)), reg(r), lib(library), path(pth) {
+        sync(reg.onStyl, PlugFns->stylFns);
+        sync(reg.onPlay, PlugFns->playFns);
+        isBI = false;
+    }
 Plugin::~Plugin() {
-    reg.unloadFn();
+    for (int i = 0; i < reg.onUnload.count; i++) {
+        reg.onUnload.fns[i]();
+    }
     lib->unload();
     delete lib;
-}
-bool Plugin::run() {
-    return reg.runFn();
-}
-void Plugin::loadCols() {
-    return reg.loadColsFn();
 }
 
 void clearPlugins() {
@@ -77,6 +80,10 @@ void clearPlugins() {
     plugs.clear();
     failedPlugs.clear();
     disabldPlugs.clear();
+    if (PlugFns != nullptr) {
+        delete PlugFns;
+        PlugFns = new _PFuncs();
+    }
 }
 
 void loadPlugins() {
@@ -110,10 +117,8 @@ void loadPlugins() {
         }
     }
 
+    for (auto* f : PlugFns->stylFns) f();
     initColours();
-    for (auto* p : plugs) {
-        p->loadCols();
-    }
     MG->initStyles();
     MG->removeGame();
     Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"

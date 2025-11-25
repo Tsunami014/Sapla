@@ -13,8 +13,6 @@ public:
     ~Plugin();
     QString name;
     QString path;
-    bool run();
-    void loadCols();
     bool isBI;
 private:
     Registry reg;
@@ -32,6 +30,14 @@ struct DisabldPlug {
     QString path;
     bool isBI;
 };
+
+using BoolFns = std::vector<bool(*)()>;
+using VoidFns = std::vector<void(*)()>;
+struct _PFuncs {
+    BoolFns playFns;
+    VoidFns stylFns;
+};
+extern _PFuncs* PlugFns;
 
 extern std::vector<Plugin*> plugs;
 extern std::vector<FailedPlug> failedPlugs;

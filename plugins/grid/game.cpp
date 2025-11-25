@@ -6,17 +6,17 @@ bool init() {
     return true;
 }
 
-void load() {
-    Q_INIT_RESOURCE(gridResources);
-}
 void loadCols() {
     colours["fGridIt"]   = getCol("faded", 120);
     colours["fGridItBg"] = getCol("faded", 60);
     colours["fEmpTIt"]   = getCol("dark",  42);
 }
-void unload() {
-    Q_CLEANUP_RESOURCE(gridResources);
-}
 
-REGISTER_PLUG(makeRegistry(1, 1, init, load, unload, loadCols))
+auto r = RegistryBuilder()
+    .addLoad([](){ Q_INIT_RESOURCE(gridResources); })
+    .addUnload([](){ Q_CLEANUP_RESOURCE(gridResources); })
+    .addStyl(loadCols)
+    .addPlay(init);
+
+REGISTER_PLUG(r, 1, 1)
 

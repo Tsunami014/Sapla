@@ -8,12 +8,12 @@ constexpr auto MO = QRegularExpression::MultilineOption;
 const QString grey = "style='color:#D5D0D5;'";
 
 void registerNoteFeatures() {
-    REGISTER_FEAT(SingleSideFeat);
-    REGISTER_FEAT(DoubleSideFeat);
-    REGISTER_FEAT(HiddenFeat);
+    REGISTER_CFEAT(SingleSideFeat);
+    REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_FEAT(TemplateFeat);
+    REGISTER_FEAT(HiddenFeat);
 
-    std::stable_sort(Feats.begin(), Feats.end(), [](const std::unique_ptr<FeatRegistry>& a, const std::unique_ptr<FeatRegistry>& b) {
+    std::stable_sort(Feats.begin(), Feats.end(), [](const std::unique_ptr<FeatReg>& a, const std::unique_ptr<FeatReg>& b) {
         return a->order() < b->order();
     });
 }
@@ -27,9 +27,6 @@ QString trimNL(const QString& orig) {
 
 const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *$)", QRegularExpression::MultilineOption);
 const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", QRegularExpression::MultilineOption);
-bool TemplateFeat::dominance(const QString& txt) const {
-    return templDefRe.match(txt).hasMatch();
-}
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     return txt.replace(templApplyRe, "");
 }
@@ -50,6 +47,15 @@ std::vector<BtnFeatures> TemplateFeat::btns() const {
 }
 
 const QRegularExpression ssfRe("^ *--- *$", MO);
+QString SingleSideFeat::markup(QString& line) const {
+    if (ssfRe.match(line).hasMatch()) {
+        return "───";
+    }
+    return line;
+}
+bool SingleSideFeat::dominance(const QString& txt) const {
+    return ssfRe.match(txt).hasMatch();
+}
 FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
     int amnt = txt.count(ssfRe);
     if (amnt == 0) return std::nullopt;
@@ -62,15 +68,6 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]));
     return l;
 }
-bool SingleSideFeat::dominance(const QString& txt) const {
-    return ssfRe.match(txt).hasMatch();
-}
-QString SingleSideFeat::markup(QString& line) const {
-    if (ssfRe.match(line).hasMatch()) {
-        return "───";
-    }
-    return line;
-}
 std::vector<BtnFeatures> SingleSideFeat::btns() const {
     return {{"---", "\n---\n", std::nullopt, "Single sided note", 
         "Separates the card into a front and a back.\n"
@@ -79,6 +76,15 @@ std::vector<BtnFeatures> SingleSideFeat::btns() const {
 }
 
 const QRegularExpression dsfRe("^ *=== *$", MO);
+QString DoubleSideFeat::markup(QString& line) const {
+    if (dsfRe.match(line).hasMatch()) {
+        return "═══";
+    }
+    return line;
+}
+bool DoubleSideFeat::dominance(const QString& txt) const {
+    return dsfRe.match(txt).hasMatch();
+}
 FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
     int amnt = txt.count(dsfRe);
     if (amnt == 0) return std::nullopt;
@@ -93,15 +99,6 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     l.emplace_back(parent, first, second);
     l.emplace_back(parent, second, first);
     return l;
-}
-bool DoubleSideFeat::dominance(const QString& txt) const {
-    return dsfRe.match(txt).hasMatch();
-}
-QString DoubleSideFeat::markup(QString& line) const {
-    if (dsfRe.match(line).hasMatch()) {
-        return "═══";
-    }
-    return line;
 }
 std::vector<BtnFeatures> DoubleSideFeat::btns() const {
     return {{"===", "\n===\n", std::nullopt, "Double sided note", 

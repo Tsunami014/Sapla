@@ -111,7 +111,7 @@ void Note::updateCards() {
         }
     }
     std::vector<QString> dominants;
-    for (auto& f : Feats) {
+    for (auto& f : CardFeats) {
         if (f->dominance(conts)) {
             dominants.push_back(f->getName());
         }
@@ -125,7 +125,7 @@ void Note::updateCards() {
         }
         return;
     }
-    for (auto& f : Feats) {
+    for (auto& f : CardFeats) {
         if (auto fcs = f->getFlashCards(this, conts)) {
             std::move(fcs->begin(), fcs->end(), std::back_inserter(cards));
         }

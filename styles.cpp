@@ -80,10 +80,19 @@ void MainGame::initStyles() {
          .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
          .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
     ;
+    QString misc = QString(
+        "QSplitter::handle {"
+            "background-color: %1;"
+            "border-radius: 6px;"
+        "}"
+    )
+        .arg(getCol("alight", -100, 0, 20))  // %1 - QSplitter handle colour
+    ;
     setStyleSheet(
         "QWidget {" + globals + "}" +
         treeWidAndMenu +
-        textEdit
+        textEdit +
+        misc
     );
 
     styls.dialogStyl = QString(
@@ -96,6 +105,7 @@ void MainGame::initStyles() {
     ;
     styls.listWidCol = getCol("alight", -42, 10);
     styls.logBgCol = getCol("shadow", -200, 20);
+    styls.mdHlCol = getCol("light", 20, -60);
 
     setFont(getFont(1.2));
 }

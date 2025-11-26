@@ -1,3 +1,4 @@
+#include "../core.hpp"
 #include "../notes/features.hpp"
 #include <QRegularExpression>
 
@@ -20,6 +21,13 @@ void replace(QString& search, const QRegularExpression& re, std::function<QStrin
     }
 }
 
+const QString codeRepl = "<span style='"
+    "background-color: grey;"
+    "font-family: monospace;"
+"'>\\1</span>";
+const QString hlRepl = "<span style='background-color: %1;'>"
+    "&nbsp;\\1&nbsp;"
+"</span>";
 QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
 
@@ -47,8 +55,10 @@ QString parseMarkdownHtml(QString txt) {
     });
 
     // Bold & italic
-    esc.replace(STATIC_RE(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
-       .replace(STATIC_RE(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
+    esc.replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*|(?<!\\)__([^_]*[^`\\])__)"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^`\\])\*|(?<!\\)_([^_]*[^`\\])_)"), "<i>\\1</i>")
+       .replace(STATIC_RE(R"((?<!\\)`([^`]*[^`\\])`)"), codeRepl)
+       .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol));
 
     // Now parse all the features
     for (auto& f : Feats) {

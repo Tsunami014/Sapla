@@ -16,6 +16,7 @@ struct spareStyls {
     QString listWidCol;
     QString dialogStyl;
     QString logBgCol;
+    QString mdHlCol;
 };
 
 class MainGame : public QMainWindow {

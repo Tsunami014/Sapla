@@ -5,8 +5,6 @@
 const QString MODULE = "CardFeature";
 constexpr auto MO = QRegularExpression::MultilineOption;
 
-const QString grey = "style='color:#D5D0D5;'";
-
 void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
@@ -31,8 +29,9 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     return txt.replace(templApplyRe, "");
 }
 QString TemplateFeat::markup(QString& line) const {
-    static const QRegularExpression re(R"((%[%|]|\|%))");
-    return line.replace(re, QString("<b %1>\\1</b>").arg(grey));
+    static const QRegularExpression re(R"((%\||\|%))");
+    return line.replace("%%", "<b style='color:#C0B5D9;'>%%</b>")
+        .replace(re, QString("<b style='color:#B5D9C0;'>\\1</b>"));
 }
 std::vector<BtnFeatures> TemplateFeat::btns() const {
     return {
@@ -115,6 +114,7 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
     return txt.replace(hiddenRe, repl);
 }
 QString HiddenFeat::markup(QString& line) const {
+    static const QString grey = "style='color:#D5D0D5;'";
     return line.replace(hiddenRe, QString("<b %1>[[</b>\\1<span %1>:</span>\\2<b %1>]]</b>").arg(grey));
 }
 std::vector<BtnFeatures> HiddenFeat::btns() const {

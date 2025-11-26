@@ -3,6 +3,7 @@
 #include <map>
 
 enum Side {
+    SIDE_NAME,
     SIDE_FRONT,
     SIDE_BACK
 };

@@ -110,6 +110,7 @@ std::vector<BtnFeatures> DoubleSideFeat::btns() const {
 
 const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)(?<!\\):((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_NAME) return txt;
     QString repl = s == SIDE_BACK ? "\\2" : "\\1";
     return txt.replace(hiddenRe, repl);
 }

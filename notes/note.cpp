@@ -142,7 +142,11 @@ QString Note::contents() const {
     return orig;
 }
 QString Note::title() {
-    return orig.simplified();
+    QString n = orig;
+    for (auto& f : Feats) {
+        n = f->replacements(n, SIDE_NAME);
+    }
+    return n.simplified();
 }
 
 FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk) : front(fr), back(bk) {

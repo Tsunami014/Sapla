@@ -15,7 +15,7 @@ public:
     explicit Note(QString contents);
     ~Note();
     bool operator==(const Note& other) const;
-    // No not allow copy, but do allow move (and override it to work)
+    // Do not allow copy, but do allow move (and override it to work)
     Note(const Note& other) = delete;
     Note& operator=(const Note& other) = delete;
     Note(Note&& other) noexcept;
@@ -24,6 +24,8 @@ public:
     FlashCard* getFlashCard(int idx);
     int getNumCards();
     int getNumTemplates();
+
+    QString error;
 
     void setContents(const QString& newContents);
     void updateCards();

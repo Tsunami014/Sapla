@@ -60,7 +60,7 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     int amnt = txt.count(ssfRe);
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
-        Log::Warn(MODULE) << "Found multiple `---` - there should only be 1!";
+        parent->error += "Found multiple `---` - there should only be 1!\n";
         return std::nullopt;
     }
     std::vector<FlashCard> l{};
@@ -89,7 +89,7 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     int amnt = txt.count(dsfRe);
     if (amnt == 0) return std::nullopt;
     if (amnt != 1) {
-        Log::Warn(MODULE) << "Found multiple `===` - there should only be 1!";
+        parent->error += "Found multiple `===` - there should only be 1!";
         return std::nullopt;
     }
     std::vector<FlashCard> l{};

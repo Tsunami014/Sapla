@@ -29,7 +29,6 @@ protected:
     void updatePrev();
     Side side;
     MarkdownEdit* preview;
-    void updatePrevIdxLabl();
     struct prevIdxTyp {
         int idx;
         int max;

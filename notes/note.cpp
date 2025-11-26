@@ -12,6 +12,7 @@ const QString MODULE = "Note";
 std::map<QString, QString> globalTemplates = {};
 
 Note::Note(QString conts) {
+    error = "";
     setContents(conts);
 }
 Note::~Note() {
@@ -79,6 +80,7 @@ void Note::setContents(const QString& nc) {
     }
 }
 void Note::updateCards() {
+    error = "";
     QString conts = orig;
     {
         auto it = templDefRe.globalMatch(orig);
@@ -98,7 +100,7 @@ void Note::updateCards() {
 
             QString name = m.captured(1);
             if (globalTemplates.find(name) == globalTemplates.end()) {
-                Log::Warn(MODULE) << "Unknown template name: " << name;
+                error += "Unknown template name: " + name + "\n";
                 continue;
             }
             QString templ = globalTemplates[name];
@@ -120,12 +122,12 @@ void Note::updateCards() {
         }
     }
     if (dominants.size() > 1) {
-        auto logger = Log::Warn(MODULE);
-        logger << "Found multiple dominant features on note where there should only be one: " << dominants.back();
+        error += "Found multiple dominant features on note where there should only be one: " + dominants.back();
         dominants.pop_back();
         for (auto& d : dominants) {
-            logger << ", " << d;
+            error += ", " + d;
         }
+        error += "\n";
         return;
     }
     for (auto& f : CardFeats) {

@@ -57,9 +57,9 @@ BrowseScene::BrowseScene()
 
         prevIdx = {0, 0};
         prevIdxLabl = new QLabel(this);
-        prevIdxLabl->setFont(getFont(2));
+        prevIdxLabl->setFont(getFont(1.5));
         auto* prevBtn = new SvgBtn(":/assets/btn2.svg");
-        prevBtn->setText("<-");
+        prevBtn->setText("←");
         connect(prevBtn, &SvgBtn::clicked, this, [=](){
             if (prevIdx.idx > 1) {
                 prevIdx.idx--;
@@ -68,7 +68,7 @@ BrowseScene::BrowseScene()
             }
         });
         auto* nxtBtn = new SvgBtn(":/assets/btn2.svg");
-        nxtBtn->setText("->");
+        nxtBtn->setText("→");
         connect(nxtBtn, &SvgBtn::clicked, this, [=](){
             if (prevIdx.idx < prevIdx.max) {
                 prevIdx.idx++;
@@ -127,21 +127,26 @@ Note* BrowseScene::getSelNote() {
     return getNote(tree->selectedItems().first());
 }
 
-void BrowseScene::updatePrevIdxLabl() {
-    if (prevIdx.idx == 0) {
-        prevIdxLabl->setText("No card to preview!");
-    } else {
-        prevIdxLabl->setText(QString("Preview card %1/%2").arg(prevIdx.idx).arg(prevIdx.max));
-    }
-}
 void BrowseScene::updatePrev() {
-    updatePrevIdxLabl();
-    if (prevIdx.idx == 0) {
+    if (tree->selectedItems().size() == 0) {
+        prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
+        return;
+    }
+    Note* n = getSelNote();
+    if (n->error != "") {
+        prevIdxLabl->setText("<span style='color:red;'>Encountered errors!</span>");
+        preview->setMarkdown(n->error);
         side = SIDE_FRONT;
         return;
     }
-    preview->setMarkdown(getSelNote()->getFlashCard(prevIdx.idx-1)->getSide(side));
+    if (prevIdx.idx == 0) {
+        prevIdxLabl->setText("No cards to preview!");
+        preview->setMarkdown("");
+        return;
+    }
+    prevIdxLabl->setText(QString("Preview card %1/%2").arg(prevIdx.idx).arg(prevIdx.max));
+    preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
 }
 void BrowseScene::typed() {
     QList<QTreeWidgetItem*> selected = tree->selectedItems();
@@ -165,6 +170,11 @@ void BrowseScene::typed() {
         }
         prevIdx.idx = idx;
         prevIdx.max = nOO;
+    }
+    if (nOO == 0) { prevIdx.idx = 0; }
+    else {
+        if (prevIdx.idx == 0)
+            prevIdx.idx = 1;
     }
     updatePrev();
 

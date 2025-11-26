@@ -21,6 +21,7 @@ public:
     Topbar(QWidget* parent = nullptr);
     Topbar* clone() const;
     void close();
+    void resize();
     inline void resizeEvent(QResizeEvent* ev) override { resize(); QWidget::resizeEvent(ev); }
 
 signals:
@@ -30,7 +31,7 @@ protected:
     void createItems();
 
     QHBoxLayout* barLay;
-    QGridLayout* gridLay;
+    QVBoxLayout* gridLay;
     QWidget* grid;
     struct Btns {
         SvgBtn* btn;
@@ -45,10 +46,9 @@ private slots:
     void makeSettings();
 
 private:
-    void resize();
-
     SvgBtn* xpandBtn;
     SvgBtn* settingsBtn;
+    std::vector<QHBoxLayout*> gridRows;
     bool xpanded = false;
 };
 

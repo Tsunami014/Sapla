@@ -3,21 +3,31 @@
 #include <QMouseEvent>
 
 SvgBtn::SvgBtn(QWidget* parnt)
-    : QLabel(parnt), SvgUtils() {
-        init();
-    }
+    : QLabel(parnt), SvgUtils() { init(); }
 SvgBtn::SvgBtn(const QString& pth, QWidget* parnt)
-    : QLabel(parnt), SvgUtils(pth) {
-        init();
-    }
+    : QLabel(parnt), SvgUtils(pth) { init(); }
 void SvgBtn::init() {
     setMouseTracking(true);
     setWordWrap(true);
     setAlignment(Qt::AlignCenter);
-    setContentsMargins(40, 5, 40, 20);
+    setMinimumHeight(50);
+    fixPadding();
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     if (hover) {
         setCursor(Qt::PointingHandCursor);
     }
+}
+
+void SvgBtn::fixPadding() {
+    QFontMetrics fm(font());
+    int hei = fm.height()*0.2;
+    int wid = fm.height()*0.8;
+    setStyleSheet(QString("padding: %1px %2px;").arg(hei).arg(wid));
+}
+void SvgBtn::changeEvent(QEvent* event) {
+    if (event->type() == QEvent::FontChange)
+        fixPadding();
+    QLabel::changeEvent(event);
 }
 
 void SvgBtn::leaveEvent(QEvent* event) {

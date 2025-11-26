@@ -11,6 +11,7 @@
 #include <QTextBlock>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QSplitter>
 
 bool BrowseScene::doubleCheck(QString prompt) {
     QMessageBox msgBox;
@@ -98,10 +99,24 @@ BrowseScene::BrowseScene()
         vLay->addWidget(te, 2);
         vLay->addLayout(hlay);
         vLay->addWidget(preview, 1);
+        auto* vLayW = new QWidget(this);
+        vLayW->setLayout(vLay);
 
-        auto* mLay = new QHBoxLayout(this);
-        mLay->addWidget(tree);
-        mLay->addLayout(vLay);
+        auto* mSplit = new QSplitter(Qt::Horizontal, this);
+        mSplit->addWidget(tree);
+        mSplit->addWidget(vLayW);
+        mSplit->setHandleWidth(6);
+        mSplit->setStretchFactor(0, 1);
+        mSplit->setStretchFactor(1, 1);
+
+        QTimer::singleShot(0, this, [=](){
+            int w = this->width() / 2;
+            if (w > 0) mSplit->setSizes(QList<int>{w, w});
+            bar->resize();
+        });
+
+        auto* root = new QHBoxLayout(this);
+        root->addWidget(mSplit);
 
         connect(&m, &QAction::triggered, this, &BrowseScene::newNote);
         connect(&clearIt, &QAction::triggered, this, [this](){

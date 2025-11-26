@@ -14,7 +14,7 @@ Topbar::Topbar(QWidget* parent) : QWidget(parent) {
     connect(xpandBtn, &SvgBtn::clicked, this, &Topbar::toggleXpanded);
 
     grid = new QWidget(this);
-    gridLay = new QGridLayout(grid);
+    gridLay = new QVBoxLayout(grid);
     settingsBtn = new SvgBtn(":/assets/btn2.svg", this);
     settingsBtn->setText("⚙️");
     connect(settingsBtn, &SvgBtn::clicked, this, &Topbar::makeSettings);
@@ -34,6 +34,7 @@ void Topbar::createItems() {
             auto* newB = new SvgBtn(":/assets/btn2.svg", this);
             newB->setText(b.label);
             newB->setToolTip(b.context);
+            newB->setWordWrap(false);
             QString apply = b.apply;
             QString help = b.help;
             connect(newB, &SvgBtn::clicked, this, [this, apply, help](){ onBtnPush(apply, help); });
@@ -50,26 +51,24 @@ void Topbar::createItems() {
 }
 
 void Topbar::resize() {
-    int hei = xpandBtn->fontMetrics().height() * 1.6;
-    int wid = hei * 2;
-    int fatness = wid * 1.05;  // layout width
-    int maxWid = rect().width();
-    int perRow = maxWid/fatness;
-    if (perRow == 0) perRow = 1;
-
+    for (auto* l : gridRows) delete l;
+    gridRows.clear();
+    QHBoxLayout* hbox = barLay;
+    int maxWid = rect().width() - xpandBtn->sizeHint().width() - barLay->spacing();
     for (int i=0; i<btns.size(); i++) {
-        if (i >= perRow) {
-            btns[i].btn->setParent(grid); 
-            // We have to do this funky thing because the first row has 1 less item
-            gridLay->addWidget(btns[i].btn, int((i+1)/perRow)-1, (i+1)%perRow);
-        } else {
-            btns[i].btn->setParent(this); 
-            barLay->addWidget(btns[i].btn);
+        auto* btn = btns[i].btn;
+        int wid = btn->sizeHint().width() + hbox->spacing()*2;
+        maxWid -= wid;
+        if (maxWid < 0) {
+            hbox = new QHBoxLayout();
+            gridRows.push_back(hbox);
+            maxWid = rect().width() - wid;
+            gridLay->addLayout(hbox);
         }
-        btns[i].btn->setFixedSize(wid, hei);
+        hbox->addWidget(btn);
     }
+
     barLay->addWidget(xpandBtn);
-    xpandBtn->setFixedSize(wid, hei);
 }
 
 void Topbar::close() {

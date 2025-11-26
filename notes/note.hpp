@@ -21,6 +21,7 @@ public:
     Note(Note&& other) noexcept;
     Note& operator=(Note&& other) noexcept;
 
+    FlashCard* getFlashCard(int idx);
     int getNumCards();
     int getNumTemplates();
 
@@ -44,6 +45,7 @@ public:
 
     Note* parent;
     QString getSide(Side s) const;
+    QString getSideHtml(Side s) const;
 private:
     QString front;
     QString back;

@@ -28,7 +28,7 @@ inline std::vector<CardFeatReg*> CardFeats;
 void registerNoteFeatures();
 
 #define Feat_order(ordr)   int order() const override { return ordr; }
-#define Feat_name          inline const QString getName() const override
+#define Feat_name(nam)     inline const QString getName() const override { return nam; }
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
 #define Feat_markup        QString markup(QString& line) const override
 #define Feat_dominance     bool dominance(const QString& txt) const override
@@ -40,21 +40,21 @@ extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
     Feat_order(-999)
-    Feat_name { return "%%"; };
+    Feat_name("%%");
     Feat_replacements;
     Feat_markup;
     Feat_btns;
 };
 
 struct SingleSideFeat : CardFeatReg {
-    Feat_name { return "---"; };
+    Feat_name("---");
     Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
     Feat_btns;
 };
 struct DoubleSideFeat : CardFeatReg {
-    Feat_name { return "==="; };
+    Feat_name("===");
     Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
@@ -62,7 +62,7 @@ struct DoubleSideFeat : CardFeatReg {
 };
 
 struct HiddenFeat : FeatReg {
-    Feat_name { return "[[:]]"; };
+    Feat_name("[[:]]");
     Feat_replacements;
     Feat_markup;
     Feat_btns;

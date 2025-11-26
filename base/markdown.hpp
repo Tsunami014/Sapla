@@ -19,22 +19,28 @@ private:
 };
 
 class MarkdownEdit : public QTextEdit {
+    Q_OBJECT
 public:
     MarkdownEdit(QWidget* parent = nullptr);
     MarkdownEdit(const QString& text, QWidget* parent = nullptr);
     void setMarkdown(const QString& text);
     QString getMarkdown();
+    void setButton(bool enabled);
 
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
     void focusOutEvent(QFocusEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
 
     void insertMarkdown(QString txt, QString cursSub = "");
     void refresh();
+signals:
+    void clicked();
 protected:
     void updateTxt(bool save, bool orig);
     int lastCol = -1;
+    bool isBtn;
 private:
     void init();
 };

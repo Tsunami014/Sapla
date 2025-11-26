@@ -8,7 +8,7 @@
 
 CardGraphicItem::CardGraphicItem(layout l, const FlashCard& flashc, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(l.fname), lay(l), side(0), fc(flashc), onTop(false),
-      front(fc.getSide(SIDE_FRONT)), back(fc.getSide(SIDE_BACK)), txt() {
+      front(fc.getSideHtml(SIDE_FRONT)), back(fc.getSideHtml(SIDE_BACK)), txt() {
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);
         txt.setWordWrap(true);

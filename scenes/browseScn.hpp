@@ -19,14 +19,29 @@ public slots:
     void newNote();
 
 protected:
+    Note* getSelNote();
+    Note* getNote(QTreeWidgetItem* item);
     QTreeWidget* tree;
     QVBoxLayout* form;
     MarkdownEdit* te;
     Topbar* bar;
 
+    void updatePrev();
+    Side side;
+    MarkdownEdit* preview;
+    void updatePrevIdxLabl();
+    struct prevIdxTyp {
+        int idx;
+        int max;
+        void reset();
+    };
+    prevIdxTyp prevIdx;
+
+    bool doubleCheck(QString prompt);
 private:
+    QLabel* prevIdxLabl;
+
     MenuAction m;
     MenuItem resetIt;
     MenuItem clearIt;
-    bool doubleCheck(QString prompt);
 };

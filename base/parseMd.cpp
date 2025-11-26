@@ -1,0 +1,65 @@
+#include "../notes/features.hpp"
+#include <QRegularExpression>
+
+#define STATIC_RE(pattern) ([]() -> const QRegularExpression& { \
+    static const QRegularExpression re(pattern, QRegularExpression::MultilineOption); \
+    return re; \
+}())
+
+void replace(QString& search, const QRegularExpression& re, std::function<QString(QRegularExpressionMatch)> replFn) {
+    auto it = re.globalMatch(search);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString repl = replFn(m);
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        search.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+}
+
+QString parseMarkdownHtml(QString txt) {
+    QString esc = txt.toHtmlEscaped();
+
+    esc.replace("\t", "    ")
+       .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
+       .replace("\\n", "\n")
+    ;
+
+    // Lists
+    replace(esc, STATIC_RE(R"(^( *)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
+        QString bullet;
+        switch (m.captured(2)[0].unicode()) {
+            case '-':
+                bullet = "‣";
+                break;
+            case '+':
+                bullet = "✦";
+                break;
+            default:
+                bullet = "•";
+        }
+
+        return QString("%1%2 %3")
+            .arg(m.captured(1)).arg(bullet).arg(m.captured(3));
+    });
+
+    // Bold & italic
+    esc.replace(STATIC_RE(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
+
+    // Now parse all the features
+    for (auto& f : Feats) {
+        esc = f->markup(esc);
+    }
+
+    // Fix spaces and finish
+    int i = 0;
+    while (i < esc.size() && esc.at(i) == ' ') i++;
+    esc = QString("&nbsp;").repeated(i) + esc.mid(i)
+        .replace("\n", "<br/>")
+        .replace("\\", "");  // Get rid of backslashes that are only there for escaping stuff (the \\ was handled at the start)
+    return esc;
+}

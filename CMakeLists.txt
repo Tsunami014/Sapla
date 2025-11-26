@@ -16,6 +16,7 @@ set(CORELIB
     plugins/getPlugins.cpp
 
     base/font.cpp
+    base/parseMd.cpp
     base/markdown.cpp
     base/rectIt.cpp
     base/svgRend.cpp

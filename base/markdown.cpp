@@ -1,72 +1,8 @@
 #include "markdown.hpp"
 #include "font.hpp"
-#include "../notes/features.hpp"
 #include <QTextList>
 #include <QTextBlock>
-#include <QRegularExpression>
 
-
-#define STATIC_RE(pattern) ([]() -> const QRegularExpression& { \
-    static const QRegularExpression re(pattern, QRegularExpression::MultilineOption); \
-    return re; \
-}())
-void replace(QString& search, const QRegularExpression& re, std::function<QString(QRegularExpressionMatch)> replFn) {
-    auto it = re.globalMatch(search);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString repl = replFn(m);
-
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        search.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }
-}
-
-QString parseMarkdownHtml(QString txt) {
-    QString esc = txt.toHtmlEscaped();
-
-    esc.replace("\t", "    ")
-       .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
-       .replace("\\n", "\n")
-    ;
-
-    // Lists
-    replace(esc, STATIC_RE(R"(^( *)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
-        QString bullet;
-        switch (m.captured(2)[0].unicode()) {
-            case '-':
-                bullet = "‣";
-                break;
-            case '+':
-                bullet = "✦";
-                break;
-            default:
-                bullet = "•";
-        }
-
-        return QString("%1%2 %3")
-            .arg(m.captured(1)).arg(bullet).arg(m.captured(3));
-    });
-
-    // Bold & italic
-    esc.replace(STATIC_RE(R"((?:\*\*([^*]+?)\*\*|__([^_]+?)__))"), "<b>\\1</b>")
-       .replace(STATIC_RE(R"((?:\*([^*]+?)\*|_([^_]+?)_))"), "<i>\\1</i>");
-
-    // Now parse all the features
-    for (auto& f : Feats) {
-        esc = f->markup(esc);
-    }
-
-    // Fix spaces and finish
-    int i = 0;
-    while (i < esc.size() && esc.at(i) == ' ') i++;
-    esc = QString("&nbsp;").repeated(i) + esc.mid(i)
-        .replace("\n", "<br/>")
-        .replace("\\", "");  // Get rid of backslashes that are only there for escaping stuff (the \\ was handled at the start)
-    return esc;
-}
 
 class MarkdownBlockData : public QTextBlockUserData {
 public:
@@ -96,6 +32,7 @@ int SaveCursor::load(Point saved) {
 MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
 MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(parent) { init(); setMarkdown(text); }
 void MarkdownEdit::init() {
+    isBtn = false;
     lastCol = -1;
     setFont(getFont(1));
     connect(this, &QTextEdit::selectionChanged, this, [this](){
@@ -103,6 +40,20 @@ void MarkdownEdit::init() {
         SaveCursor savCurs(this);
         updateTxt(false, false);
     });
+}
+
+void MarkdownEdit::setButton(bool enabled) {
+    isBtn = enabled;
+    if (enabled) {
+        setTextInteractionFlags(Qt::NoTextInteraction);
+        setCursor(Qt::PointingHandCursor);
+        viewport()->setCursor(Qt::PointingHandCursor);
+        clearFocus();
+    } else {
+        setTextInteractionFlags(Qt::TextEditorInteraction);
+        unsetCursor();
+        viewport()->unsetCursor();
+    }
 }
 
 void MarkdownEdit::setMarkdown(const QString& text) {
@@ -129,6 +80,7 @@ QString MarkdownEdit::getMarkdown() {
 }
 
 void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
+    if (isBtn) return;
     bool undo = event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Z;
     bool redo = (event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Y) ||
         (event->modifiers() & Qt::ControlModifier & Qt::ShiftModifier && event->key() == Qt::Key_Z);
@@ -149,12 +101,24 @@ void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
 }
 void MarkdownEdit::mousePressEvent(QMouseEvent* event) {
     QTextEdit::mousePressEvent(event);
+    if (isBtn) {
+        if (event->button() == Qt::LeftButton) {
+            emit clicked();
+        }
+        return;
+    }
     QSignalBlocker blocker(this);
     SaveCursor savCurs(this);
     updateTxt(false, false);
 }
+void MarkdownEdit::mouseDoubleClickEvent(QMouseEvent* event) {
+    if (isBtn && event->button() == Qt::LeftButton) {
+        emit clicked();
+    }
+}
 void MarkdownEdit::focusOutEvent(QFocusEvent *event) {
     QTextEdit::focusOutEvent(event);
+    if (isBtn) return;
     QSignalBlocker blocker(this);
     QTextCursor c = textCursor();
     c.clearSelection();
@@ -164,6 +128,7 @@ void MarkdownEdit::focusOutEvent(QFocusEvent *event) {
 }
 void MarkdownEdit::focusInEvent(QFocusEvent *event) {
     QTextEdit::focusInEvent(event);
+    if (isBtn) return;
     QSignalBlocker blocker(this);
     updateTxt(false, false);
     if (lastCol != -1) {
@@ -174,6 +139,7 @@ void MarkdownEdit::focusInEvent(QFocusEvent *event) {
         lastCol = -1;
     }
 }
+
 void MarkdownEdit::insertMarkdown(QString txt, QString cursSub) {
     if (!isEnabled()) return;
     setFocus();
@@ -205,28 +171,35 @@ void MarkdownEdit::insertMarkdown(QString txt, QString cursSub) {
     blocker.unblock();
     emit textChanged();
 }
+
 void MarkdownEdit::refresh() {
     QSignalBlocker blocker(this);
     updateTxt(false, false);
 }
 
 void MarkdownEdit::updateTxt(bool save, bool orig) {
-    QTextCursor curs = textCursor();
-    bool focus = this->hasFocus();
-    bool hasSel = curs.hasSelection();
     QTextDocument* doc = document();
-    int sBlk = doc->findBlock(curs.selectionStart()).blockNumber();
-    int eBlk;
-    if (hasSel) {
-        int selEndPos = curs.selectionEnd();
-        if (selEndPos > curs.selectionStart()) selEndPos = selEndPos - 1;
-        eBlk = doc->findBlock(selEndPos).blockNumber();
+    bool focus;
+    int sBlk; int eBlk;
+    if (isBtn) {
+        focus = false;
+        sBlk = -1; eBlk = -1;
     } else {
-        eBlk = doc->findBlock(curs.selectionEnd()).blockNumber();
+        focus = this->hasFocus();
+        QTextCursor curs = textCursor();
+        if (curs.hasSelection()) {
+            sBlk = doc->findBlock(curs.selectionStart()).blockNumber();
+            int selEndPos = curs.selectionEnd();
+            if (selEndPos > curs.selectionStart()) selEndPos = selEndPos - 1;
+            eBlk = doc->findBlock(selEndPos).blockNumber();
+        } else {
+            sBlk = curs.blockNumber();
+            eBlk = sBlk;
+        }
     }
 
     QTextCharFormat plainfmt;
-    plainfmt.setFont(document()->defaultFont());
+    plainfmt.setFont(doc->defaultFont());
     plainfmt.setFontWeight(QFont::Normal);
     plainfmt.setFontItalic(false);
 
@@ -246,10 +219,7 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
         }
         QString line = data->orig;
 
-        bool plain = focus && (orig ||
-            (!hasSel && bnum == curs.blockNumber()) ||
-            (hasSel && bnum >= sBlk && bnum <= eBlk)
-        );
+        bool plain = focus && (orig || (bnum >= sBlk && bnum <= eBlk));
 
         if (!(
             // If it is supposed to be plain and already is and is the correct text, skip

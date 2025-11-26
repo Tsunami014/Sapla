@@ -47,6 +47,9 @@ Note& Note::operator=(Note&& other) noexcept {
 }
 
 
+FlashCard* Note::getFlashCard(int idx) {
+    return &cards[idx];
+}
 int Note::getNumCards() {
     return cards.size();
 }
@@ -156,7 +159,10 @@ QString FlashCard::getSide(Side s) const {
     for (auto& f : Feats) {
         txt = f->replacements(txt, s);
     }
-    return parseMarkdownHtml(txt);
+    return txt;
+}
+QString FlashCard::getSideHtml(Side s) const {
+    return parseMarkdownHtml(getSide(s));
 }
 
 bool FlashCard::operator==(const FlashCard& other) const {

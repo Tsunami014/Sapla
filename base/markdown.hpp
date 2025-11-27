@@ -1,6 +1,7 @@
 #pragma once
 #include <QTextEdit>
 #include <QGraphicsTextItem>
+#include "../notes/features.hpp"
 
 QString parseMarkdownHtml(QString txt);
 

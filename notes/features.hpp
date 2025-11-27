@@ -4,8 +4,18 @@
 #include "note.hpp"
 #include "../wids/topbar.hpp"
 
+class _AutoColour {
+public:
+    _AutoColour() : idx(0) {}
+    QString nxtCol();
+private:
+    int idx;
+};
+inline _AutoColour AC;
+
 using FeatReturnTyp = std::optional<std::vector<FlashCard>>;
 struct FeatReg {
+    virtual void init() {}
     virtual int order() const { return 0; }
     virtual const QString getName() const = 0;
     virtual std::vector<BtnFeatures> btns() const { return {}; }
@@ -27,6 +37,8 @@ inline std::vector<CardFeatReg*> CardFeats;
 }
 void registerNoteFeatures();
 
+#define Feat_useCol        void init() override { col = AC.nxtCol(); } QString col
+#define Feat_useCols(amnt) void init() override { for (int i=0; i<amnt; i++) { cols.push_back(AC.nxtCol()); } } std::vector<QString> cols
 #define Feat_order(ordr)   int order() const override { return ordr; }
 #define Feat_name(nam)     inline const QString getName() const override { return nam; }
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
@@ -39,6 +51,7 @@ void registerNoteFeatures();
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
+    Feat_useCols(2);
     Feat_order(-999)
     Feat_name("%%");
     Feat_replacements;
@@ -47,6 +60,7 @@ struct TemplateFeat : FeatReg {
 };
 
 struct SingleSideFeat : CardFeatReg {
+    Feat_useCol;
     Feat_name("---");
     Feat_markup;
     Feat_dominance;
@@ -54,6 +68,7 @@ struct SingleSideFeat : CardFeatReg {
     Feat_btns;
 };
 struct DoubleSideFeat : CardFeatReg {
+    Feat_useCol;
     Feat_name("===");
     Feat_markup;
     Feat_dominance;
@@ -62,6 +77,7 @@ struct DoubleSideFeat : CardFeatReg {
 };
 
 struct HiddenFeat : FeatReg {
+    Feat_useCol;
     Feat_name("[[:]]");
     Feat_replacements;
     Feat_markup;

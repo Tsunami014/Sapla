@@ -5,15 +5,43 @@
 const QString MODULE = "CardFeature";
 constexpr auto MO = QRegularExpression::MultilineOption;
 
+QStringList cols = {
+    "#D6E0F0",
+    "#E6DDD6",
+    "#D6E0D6",
+    "#F0D6F0",
+    "#F0F0D6",
+    "#E6FFF0",
+    "#F0F0F0",
+    "#E0E0E0",
+    "#E6DDE6",
+    "#DDE6E6",
+    "#E6E6DD",
+    "#FDDFDF",
+    "#DDE6DD"
+};
+QString _AutoColour::nxtCol() {
+    QString& ret = cols[idx];
+    idx = (idx + 1) % cols.size();
+    return ret;
+}
+
 void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_FEAT(TemplateFeat);
     REGISTER_FEAT(HiddenFeat);
 
-    std::stable_sort(Feats.begin(), Feats.end(), [](const std::unique_ptr<FeatReg>& a, const std::unique_ptr<FeatReg>& b) {
+    std::stable_sort(Feats.begin(), Feats.end(), [](const auto& a, const auto& b) {
         return a->order() < b->order();
     });
+    std::stable_sort(CardFeats.begin(), CardFeats.end(), [](const auto& a, const auto& b) {
+        return a->order() < b->order();
+    });
+
+    for (auto& feat : Feats) {
+        feat->init();
+    }
 }
 
 QString trimNL(const QString& orig) {
@@ -30,8 +58,8 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
 }
 QString TemplateFeat::markup(QString& line) const {
     static const QRegularExpression re(R"((%\||\|%))");
-    return line.replace("%%", "<b style='color:#C0B5D9;'>%%</b>")
-        .replace(re, QString("<b style='color:#B5D9C0;'>\\1</b>"));
+    return line.replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]))
+        .replace(re, QString("<b style='color:%1;'>\\1</b>").arg(cols[1]));
 }
 std::vector<BtnFeatures> TemplateFeat::btns() const {
     return {
@@ -48,7 +76,7 @@ std::vector<BtnFeatures> TemplateFeat::btns() const {
 const QRegularExpression ssfRe("^ *--- *$", MO);
 QString SingleSideFeat::markup(QString& line) const {
     if (ssfRe.match(line).hasMatch()) {
-        return "───";
+        return QString("<span style='color:%1'>───</span>").arg(col);
     }
     return line;
 }
@@ -77,7 +105,7 @@ std::vector<BtnFeatures> SingleSideFeat::btns() const {
 const QRegularExpression dsfRe("^ *=== *$", MO);
 QString DoubleSideFeat::markup(QString& line) const {
     if (dsfRe.match(line).hasMatch()) {
-        return "═══";
+        return QString("<span style='color:%1'>═══</span>").arg(col);
     }
     return line;
 }
@@ -114,8 +142,7 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
     return txt.replace(hiddenRe, repl);
 }
 QString HiddenFeat::markup(QString& line) const {
-    static const QString grey = "style='color:#D5D0D5;'";
-    return line.replace(hiddenRe, QString("<b %1>[[</b>\\1<span %1>:</span>\\2<b %1>]]</b>").arg(grey));
+    return line.replace(hiddenRe, QString("<b style='color:%1'>[[</b>\\1<span style='color:%1'>:</span>\\2<b style='color:%1'>]]</b>").arg(col));
 }
 std::vector<BtnFeatures> HiddenFeat::btns() const {
     return {{"[[:]]", "[[$CUR$:]]", std::nullopt, "Hidden sides", 

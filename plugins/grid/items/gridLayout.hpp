@@ -26,7 +26,7 @@ public:
 
     void updateAllChildren();
 
-    bool addItem(CardGraphicItem* item);
+    bool addItem(CardGraphicItem* item, layout& lay);
     void removeItem(CardGraphicItem* item);
 
     void setRect(const QRectF& newRect) override;

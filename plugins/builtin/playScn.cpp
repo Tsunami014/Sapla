@@ -1,5 +1,4 @@
 #include "playScn.hpp"
-#include "items/cardIt.hpp"
 #include <QEvent>
 #include <QKeyEvent>
 #include <QRandomGenerator>
@@ -30,7 +29,6 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     int key = event->key();
 
     if (card->side == 255 && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
-        card->finish();
         done = true;
         if (MG->cardFin(card->fc, key != Qt::Key_Space)) return true;
         MG->nextFC();

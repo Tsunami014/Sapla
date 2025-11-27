@@ -11,6 +11,7 @@
 #include "../base/svgRend.hpp"
 #include "../base/svgUtils.hpp"
 // UI
+#include "../items/cardIt.hpp"
 #include "../items/progress.hpp"
 #include "../items/treeItem.hpp"
 #include "../wids/svgBtn.hpp"

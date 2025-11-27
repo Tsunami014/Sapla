@@ -1,5 +1,4 @@
 #include "playScn.hpp"
-#include "items/cardIt.hpp"
 #include "items/cardLayouts.hpp"
 #include <QEvent>
 #include <QKeyEvent>
@@ -27,8 +26,8 @@ PlayScene::PlayScene()
         while (true) {
             const FlashCard fc = *NextFC();
             auto lay = Single;
-            auto* nCGI = new CardGraphicItem(lay, fc);
-            if (!main->addItem(nCGI)) {
+            auto* nCGI = new CardGraphicItem(lay.fname, fc);
+            if (!main->addItem(nCGI, lay)) {
                 delete nCGI;
                 break;
             }
@@ -52,7 +51,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (hasOverlay() && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
-                it.item->finish();
+                scn.removeItem(it.item);
                 if (MG->cardFin(it.item->fc, key != Qt::Key_Space)) return true;
                 resume();  // Only for checking if empty
                 return true;

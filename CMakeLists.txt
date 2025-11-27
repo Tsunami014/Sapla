@@ -29,6 +29,7 @@ set(CORELIB
     wids/svgBtn.cpp
     wids/svgPic.cpp
 
+    items/cardIt.cpp
     items/progress.cpp
     items/treeItem.cpp
 

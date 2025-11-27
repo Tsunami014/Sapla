@@ -1,5 +1,4 @@
 #include "gridLayout.hpp"
-#include "cardIt.hpp"
 #include <QRandomGenerator>
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)
@@ -82,9 +81,9 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
     }
 }
 
-bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
-    uint8_t loops = (item->lay.botWid == -1) + 1;
-    uint8_t maxX = Cols + 1 - qMax(item->lay.topWid, item->lay.botWid);
+bool GLayoutGraphicItem::addItem(CardGraphicItem* item, layout& lay) {
+    uint8_t loops = (lay.botWid == -1) + 1;
+    uint8_t maxX = Cols + 1 - qMax(lay.topWid, lay.botWid);
     uint8_t nx = QRandomGenerator::global()->bounded(maxX);
     uint8_t ny = QRandomGenerator::global()->bounded(loops);
     for (uint8_t _ = 0; _ < loops; _++) {
@@ -93,7 +92,7 @@ bool GLayoutGraphicItem::addItem(CardGraphicItem* item) {
                 gridItem val;
                 val.item = item;
                 item->setParentItem(this);
-                val.lay = item->lay;
+                val.lay = lay;
                 val.x = (nx + offx) % maxX;
                 val.y = ny;
                 grid.push_back(val);

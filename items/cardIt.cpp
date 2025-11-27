@@ -1,7 +1,7 @@
-#include "../game.hpp"
-#include "../playScn.hpp"
 #include "cardIt.hpp"
+#include "../base/font.hpp"
 #include <QCursor>
+#include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
 CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& flashc, QGraphicsItem* parent)
@@ -54,11 +54,6 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     }
 }
 
-void CardGraphicItem::finish() {
-    PlayScene* curS = (PlayScene*)MG->curScene;
-    scene()->removeItem(this);
-}
-
 void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w) {
     if (side == 0) {
         txt.setText(front);
@@ -71,9 +66,11 @@ void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, Q
     }
     paintSvg(p);
 
-    txt.resize(rect.size().toSize());
+    const int adjustment = 40;
+    QRectF newr = rect.adjusted(adjustment, adjustment, -adjustment, -adjustment);
+    txt.resize(newr.size().toSize());
     p->save();
-    p->translate(rect.topLeft());
+    p->translate(newr.topLeft());
     txt.render(p);
     p->restore();
 }

@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 set(PLUG_NAME builtin)
 set(PLUG_SOURCES
     game.cpp BIResources.qrc
-
     playScn.cpp
-    items/cardIt.cpp
 )
 include("${CMAKE_CURRENT_LIST_DIR}/../base.cmake")
 set_target_properties(${PLUG_NAME} PROPERTIES

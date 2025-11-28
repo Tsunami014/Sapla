@@ -141,11 +141,18 @@ void Note::updateCards() {
         }
     } {
         auto it = noteInfRe.globalMatch(orig);
+        QMap<QString, bool> has;
         while (it.hasNext()) {
             auto m = it.next();
             QString title = m.captured(1);
             if (title == "tag" || title == "tags") {
-                tags = parseCommas(m.captured(2));
+                if (has.value("tag", false)) {
+                    tags.clear();
+                    error += "Cannot have multiple @tag:...@!\n";
+                } else {
+                    tags = parseCommas(m.captured(2));
+                    has["tag"] = true;
+                }
             } else {
                 error += "Unknown note info title: " + title + "\n";
             }

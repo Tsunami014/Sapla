@@ -27,6 +27,7 @@ const QString BROWSE_HELP =
         "<li>📚 - <b>Cards</b> (The amount of cards produced by the note)</li>"
         "<li>📝 - <b>Templates</b> (The amount of templates specified by the note)</li>"
         "<li>‼️ - <b>Errors</b> (The amount of errors in the note)</li>"
+        "<li>🏷️ - <b>Tags</b> (The list of tags provided)</li>"
     "</ul>"
 "<h2>Notes and cards</h2>"
     "<p><i>Notes</i> are blocks of information and <i>cards</i> are a way to view that information.</p>"

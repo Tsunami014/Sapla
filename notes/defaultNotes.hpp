@@ -1,51 +1,58 @@
 #include <QStringList>
 
-QStringList defNotes = {
-    "What is **Australia**?\n"
-    "    *  (This is important to know)\n"
-    "---\n"
-    "A ~~city~~ ==country==",
+QStringList defNotes = QString(R"(
 
-    "What _is_ the meaning of life?\n"
-    "---\n"
-    "42",
+What is **Australia**?
+    *  (This is important to know)
+---
+A ~~city~~ ==country==
 
-    "What is `1 + 1`?\n"
-     "---\n"
-     "- ==2==\n"
-     "+ *You should know this*!",
 
-    "[[What happened i:I]]n _2025_[[?:]]\n"
-     "===\n"
-     "[[When was t:T]]his app was made[[?:]]",
+What _is_ the meaning of life?
+---
+42
 
-    "%|debug\n"
-     "This is the [[front:back]]\n"
-     "|%\n"
-     "Here is some text in a note but not in a card so you'll never see it when playing "
-     "because it doesn't have any features that create a card such as `---`.\n"
-     "The fact there's a note template here makes no difference.\n"
-     "@tag:test@",
 
-    "[[What is this:For]] testing[[?\\n(*hint\\: it's below*):.]]\n"
-     "%%debug%%\n"
-     "===\n"
-     "Note templates[[ play what role in this card?:.]]\n"
-     "%%debug%%\n"
-     "@tag:test@",
+What is `1 + 1`?
+---
+- ==2==
++ *You should know this*!
 
-    "Can you have note templates with regular cards?\n"
-     "%| highlight **==%1==** |%\n"
-     "---\n"
-     "%%highlight Yes!%%"
-     "@tag:test@",
 
-    "Testing:\n"
-     "[\\[broken via backslash]]\n"
-     "\\* broken again\n"
-     "---\n"
-     "Actual backslash: \\\\\n"
-     "Fake newline: \\n"
-     "<- fake newline (try typing here)\n"
-     " @ tag : test ,use\\,less @ ",
-};
+[[What happened i:I]]n _2025_[[?:]]
+===
+[[When was t:T]]his app was made[[?:]]
+
+
+%|debug
+This is the [[front:back]]
+|%
+Here is some text in a note but not in a card so you'll never see it when playing because it doesn't have any features that create a card such as `---`.
+The fact there's a note template here makes no difference.
+@tag:test@
+
+
+[[What is this:For]] testing[[?\\n(*hint\: it's below*):.]]
+%%debug%%
+===
+Note templates[[ play what role in this card?:.]]
+%%debug%%
+@tag:test@
+
+
+Testing:
+[\[broken via backslash]]
+\* broken again
+---
+Actual backslash: \\
+Fake newline: \n<- fake newline (try typing here)
+ @ tag : test ,use\,less @ 
+
+
+Can you have note templates with regular cards?
+%| highlight **==%1==** |%
+---
+%%highlight Yes!%%
+@tag:test@
+
+)").trimmed().split("\n\n\n");

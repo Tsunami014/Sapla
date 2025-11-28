@@ -4,18 +4,18 @@ QStringList defNotes = {
     "What is **Australia**?\n"
     "    *  (This is important to know)\n"
     "---\n"
-    "A ==country==",
+    "A ~~city~~ ==country==",
 
-    "What *is* the meaning of life?\n"
+    "What _is_ the meaning of life?\n"
     "---\n"
     "42",
 
     "What is `1 + 1`?\n"
      "---\n"
      "- ==2==\n"
-     "+ You should know this!",
+     "+ *You should know this*!",
 
-    "[[What happened i:I]]n 2025[[?:]]\n"
+    "[[What happened i:I]]n _2025_[[?:]]\n"
      "===\n"
      "[[When was t:T]]his app was made[[?:]]",
 

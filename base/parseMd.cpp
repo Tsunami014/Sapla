@@ -54,11 +54,13 @@ QString parseMarkdownHtml(QString txt) {
             .arg(m.captured(1)).arg(bullet).arg(m.captured(3));
     });
 
-    // Bold & italic
-    esc.replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*|(?<!\\)__([^_]*[^`\\])__)"), "<b>\\1</b>")
-       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^`\\])\*|(?<!\\)_([^_]*[^`\\])_)"), "<i>\\1</i>")
+    // *italic*, **bold**, _underline_, `code`, ==highlight==, ~~strikethrough~~
+    esc.replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*)"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^`\\])\*)"), "<i>\\1</i>")
+       .replace(STATIC_RE(R"((?<!\\)_([^_]*[^`\\])_)"), "<u>\\1</u>")
        .replace(STATIC_RE(R"((?<!\\)`([^`]*[^`\\])`)"), codeRepl)
-       .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol));
+       .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol))
+       .replace(STATIC_RE(R"((?<!\\)~~([^~]*[^~\\])~~)"), "<s>\\1</s>");
 
     // Now parse all the features
     for (auto& f : Feats) {

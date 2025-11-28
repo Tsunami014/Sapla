@@ -12,10 +12,11 @@ There are example cards to help you
 
 ## Features
 ### Notes & cards
+- Browse all your notes, edit them, delete them or add more
 - Many different card features!
 - An accordian bar with card features on it and a settings page to see help texts for each
 - Example cards to help
-- Browse all your notes, edit them, delete them or add more
+- A note preview which also reveals errors
 - Markdown support - and reveals text underneath on selection
 - Saves notes to a configuration file automatically as you type
 ### Gameplay
@@ -30,12 +31,14 @@ There are example cards to help you
 ### Customisability
 - Ease of plugin creation through the extensable code structure
 - Import/disable/remove plugins
-- Plugins can add new games, features or change the colour scheme
+- Plugins can add new games, features, change the colour scheme or whatever!
 #### Plugins
 - Built in plugin which comes with the app, which adds
     - A simple flashcard game - just a regular flashcard
 - Grid plugin, which adds
     - A flashcard game - multiple flashcards in a grid you have to work through
+- Winter plugin, which adds
+    - A new colour theme
 
 ## Usage instructions
 If you need help on anything, look at the `help > this screen help` or `help > application help`

@@ -97,7 +97,7 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
 }
 std::vector<BtnFeatures> SingleSideFeat::btns() const {
     return {{"---", "\n---\n", std::nullopt, "Single sided note", 
-        "Separates the card into a front and a back.\n"
+        "Separates the note into a front and a back.\n"
         "This creates a single sided card, where the front is above the line and the back is below."
     }};
 }
@@ -129,7 +129,7 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) co
 }
 std::vector<BtnFeatures> DoubleSideFeat::btns() const {
     return {{"===", "\n===\n", std::nullopt, "Double sided note", 
-        "Separates the card into 2 sides.\n"
+        "Separates the note into 2 sides.\n"
         "This creates 2 cards: one where the top is on the front and the bottom is on the back, and another the other way around."
     }};
 }
@@ -147,7 +147,7 @@ QString HiddenFeat::markup(QString& line) const {
 std::vector<BtnFeatures> HiddenFeat::btns() const {
     return {{"[[:]]", "[[$CUR$:]]", std::nullopt, "Hidden sides", 
         "Only shows text if it's on a specific side\n"
-        "E.g. `[[hi:bye]]` would show hi if it's on the front side of a flashcard and bye if it's on the back\n"
+        "E.g. `[[hi:bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
         "Leaving sides blank is ok (e.g. `[[front:]]`)"
     }};
 }

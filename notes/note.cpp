@@ -71,13 +71,38 @@ void Note::reset() {
 void Note::setContents(const QString& nc) {
     orig = nc;
     reset();
-    auto it = templDefRe.globalMatch(orig);
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString title = m.captured(1);
-        globalTemplates[title] = m.captured(2);
-        templates.push_back(title);
+    {
+        auto it = templDefRe.globalMatch(orig);
+        while (it.hasNext()) {
+            auto m = it.next();
+            QString title = m.captured(1);
+            globalTemplates[title] = m.captured(2);
+            templates.push_back(title);
+        }
     }
+}
+QStringList parseCommas(QString inp) {
+    QStringList out; QString cur;
+    bool esc = false;
+
+    for (QChar c : inp) {
+        if (esc) {
+            cur += c;
+            esc = false;
+        } else if (c == '\\') {
+            esc = true;
+        } else if (c == ',') {
+            out.append(cur.trimmed());
+            cur.clear();
+        } else {
+            cur += c;
+        }
+    }
+
+    if (!cur.isEmpty()) {
+        out.append(cur);
+    }
+    return out;
 }
 void Note::updateCards() {
     error = "";
@@ -113,6 +138,17 @@ void Note::updateCards() {
             int end = m.capturedEnd(0) + offs;
             conts.replace(start, end - start, templ);
             offs += templ.length() - (end - start);
+        }
+    } {
+        auto it = noteInfRe.globalMatch(orig);
+        while (it.hasNext()) {
+            auto m = it.next();
+            QString title = m.captured(1);
+            if (title == "tag" || title == "tags") {
+                tags = parseCommas(m.captured(2));
+            } else {
+                error += "Unknown note info title: " + title + "\n";
+            }
         }
     }
     std::vector<QString> dominants;
@@ -155,6 +191,8 @@ FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk) : front(fr),
 QString FlashCard::getSide(Side s) const {
     QString txt;
     switch (s) {
+        case SIDE_NAME:
+            return "ERROR";
         case SIDE_FRONT:
             txt = front;
             break;

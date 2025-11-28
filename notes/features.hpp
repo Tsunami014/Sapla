@@ -50,10 +50,11 @@ void registerNoteFeatures();
 
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
-struct TemplateFeat : FeatReg {
-    Feat_useCols(2);
-    Feat_order(-999)
-    Feat_name("%%");
+extern const QRegularExpression noteInfRe;
+struct BuiltInFeats : FeatReg {
+    Feat_useCols(4);
+    Feat_order(99)
+    Feat_name("BI");
     Feat_replacements;
     Feat_markup;
     Feat_btns;

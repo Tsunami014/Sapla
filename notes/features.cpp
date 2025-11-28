@@ -29,7 +29,7 @@ QString _AutoColour::nxtCol() {
 void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
-    REGISTER_FEAT(TemplateFeat);
+    REGISTER_FEAT(BuiltInFeats);
     REGISTER_FEAT(HiddenFeat);
 
     std::stable_sort(Feats.begin(), Feats.end(), [](const auto& a, const auto& b) {
@@ -51,17 +51,54 @@ QString trimNL(const QString& orig) {
 }
 
 
-const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *$)", QRegularExpression::MultilineOption);
-const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", QRegularExpression::MultilineOption);
-QString TemplateFeat::replacements(QString& txt, Side s) const {
-    return txt.replace(templApplyRe, "");
+const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *)", MO);
+const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", MO);
+const QRegularExpression noteInfRe(R"(^ *@ *([^@: \n]+) *: *(.+?) *@ *)", MO);
+QString BuiltInFeats::replacements(QString& txt, Side s) const {
+    return txt.replace(templDefRe, "")
+              .replace(noteInfRe, "");
 }
-QString TemplateFeat::markup(QString& line) const {
-    static const QRegularExpression re(R"((%\||\|%))");
-    return line.replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]))
-        .replace(re, QString("<b style='color:%1;'>\\1</b>").arg(cols[1]));
+QString BuiltInFeats::markup(QString& line) const {
+    static const QRegularExpression re(R"((^ *@ *)([^@: \n]+)( *:))", MO);
+    QString nln = line
+        .replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]))
+        .replace(re, QString(
+            "<b style='color:%1;'>\\1</b>"
+            "<b style='color:%2;'>\\2</b>"
+            "<b style='color:%1;'>\\3</b>"
+        ).arg(cols[2], cols[3]));
+
+    int si = 0;
+    while (si < nln.size() && nln[si].isSpace()) si++;
+    QString lftstrpln = nln.mid(si);
+    auto replStart = [&](const QString& txt, const QString& col){
+        if (lftstrpln.startsWith(txt)) {
+            nln.replace(si, txt.length(), QString("<b style='color:%1;'>%2</b>").arg(col, txt));
+            return true;
+        }
+        return false;
+    };
+    replStart("%|", cols[1])
+    ;
+    int ei = nln.size() - 1;
+    while (ei >= 0 && nln[ei].isSpace()) ei--;
+    QString rtstrpln = nln.left(ei+1);
+    auto replEnd = [&](const QString& txt, const QString& col){
+        if (rtstrpln.endsWith(txt)) {
+            int ln = txt.length();
+            nln.replace(ei-ln + 1, ln, QString("<b style='color:%1;'>%2</b>").arg(col, txt));
+            return true;
+        }
+        return false;
+    };
+    static const QRegularExpression re1(R"((^ *%\||\|% *$))");
+    static const QRegularExpression re2(R"((^ *@|@ *$))");
+    replEnd("|%", cols[1]) ||
+    replEnd("@", cols[2])
+    ;
+    return nln;
 }
-std::vector<BtnFeatures> TemplateFeat::btns() const {
+std::vector<BtnFeatures> BuiltInFeats::btns() const {
     return {
            {"%||%", "%|$CUR$|%", std::nullopt, "Template definition",
             "Defines a note template\n"
@@ -69,6 +106,8 @@ std::vector<BtnFeatures> TemplateFeat::btns() const {
         }, {"%%", "%%$CUR$%%", std::nullopt, "Template usage",
             "Uses a template for the note\n"
             "See this screen help for more info"
+        }, {"@tag:@", "@tag:$CUR$@", std::nullopt, "Tag",
+            "Add tags (separated by ,) for this note"
         }
     };
 }

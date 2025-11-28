@@ -1,5 +1,6 @@
 #pragma once
 #include <QString>
+#include <QStringList>
 #include <map>
 
 enum Side {
@@ -25,6 +26,7 @@ public:
     FlashCard* getFlashCard(int idx);
     int getNumCards();
     int getNumTemplates();
+    QStringList tags;
 
     QString error;
 

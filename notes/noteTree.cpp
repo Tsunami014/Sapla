@@ -5,12 +5,14 @@
 
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    tree->setColumnCount(4);
-    tree->setHeaderLabels({"Name", "📚", "📝", "‼️"});
+    int cols = 5;
+    tree->setColumnCount(cols);
+    tree->setHeaderLabels({"Name", "📚", "📝", "‼️", "🏷️"});
     tree->header()->setSectionResizeMode(0, QHeaderView::Interactive);
-    tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    tree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-    tree->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    for (int i = 1; i < cols-1; i++) {
+        tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
+    tree->header()->setSectionResizeMode(cols-1, QHeaderView::Interactive);
     tree->header()->setMinimumSectionSize(40);
     tree->header()->setDefaultSectionSize(240);
 
@@ -33,6 +35,7 @@ void updateItem(QTreeWidgetItem* it, Note* note) {
     it->setData(1, Qt::DisplayRole, QVariant(note->getNumCards()));
     it->setData(2, Qt::DisplayRole, QVariant(note->getNumTemplates()));
     it->setData(3, Qt::DisplayRole, QVariant(note->error.count("\n")));
+    it->setText(4, note->tags.join(", "));
 
     //item->setIcon(0, QIcon(":/icons/file.png"));
 }

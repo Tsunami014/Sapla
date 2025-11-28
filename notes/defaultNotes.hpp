@@ -24,18 +24,21 @@ QStringList defNotes = {
      "|%\n"
      "Here is some text in a note but not in a card so you'll never see it when playing "
      "because it doesn't have any features that create a card such as `---`.\n"
-     "The fact there's a note template here makes no difference.",
+     "The fact there's a note template here makes no difference.\n"
+     "@tag:test@",
 
     "[[What is this:For]] testing[[?\\n(*hint\\: it's below*):.]]\n"
      "%%debug%%\n"
      "===\n"
      "Note templates[[ play what role in this card?:.]]\n"
-     "%%debug%%",
+     "%%debug%%\n"
+     "@tag:test@",
 
     "Can you have note templates with regular cards?\n"
      "%| highlight **==%1==** |%\n"
      "---\n"
-     "%%highlight Yes!%%",
+     "%%highlight Yes!%%"
+     "@tag:test@",
 
     "Testing:\n"
      "[\\[broken via backslash]]\n"
@@ -43,5 +46,6 @@ QStringList defNotes = {
      "---\n"
      "Actual backslash: \\\\\n"
      "Fake newline: \\n"
-     "<- fake newline (try typing here)\n",
+     "<- fake newline (try typing here)\n"
+     " @ tag : test ,use\\,less @ ",
 };

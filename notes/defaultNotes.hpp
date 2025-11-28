@@ -6,17 +6,20 @@ What is **Australia**?
     *  (This is important to know)
 ---
 A ~~city~~ ==country==
+@prio: 2@
 
 
 What _is_ the meaning of life?
 ---
 42
+@prio: 1@
 
 
 What is `1 + 1`?
 ---
 - ==2==
 + *You should know this*!
+@prio: 2@
 
 
 [[What happened i:I]]n _2025_[[?:]]

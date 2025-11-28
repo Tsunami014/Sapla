@@ -26,7 +26,9 @@ public:
     FlashCard* getFlashCard(int idx);
     int getNumCards();
     int getNumTemplates();
+
     QStringList tags;
+    int prio;
 
     QString error;
 

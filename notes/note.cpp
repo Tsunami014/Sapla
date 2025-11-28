@@ -106,6 +106,7 @@ QStringList parseCommas(QString inp) {
 }
 void Note::updateCards() {
     error = "";
+    prio = 0;
     QString conts = orig;
     {
         auto it = templDefRe.globalMatch(orig);
@@ -153,8 +154,22 @@ void Note::updateCards() {
                     tags = parseCommas(m.captured(2));
                     has["tag"] = true;
                 }
+            } else if (title == "priority" || title == "prio") {
+                if (has.value("prio", false)) {
+                    prio = 0;
+                    error += "Cannot have multiple @priority:...@!\n";
+                } else {
+                    bool ok;
+                    int value = m.captured(2).toInt(&ok);
+                    if (ok) {
+                        prio = value;
+                    } else {
+                        error += "Priority could not be converted to an int: `" + m.captured(2) + "`\n";
+                    }
+                    has["prio"] = true;
+                }
             } else {
-                error += "Unknown note info title: " + title + "\n";
+                error += "Unknown note info title: `" + title + "`\n";
             }
         }
     }
@@ -165,12 +180,12 @@ void Note::updateCards() {
         }
     }
     if (dominants.size() > 1) {
-        error += "Found multiple dominant features on note where there should only be one: " + dominants.back();
+        error += "Found multiple dominant features on note where there should only be one: `" + dominants.back();
         dominants.pop_back();
         for (auto& d : dominants) {
-            error += ", " + d;
+            error += "`, `" + d;
         }
-        error += "\n";
+        error += "`\n";
         return;
     }
     for (auto& f : CardFeats) {

@@ -5,9 +5,9 @@
 
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    int cols = 5;
+    int cols = 6;
     tree->setColumnCount(cols);
-    tree->setHeaderLabels({"Name", "📚", "📝", "‼️", "🏷️"});
+    tree->setHeaderLabels({"Name", "📚", "🚩", "‼️", "📝", "🏷️"});
     tree->header()->setSectionResizeMode(0, QHeaderView::Interactive);
     for (int i = 1; i < cols-1; i++) {
         tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
@@ -33,9 +33,10 @@ void resetNoteTree(QTreeWidget* tree) {
 void updateItem(QTreeWidgetItem* it, Note* note) {
     it->setText(0, note->title());
     it->setData(1, Qt::DisplayRole, QVariant(note->getNumCards()));
-    it->setData(2, Qt::DisplayRole, QVariant(note->getNumTemplates()));
+    it->setData(2, Qt::DisplayRole, QVariant(note->prio));
     it->setData(3, Qt::DisplayRole, QVariant(note->error.count("\n")));
-    it->setText(4, note->tags.join(", "));
+    it->setData(4, Qt::DisplayRole, QVariant(note->getNumTemplates()));
+    it->setText(5, note->tags.join(", "));
 
     //item->setIcon(0, QIcon(":/icons/file.png"));
 }

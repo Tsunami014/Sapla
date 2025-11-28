@@ -106,8 +106,12 @@ std::vector<BtnFeatures> BuiltInFeats::btns() const {
         }, {"%%", "%%$CUR$%%", std::nullopt, "Template usage",
             "Uses a template for the note\n"
             "See this screen help for more info"
-        }, {"@tag:@", "@tag:$CUR$@", std::nullopt, "Tag",
+        }, {"@🏷️:@", "@tag:$CUR$@", std::nullopt, "Tag",
             "Add tags (separated by ,) for this note"
+        }, {"@🚩:@", "@prio:$CUR$@", std::nullopt, "Priority",
+            "(also can be `@priority:@`)\n"
+            "Give the card a priority\n"
+            "This gets converted to a number, where 0 is the default and positives are more important."
         }
     };
 }

@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "core.hpp"
+#include "log.hpp"
 #include "scenes/homeScn.hpp"
 #include "scenes/browseScn.hpp"
 #include "scenes/pluginView.hpp"
@@ -86,12 +87,19 @@ void MainGame::showFC() {
 void MainGame::nextFC() {
     auto games = PlugFns->playFns;
     int gSze = games.size();
-    if (gSze == 0) return;
+    if (gSze == 0) {
+        Log::Warn("Game") << "Could not find any game to run!";
+        return;
+    }
     int gidx = QRandomGenerator::global()->bounded(gSze);
+    bool success = false;
     for (int _ = 0; _ < gSze; _++) {
-        bool success = games[gidx]();
+        success = games[gidx]();
         if (success) break;
         gidx = (gidx + 1) % gSze;
+    }
+    if (!success) {
+        Log::Warn("Game") << "Could not find any game willing to run!";
     }
 }
 

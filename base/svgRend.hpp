@@ -5,6 +5,7 @@
 using _colourMapTyp = QMap<QString, QString>;
 
 extern _colourMapTyp pallete;
+void initPallete();
 QString getCol(QString palleteCol, int avgOffs = 0, int offset = 0, int diff = 5);
 QColor getQCol(QString palleteCol, int avgOffs = 0, int offset = 0, int diff = 5);
 

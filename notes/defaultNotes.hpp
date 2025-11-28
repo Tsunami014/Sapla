@@ -35,7 +35,7 @@ The fact there's a note template here makes no difference.
 @tag:test@
 
 
-[[What is this:For]] testing[[?\\n(*hint\: it's below*):.]]
+[[What is this:For]] testing[[?\n(*hint\: it's below*):.]]
 %%debug%%
 ===
 Note templates[[ play what role in this card?:.]]

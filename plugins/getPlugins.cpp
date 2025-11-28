@@ -133,6 +133,7 @@ void loadPlugins() {
         }
     }
 
+    initPallete();
     for (auto* f : PlugFns->stylFns) f();
     initColours();
     MG->initStyles();

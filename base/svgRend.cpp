@@ -7,14 +7,17 @@
 
 const QString MODULE = "SvgRenderer";
 
-_colourMapTyp pallete = {
-    {"light",  "#56B75D"},
-    {"dark",   "#20471C"},
-    {"shadow", "#436253"},
-    {"faded",  "#699C6B"},
-    {"alight", "#B87333"},
-    {"adark",  "#5A280A"}
-};
+_colourMapTyp pallete = {};
+void initPallete() {
+    pallete = {
+        {"light",  "#56B75D"},
+        {"dark",   "#20471C"},
+        {"shadow", "#436253"},
+        {"faded",  "#699C6B"},
+        {"alight", "#B87333"},
+        {"adark",  "#5A280A"}
+    };
+}
 
 QString getCol(QString palleteCol, int avgOffs, int offset, int diff) {
     return getQCol(palleteCol, avgOffs, offset, diff).name(QColor::HexRgb);

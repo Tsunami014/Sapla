@@ -1,5 +1,6 @@
 #pragma once
 #include "../game.hpp"
+#include "cardIt.hpp"
 #include <vector>
 #include <QString>
 #include <QSvgRenderer>
@@ -14,7 +15,7 @@ struct layout {
 };
 
 struct gridItem {
-    CardGraphicItem* item;
+    GridCGI* item;
     uint8_t x;
     uint8_t y;
     layout lay;
@@ -26,8 +27,8 @@ public:
 
     void updateAllChildren();
 
-    bool addItem(CardGraphicItem* item, layout& lay);
-    void removeItem(CardGraphicItem* item);
+    bool addItem(GridCGI* item, layout& lay);
+    void removeItem(GridCGI* item);
 
     void setRect(const QRectF& newRect) override;
     QRectF getRealRect();

@@ -4,9 +4,9 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard& flashc, QGraphicsItem* parent)
+CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard* flashc, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(flashc),
-      front(fc.getSideHtml(SIDE_FRONT)), back(fc.getSideHtml(SIDE_BACK)), txt() {
+      front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
         side = 0;
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);
@@ -22,7 +22,7 @@ bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
     return fc == other.fc;
 }
 bool CardGraphicItem::operator==(const FlashCard& other) const {
-    return fc == other;
+    return *fc == other;
 }
 
 void CardGraphicItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
@@ -47,7 +47,6 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (touching(event->pos())) {
         if (side == 0) {
             unsetCursor();
-            setZValue(4);
             side = 255;  // TODO: Animations
             hover = false;
         }

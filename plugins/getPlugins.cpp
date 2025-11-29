@@ -78,6 +78,9 @@ std::vector<DisabldPlug> disabldPlugs;
 #define sync(from, to) to.insert(to.end(), from.fns, from.fns + from.count)
 Plugin::Plugin(QString nme, Registry& r, QLibrary* library, QString pth)
     : name(std::move(nme)), reg(r), lib(library), path(pth) {
+        for (int i = 0; i < reg.onLoad.count; i++) {
+            reg.onLoad.fns[i]();
+        }
         sync(reg.onStyl, PlugFns->stylFns);
         sync(reg.onPlay, PlugFns->playFns);
         desc = QString::fromUtf8(reg.desc);
@@ -92,7 +95,7 @@ Plugin::~Plugin() {
 }
 
 void clearPlugins() {
-    for (int i = 1; i < plugs.size(); i++) delete plugs[i];
+    for (auto* p : plugs) delete p;
     plugs.clear();
     failedPlugs.clear();
     disabldPlugs.clear();

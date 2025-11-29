@@ -36,7 +36,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *event) override;
     void fixLogs();
 
-    bool cardFin(const FlashCard& card, bool correct);
+    bool cardFin(const FlashCard* card, bool correct);
     Stats s;
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;

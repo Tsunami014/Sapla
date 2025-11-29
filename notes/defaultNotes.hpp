@@ -43,10 +43,9 @@ Note templates[[ play what role in this card?:.]]
 @tag:test@
 
 
-Testing:
+Testing: (will generate no cards as there is no feature to do so)
 [\[broken via backslash]]
 \* broken again
----
 Actual backslash: \\
 Fake newline: \n<- fake newline (try typing here)
  @ tag : test ,use\,less @ 

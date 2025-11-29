@@ -103,7 +103,7 @@ void MainGame::nextFC() {
     }
 }
 
-bool MainGame::cardFin(const FlashCard& card, bool correct) {
+bool MainGame::cardFin(const FlashCard* card, bool correct) {
     if (correct) s.goods++;
     else s.bads++;
 

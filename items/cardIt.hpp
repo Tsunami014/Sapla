@@ -6,7 +6,7 @@
 
 class CardGraphicItem : public RectItem, public SvgUtils {
 public:
-    CardGraphicItem(const QString& fname, const FlashCard& fc, QGraphicsItem* parent = nullptr);   
+    CardGraphicItem(const QString& fname, const FlashCard* fc, QGraphicsItem* parent = nullptr);   
 
     QRect getRect() override { return rect.toRect(); }
 
@@ -19,7 +19,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
 
-    const FlashCard& fc;
+    const FlashCard* fc;
 
 protected:
     QLabel txt;

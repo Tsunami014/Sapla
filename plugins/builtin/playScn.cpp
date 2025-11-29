@@ -14,7 +14,7 @@ void PlayScene::resume() {
 }
 PlayScene::PlayScene() : GraphicGameScene(), tr(Tree::getTree()), done(false) {
     resume();
-    card = new CardGraphicItem(":/BIAssets/card.svg", *NextFC());
+    card = new CardGraphicItem(":/BIAssets/card.svg", NextFC());
     scn.addItem(card);
     scn.addItem(&tr);
 }

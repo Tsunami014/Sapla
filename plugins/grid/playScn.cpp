@@ -9,12 +9,12 @@ const QString HELP_TXT =
     "Press &lt;Esc&gt; to go back to the home screen.";
 
 void PlayScene::resume() {
-        if (main->grid.empty()) {
-            MG->nextFC();
-            return;
-        }
-        helpStr = &HELP_TXT;
-        MG->changeBG("pretty");
+    if (main->grid.empty()) {
+        MG->nextFC();
+        return;
+    }
+    helpStr = &HELP_TXT;
+    MG->changeBG("pretty");
 }
 PlayScene::PlayScene()
     : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(Tree::getTree()) {
@@ -24,9 +24,9 @@ PlayScene::PlayScene()
         overlay = NULL;
 
         while (true) {
-            const FlashCard fc = *NextFC();
+            const FlashCard* fc = NextFC();
             auto lay = Single;
-            auto* nCGI = new CardGraphicItem(lay.fname, fc);
+            auto* nCGI = new GridCGI(lay.fname, fc);
             if (!main->addItem(nCGI, lay)) {
                 delete nCGI;
                 break;
@@ -51,8 +51,13 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (hasOverlay() && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
+                removeOverlay();
+                const FlashCard* fc = it.item->fc;
                 scn.removeItem(it.item);
-                if (MG->cardFin(it.item->fc, key != Qt::Key_Space)) return true;
+                main->removeItem(it.item);
+                main->update();
+                main->updateAllChildren();
+                if (MG->cardFin(fc, key != Qt::Key_Space)) return true;
                 resume();  // Only for checking if empty
                 return true;
             }

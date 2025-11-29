@@ -43,9 +43,9 @@ void GLayoutGraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem
     float rowHei = nrect.height()/2;
     for (int i = 0; i < Cols; i++) {
         for (int j = 0; j < 2; j++) {
-            int x = nrect.x() + i*colWid;
-            int y = nrect.y() + j*rowHei;
             if (isGood(i, j)) {
+                int x = nrect.x() + i*colWid;
+                int y = nrect.y() + j*rowHei;
                 MTrenderer->render(painter, QRectF(x, y, colWid, rowHei));
             }
         }
@@ -81,7 +81,7 @@ void GLayoutGraphicItem::setRect(const QRectF& newRect) {
     }
 }
 
-bool GLayoutGraphicItem::addItem(CardGraphicItem* item, layout& lay) {
+bool GLayoutGraphicItem::addItem(GridCGI* item, layout& lay) {
     uint8_t loops = (lay.botWid == -1) + 1;
     uint8_t maxX = Cols + 1 - qMax(lay.topWid, lay.botWid);
     uint8_t nx = QRandomGenerator::global()->bounded(maxX);
@@ -111,11 +111,11 @@ bool GLayoutGraphicItem::addItem(CardGraphicItem* item, layout& lay) {
     return false;
 }
 
-void GLayoutGraphicItem::removeItem(CardGraphicItem* item) {
-    grid.erase(
-        std::remove_if(grid.begin(), grid.end(),
-                       [item](gridItem& it) { return it.item == item; }),
-        grid.end()
-    );
+void GLayoutGraphicItem::removeItem(GridCGI* item) {
+    auto it = std::find_if(grid.begin(), grid.end(),
+                           [item](const gridItem& gi){ return gi.item == item; });
+    if (it != grid.end()) {
+        grid.erase(it);
+    }
 }
 

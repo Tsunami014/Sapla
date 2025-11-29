@@ -59,13 +59,15 @@ QString BuiltInFeats::replacements(QString& txt, Side s) const {
               .replace(noteInfRe, "");
 }
 QString BuiltInFeats::markup(QString& line) const {
-    static const QRegularExpression re(R"((^ *@ *)([^@: \n]+)( *:))", MO);
+    static const QRegularExpression re(R"((^ *@ *)([^@: \n]+)( *:)(.+?)@ *$)", MO);
     QString nln = line
         .replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]))
         .replace(re, QString(
             "<b style='color:%1;'>\\1</b>"
             "<b style='color:%2;'>\\2</b>"
             "<b style='color:%1;'>\\3</b>"
+            "\\4"
+            "<b style='color:%1;'>@</b>"
         ).arg(cols[2], cols[3]));
 
     int si = 0;
@@ -93,8 +95,7 @@ QString BuiltInFeats::markup(QString& line) const {
     };
     static const QRegularExpression re1(R"((^ *%\||\|% *$))");
     static const QRegularExpression re2(R"((^ *@|@ *$))");
-    replEnd("|%", cols[1]) ||
-    replEnd("@", cols[2])
+    replEnd("|%", cols[1])
     ;
     return nln;
 }

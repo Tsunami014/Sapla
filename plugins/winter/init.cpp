@@ -14,4 +14,4 @@ void styl() {
 auto r = RegistryBuilder()
     .addStyl(styl);
 
-REGISTER_PLUG(r.build("A wintery theme for the app!"), 9, 9)
+REGISTER_PLUG(r.build("A wintery theme for the app!"), 9, VERSION)

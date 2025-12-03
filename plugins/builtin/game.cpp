@@ -20,4 +20,4 @@ auto r = RegistryBuilder()
 REGISTER_PLUG(r.build(
 "The built-in plugin\n\
 This contains a single game where a single flashcard is shown."
-    ), 9, 9)
+    ), VERSION, VERSION)

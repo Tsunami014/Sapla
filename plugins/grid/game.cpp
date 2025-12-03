@@ -20,4 +20,4 @@ auto r = RegistryBuilder()
 
 REGISTER_PLUG(r.build(
     "Contains a grid game - flashcards aligned on a grid!"
-    ), 9, 9)
+    ), VERSION, VERSION)

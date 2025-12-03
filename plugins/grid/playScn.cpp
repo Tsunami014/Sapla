@@ -24,7 +24,7 @@ PlayScene::PlayScene()
         overlay = NULL;
 
         while (true) {
-            const FlashCard* fc = NextFC();
+            GetFlashCard fc = GetFlashCard();
             auto lay = Single;
             auto* nCGI = new GridCGI(lay.fname, fc);
             if (!main->addItem(nCGI, lay)) {

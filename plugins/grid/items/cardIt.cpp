@@ -3,8 +3,8 @@
 #include "overlay.hpp"
 #include <QGraphicsSceneMouseEvent>
 
-GridCGI::GridCGI(const QString& fname, const FlashCard* flashc, QGraphicsItem* parent)
-    : CardGraphicItem(fname, flashc, parent), ontop(false) {}
+GridCGI::GridCGI(const QString& fname, GetFlashCard& fc, QGraphicsItem* parent)
+    : CardGraphicItem(fname, std::move(fc), parent), ontop(false) {}
 
 void GridCGI::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     bool oldHover = hover;

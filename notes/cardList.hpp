@@ -4,7 +4,30 @@
 
 void CLaddCard(FlashCard* newCard);
 void CLremoveCard(FlashCard* card);
-std::vector<std::deque<FlashCard*>> getCardLists();
+extern std::vector<FlashCard*> allCards;
 
-FlashCard* NextFC();
+class GetFlashCard {
+public:
+    explicit GetFlashCard();
+    ~GetFlashCard();
+
+    // Forbid copying
+    GetFlashCard(const GetFlashCard&) = delete;
+    GetFlashCard& operator=(const GetFlashCard&) = delete;
+    // Move constructor.
+    GetFlashCard(GetFlashCard&& other) noexcept;
+    // Move assignment.
+    GetFlashCard& operator=(GetFlashCard&& other) noexcept;
+
+    // Some operators, such as * and ->
+    explicit operator bool() const;
+    FlashCard& operator*() const;
+    inline FlashCard* operator->() const { return *this ? ptr : nullptr; }
+    inline FlashCard* get() const { return *this ? ptr : nullptr; }
+    inline operator FlashCard*() const { return ptr; }
+
+private:
+    FlashCard* ptr;
+    bool modify;
+};
 

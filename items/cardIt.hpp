@@ -2,11 +2,12 @@
 #include "../base/rectIt.hpp"
 #include "../base/svgUtils.hpp"
 #include "../notes/getNotes.hpp"
+#include "../notes/cardList.hpp"
 #include <QLabel>
 
 class CardGraphicItem : public RectItem, public SvgUtils {
 public:
-    CardGraphicItem(const QString& fname, const FlashCard* fc, QGraphicsItem* parent = nullptr);   
+    CardGraphicItem(const QString& fname, GetFlashCard fc, QGraphicsItem* parent = nullptr);   
 
     QRect getRect() override { return rect.toRect(); }
 
@@ -19,7 +20,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
 
-    const FlashCard* fc;
+    GetFlashCard fc;
 
 protected:
     QLabel txt;

@@ -4,8 +4,8 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard* flashc, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(fname), side(0), fc(flashc),
+CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard flashc, QGraphicsItem* parent)
+    : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)),
       front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
         side = 0;
         setAcceptHoverEvents(true);
@@ -19,7 +19,7 @@ CardGraphicItem::CardGraphicItem(const QString& fname, const FlashCard* flashc, 
     }
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
-    return fc == other.fc;
+    return fc.get() == fc.get();
 }
 bool CardGraphicItem::operator==(const FlashCard& other) const {
     return *fc == other;

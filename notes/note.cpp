@@ -207,9 +207,11 @@ QString Note::title() {
     return n.simplified();
 }
 
-FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk) : front(fr), back(bk) {
-    parent = p;
-}
+FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk, Schedule s)
+    : front(fr), back(bk), parent(p), schd(s), alive(true) {}
+FlashCard::~FlashCard() { alive = false; }
+bool FlashCard::isAlive() { return alive; }
+
 QString FlashCard::getSide(Side s) const {
     QString txt;
     switch (s) {
@@ -233,5 +235,13 @@ QString FlashCard::getSideHtml(Side s) const {
 
 bool FlashCard::operator==(const FlashCard& other) const {
     return other.parent == parent && other.front == front && other.back == back;
+}
+
+
+Schedule Schedule::blank() {
+    return {0, {}};
+}
+void Schedule::update(int rating) {
+    
 }
 

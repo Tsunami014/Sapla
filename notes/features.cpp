@@ -55,10 +55,15 @@ const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?
 const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", MO);
 const QRegularExpression noteInfRe(R"(^ *@ *([^@: \n]+) *: *(.+?) *@ *)", MO);
 QString BuiltInFeats::replacements(QString& txt, Side s) const {
-    return txt.replace(templDefRe, "")
+    static const QRegularExpression re(R"(^\|\|.*\|\|$)", MO);
+    return txt.replace(re, "")
+              .replace(templDefRe, "")
               .replace(noteInfRe, "");
 }
 QString BuiltInFeats::markup(QString& line) const {
+    if (line.startsWith("||") && line.endsWith("||")) {
+        return "<i style='color:#CCC'>Scheduling info</i>";
+    }
     static const QRegularExpression re(R"((^ *@ *)([^@: \n]+)( *:)(.+?)@ *$)", MO);
     QString nln = line
         .replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]))
@@ -136,7 +141,7 @@ FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     }
     std::vector<FlashCard> l{};
     QStringList parts = txt.split("---");
-    l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]));
+    l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]), Schedule::blank());
     return l;
 }
 std::vector<BtnFeatures> SingleSideFeat::btns() const {
@@ -149,7 +154,7 @@ std::vector<BtnFeatures> SingleSideFeat::btns() const {
 const QRegularExpression dsfRe("^ *=== *$", MO);
 QString DoubleSideFeat::markup(QString& line) const {
     if (dsfRe.match(line).hasMatch()) {
-        return QString("<span style='color:%1'>═══</span>").arg(col);
+        return QString("<span style='r:%1'>═══</span>").arg(col);
     }
     return line;
 }
@@ -167,8 +172,8 @@ FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) co
     QStringList parts = txt.split("===");
     QString first = trimNL(parts[0]);
     QString second = trimNL(parts[1]);
-    l.emplace_back(parent, first, second);
-    l.emplace_back(parent, second, first);
+    l.emplace_back(parent, first, second, Schedule::blank());
+    l.emplace_back(parent, second, first, Schedule::blank());
     return l;
 }
 std::vector<BtnFeatures> DoubleSideFeat::btns() const {

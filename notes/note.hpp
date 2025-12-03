@@ -2,11 +2,20 @@
 #include <QString>
 #include <QStringList>
 #include <map>
+#include <chrono>
 
 enum Side {
     SIDE_NAME,
     SIDE_FRONT,
     SIDE_BACK
+};
+
+struct Schedule {
+    void update(int rating);
+    static Schedule blank();
+
+    int score;
+    std::chrono::system_clock::time_point nxt;
 };
 
 extern std::map<QString, QString> globalTemplates;
@@ -47,14 +56,18 @@ private:
 
 class FlashCard {
 public:
-    FlashCard(Note* parent, const QString& front, const QString& back);
+    FlashCard(Note* parent, const QString& front, const QString& back, Schedule s);
+    ~FlashCard();
+    bool isAlive();
     bool operator==(const FlashCard& other) const;
 
+    Schedule schd;
     Note* parent;
     QString getSide(Side s) const;
     QString getSideHtml(Side s) const;
 private:
     QString front;
     QString back;
+    bool alive;
 };
 

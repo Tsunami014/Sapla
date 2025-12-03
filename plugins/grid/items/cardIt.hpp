@@ -3,7 +3,7 @@
 
 class GridCGI : public CardGraphicItem {
 public:
-    GridCGI(const QString& fname, const FlashCard* flashc, QGraphicsItem* parent = nullptr);
+    GridCGI(const QString& fname, GetFlashCard& fc, QGraphicsItem* parent = nullptr);
     void hoverMoveEvent(QGraphicsSceneHoverEvent* event);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, QWidget* w);

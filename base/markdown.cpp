@@ -26,7 +26,10 @@ SaveCursor::Point SaveCursor::save(int thing) {
     return {blk.blockNumber(), thing - blk.position()};
 }
 int SaveCursor::load(Point saved) {
-    return edit->document()->findBlockByNumber(saved.first).position() + saved.second;
+    auto blk = edit->document()->findBlockByNumber(saved.first);
+    int absPos = blk.position() + saved.second;
+    int absEnd = blk.position() + blk.length() - 1;
+    return qMin(absPos, absEnd);
 }
 
 MarkdownEdit::MarkdownEdit(QWidget* parent) : QTextEdit(parent) { init(); }
@@ -133,8 +136,9 @@ void MarkdownEdit::focusInEvent(QFocusEvent *event) {
     updateTxt(false, false);
     if (lastCol != -1) {
         QTextCursor c = textCursor();
-        int newPos = c.block().position() + qMin(lastCol, c.block().length() - 1);
-        c.setPosition(newPos);
+        int blkLen = c.block().length();
+        int newPos = c.block().position() + qMin(lastCol, blkLen - 1);
+        c.setPosition(qMin(newPos, blkLen));
         setTextCursor(c);
         lastCol = -1;
     }
@@ -146,8 +150,9 @@ void MarkdownEdit::insertMarkdown(QString txt, QString cursSub) {
     QSignalBlocker blocker(this);
     QTextCursor c = textCursor();
     if (lastCol != -1) {
-        int newPos = c.block().position() + qMin(lastCol, c.block().length() - 1);
-        c.setPosition(newPos);
+        int blkLen = c.block().length();
+        int newPos = c.block().position() + qMin(lastCol, blkLen - 1);
+        c.setPosition(qMin(newPos, blkLen));
     }
     updateTxt(false, true);
     int pos;

@@ -33,7 +33,7 @@ bool Tree::isDone() {
 void Tree::setRect(const QRectF& newRect) {
     prepareGeometryChange();
     qreal hei = newRect.height()/2;
-    qreal wid = hei/2;
+    qreal wid = (newRect.width()*0.3 + hei/2) / 2;
     rect = {
         newRect.right()-wid, newRect.y(), 
         wid, hei

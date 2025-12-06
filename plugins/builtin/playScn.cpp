@@ -14,7 +14,10 @@ void PlayScene::resume() {
 }
 PlayScene::PlayScene() : GraphicGameScene(), tr(Tree::getTree()), done(false) {
     resume();
-    card = new CardGraphicItem(":/BIAssets/card.svg", GetFlashCard());
+    GetFlashCard gfc{};
+    schdT = getScheduleInfTxt(gfc);
+    scn.addItem(schdT);
+    card = new CardGraphicItem(":/BIAssets/card.svg", gfc);
     scn.addItem(card);
     scn.addItem(&tr);
 }
@@ -43,6 +46,12 @@ bool PlayScene::keyEv(QKeyEvent* event) {
 void PlayScene::resize() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
-    card->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
+    int trW = tr.boundingRect().width();
+    card->setRect({rect.x(), rect.y(), rect.width()-trW, rect.height()});
+
+    int thei = rect.height()*0.35;
+    QRectF rec(rect.x()+rect.width()-trW, rect.y()+rect.height()-thei, trW, thei);
+    schdT->document()->setTextWidth(rec.width());
+    schdT->setPos(rec.topLeft());
 }
 

@@ -14,6 +14,7 @@
 #include "../items/cardIt.hpp"
 #include "../items/progress.hpp"
 #include "../items/treeItem.hpp"
+#include "../items/scheduleInfTxt.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../wids/svgPic.hpp"
 #include "../wids/topbar.hpp"

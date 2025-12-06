@@ -32,6 +32,7 @@ set(CORELIB
     items/cardIt.cpp
     items/progress.cpp
     items/treeItem.cpp
+    items/scheduleInfTxt.cpp
 
     notes/note.cpp
     notes/schedule.cpp

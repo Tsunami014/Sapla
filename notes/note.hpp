@@ -4,6 +4,10 @@
 #include <map>
 #include <chrono>
 
+using days = std::chrono::duration<long, std::ratio<86400>>;
+using weeks = std::chrono::duration<long, std::ratio<604800>>;
+using months = std::chrono::duration<long, std::ratio<2629746>>;
+
 enum Side {
     SIDE_NAME,
     SIDE_FRONT,
@@ -30,6 +34,7 @@ struct Schedule {
     QString toInf(QString title);
 
     void update(int rating = -1);
+    Duration getUpdatedTime(int rating = -1);
 
     float score;
     TimePoint nxt;

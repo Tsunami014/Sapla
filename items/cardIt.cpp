@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard flashc, QGraphicsItem* parent)
+CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)),
       front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
         side = 0;

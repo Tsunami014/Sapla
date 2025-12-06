@@ -8,44 +8,39 @@ _scheduleInf::_scheduleInf(std::vector<float> rScos, QString ts, Duration skpAmn
         setTimings(ts);
     }
 
-using days = std::chrono::duration<int, std::ratio<86400>>;
-using weeks = std::chrono::duration<int, std::ratio<604800>>;
-using months = std::chrono::duration<int, std::ratio<2629746>>;
-
 using DurationFn = std::function<Duration(long long)>;
 #define makeTimeFn(time) [](long long n){ return time(n); }
-std::vector<std::pair<QStringList, DurationFn>> consts = {
-    {{ "mo", "mos", "mth", "mths", "month", "months" }, makeTimeFn(months)},
-    {{ "w", "wk", "wks", "week", "weeks" }, makeTimeFn(weeks)},
-    {{ "d", "dy", "dys", "day", "days" }, makeTimeFn(days)},
-    {{ "h", "hr", "hrs", "hour", "hours" }, makeTimeFn(std::chrono::hours)},
-    {{ "m", "min", "mins", "minute", "minutes" }, makeTimeFn(std::chrono::minutes)},
-    {{ "s", "sec", "secs", "second", "seconds" }, makeTimeFn(std::chrono::seconds)}
-};
-const std::map<QStringView, const DurationFn*> getMap() {
-    std::map<QStringView, const DurationFn*> tempMap;
-    for (const auto& group : consts) {
-        for (const QString& key : group.first) {
-            tempMap[key] = &group.second;
-        }
-    }
-    return tempMap;
+static const std::unordered_map<QString, DurationFn> & getUnitMap() {
+    static const std::unordered_map<QString, DurationFn> unitMap = []{
+        std::unordered_map<QString, DurationFn> m;
+        auto add = [&](const QStringList &keys, DurationFn fn) {
+            for (const auto &k : keys) m.emplace(k, fn);
+        };
+        add({ "mo", "mos", "mth", "mths", "month", "months" }, makeTimeFn(months));
+        add({ "w", "wk", "wks", "week", "weeks" }, makeTimeFn(weeks));
+        add({ "d", "dy", "dys", "day", "days" }, makeTimeFn(days));
+        add({ "h", "hr", "hrs", "hour", "hours" }, makeTimeFn(std::chrono::hours));
+        add({ "m", "min", "mins", "minute", "minutes" }, makeTimeFn(std::chrono::minutes));
+        add({ "s", "sec", "secs", "second", "seconds" }, makeTimeFn(std::chrono::seconds));
+        return m;
+    }();
+    return unitMap;
 }
 
 
 Duration parseDuration(QString amount, QString unit, QString& problems) {
     bool ok;
-    long amnt = amount.toDouble(&ok);
+    long amnt = amount.toLong(&ok);
     if (!ok) {
         problems += "Could not parse number: " + amount + "!\n";
         return {};
     }
     Duration time;
 
-    static const auto map = getMap();
+    const auto &map = getUnitMap();
     auto it = map.find(unit);
     if (it != map.end()) {
-        return (*it->second)(amnt);
+        return it->second(amnt);
     }
     problems += "Unit not found: " + unit + "\n";
     return {};
@@ -53,12 +48,12 @@ Duration parseDuration(QString amount, QString unit, QString& problems) {
 enum Parts { NUM, TXT, UNKNOWN, END };
 Duration parseWholeDuration(QString inp, QString& problems) {
     QString part;
-    Duration dur;
+    Duration dur = {};
     QString lastnum;
     Parts typ = NUM;
     for (QChar c : (inp+'\n')) {
         Parts thistyp;
-        if ((c >= '0' && c <= '9') || c == '.') {
+        if ((c >= '0' && c <= '9')) {
             thistyp = NUM;
         } else if (c >= 'A' && c <= 'Z') {
             c = c.toLower();
@@ -136,12 +131,12 @@ _scheduleInf ScheduleInfo(
     "20mins\n"
     "40mins\n"
     "1hr\n"
-    "1.5hrs\n"
+    "1hr30min\n"
     "2hrs\n"
     "4hrs\n"
     "6hrs\n"
     "1day\n"
-    "1.5days\n"
+    "1day12hours\n"
     "2days\n"
     "4days\n"
     "6days\n"
@@ -151,6 +146,8 @@ _scheduleInf ScheduleInfo(
     "3wks\n"
     "4wks\n"
     "1mo\n"
+    "1mo2wks\n"
+    "2mo\n"
     , parseWholeDuration("40mins")
 );
 
@@ -177,7 +174,12 @@ void Schedule::update(int rating) {
         Log::Error(MODULE) << "Found bad rating value: " << rating << "!";
         return;
     }
-    score = std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()));
+    score = std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-1));
     nxt += ScheduleInfo.timings[std::round(score)];
+}
+Duration Schedule::getUpdatedTime(int rating) {
+    return ScheduleInfo.timings[std::round(
+        std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-1))
+    )];
 }
 

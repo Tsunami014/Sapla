@@ -15,4 +15,5 @@ private:
     bool done;
     Tree& tr;
     CardGraphicItem* card;
+    QGraphicsTextItem* schdT;
 };

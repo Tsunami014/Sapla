@@ -35,7 +35,7 @@ void Tree::setRect(const QRectF& newRect) {
     qreal hei = newRect.height()/2;
     qreal wid = hei/2;
     rect = {
-        newRect.right()-wid, ((newRect.y()+newRect.height()) - hei)/2, 
+        newRect.right()-wid, newRect.y(), 
         wid, hei
     };
     pb.setRect({

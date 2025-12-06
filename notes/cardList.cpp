@@ -42,10 +42,8 @@ GetFlashCard::GetFlashCard() {
         }
     }
     modify = ptr->isAlive();
-    QString name = (ptr && ptr->isAlive()) ? ptr->getSide(SIDE_FRONT) : "null";
 }
 GetFlashCard::~GetFlashCard() {
-    QString name = (ptr && ptr->isAlive()) ? ptr->getSide(SIDE_FRONT) : "null";
     if (modify && ptr && ptr->isAlive()) cardQ.push(ptr);
 }
 

@@ -39,8 +39,7 @@ PlayScene::~PlayScene() {
     if (tr.scene() == &scn) {
         scn.removeItem(&tr);
     }
-    scn.removeItem(main);
-    delete main;
+    scn.clear();
 }
 
 
@@ -48,24 +47,25 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
     int key = event->key();
 
-    if (hasOverlay() && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
+    if (hasOverlay()) {
+        GridCGI* git;
+        int resp;
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
-                removeOverlay();
-                FlashCard* fc = it.item->fc;
-                scn.removeItem(it.item);
-                main->removeItem(it.item);
-                main->update();
-                main->updateAllChildren();
-                switch (MG->cardFin(fc, key)) {
-                    case 0:
-                        resume();  // Only for checking if empty
-                    case 1:
-                        return true;
-                }
-                return true;
+                git = it.item;
+                resp = MG->cardFin(it.item->fc, key);
+                break;
             }
         }
+        if (resp == -1 || !git) return false;
+        removeOverlay();
+        scn.removeItem(git);
+        main->removeItem(git);
+        delete git;
+        main->update();
+        main->updateAllChildren();
+        if (resp == 0) resume();  // Only for checking if empty
+        return true;
     }
     return false;
 }

@@ -17,6 +17,9 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard flashc, QGra
         txt.setAttribute(Qt::WA_TranslucentBackground);
         txt.setFont(getFont(1.5));
     }
+CardGraphicItem::~CardGraphicItem() {
+    txt.deleteLater();
+}
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
     return fc.get() == other.fc.get();

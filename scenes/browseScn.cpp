@@ -43,6 +43,7 @@ BrowseScene::BrowseScene()
     resetIt("Reset notes to default", Menues->FileMenu) {
         helpStr = &BROWSE_HELP;
         MG->changeBG("dirt");
+        MG->removeGame();
 
         tree = getNoteTree(this);
         QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, this, &BrowseScene::selectionChange);

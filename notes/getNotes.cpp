@@ -81,7 +81,6 @@ void writeNotes() {
         out << makeSafe(n->contents()) << "\n";
     }
     file.close();
-    MG->removeGame();
     //Log::Debug(MODULE) << "Successfully wrote " << cards.size() << " cards to the configuration file at:\n" << fullpth;
 }
 

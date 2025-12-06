@@ -45,7 +45,9 @@ There are example cards to help you
 If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-https://github.com/user-attachments/assets/a18e07e6-ed2a-49d4-93ad-ae491ef6e19b
+https://github.com/user-attachments/assets/edb5b971-c889-4955-a444-23a0fc0306b5
+
+Please note I take a while before getting to the winter theme, that's just where it fit best in the script
 
 ## Getting it
 ### The easy way

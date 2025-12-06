@@ -7,10 +7,6 @@
 #include "wids/ovrlWrap.hpp"
 
 class FlashCard;  // Forward reference
-struct Stats {  // TODO: Save/load
-    uint32_t goods;
-    uint32_t bads;
-};
 
 struct spareStyls {
     QString listWidCol;
@@ -36,8 +32,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *event) override;
     void fixLogs();
 
-    bool cardFin(const FlashCard* card, bool correct);
-    Stats s;
+    int cardFin(FlashCard* card, int key);
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;
     BaseScene* curScene;

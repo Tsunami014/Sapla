@@ -14,7 +14,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 
-MainGame::MainGame() : s{0, 0}, logLay(), logLayWrap(this), curGame(nullptr) {
+MainGame::MainGame() : logLay(), logLayWrap(this), curGame(nullptr) {
     sceneStash = new QWidget(this);
     sceneStash->hide();
     bg = new SvgWidget(this);
@@ -103,12 +103,19 @@ void MainGame::nextFC() {
     }
 }
 
-bool MainGame::cardFin(const FlashCard* card, bool correct) {
-    if (correct) s.goods++;
-    else s.bads++;
-
-    int grow = correct ? 50 : 20;
-    return Tree::getTree().grow(grow, correct);
+int MainGame::cardFin(FlashCard* card, int key) {
+    int rating;
+    if (key >= Qt::Key_1 && key <= Qt::Key_1+ScheduleInfo.ratesLen()) {
+        rating = key - Qt::Key_1;
+    } else if (key == Qt::Key_Minus || key == Qt::Key_Equal) {
+        rating = key == Qt::Key_Minus ? -2 : -1;
+    } else {
+        return -1;
+    }
+    card->schd.update(rating);
+    card->parent->updateSchedules();
+    int grow = std::max(rating * 10 + 5, 0);
+    return Tree::getTree().grow(grow, rating >= ScheduleInfo.ratesLen()/4);
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {

@@ -37,7 +37,9 @@ namespace Log {
 }
 
 /** DeBug Log - for debugging purposes ONLY - do not use in production - instead use Log::Debug(module) */
-inline Log::Log DBL() { return Log::Info("DEBUG"); }
+inline Log::Log DBL() { return Log::Debug("DEBUG"); }
+/** DeBug Log with Print - for debugging purposes ONLY - do not use in production - instead use Log::Info(module) */
+inline Log::Log DBLP() { return Log::Info("DEBUG"); }
 
 void showLogWindow();
 

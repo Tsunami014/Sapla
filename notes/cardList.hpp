@@ -3,13 +3,15 @@
 #include <deque>
 
 void CLaddCard(FlashCard* newCard);
-void CLremoveCard(FlashCard* card);
+void CLclear();
 extern std::vector<FlashCard*> allCards;
 
 class GetFlashCard {
 public:
     explicit GetFlashCard();
     ~GetFlashCard();
+
+    void updateSchedule(int rating);
 
     // Forbid copying
     GetFlashCard(const GetFlashCard&) = delete;

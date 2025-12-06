@@ -34,6 +34,7 @@ set(CORELIB
     items/treeItem.cpp
 
     notes/note.cpp
+    notes/schedule.cpp
     notes/features.cpp
     notes/getNotes.cpp
     notes/noteTree.cpp

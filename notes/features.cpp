@@ -26,6 +26,14 @@ QString _AutoColour::nxtCol() {
     return ret;
 }
 
+Schedule getSchd(std::map<int, Schedule> schds, int idx) {
+    auto it = schds.find(idx);
+    if (it != schds.end()) {
+        return schds.at(idx);
+    }
+    return Schedule(idx);
+}
+
 void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
@@ -33,10 +41,10 @@ void registerNoteFeatures() {
     REGISTER_FEAT(HiddenFeat);
 
     std::stable_sort(Feats.begin(), Feats.end(), [](const auto& a, const auto& b) {
-        return a->order() < b->order();
+        return a->order() > b->order();
     });
     std::stable_sort(CardFeats.begin(), CardFeats.end(), [](const auto& a, const auto& b) {
-        return a->order() < b->order();
+        return a->order() > b->order();
     });
 
     for (auto& feat : Feats) {
@@ -53,10 +61,10 @@ QString trimNL(const QString& orig) {
 
 const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *)", MO);
 const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", MO);
-const QRegularExpression noteInfRe(R"(^ *@ *([^@: \n]+) *: *(.+?) *@ *)", MO);
+const QRegularExpression noteInfRe(R"(^ *@ *([^@: \n]+) *: *(.+?) *@ *$\n?)", MO);
+const QRegularExpression scheduleInfRe(R"(\n?^\|\|(.*)\|\|$\n*)", MO);
 QString BuiltInFeats::replacements(QString& txt, Side s) const {
-    static const QRegularExpression re(R"(^\|\|.*\|\|$)", MO);
-    return txt.replace(re, "")
+    return txt.replace(scheduleInfRe, "")
               .replace(templDefRe, "")
               .replace(noteInfRe, "");
 }
@@ -122,7 +130,7 @@ std::vector<BtnFeatures> BuiltInFeats::btns() const {
     };
 }
 
-const QRegularExpression ssfRe("^ *--- *$", MO);
+const QRegularExpression ssfRe(R"(^\s*--- *\n*$)", MO);
 QString SingleSideFeat::markup(QString& line) const {
     if (ssfRe.match(line).hasMatch()) {
         return QString("<span style='color:%1'>───</span>").arg(col);
@@ -132,26 +140,29 @@ QString SingleSideFeat::markup(QString& line) const {
 bool SingleSideFeat::dominance(const QString& txt) const {
     return ssfRe.match(txt).hasMatch();
 }
-FeatReturnTyp SingleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
-    int amnt = txt.count(ssfRe);
-    if (amnt == 0) return std::nullopt;
-    if (amnt != 1) {
-        parent->error += "Found multiple `---` - there should only be 1!\n";
-        return std::nullopt;
+ std::vector<std::unique_ptr<FlashCard>>SingleSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const {
+    QRegularExpressionMatch m = ssfRe.match(txt);
+    if (!m.hasMatch()) {
+        return {};
     }
-    std::vector<FlashCard> l{};
-    QStringList parts = txt.split("---");
-    l.emplace_back(parent, trimNL(parts[0]), trimNL(parts[1]), Schedule::blank());
+    int idx = m.capturedStart();
+    std::vector<std::unique_ptr<FlashCard>> l;
+    l.push_back(std::make_unique<FlashCard>(
+        parent,
+        trimNL(txt.left(idx)), trimNL(txt.mid(idx + m.capturedLength())),
+        getName(), getSchd(schds, 0)
+    ));
     return l;
 }
 std::vector<BtnFeatures> SingleSideFeat::btns() const {
     return {{"---", "\n---\n", std::nullopt, "Single sided note", 
         "Separates the note into a front and a back.\n"
+        "If multiple are present, splits off the first one.\n"
         "This creates a single sided card, where the front is above the line and the back is below."
     }};
 }
 
-const QRegularExpression dsfRe("^ *=== *$", MO);
+const QRegularExpression dsfRe(R"(^\s*=== *\n*$)", MO);
 QString DoubleSideFeat::markup(QString& line) const {
     if (dsfRe.match(line).hasMatch()) {
         return QString("<span style='r:%1'>═══</span>").arg(col);
@@ -161,24 +172,27 @@ QString DoubleSideFeat::markup(QString& line) const {
 bool DoubleSideFeat::dominance(const QString& txt) const {
     return dsfRe.match(txt).hasMatch();
 }
-FeatReturnTyp DoubleSideFeat::getFlashCards(Note* parent, const QString& txt) const {
-    int amnt = txt.count(dsfRe);
-    if (amnt == 0) return std::nullopt;
-    if (amnt != 1) {
-        parent->error += "Found multiple `===` - there should only be 1!";
-        return std::nullopt;
+ std::vector<std::unique_ptr<FlashCard>>DoubleSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const {
+    QRegularExpressionMatch m = dsfRe.match(txt);
+    if (!m.hasMatch()) {
+        return {};
     }
-    std::vector<FlashCard> l{};
-    QStringList parts = txt.split("===");
-    QString first = trimNL(parts[0]);
-    QString second = trimNL(parts[1]);
-    l.emplace_back(parent, first, second, Schedule::blank());
-    l.emplace_back(parent, second, first, Schedule::blank());
+    int idx = m.capturedStart();
+    QString first = trimNL(txt.left(idx));
+    QString second = trimNL(txt.mid(idx + m.capturedLength()));
+    std::vector<std::unique_ptr<FlashCard>> l;
+    l.push_back(std::make_unique<FlashCard>(
+        parent, first, second, getName(), getSchd(schds, 0)
+    ));
+    l.push_back(std::make_unique<FlashCard>(
+        parent, second, first, getName(), getSchd(schds, 1)
+    ));
     return l;
 }
 std::vector<BtnFeatures> DoubleSideFeat::btns() const {
     return {{"===", "\n===\n", std::nullopt, "Double sided note", 
         "Separates the note into 2 sides.\n"
+        "If multiple are present, splits off the first one.\n"
         "This creates 2 cards: one where the top is on the front and the bottom is on the back, and another the other way around."
     }};
 }

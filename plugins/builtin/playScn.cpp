@@ -28,11 +28,14 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
     int key = event->key();
 
-    if (card->side == 255 && (key == Qt::Key_Space || key == Qt::Key_Enter || key == Qt::Key_Return)) {
-        done = true;
-        if (MG->cardFin(card->fc, key != Qt::Key_Space)) return true;
-        MG->nextFC();
-        return true;
+    if (card->side == 255) {
+        switch (MG->cardFin(card->fc, key)) {
+            case 0:
+                MG->nextFC();
+            case 1:
+                done = true;
+                return true;
+        }
     }
     return false;
 }

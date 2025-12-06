@@ -2,6 +2,7 @@
 #include "playScn.hpp"
 
 bool init() {
+    if (allCards.empty()) return false;
     MG->changeScene(new PlayScene());
     return true;
 }

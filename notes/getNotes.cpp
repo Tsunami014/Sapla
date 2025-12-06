@@ -53,6 +53,7 @@ QString getPath() {
 }
 
 void updateNoteCards() {
+    CLclear();
     for (auto* n : notesL) {
         n->updateCards();
     }

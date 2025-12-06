@@ -52,13 +52,17 @@ bool PlayScene::keyEv(QKeyEvent* event) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
                 removeOverlay();
-                const FlashCard* fc = it.item->fc;
+                FlashCard* fc = it.item->fc;
                 scn.removeItem(it.item);
                 main->removeItem(it.item);
                 main->update();
                 main->updateAllChildren();
-                if (MG->cardFin(fc, key != Qt::Key_Space)) return true;
-                resume();  // Only for checking if empty
+                switch (MG->cardFin(fc, key)) {
+                    case 0:
+                        resume();  // Only for checking if empty
+                    case 1:
+                        return true;
+                }
                 return true;
             }
         }

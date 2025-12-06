@@ -19,9 +19,9 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard flashc, QGra
     }
 
 bool CardGraphicItem::operator==(const CardGraphicItem& other) const {
-    return fc.get() == fc.get();
-}
-bool CardGraphicItem::operator==(const FlashCard& other) const {
+    return fc.get() == other.fc.get();
+    }
+    bool CardGraphicItem::operator==(const FlashCard& other) const {
     return *fc == other;
 }
 

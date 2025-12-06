@@ -1,4 +1,5 @@
 #include "note.hpp"
+#include "getNotes.hpp"
 #include "cardList.hpp"
 #include "features.hpp"
 #include "../log.hpp"
@@ -6,10 +7,11 @@
 #include <unordered_set>
 #include <QApplication>
 #include <QRegularExpression>
+#include <cctype>
 
 const QString MODULE = "Note";
 
-std::map<QString, QString> globalTemplates = {};
+std::map<QString, QString> globalTemplates;
 
 Note::Note(QString conts) {
     error = "";
@@ -28,7 +30,7 @@ Note::Note(Note&& other) noexcept : orig(std::move(other.orig)),
                                     cards(std::move(other.cards)),
                                     templates(std::move(other.templates)) {
     for (auto& c : cards) {
-        c.parent = this;
+        c->parent = this;
     }
     other.cards.clear();
     other.templates.clear();
@@ -40,7 +42,7 @@ Note& Note::operator=(Note&& other) noexcept {
     cards = std::move(other.cards);
     templates = std::move(other.templates);
     for (auto& c : cards) {
-        c.parent = this;
+        c->parent = this;
     }
     other.cards.clear();
     other.templates.clear();
@@ -49,7 +51,7 @@ Note& Note::operator=(Note&& other) noexcept {
 
 
 FlashCard* Note::getFlashCard(int idx) {
-    return &cards[idx];
+    return cards[idx].get();
 }
 int Note::getNumCards() {
     return cards.size();
@@ -59,9 +61,6 @@ int Note::getNumTemplates() {
 }
 
 void Note::reset() {
-    for (auto& item : cards)
-        CLremoveCard(&item);
-
     cards.clear();
     for (auto& t : templates) {
         globalTemplates.erase(t);
@@ -188,13 +187,45 @@ void Note::updateCards() {
         error += "`\n";
         return;
     }
-    for (auto& f : CardFeats) {
-        if (auto fcs = f->getFlashCards(this, conts)) {
-            std::move(fcs->begin(), fcs->end(), std::back_inserter(cards));
+    std::map<QString, std::map<int, Schedule>> scheduleMap;
+    auto it = scheduleInfRe.globalMatch(conts);
+    while (it.hasNext()) {
+        auto m = it.next();
+        for (QString part : m.captured(1).split("|")) {
+            QStringList spl = part.split(",");
+            if (spl.size() != 4) {
+                error += "Found not 4 parts in schedule string: `" + part + "`\n";
+                continue;
+            }
+            bool ok;
+            int idx = spl[1].toInt(&ok);
+            if (!ok) {
+                error += "Could not convert idx to int: `" + spl[1] + "`\n";
+                continue;
+            }
+            float sco = spl[2].toFloat(&ok);
+            if (!ok) {
+                error += "Could not convert score to float: `" + spl[2] + "`\n";
+                continue;
+            }
+            long long nxtTime = spl[3].toLongLong(&ok);
+            if (!ok) {
+                error += "Could not convert time to long long: `" + spl[3] + "`\n";
+                continue;
+            }
+            auto schdMap = scheduleMap[spl[0]];
+            auto [_, inserted] = schdMap.try_emplace(idx, idx, sco, nxtTime);
+            if (!inserted) {
+                error += "Schedule idx already exists: `" + spl[1] + "`\n";
+            }
         }
     }
+    for (auto& f : CardFeats) {
+        auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
+        std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));
+    }
     for (auto& item : cards)
-        CLaddCard(&item);
+        CLaddCard(item.get());
 }
 QString Note::contents() const {
     return orig;
@@ -207,9 +238,51 @@ QString Note::title() {
     return n.simplified();
 }
 
-FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk, Schedule s)
-    : front(fr), back(bk), parent(p), schd(s), alive(true) {}
-FlashCard::~FlashCard() { alive = false; }
+void Note::updateSchedules() {
+    QString conts = contents()
+        .replace(scheduleInfRe, "");
+    QStringList infs;
+    for (auto& fc : cards) {
+        infs.append(fc->schd.toInf(fc->title));
+    }
+    conts += "\n||"+infs.join("|")+"||";
+    orig = conts;
+    writeNotes();
+}
+
+FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk, QString t, Schedule s)
+    : front(fr), back(bk), parent(p), title(t), schd(s), alive(true) {}
+void FlashCard::MoveContents(FlashCard&& other) {
+    // std move all but parent
+    front = std::move(other.front);
+    back = std::move(other.back);
+    parent = other.parent;
+    title = std::move(other.title);
+    alive = true;
+    other.alive = false;
+}
+FlashCard::FlashCard(FlashCard&& other) noexcept :schd(std::move(other.schd)) {
+    MoveContents(std::move(other));
+    other.alive = false;
+}
+// Move assignment.
+FlashCard& FlashCard::operator=(FlashCard&& other) noexcept {
+    if (this != &other) {
+        MoveContents(std::move(other));
+        schd = std::move(other.schd);
+    }
+    return *this;
+}
+FlashCard::~FlashCard() {
+    if (!alive) return;
+    alive = false;
+    auto it = std::find(allCards.begin(), allCards.end(), this);
+    if (it != allCards.end()) {
+        allCards.erase(it);
+    } else {
+        Log::Error(MODULE) << "Failed to erase flashcard from list!";
+    }
+}
 bool FlashCard::isAlive() { return alive; }
 
 QString FlashCard::getSide(Side s) const {
@@ -235,13 +308,5 @@ QString FlashCard::getSideHtml(Side s) const {
 
 bool FlashCard::operator==(const FlashCard& other) const {
     return other.parent == parent && other.front == front && other.back == back;
-}
-
-
-Schedule Schedule::blank() {
-    return {0, {}};
-}
-void Schedule::update(int rating) {
-    
 }
 

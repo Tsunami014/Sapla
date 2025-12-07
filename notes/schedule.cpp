@@ -175,7 +175,7 @@ void Schedule::update(int rating) {
         return;
     }
     score = std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-1));
-    nxt += ScheduleInfo.timings[std::round(score)];
+    nxt = std::chrono::system_clock::now() + ScheduleInfo.timings[std::round(score)];
 }
 Duration Schedule::getUpdatedTime(int rating) {
     return ScheduleInfo.timings[std::round(

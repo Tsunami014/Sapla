@@ -29,6 +29,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     if (card->side == 255) {
         switch (MG->cardFin(card->fc, key)) {
             case 0:
+                card->fc.finish();
                 MG->nextFC();
             case 1:
                 done = true;

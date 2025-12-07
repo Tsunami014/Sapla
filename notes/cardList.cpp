@@ -44,13 +44,17 @@ GetFlashCard::GetFlashCard() {
     modify = ptr->isAlive();
 }
 GetFlashCard::~GetFlashCard() {
-    if (modify && ptr && ptr->isAlive()) cardQ.push(ptr);
+    finish();
 }
 
 void GetFlashCard::updateSchedule(int rating) {
     if (ptr && ptr->isAlive()) {
         ptr->schd.update(rating);
     }
+}
+void GetFlashCard::finish() {
+    if (modify && ptr && ptr->isAlive()) cardQ.push(ptr);
+    modify = false;
 }
 
 // Move constructor

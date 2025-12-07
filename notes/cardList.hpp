@@ -12,6 +12,7 @@ public:
     ~GetFlashCard();
 
     void updateSchedule(int rating);
+    void finish();
 
     // Forbid copying
     GetFlashCard(const GetFlashCard&) = delete;

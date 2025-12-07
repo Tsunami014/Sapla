@@ -1,5 +1,5 @@
 # Sapla
-A cool flashcard app made in QT where you map out a constellation!
+A cool flashcard app made in QT!
 
 FAQ is at the bottom.
 
@@ -47,9 +47,7 @@ There are example cards to help you
 If you need help on anything, look at the `help > this screen help` or `help > application help`
 
 ## Demo video
-https://github.com/user-attachments/assets/edb5b971-c889-4955-a444-23a0fc0306b5
-
-Please note I take a while before getting to the winter theme, that's just where it fit best in the script
+https://github.com/user-attachments/assets/25ea20ac-16c6-45a0-86a2-5bbb45f343fe
 
 ## Getting it
 ### The easy way

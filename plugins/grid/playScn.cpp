@@ -21,6 +21,11 @@ PlayScene::PlayScene()
         scn.addItem(main);
         scn.addItem(&tr);
 
+        schdT = new QGraphicsTextItem();
+        scn.addItem(schdT);
+        schdT->setZValue(5);
+        styleScheduleInfTxt(schdT);
+
         overlay = NULL;
 
         while (true) {
@@ -42,6 +47,9 @@ PlayScene::~PlayScene() {
     scn.clear();
 }
 
+void PlayScene::cardClicked(FlashCard* card) {
+    setScheduleInfTxt(schdT, card);
+}
 
 bool PlayScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
@@ -58,6 +66,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
             }
         }
         if (resp == -1 || !git) return false;
+        schdT->setPlainText("");
         removeOverlay();
         scn.removeItem(git);
         main->removeItem(git);
@@ -73,10 +82,15 @@ bool PlayScene::keyEv(QKeyEvent* event) {
 void PlayScene::resize() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
-    main->setRect({rect.x(), rect.y(), rect.width()-tr.boundingRect().width(), rect.height()});
+    int trW = tr.boundingRect().width();
+    main->setRect({rect.x(), rect.y(), rect.width()-trW, rect.height()});
     if (overlay != NULL) {
         overlay->setRect(rect);
     }
+    int thei = rect.height()*0.35;
+    QRectF rec(rect.x()+rect.width()-trW, rect.y()+rect.height()-thei, trW, thei);
+    schdT->document()->setTextWidth(rec.width());
+    schdT->setPos(rec.topLeft());
 }
 
 void PlayScene::setOverlay(QGraphicsRectItem* ovl) {

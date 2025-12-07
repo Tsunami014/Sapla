@@ -33,6 +33,18 @@ std::string format_duration(Duration dur) {
 }
 
 QGraphicsTextItem* getScheduleInfTxt(FlashCard* card, QGraphicsItem* parent) {
+    auto* gti = new QGraphicsTextItem(parent);
+    styleScheduleInfTxt(gti);
+    setScheduleInfTxt(gti, card);
+    return gti;
+}
+void styleScheduleInfTxt(QGraphicsTextItem* it) {
+    it->document()->setDefaultTextOption(
+        QTextOption(Qt::AlignCenter)
+    );
+    it->setDefaultTextColor(Qt::black);
+}
+void setScheduleInfTxt(QGraphicsTextItem* it, FlashCard* card) {
     QString txt = "<h2>";
 
     for (int i = 0; i < ScheduleInfo.ratesLen(); i++) {
@@ -42,13 +54,7 @@ QGraphicsTextItem* getScheduleInfTxt(FlashCard* card, QGraphicsItem* parent) {
            "<b>=</b>: Skip<br>"
         "</h2>";
 
-    auto* gti = new QGraphicsTextItem(parent);
-    gti->setHtml(
+    it->setHtml(
         txt
     );
-    gti->document()->setDefaultTextOption(
-        QTextOption(Qt::AlignCenter)
-    );
-    gti->setDefaultTextColor(Qt::black);
-    return gti;
 }

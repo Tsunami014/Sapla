@@ -36,6 +36,7 @@ void GridCGI::mousePressEvent(QGraphicsSceneMouseEvent* event) {
             overl->setZValue(3);
             curS->setOverlay(overl);
             curS->main->updateAllChildren();
+            static_cast<PlayScene*>(MG->curScene)->cardClicked(fc);
         }
     }
 }

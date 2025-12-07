@@ -12,6 +12,8 @@ public:
     void resume() override;
     void resize() override;
 
+    void cardClicked(FlashCard* card);
+
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();
     void removeOverlay();
@@ -19,5 +21,6 @@ public:
     GLayoutGraphicItem* main;
 private:
     QGraphicsRectItem* overlay;
+    QGraphicsTextItem* schdT;
     Tree& tr;
 };

@@ -1,15 +1,10 @@
 #include "playScn.hpp"
 #include <QEvent>
 #include <QKeyEvent>
-#include <QRandomGenerator>
-
-const QString HELP_TXT =
-    "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
-    "Press &lt;Esc&gt; to go back to the home screen.";
 
 void PlayScene::resume() {
     if (done) return MG->nextFC();
-    helpStr = &HELP_TXT;
+    helpStr = &GAME_HELP;
     MG->changeBG("pretty");
 }
 PlayScene::PlayScene() : GraphicGameScene(), tr(Tree::getTree()), done(false) {

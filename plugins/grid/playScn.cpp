@@ -4,16 +4,12 @@
 #include <QKeyEvent>
 #include <QRandomGenerator>
 
-const QString HELP_TXT =
-    "Click on card to flip, once flipped; &lt;Space&gt; if you got it wrong, &lt;Enter&gt; if right.\n"
-    "Press &lt;Esc&gt; to go back to the home screen.";
-
 void PlayScene::resume() {
     if (main->grid.empty()) {
         MG->nextFC();
         return;
     }
-    helpStr = &HELP_TXT;
+    helpStr = &GAME_HELP;
     MG->changeBG("pretty");
 }
 PlayScene::PlayScene()

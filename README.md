@@ -20,6 +20,8 @@ There are example cards to help you
 - Markdown support - and reveals text underneath on selection
 - Saves notes to a configuration file automatically as you type
 - Tags & priority for ease of sorting
+- Scheduling - cards revised based on their schedule time!
+- Rate whether you know the card based on a scale!
 ### Gameplay
 - Grow a tree with your answers
 - Different short flashcard 'games' to test your knowledge in different ways

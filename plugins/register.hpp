@@ -4,6 +4,7 @@
 #include "../core.hpp"
 #include "../log.hpp"
 #include "../menu.hpp"
+#include "../help.hpp"
 // Base
 #include "../base/font.hpp"
 #include "../base/markdown.hpp"

@@ -54,6 +54,11 @@ const QString BROWSE_HELP =
         "Using backslashes in places e.g. <b>-\\--</b> will make the feature not parse as a feature!</p>"
     "<p>To get a regular backslash in your text you can escape it; \\\\</p>"
     "<p>Rules for backslashes: place it wherever it works (usually on the <i>inside or middle</i> of features not the outside)</p>"
+"<h2>Scheduling</h2>"
+    "<p>Scheduling for cards is auto generated and updated at the bottom of the file.</p>"
+    "<p>Adding text after it will still work, but the text will get moved before it when the card is next completed.</p>"
+    "<p>The scheduling info is different for different card features, so copying it to another card may/may not work.</p>"
+    "<p>To reset scheduling you can just delete the line. It will get recreated later, but with a new schedule.</p>"
 "<h2>How to use</h2>"
     "<p>You can select notes on the left and edit their contents on the right</p>"
     "<p>There is a bar in the middle you can move left/right to adjust the screen to your needs</p>"
@@ -92,5 +97,12 @@ const QString PLUGVIEW_HELP =
         "<li>💔 - the plugin failed to load</li>"
         "<li>💖 - the plugin loaded successfully!</li>"
     "</ul>"
+;
+
+const QString GAME_HELP =
+"<p>Click on card to flip, and once flipped press a button as listed on the right to finish and reschedule the card.</p>"
+"<p>Reset and Skip both don't change the score of the card but just reschedule it for later (skip a lot longer away than reset)</p>"
+"<p>The times present are only a guideline. The app gives you cards sorted based on these times, so when you will recieve these cards is independent of the times.</p>"
+"<p>Press &lt;Esc&gt; to go back to the home screen.</p>";
 ;
 

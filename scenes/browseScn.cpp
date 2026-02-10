@@ -51,6 +51,8 @@ BrowseScene::BrowseScene()
         te = new MarkdownEdit(this);
         te->setDisabled(true);
         QObject::connect(te, &MarkdownEdit::textChanged, this, &BrowseScene::typed);
+        QObject::connect(te, &MarkdownEdit::altEnter, this, &BrowseScene::newNote);
+        QObject::connect(te, &MarkdownEdit::altDelete, this, &BrowseScene::delNote);
 
         bar = new Topbar(this);
         connect(bar, &Topbar::onBtnPush, this, [=](const QString& apply){
@@ -161,7 +163,10 @@ void BrowseScene::updatePrev() {
         preview->setMarkdown("");
         return;
     }
-    prevIdxLabl->setText(QString("Preview card %1/%2").arg(prevIdx.idx).arg(prevIdx.max));
+    QString sidestr;
+    if (side == SIDE_FRONT) sidestr = " (front)";
+    else if (side == SIDE_BACK) sidestr = " (back)";
+    prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
 }
 void BrowseScene::typed() {
@@ -222,6 +227,7 @@ void BrowseScene::selectionChange() {
     }
     updatePrev();
 }
+
 void BrowseScene::newNote() {
     auto* n = new Note("");
     n->updateCards();
@@ -234,53 +240,62 @@ void BrowseScene::newNote() {
         tree->header()->sortIndicatorSection(),
         tree->header()->sortIndicatorOrder()
     );
+    te->setFocus();
+}
+void BrowseScene::delNote() {
+    QList<QTreeWidgetItem*> selected = tree->selectedItems();
+    if (selected.isEmpty())
+        return;
+
+    QTreeWidgetItem* item = selected.first();
+    QSignalBlocker block(tree);
+
+    QTreeWidgetItem* parent = item->parent();
+    int idx; int maxlen;
+    if (parent) {
+        idx = parent->indexOfChild(item);
+        maxlen = parent->childCount();
+    } else {
+        idx = tree->indexOfTopLevelItem(item);
+        maxlen = tree->topLevelItemCount();
+    }
+    bool nxt = maxlen > 1;
+    if (nxt && idx == maxlen-1) idx--;
+
+    Note* data = getNote(item);
+    notesL.erase(std::remove(notesL.begin(), notesL.end(), data), notesL.end());
+    delete data;
+    writeNotes();
+    QTreeWidgetItem* nxtSel;
+    if (parent) {
+        parent->removeChild(item);
+        if (nxt) nxtSel = parent->child(idx);
+    } else if (QTreeWidget *tree = item->treeWidget()) {
+        tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
+        if (nxt) nxtSel = tree->topLevelItem(idx);
+    }
+
+    if (nxt) {
+        tree->setCurrentItem(nxtSel);
+    } else {
+        tree->clearSelection();
+    }
+    selectionChange();
+    delete item;
 }
 
 bool BrowseScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
-    int key = event->key();
-    if ((key == Qt::Key_Delete || key == Qt::Key_Backspace) && 
-               event->modifiers() == (Qt::ControlModifier)) {
-        QList<QTreeWidgetItem*> selected = tree->selectedItems();
-        if (selected.isEmpty())
+    if (event->modifiers() == Qt::AltModifier) {
+        int key = event->key();
+        if (key == Qt::Key_Return) {
+            newNote();
             return true;
-
-        QTreeWidgetItem* item = selected.first();
-        QSignalBlocker block(tree);
-
-        QTreeWidgetItem* parent = item->parent();
-        int idx; int maxlen;
-        if (parent) {
-            idx = parent->indexOfChild(item);
-            maxlen = parent->childCount();
-        } else {
-            idx = tree->indexOfTopLevelItem(item);
-            maxlen = tree->topLevelItemCount();
         }
-        bool nxt = maxlen > 1;
-        if (nxt && idx == maxlen-1) idx--;
-
-        Note* data = getNote(item);
-        notesL.erase(std::remove(notesL.begin(), notesL.end(), data), notesL.end());
-        delete data;
-        writeNotes();
-        QTreeWidgetItem* nxtSel;
-        if (parent) {
-            parent->removeChild(item);
-            if (nxt) nxtSel = parent->child(idx);
-        } else if (QTreeWidget *tree = item->treeWidget()) {
-            tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
-            if (nxt) nxtSel = tree->topLevelItem(idx);
+        if (key == Qt::Key_Delete || key == Qt::Key_Backspace) {
+            delNote();
+            return true;
         }
-
-        if (nxt) {
-            tree->setCurrentItem(nxtSel);
-        } else {
-            tree->clearSelection();
-        }
-        selectionChange();
-        delete item;
-        return true;
     }
     return false;
 }

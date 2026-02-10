@@ -15,7 +15,10 @@ void MainGame::initStyles() {
         .arg(getCol("alight", 100, 150, 10)) // %1 - color
     ;
     QString treeWidAndMenu = QString(
-        "QTreeWidget::item { background: %1; }"
+        "QTreeWidget::item {"
+            "background: %1;"
+            "padding: 3px 0;"
+        "}"
         "QTreeWidget {"
             "border: 1px solid #333;"
             "padding: 4px;"

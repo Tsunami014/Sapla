@@ -38,6 +38,8 @@ public:
     void refresh();
 signals:
     void clicked();
+    void altEnter();
+    void altDelete();
 protected:
     void updateTxt(bool save, bool orig);
     int lastCol = -1;

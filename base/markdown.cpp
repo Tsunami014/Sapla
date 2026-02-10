@@ -84,16 +84,26 @@ QString MarkdownEdit::getMarkdown() {
 
 void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
     if (isBtn) return;
-    bool undo = event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Z;
-    bool redo = (event->modifiers() & Qt::ControlModifier && event->key() == Qt::Key_Y) ||
-        (event->modifiers() & Qt::ControlModifier & Qt::ShiftModifier && event->key() == Qt::Key_Z);
-    // TODO: Undo and redo
-    if (redo) {
-        event->accept();
-        return;
-    } else if (undo) {
-        event->accept();
-        return;
+    int key = event->key();
+    if (event->modifiers() & Qt::AltModifier) {
+        if (key == Qt::Key_Return) {
+            emit altEnter();
+            event->accept();
+        }
+        if (key == Qt::Key_Delete || key == Qt::Key_Backspace) {
+            emit altDelete();
+            event->accept();
+        }
+    }
+    if (event->modifiers() & Qt::ControlModifier) {
+        // TODO: Undo and redo
+        if (key == Qt::Key_Y || (event->modifiers()& Qt::ShiftModifier && key == Qt::Key_Z)) {
+            event->accept();
+            return;
+        } else if (key == Qt::Key_Z) {
+            event->accept();
+            return;
+        }
     }
     QSignalBlocker blocker(this);
     updateTxt(false, true);

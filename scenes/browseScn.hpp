@@ -17,6 +17,7 @@ public slots:
     void typed();
     void selectionChange();
     void newNote();
+    void delNote();
 
 protected:
     Note* getSelNote();

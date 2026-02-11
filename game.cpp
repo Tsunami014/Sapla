@@ -105,7 +105,7 @@ void MainGame::nextFC() {
 
 int MainGame::cardFin(FlashCard* card, int key) {
     int rating;
-    if (key >= Qt::Key_1 && key <= Qt::Key_1+ScheduleInfo.ratesLen()) {
+    if (key >= Qt::Key_1 && key < Qt::Key_1+ScheduleInfo.ratesLen()) {
         rating = key - Qt::Key_1;
     } else if (key == Qt::Key_Minus || key == Qt::Key_Equal) {
         rating = key == Qt::Key_Minus ? -2 : -1;

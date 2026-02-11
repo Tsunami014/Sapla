@@ -1,5 +1,6 @@
 #include "cardIt.hpp"
 #include "../base/font.hpp"
+#include "../base/svgRend.hpp"
 #include <QCursor>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
@@ -16,6 +17,7 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, QGr
         txt.setStyleSheet("color: black;");
         txt.setAttribute(Qt::WA_TranslucentBackground);
         txt.setFont(getFont(1.5));
+        hlcol = getCol("alight", 100, 50, 100);
     }
 CardGraphicItem::~CardGraphicItem() {
     txt.deleteLater();
@@ -51,6 +53,7 @@ void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         if (side == 0) {
             unsetCursor();
             side = 255;  // TODO: Animations
+            hlcol = getCol("adark", 100, 50, 100);
             hover = false;
         }
     }
@@ -62,6 +65,7 @@ void CardGraphicItem::paint(QPainter* p, const QStyleOptionGraphicsItem* sogi, Q
     } else {
         if (side == 255) {
             txt.setText(back);
+            hover = true;
         } else {
             // TODO: Partial flipped states
         }

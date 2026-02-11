@@ -1,5 +1,6 @@
 #pragma once
 #include <QSvgRenderer>
+#include <QColor>
 
 class SvgUtils {
 public:
@@ -15,7 +16,12 @@ protected:
     void paintSvg(QPainter* p, const QRect& r);
 
     bool hover;
+    QColor hlcol;
+    QColor hoverhlcol;
+    double hlopacity;
+    int hlthick;
 private:
     QSvgRenderer rend;
+    void init();
 };
 

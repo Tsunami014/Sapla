@@ -22,12 +22,13 @@ set(CORELIB
     base/svgRend.cpp
     base/svgUtils.cpp
     base/svgWid.hpp
+    base/flowlayout.cpp
 
-    wids/topbar.cpp
     wids/ovrlWrap.cpp
     wids/listWid.cpp
     wids/svgBtn.cpp
     wids/svgPic.cpp
+    wids/featInfo.cpp
 
     items/cardIt.cpp
     items/progress.cpp

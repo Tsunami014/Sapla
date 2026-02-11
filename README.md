@@ -14,7 +14,7 @@ There are example cards to help you
 ### Notes & cards
 - Browse all your notes, edit them, delete them or add more
 - Many different card features!
-- An accordian bar with card features on it and a settings page to see help texts for each
+- Convenient help screen for card features you can look at while making new notes!
 - Example cards to help
 - A note preview which also reveals errors
 - Markdown support - and reveals text underneath on selection

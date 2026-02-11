@@ -2,11 +2,11 @@
 #include "baseScn.hpp"
 #include "../menu.hpp"
 #include "../notes/note.hpp"
-#include "../wids/topbar.hpp"
 #include "../base/markdown.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
+#include <QLabel>
 
 class BrowseScene : public BaseScene {
 public:
@@ -25,7 +25,6 @@ protected:
     QTreeWidget* tree;
     QVBoxLayout* form;
     MarkdownEdit* te;
-    Topbar* bar;
 
     void updatePrev();
     Side side;
@@ -41,7 +40,9 @@ protected:
 private:
     QLabel* prevIdxLabl;
 
-    MenuAction m;
+    MenuItem newnote;
+    MenuItem delnote;
+    MenuItem helps;
     MenuItem resetIt;
     MenuItem clearIt;
 };

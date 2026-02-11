@@ -5,6 +5,7 @@
 #include "../notes/getNotes.hpp"
 #include "../notes/cardList.hpp"
 #include "../base/font.hpp"
+#include "../wids/featInfo.hpp"
 #include <QTimer>
 #include <QHeaderView>
 #include <QKeyEvent>
@@ -38,7 +39,10 @@ void BrowseScene::prevIdxTyp::reset() {
 }
 
 BrowseScene::BrowseScene()
-    : BaseScene(), m("New note"),
+    : BaseScene(),
+    newnote("New note (alt+enter)", Menues->FileMenu),
+    delnote("Delete note (alt+delete)", Menues->FileMenu),
+    helps("Note feature help", Menues->HelpMenu),
     clearIt("Clear notes", Menues->FileMenu),
     resetIt("Reset notes to default", Menues->FileMenu) {
         helpStr = &BROWSE_HELP;
@@ -53,11 +57,6 @@ BrowseScene::BrowseScene()
         QObject::connect(te, &MarkdownEdit::textChanged, this, &BrowseScene::typed);
         QObject::connect(te, &MarkdownEdit::altEnter, this, &BrowseScene::newNote);
         QObject::connect(te, &MarkdownEdit::altDelete, this, &BrowseScene::delNote);
-
-        bar = new Topbar(this);
-        connect(bar, &Topbar::onBtnPush, this, [=](const QString& apply){
-            te->insertMarkdown(apply, "$CUR$");
-        });
 
         prevIdx = {0, 0};
         prevIdxLabl = new QLabel(this);
@@ -98,7 +97,6 @@ BrowseScene::BrowseScene()
         hlay->addWidget(nxtBtn);
 
         auto* vLay = new QVBoxLayout();
-        vLay->addWidget(bar);
         vLay->addWidget(te, 2);
         vLay->addLayout(hlay);
         vLay->addWidget(preview, 1);
@@ -115,13 +113,14 @@ BrowseScene::BrowseScene()
         QTimer::singleShot(0, this, [=](){
             int w = this->width() / 2;
             if (w > 0) mSplit->setSizes(QList<int>{w, w});
-            bar->resize();
         });
 
         auto* root = new QHBoxLayout(this);
         root->addWidget(mSplit);
 
-        connect(&m, &QAction::triggered, this, &BrowseScene::newNote);
+        connect(&newnote, &QAction::triggered, this, &BrowseScene::newNote);
+        connect(&delnote, &QAction::triggered, this, &BrowseScene::delNote);
+        connect(&helps, &QAction::triggered, this, &showFeatInfo);
         connect(&clearIt, &QAction::triggered, this, [this](){
             if (doubleCheck("delete all your notes")) {
                 for (auto* n : notesL) delete n;
@@ -299,4 +298,3 @@ bool BrowseScene::keyEv(QKeyEvent* event) {
     }
     return false;
 }
-

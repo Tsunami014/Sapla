@@ -112,17 +112,17 @@ QString BuiltInFeats::markup(QString& line) const {
     ;
     return nln;
 }
-std::vector<BtnFeatures> BuiltInFeats::btns() const {
+QMap<QString, QString> BuiltInFeats::help() const {
     return {
-           {"%||%", "%|$CUR$|%", std::nullopt, "Template definition",
+           {"Template definition\n%||%",
             "Defines a note template\n"
             "See this screen help for more info"
-        }, {"%%", "%%$CUR$%%", std::nullopt, "Template usage",
+        }, {"Template usage\n%%",
             "Uses a template for the note\n"
             "See this screen help for more info"
-        }, {"@🏷️:@", "@tag:$CUR$@", std::nullopt, "Tag",
+        }, {"Tag\n@🏷️:@",
             "Add tags (separated by ,) for this note"
-        }, {"@🚩:@", "@prio:$CUR$@", std::nullopt, "Priority",
+        }, {"Priority\n@🚩:@",
             "(also can be `@priority:@`)\n"
             "Give the card a priority\n"
             "This gets converted to a number, where 0 is the default and positives are more important."
@@ -154,8 +154,8 @@ bool SingleSideFeat::dominance(const QString& txt) const {
     ));
     return l;
 }
-std::vector<BtnFeatures> SingleSideFeat::btns() const {
-    return {{"---", "\n---\n", std::nullopt, "Single sided note", 
+QMap<QString, QString> SingleSideFeat::help() const {
+    return {{"Single sided note\n---",
         "Separates the note into a front and a back.\n"
         "If multiple are present, splits off the first one.\n"
         "This creates a single sided card, where the front is above the line and the back is below."
@@ -189,8 +189,8 @@ bool DoubleSideFeat::dominance(const QString& txt) const {
     ));
     return l;
 }
-std::vector<BtnFeatures> DoubleSideFeat::btns() const {
-    return {{"===", "\n===\n", std::nullopt, "Double sided note", 
+QMap<QString, QString> DoubleSideFeat::help() const {
+    return {{"Double sided note\n===",
         "Separates the note into 2 sides.\n"
         "If multiple are present, splits off the first one.\n"
         "This creates 2 cards: one where the top is on the front and the bottom is on the back, and another the other way around."
@@ -207,8 +207,8 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
 QString HiddenFeat::markup(QString& line) const {
     return line.replace(hiddenRe, QString("<b style='color:%1'>[[</b>\\1<span style='color:%1'>:</span>\\2<b style='color:%1'>]]</b>").arg(col));
 }
-std::vector<BtnFeatures> HiddenFeat::btns() const {
-    return {{"[[:]]", "[[$CUR$:]]", std::nullopt, "Hidden sides", 
+QMap<QString, QString> HiddenFeat::help() const {
+    return {{"Hidden sides\n[[:]]",
         "Only shows text if it's on a specific side\n"
         "E.g. `[[hi:bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
         "Leaving sides blank is ok (e.g. `[[front:]]`)"

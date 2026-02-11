@@ -2,7 +2,6 @@
 #include <QString>
 #include <QRegularExpression>
 #include "note.hpp"
-#include "../wids/topbar.hpp"
 
 class _AutoColour {
 public:
@@ -17,7 +16,7 @@ struct FeatReg {
     virtual void init() {}
     virtual int order() const { return 0; }
     virtual const QString getName() const = 0;
-    virtual std::vector<BtnFeatures> btns() const { return {}; }
+    virtual QMap<QString, QString> help() const { return {}; }
     virtual QString replacements(QString& txt, Side s) const { return txt; }
     virtual QString markup(QString& line) const { return line; }
 };
@@ -41,7 +40,7 @@ void registerNoteFeatures();
 #define Feat_order(ordr)   int order() const override { return ordr; }
 #define Feat_name(nam)     inline const QString getName() const override { return nam; }
 
-#define Feat_btns          std::vector<BtnFeatures> btns() const override
+#define Feat_help          QMap<QString, QString> help() const override
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
 #define Feat_markup        QString markup(QString& line) const override
 
@@ -59,7 +58,7 @@ struct BuiltInFeats : FeatReg {
     Feat_name("BI");
     Feat_replacements;
     Feat_markup;
-    Feat_btns;
+    Feat_help;
 };
 
 struct SingleSideFeat : CardFeatReg {
@@ -69,7 +68,7 @@ struct SingleSideFeat : CardFeatReg {
     Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
-    Feat_btns;
+    Feat_help;
 };
 struct DoubleSideFeat : CardFeatReg {
     Feat_useCol;
@@ -78,7 +77,7 @@ struct DoubleSideFeat : CardFeatReg {
     Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
-    Feat_btns;
+    Feat_help;
 };
 
 struct HiddenFeat : FeatReg {
@@ -86,6 +85,6 @@ struct HiddenFeat : FeatReg {
     Feat_name("[[:]]");
     Feat_replacements;
     Feat_markup;
-    Feat_btns;
+    Feat_help;
 };
 

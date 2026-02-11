@@ -28,16 +28,22 @@ const QString codeRepl = "<span style='"
 const QString hlRepl = "<span style='background-color: %1;'>"
     "&nbsp;\\1&nbsp;"
 "</span>";
+const QString quoteRepl = "<span style='"
+    "color: lightgray;"
+    "font-style: italic;"
+"'>\\1▎\\2</span>";
 QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
 
-    esc.replace("\t", "    ")
+    esc
+       .replace("\t", "    ")
        .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
        .replace("\\n", "\n")
     ;
 
     // Lists
-    replace(esc, STATIC_RE(R"(^( *)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
+    replace(esc, STATIC_RE(R"(^( *(?:&gt; *)?)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
+    // (?:> {1,2})? *
         QString bullet;
         switch (m.captured(2)[0].unicode()) {
             case '-':
@@ -54,8 +60,12 @@ QString parseMarkdownHtml(QString txt) {
             .arg(m.captured(1)).arg(bullet).arg(m.captured(3));
     });
 
+    // > Block quote
+    esc.replace(STATIC_RE(R"(^( *)&gt; {1,2}(.+)$)"), quoteRepl);
+
     // *italic*, **bold**, _underline_, `code`, ==highlight==, ~~strikethrough~~
-    esc.replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*)"), "<b>\\1</b>")
+    esc
+       .replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*)"), "<b>\\1</b>")
        .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^`\\])\*)"), "<i>\\1</i>")
        .replace(STATIC_RE(R"((?<!\\)_([^_]*[^`\\])_)"), "<u>\\1</u>")
        .replace(STATIC_RE(R"((?<!\\)`([^`]*[^`\\])`)"), codeRepl)

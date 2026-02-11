@@ -12,13 +12,14 @@ A ~~city~~ ==country==
 What _is_ the meaning of life?
 ---
 42
+>  From a book or something
 @prio: 1@
 
 
 What is `1 + 1`?
 ---
 - ==2==
-+ *You should know this*!
+> + *You should know this*!
 @prio: 2@
 
 
@@ -39,7 +40,7 @@ The fact there's a note template here makes no difference.
 %%debug%%
 ===
 Note templates[[ play what role in this card?:.]]
-%%debug%%
+> %%debug%%
 @tag:test@
 
 

@@ -48,6 +48,7 @@ set(CORELIB
     scenes/winScn.cpp
     scenes/browseScn.cpp
     scenes/pluginView.cpp
+    scenes/xtra/lineEdit2.hpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)

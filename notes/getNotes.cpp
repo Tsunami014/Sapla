@@ -143,9 +143,9 @@ void changeDeck(QString newname) {
 int renameDeck(QString newname) {
     if (newname == "") {
         Log::Warn(MODULE) << "New deck name cannot be empty!";
-        return false;
+        return -2;
     }
-    if (newname == curDeck) return true;
+    if (newname == curDeck) return -2;
 
     QString pth = getPath()+"/";
     if (curDeck == "") {

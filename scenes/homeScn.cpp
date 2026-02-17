@@ -1,6 +1,7 @@
 #include "homeScn.hpp"
 #include "browseScn.hpp"
 #include "pluginView.hpp"
+#include "xtra/lineEdit2.hpp"
 #include "../base/font.hpp"
 #include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"
@@ -62,11 +63,39 @@ HomeScene::HomeScene() : BaseScene() {
     auto* deckLabl2 = new QLabel("<h3> Rename: </h3>", this);
     deckLabl2->setFont(font2);
     deckLabl2->setAlignment(Qt::AlignCenter);
-    auto* deckNam2 = new QLineEdit(this);
+    auto* deckNam2 = new LineEdit2(this);
     deckNam2->setFont(font2);
     deckNam2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
+    delBtn->setPadding(20, -20);
+    delBtn->setFont(font2);
+    delBtn->setText("Delete deck");
+    auto indexChanged = [=](int index){
+        if (index < 0 || index >= decks.size()) return;
+        if (!deckNam2) return;
+        changeDeck(decks[index]);
+        QSignalBlocker blocker(deckNam2);
+        deckNam2->setText(decks[index]);
+        blocker.unblock();
+
+        QPalette palette = deckNam2->palette();
+        palette.setColor(QPalette::Text, getQCol("alight", 40, 50, 15));
+        deckNam2->setPalette(palette);
+    };
+    auto delfn = [=](){
+        int idx = deleteDeck();
+        QSignalBlocker blocker(deckNam);
+        if (idx != -1) {
+            deckNam->removeItem(idx);
+        }
+        deckNam->setCurrentIndex(0);
+        blocker.unblock();
+        indexChanged(0);
+    };
+    connect(deckNam2, &LineEdit2::emptyBackspace, this, delfn);
     connect(deckNam2, &QLineEdit::textChanged, this, [=](const QString& newtxt){
         int idx = renameDeck(newtxt);
+        if (idx == -2) return;
         QSignalBlocker blocker(deckNam);
         if (idx >= 0) {
             deckNam->setItemText(idx, newtxt);
@@ -87,33 +116,8 @@ HomeScene::HomeScene() : BaseScene() {
         }
         deckNam2->setStyleSheet(QString("QLineEdit { color: %1 }").arg(col));
     });
-    auto indexChanged = [=](int index){
-        if (index < 0 || index >= decks.size()) return;
-        if (!deckNam2) return;
-        changeDeck(decks[index]);
-        QSignalBlocker blocker(deckNam2);
-        deckNam2->setText(decks[index]);
-        blocker.unblock();
-
-        QPalette palette = deckNam2->palette();
-        palette.setColor(QPalette::Text, getQCol("alight", 40, 50, 15));
-        deckNam2->setPalette(palette);
-    };
     connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
-    auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
-    delBtn->setPadding(20, -20);
-    delBtn->setFont(font2);
-    delBtn->setText("Delete deck");
-    connect(delBtn, &SvgBtn::clicked, this, [=](){
-        int idx = deleteDeck();
-        QSignalBlocker blocker(deckNam);
-        if (idx != -1) {
-            deckNam->removeItem(idx);
-        }
-        deckNam->setCurrentIndex(0);
-        blocker.unblock();
-        indexChanged(0);
-    });
+    connect(delBtn, &SvgBtn::clicked, this, delfn);
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);

@@ -15,7 +15,8 @@ void initPallete() {
         {"shadow", "#436253"},
         {"faded",  "#699C6B"},
         {"alight", "#B87333"},
-        {"adark",  "#5A280A"}
+        {"adark",  "#5A280A"},
+        {"red",    "#C33931"},
     };
 }
 

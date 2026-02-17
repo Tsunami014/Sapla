@@ -17,11 +17,11 @@ const QString* helpStr = nullptr;
 
 int runApp(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    initNotes();
     Log::Debug("Main") << "Configuration located at:\n" << getPath();
     MG = new MainGame();
     initMenu(MG->menuBar());
     registerNoteFeatures();
-    initNotes();
     loadPlugins();
     MG->initScene();
 

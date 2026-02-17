@@ -61,8 +61,7 @@ BrowseScene::BrowseScene()
         prevIdx = {0, 0};
         prevIdxLabl = new QLabel(this);
         prevIdxLabl->setFont(getFont(1.5));
-        auto* prevBtn = new SvgBtn(":/assets/btn2.svg");
-        prevBtn->setText("←");
+        auto* prevBtn = new SvgBtn(":/assets/back.svg");
         connect(prevBtn, &SvgBtn::clicked, this, [=](){
             if (prevIdx.idx > 1) {
                 prevIdx.idx--;
@@ -70,8 +69,7 @@ BrowseScene::BrowseScene()
                 updatePrev();
             }
         });
-        auto* nxtBtn = new SvgBtn(":/assets/btn2.svg");
-        nxtBtn->setText("→");
+        auto* nxtBtn = new SvgBtn(":/assets/forward.svg");
         connect(nxtBtn, &SvgBtn::clicked, this, [=](){
             if (prevIdx.idx < prevIdx.max) {
                 prevIdx.idx++;
@@ -228,6 +226,7 @@ void BrowseScene::selectionChange() {
 }
 
 void BrowseScene::newNote() {
+    if (!checkValidDeck()) return;
     auto* n = new Note("");
     n->updateCards();
     notesL.push_back(n);

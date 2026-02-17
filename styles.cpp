@@ -67,7 +67,7 @@ void MainGame::initStyles() {
          .arg(getCol("adark", 30, 10, 10)) // %6 - header
     ;
     QString textEdit = QString(
-        "QTextEdit {"
+        "QTextEdit, QLineEdit {"
             "color: white;"
             "background-color: %1;"
             "border-radius: 6px;"
@@ -75,13 +75,29 @@ void MainGame::initStyles() {
             "margin: 4px;"
             "padding: 4px;"
         "}"
-        "QTextEdit:focus {"
+        "QTextEdit:focus, QLineEdit:focus {"
             "border: 2px solid #333;"
         "}"
         "QLabel { color: %2; }"
     )
          .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
          .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
+    ;
+    QString comboBox = QString(
+        "QComboBox, QComboBox::drop-down, QComboBox QAbstractItemView {"
+            "color: %2;"
+            "padding: 8px;"
+            "background-color: %1;"
+            "border-radius: 6px;"
+            "border: 1px solid #666;"
+            "margin: 4px;"
+        "}"
+        "QComboBox:focus {"
+            "border: 2px solid #333;"
+        "}"
+    )
+         .arg(rgba(getQCol("adark", -100, 70), 0.86)) // %1 - bg
+         .arg(getCol("alight", 30, 120))  // %2 - text colour
     ;
     QString misc = QString(
         "QSplitter::handle {"
@@ -95,6 +111,7 @@ void MainGame::initStyles() {
         "QWidget {" + globals + "}" +
         treeWidAndMenu +
         textEdit +
+        comboBox +
         misc
     );
 

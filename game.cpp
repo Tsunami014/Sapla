@@ -13,6 +13,8 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QLineEdit>
+#include <QComboBox>
 
 MainGame::MainGame() : logLay(), logLayWrap(this), curGame(nullptr) {
     sceneStash = new QWidget(this);
@@ -119,6 +121,15 @@ int MainGame::cardFin(FlashCard* card, int key) {
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {
+    QWidget* fw = QApplication::focusWidget();
+    if (fw) {
+        if (qobject_cast<QLineEdit*>(fw) ||
+            qobject_cast<QTextEdit*>(fw) ||
+            qobject_cast<QComboBox*>(fw)) {
+            return false;
+        }
+    }
+
     switch (event->key()) {
         case Qt::Key_Escape:
             changeScene(new HomeScene());

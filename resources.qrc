@@ -3,6 +3,9 @@
         <file>assets/btn.svg</file>
         <file>assets/btn2.svg</file>
 
+        <file>assets/back.svg</file>
+        <file>assets/forward.svg</file>
+
         <file>assets/errorDiags/Debug.svg</file>
         <file>assets/errorDiags/Info.svg</file>
         <file>assets/errorDiags/Warning.svg</file>

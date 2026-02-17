@@ -87,7 +87,7 @@ HomeScene::HomeScene() : BaseScene() {
         }
         deckNam2->setStyleSheet(QString("QLineEdit { color: %1 }").arg(col));
     });
-    connect(deckNam, &QComboBox::currentIndexChanged, this, [=](int index){
+    auto indexChanged = [=](int index){
         if (index < 0 || index >= decks.size()) return;
         if (!deckNam2) return;
         changeDeck(decks[index]);
@@ -98,11 +98,27 @@ HomeScene::HomeScene() : BaseScene() {
         QPalette palette = deckNam2->palette();
         palette.setColor(QPalette::Text, getQCol("alight", 40, 50, 15));
         deckNam2->setPalette(palette);
+    };
+    connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
+    auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
+    delBtn->setPadding(20, -20);
+    delBtn->setFont(font2);
+    delBtn->setText("Delete deck");
+    connect(delBtn, &SvgBtn::clicked, this, [=](){
+        int idx = deleteDeck();
+        QSignalBlocker blocker(deckNam);
+        if (idx != -1) {
+            deckNam->removeItem(idx);
+        }
+        deckNam->setCurrentIndex(0);
+        blocker.unblock();
+        indexChanged(0);
     });
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);
     hlay3->addWidget(deckNam);
+    hlay3->addWidget(delBtn);
     hlay3->addStretch();
     auto* hlay4 = new QHBoxLayout();
     hlay4->addStretch();

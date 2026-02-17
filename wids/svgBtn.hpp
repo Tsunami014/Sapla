@@ -9,6 +9,8 @@ public:
     SvgBtn(QWidget* parent = nullptr);
     SvgBtn(const QString& path, QWidget* parent = nullptr);
 
+    void setPadding(int xpad = 40, int ypad = 20);
+
     QRect getRect() override { return rect(); }
 
     void leaveEvent(QEvent* event) override;

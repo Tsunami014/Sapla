@@ -6,6 +6,28 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QGraphicsOpacityEffect>
+#include <QMessageBox>
+#include <QPushButton>
+
+bool doubleCheck(QString prompt) {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Are you sure?");
+    msgBox.setText(QString("Are you sure you want to %1?").arg(prompt));
+    QAbstractButton* ybtn = msgBox.addButton("Yes", QMessageBox::YesRole);
+    msgBox.setDefaultButton(msgBox.addButton("No", QMessageBox::NoRole));
+
+    msgBox.exec();
+    if (msgBox.clickedButton() == ybtn) {
+        QMessageBox msgBox2;
+        msgBox2.setWindowTitle("Are you REALLY sure?");
+        msgBox2.setText(QString("Are you REALLY sure you want to %1?").arg(prompt));
+        msgBox2.setDefaultButton(msgBox2.addButton("No", QMessageBox::YesRole));
+        QAbstractButton* ybtn2 = msgBox2.addButton("Yes", QMessageBox::NoRole);
+        msgBox2.exec();
+        return msgBox2.clickedButton() == ybtn2;
+    }
+    return false;
+}
 
 constexpr std::string_view lnames[] = {
     "Debug",

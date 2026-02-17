@@ -2,6 +2,8 @@
 #include "wids/svgBtn.hpp"
 #include <QString>
 
+bool doubleCheck(QString prompt);
+
 namespace Log {
     enum Level { DEBUG, INFO, WARN, ERROR };
     struct LogType {

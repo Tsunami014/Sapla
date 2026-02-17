@@ -181,3 +181,18 @@ int renameDeck(QString newname) {
         return -1;
     }
 }
+int deleteDeck() {
+    if (!doubleCheck("delete the deck '"+curDeck+"'")) return -1;
+    QString oldname = curDeck;
+    curDeck = "";
+    for (auto* n : notesL) delete n;
+    notesL.clear();
+    auto it = std::find(decks.begin(), decks.end(), oldname);
+    if (it == decks.end()) { // Should never happen
+        Log::Warn(MODULE) << "Could not find deck in decks vector!";
+        return -1;
+    }
+    decks.erase(it);
+    Log::Debug(MODULE) << "Successfully deleted deck " << oldname << "!";
+    return std::distance(decks.begin(), it);
+}

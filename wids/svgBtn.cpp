@@ -11,11 +11,15 @@ void SvgBtn::init() {
     setWordWrap(true);
     setAlignment(Qt::AlignCenter);
     setMinimumHeight(50);
-    setStyleSheet(QString("padding: 20% 40%;"));
+    setPadding();
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     if (hover) {
         setCursor(Qt::PointingHandCursor);
     }
+}
+
+void SvgBtn::setPadding(int xpad, int ypad) {
+    setStyleSheet(QString("padding: %1% %2%;").arg(ypad).arg(xpad));
 }
 
 void SvgBtn::leaveEvent(QEvent* event) {

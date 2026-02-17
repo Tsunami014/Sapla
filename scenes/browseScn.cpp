@@ -1,6 +1,7 @@
 #include "browseScn.hpp"
 #include "../core.hpp"
 #include "../help.hpp"
+#include "../log.hpp"
 #include "../notes/noteTree.hpp"
 #include "../notes/getNotes.hpp"
 #include "../notes/cardList.hpp"
@@ -10,29 +11,7 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QTextBlock>
-#include <QPushButton>
-#include <QMessageBox>
 #include <QSplitter>
-
-bool BrowseScene::doubleCheck(QString prompt) {
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Are you sure?");
-    msgBox.setText(QString("Are you sure you want to %1?").arg(prompt));
-    QAbstractButton* ybtn = msgBox.addButton("Yes", QMessageBox::YesRole);
-    msgBox.setDefaultButton(msgBox.addButton("No", QMessageBox::NoRole));
-
-    msgBox.exec();
-    if (msgBox.clickedButton() == ybtn) {
-        QMessageBox msgBox2;
-        msgBox2.setWindowTitle("Are you REALLY sure?");
-        msgBox2.setText(QString("Are you REALLY sure you want to %1?").arg(prompt));
-        msgBox2.setDefaultButton(msgBox2.addButton("No", QMessageBox::YesRole));
-        QAbstractButton* ybtn2 = msgBox2.addButton("Yes", QMessageBox::NoRole);
-        msgBox2.exec();
-        return msgBox2.clickedButton() == ybtn2;
-    }
-    return false;
-}
 
 void BrowseScene::prevIdxTyp::reset() {
     idx = 0; max = 0;

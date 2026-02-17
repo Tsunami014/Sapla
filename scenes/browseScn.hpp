@@ -35,8 +35,6 @@ protected:
         void reset();
     };
     prevIdxTyp prevIdx;
-
-    bool doubleCheck(QString prompt);
 private:
     QLabel* prevIdxLabl;
 

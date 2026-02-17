@@ -23,4 +23,5 @@ void writeNotes();
 void changeDeck(QString newname);
 int renameDeck(QString newname);
 int deleteDeck();
+int deckIdx();
 

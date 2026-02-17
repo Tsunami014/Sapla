@@ -13,6 +13,7 @@ There are example cards to help you
 ## Features
 ### Notes & cards
 - Browse all your notes, edit them, delete them or add more
+- Can add, edit and delete decks of notes!
 - Many different card features!
 - Convenient help screen for card features you can look at while making new notes!
 - Example cards to help

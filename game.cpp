@@ -132,15 +132,16 @@ bool MainGame::handleEv(QKeyEvent* event) {
 
     switch (event->key()) {
         case Qt::Key_Escape:
+        case Qt::Key_H:
             changeScene(new HomeScene());
             return true;
         case Qt::Key_B:
             changeScene(new BrowseScene());
             return true;
-        case Qt::Key_G:
+        case Qt::Key_P:
             changeScene(new PlugViewScene());
             return true;
-        case Qt::Key_P:
+        case Qt::Key_G:
             showFC();
             return true;
     }

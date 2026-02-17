@@ -7,13 +7,14 @@
 #include "../wids/svgBtn.hpp"
 #include "../notes/getNotes.hpp"
 #include "../core.hpp"
+#include "../help.hpp"
 #include <QLabel>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QTextOption>
 #include <QBoxLayout>
 
-const QString HELP_TXT = "Just press a button to do stuff";
+const QString HELP_TXT = HOME_HELP;
 
 HomeScene::HomeScene() : BaseScene() {
     helpStr = &HELP_TXT;
@@ -66,10 +67,6 @@ HomeScene::HomeScene() : BaseScene() {
     auto* deckNam2 = new LineEdit2(this);
     deckNam2->setFont(font2);
     deckNam2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    auto* delBtn = new SvgBtn(":/assets/btn.svg", this);
-    delBtn->setPadding(20, -20);
-    delBtn->setFont(font2);
-    delBtn->setText("Delete deck");
     auto indexChanged = [=](int index){
         if (index < 0 || index >= decks.size()) return;
         if (!deckNam2) return;
@@ -84,10 +81,9 @@ HomeScene::HomeScene() : BaseScene() {
     };
     auto delfn = [=](){
         int idx = deleteDeck();
+        if (idx == -1) return;
         QSignalBlocker blocker(deckNam);
-        if (idx != -1) {
-            deckNam->removeItem(idx);
-        }
+        deckNam->removeItem(idx);
         deckNam->setCurrentIndex(0);
         blocker.unblock();
         indexChanged(0);
@@ -117,12 +113,11 @@ HomeScene::HomeScene() : BaseScene() {
         deckNam2->setStyleSheet(QString("QLineEdit { color: %1 }").arg(col));
     });
     connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
-    connect(delBtn, &SvgBtn::clicked, this, delfn);
+    deckNam->setCurrentIndex(deckIdx());
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);
     hlay3->addWidget(deckNam);
-    hlay3->addWidget(delBtn);
     hlay3->addStretch();
     auto* hlay4 = new QHBoxLayout();
     hlay4->addStretch();

@@ -142,7 +142,7 @@ void changeDeck(QString newname) {
 }
 int renameDeck(QString newname) {
     if (newname == "") {
-        Log::Warn(MODULE) << "New deck name cannot be empty!";
+        //Log::Warn(MODULE) << "Deck name cannot be empty!";
         return -2;
     }
     if (newname == curDeck) return -2;
@@ -150,7 +150,7 @@ int renameDeck(QString newname) {
     QString pth = getPath()+"/";
     if (curDeck == "") {
         if (QFile::exists(pth+newname)) {
-            Log::Warn(MODULE) << "New deck name already exists! Deck not created.";
+            //Log::Warn(MODULE) << "Deck name already exists! Deck not created.";
             return -1;
         }
         curDeck = newname;
@@ -162,7 +162,7 @@ int renameDeck(QString newname) {
             curDeck = "";
             return -2;
         }
-        Log::Debug(MODULE) << "Successfully created deck " << newname << "!";
+        //Log::Debug(MODULE) << "Successfully created deck " << newname << "!";
         return -std::distance(decks.begin(), it) - 10;
     }
 
@@ -177,7 +177,7 @@ int renameDeck(QString newname) {
         curDeck = newname;
         return index;
     } else {
-        Log::Warn(MODULE) << "New deck name already exists or failed to write there!";
+        Log::Warn(MODULE) << "Deck name already exists or failed to write there!";
         return -1;
     }
 }
@@ -194,5 +194,12 @@ int deleteDeck() {
     }
     decks.erase(it);
     Log::Debug(MODULE) << "Successfully deleted deck " << oldname << "!";
+    return std::distance(decks.begin(), it);
+}
+int deckIdx() {
+    auto it = std::find(decks.begin(), decks.end(), curDeck);
+    if (it == decks.end()) { // Should never happen
+        return 0;
+    }
     return std::distance(decks.begin(), it);
 }

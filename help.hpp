@@ -3,9 +3,30 @@
 
 const QString APP_HELP = 
 "<h1>Sapla help</h1>"
-    "<h2>How the app works</h2>"
-        "<p>This app is a flashcard app where you complete flashcards in order to grow a tree.</p>"
-        "<p>You'll get it as you go along, but if not you can always check the help for specifc places by the <b>Help->This screen</b> menu.</p>"
+"<h2>How the app works</h2>"
+    "<p>This app is a flashcard app where you complete flashcards in order to grow a tree.</p>"
+    "<p>You'll get it as you go along, but if not you can always check the help for specifc places by the <b>Help->This screen</b> menu.</p>"
+"<h2>Keybinds</h2>"
+    "<p>These work in any scene, as long as you aren't selecting an editable element</p>"
+    "<ul>"
+        "<li>&lt;H&gt; or &lt;Escape&gt; to go home</li>"
+        "<li>&lt;B&gt; to browse cards</li>"
+        "<li>&lt;G&gt; to play the game</li>"
+        "<li>&lt;P&gt; to manage plugins</li>"
+    "</ul>"
+;
+
+const QString HOME_HELP = 
+"<h2>Decks</h2>"
+    "<h3>Basic deck stuff</h3>"
+        "<p>Use the first field to select a deck. You can type in the box and it will give suggestions or you can use the dropdown to select a deck.</p>"
+        "<p>Whatever's present there is the deck you are currently using.</p>"
+        "<p>The rename box below allows you to rename the deck. Just edit the box and it should work!</p>"
+        "<p><i>If the rename text is red, blank or not matching up with the deck selector dropdown then the name is invalid. There may be an existing deck with that name or another problem.</i></p>"
+    "<h3>Making new decks</h3>"
+        "<p>To make a new deck, first use the deck selector to select the empty deck (the one with no name). Then, rename the deck and voila! A new deck is born.</p>"
+    "<h3>Deleting decks</h3>"
+        "<p>To delete a deck, backspace the name in the <i>rename deck field</i> then press backspace one more time to give an 'are you sure?' dialog.</p>"
 ;
 
 const QString BROWSE_HELP = 

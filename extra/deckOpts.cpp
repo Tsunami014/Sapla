@@ -1,7 +1,7 @@
 #include "deckOpts.hpp"
 #include "../core.hpp"
 #include "../menu.hpp"
-#include "../notes/getNotes.hpp"
+#include "../notes/decks.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../base/font.hpp"
 #include "../scenes/homeScn.hpp"
@@ -19,19 +19,28 @@ void showDeckOpts() {
     auto title = new QLabel(QString("<h1>Deck options for %1:</h1>").arg(curDeck));
     title->setFont(font2);
 
-    auto* delBtn = new SvgBtn(":/assets/btn.svg");
-    delBtn->setPadding(20, -20);
-    delBtn->setFont(font2);
-    delBtn->setText("Delete deck");
-    QObject::connect(delBtn, &SvgBtn::clicked, dialog, [dialog](){
-        if (deleteDeck() != -1) {
-            dialog->accept();
-        }
-    });
+    auto mkBtn = [dialog, font2](QString txt, auto func){
+        auto* btn = new SvgBtn(":/assets/btn.svg");
+        btn->setPadding(20, -20);
+        btn->setFont(font2);
+        btn->setText(txt);
+        QObject::connect(btn, &SvgBtn::clicked, dialog, func);
+        return btn;
+    };
 
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     layout->addWidget(title);
-    layout->addWidget(delBtn);
+    layout->addWidget(mkBtn("Delete deck", [dialog](){
+        if (deleteDeck() != -1) {
+            dialog->accept();
+        }
+    }));
+    /*layout->addWidget(mkBtn("Copy deck", [dialog](){
+        if (deleteDeck() != -1) {
+            dialog->accept();
+        }
+    }));*/
+
     layout->setSizeConstraint(QLayout::SetFixedSize);
     QObject::connect(dialog, &QDialog::finished, [=](int result){
         MG->curScene->dialogClose();

@@ -21,6 +21,7 @@
 // Cards stuff
 #include "../notes/note.hpp"
 #include "../notes/features.hpp"
+#include "../notes/decks.hpp"
 #include "../notes/getNotes.hpp"
 #include "../notes/cardList.hpp"
 // Scenes
@@ -28,6 +29,8 @@
 #include "../game.hpp"  // to mitigate the forward reference
 #include "../scenes/homeScn.hpp"
 #include "../scenes/winScn.hpp"
+// Extra
+#include "../extra/deckOpts.hpp"
 
 #define _makeFns(name, typ) \
     std::vector<typ> name##Fns; \

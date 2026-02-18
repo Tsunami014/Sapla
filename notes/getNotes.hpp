@@ -7,10 +7,6 @@
 inline std::vector<Note*> notesL;
 void updateNoteCards();
 
-extern std::vector<QString> decks;
-extern QString curDeck;
-bool checkValidDeck();
-
 void loadDefaultNotes();
 void initNotes();
 
@@ -20,8 +16,4 @@ QString unSafe(QString str);
 
 QString getPath();
 void writeNotes();
-void changeDeck(QString newname);
-int renameDeck(QString newname);
-int deleteDeck();
-int deckIdx();
 

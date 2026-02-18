@@ -4,6 +4,7 @@
 #include "../log.hpp"
 #include "../notes/noteTree.hpp"
 #include "../notes/getNotes.hpp"
+#include "../notes/decks.hpp"
 #include "../notes/cardList.hpp"
 #include "../base/font.hpp"
 #include "../wids/featInfo.hpp"

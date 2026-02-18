@@ -84,13 +84,20 @@ void MainGame::initStyles() {
          .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
     ;
     QString comboBox = QString(
-        "QComboBox, QComboBox::drop-down, QComboBox QAbstractItemView {"
+        "QComboBox, QComboBox::drop-down {"
             "color: %2;"
-            "padding: 8px;"
+            "padding: 4px;"
             "background-color: %1;"
             "border-radius: 6px;"
             "border: 1px solid #666;"
-            "margin: 4px;"
+            "margin: 2px;"
+        "}"
+        "QComboBox QAbstractItemView {"
+            "color: %2;"
+            "padding: 4px;"
+            "background-color: %1;"
+            "border-radius: 6px;"
+            "border: 1px solid #666;"
         "}"
         "QComboBox:focus {"
             "border: 2px solid #333;"

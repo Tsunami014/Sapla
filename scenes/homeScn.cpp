@@ -6,7 +6,7 @@
 #include "../base/font.hpp"
 #include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"
-#include "../notes/getNotes.hpp"
+#include "../notes/decks.hpp"
 #include "../core.hpp"
 #include "../help.hpp"
 #include <QLabel>
@@ -58,8 +58,8 @@ HomeScene::HomeScene() : BaseScene() {
     deckLabl->setAlignment(Qt::AlignCenter);
     deckNam = new QComboBox(this);
     deckNam->setEditable(true);
+    deckNam->setFont(font2);
     deckNam->lineEdit()->setFont(font2);
-    deckNam->addItems(QStringList(decks.begin(), decks.end()));
     deckNam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     auto* deckLabl2 = new QLabel("<h3> Rename: </h3>", this);
     deckLabl2->setFont(font2);
@@ -95,21 +95,20 @@ HomeScene::HomeScene() : BaseScene() {
     connect(deckNam2, &LineEdit2::emptyBackspace, this, delfn);
     connect(deckNam2, &QLineEdit::textChanged, this, [=](const QString& newtxt){
         int idx = renameDeck(newtxt);
-        if (idx == -2) return;
-        QSignalBlocker blocker(deckNam);
-        if (idx >= 0) {
-            deckNam->setItemText(idx, newtxt);
-        } else if (idx < -1) {
-            deckNam->clear();
-            deckNam->addItems(QStringList(decks.begin(), decks.end()));
-            if (idx < -2) {
+        if (idx != -2) {
+            QSignalBlocker blocker(deckNam);
+            if (idx >= 0) {
+                deckNam->setItemText(idx, newtxt);
+            } else if (idx < -1) {
+                deckNam->clear();
+                deckNam->addItems(QStringList(decks.begin(), decks.end()));
                 deckNam->setCurrentIndex(-idx - 10);
                 idx = 0;
             }
         }
 
         QString col;
-        if (idx >= 0) {
+        if (idx >= 0 || idx == -2) {
             col = getCol("alight", 80, 120);
         } else {
             col = getCol("red", 20, 40, 20);
@@ -118,7 +117,6 @@ HomeScene::HomeScene() : BaseScene() {
     });
     connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
     connect(optsBtn, &SvgBtn::clicked, this, showDeckOpts);
-    deckNam->setCurrentIndex(deckIdx());
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);
@@ -136,6 +134,7 @@ HomeScene::HomeScene() : BaseScene() {
     lay->addLayout(hlay3, 1);
     lay->addLayout(hlay4, 1);
     lay->addStretch(2);
+    dialogClose(); // For setting the items and idx
 }
 void HomeScene::dialogClose() {
     QSignalBlocker blocker(deckNam);

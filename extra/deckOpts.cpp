@@ -35,11 +35,11 @@ void showDeckOpts() {
             dialog->accept();
         }
     }));
-    /*layout->addWidget(mkBtn("Copy deck", [dialog](){
-        if (deleteDeck() != -1) {
+    layout->addWidget(mkBtn("Copy deck", [dialog](){
+        if (copyDeck() != -1) {
             dialog->accept();
         }
-    }));*/
+    }));
 
     layout->setSizeConstraint(QLayout::SetFixedSize);
     QObject::connect(dialog, &QDialog::finished, [=](int result){

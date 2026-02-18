@@ -2,6 +2,8 @@
 #include "decks.hpp"
 #include "../log.hpp"
 #include <QFile>
+#include <QLocale>
+#include <QRegularExpression>
 
 const QString MODULE = "decks";
 
@@ -10,8 +12,15 @@ QString curDeck;
 
 bool checkValidDeck() {
     if (curDeck != "") return true;
-    Log::Warn(MODULE) << "Deck does not exist! Please rename this empty one or choose an existing one in the home screen.";
+    Log::Error(MODULE) << "Deck does not exist! Please rename this empty one or choose an existing one in the home screen.";
     return false;
+}
+int deckIdx() {
+    auto it = std::find(decks.begin(), decks.end(), curDeck);
+    if (it == decks.end()) { // Should never happen
+        return 0;
+    }
+    return std::distance(decks.begin(), it);
 }
 
 void changeDeck(QString newname) {
@@ -63,7 +72,7 @@ int renameDeck(QString newname) {
         initNotes(); // Update list to be the order it would be created
         auto it = std::find(decks.begin(), decks.end(), curDeck);
         if (it == decks.end()) { // Should never happen but you never know...
-            Log::Warn(MODULE) << "Could not find newly created deck in decks vector!";
+            Log::Error(MODULE) << "Could not find newly created deck in decks vector!";
             curDeck = "";
             return -2;
         }
@@ -72,8 +81,8 @@ int renameDeck(QString newname) {
     }
 
     auto it = std::find(decks.begin(), decks.end(), curDeck);
-    if (it == decks.end()) { // Again, should never happen.
-        Log::Warn(MODULE) << "Could not find deck in decks vector!";
+    if (it == decks.end()) {
+        Log::Error(MODULE) << "Could not find deck in decks vector! You may need to refresh the app if you changed an external file.";
         return -1;
     }
     if (QFile::rename(pth+curDeck, pth+newname)) {
@@ -82,7 +91,7 @@ int renameDeck(QString newname) {
         curDeck = newname;
         return index;
     } else {
-        Log::Warn(MODULE) << "Deck name already exists or failed to write there!";
+        Log::Error(MODULE) << "Deck name already exists or failed to write there!";
         return -1;
     }
 }
@@ -90,7 +99,7 @@ int deleteDeck() {
     if (!doubleCheck("delete the deck '"+curDeck+"'")) return -1;
     QString pth = getPath()+"/"+curDeck;
     if (!QFile::remove(pth)) {
-        Log::Warn(MODULE) << "Unable to delete deck file!";
+        Log::Error(MODULE) << "Unable to delete deck file!";
         return -1;
     }
     QString oldname = curDeck;
@@ -98,18 +107,61 @@ int deleteDeck() {
     for (auto* n : notesL) delete n;
     notesL.clear();
     auto it = std::find(decks.begin(), decks.end(), oldname);
-    if (it == decks.end()) { // Should never happen
-        Log::Warn(MODULE) << "Could not find deck in decks vector!";
+    if (it == decks.end()) {
+        Log::Error(MODULE) << "Could not find deck in decks vector! You may need to refresh the app if you changed an external file.";
         return -1;
     }
     decks.erase(it);
     Log::Debug(MODULE) << "Successfully deleted deck " << oldname << "!";
     return std::distance(decks.begin(), it);
 }
-int deckIdx() {
-    auto it = std::find(decks.begin(), decks.end(), curDeck);
-    if (it == decks.end()) { // Should never happen
-        return 0;
+
+const QRegularExpression copyre(
+    " the ([0-9,]+)(?:st|nd|rd|th)$"
+);
+QString int2word(uint num) {
+    QString suf;
+    switch (num%10) {
+        case 1: suf = "st"; break;
+        case 2: suf = "nd"; break;
+        case 3: suf = "rd"; break;
+        default: suf = "th"; break;
     }
-    return std::distance(decks.begin(), it);
+    return QLocale(QLocale::English).toString(num) + suf;
+}
+bool copyDeck(DeckCopyType typ) {
+    QString pth = getPath()+"/";
+    QString frompth = pth+curDeck;
+    uint idx;
+    QString nam;
+    auto match = copyre.match(curDeck);
+    if (match.hasMatch()) {
+        bool ok;
+        uint num = match.captured(1).replace(",", "").toUInt(&ok);
+        if (!ok) { // Should REALLY never happen
+            Log::Warn(MODULE) << "Something very wrong happened with the copy deck!";
+            idx = 1;
+            nam = curDeck;
+        } else {
+            idx = num;
+            nam = curDeck.slice(0, curDeck.length()-match.captured().length());
+        }
+    } else {
+        idx = 1;
+        nam = curDeck;
+    }
+    while (true) {
+        idx += 1;
+        QString end = nam + " the "+int2word(idx);
+        auto it = std::find(decks.begin(), decks.end(), end);
+        if (it == decks.end()) {
+            if (!QFile::copy(frompth, pth+end)) {
+                Log::Error(MODULE) << "Could not copy deck! You may need to refresh the app if you changed an external file.";
+                return false;
+            }
+            curDeck = end;
+            initNotes(); // Update list to be the order it would be created
+            return true;
+        }
+    };
 }

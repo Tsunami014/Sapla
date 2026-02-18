@@ -8,7 +8,7 @@ inline std::vector<Note*> notesL;
 void updateNoteCards();
 
 extern std::vector<QString> decks;
-static QString curDeck;
+extern QString curDeck;
 bool checkValidDeck();
 
 void loadDefaultNotes();

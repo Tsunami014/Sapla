@@ -2,6 +2,7 @@
 #include "browseScn.hpp"
 #include "pluginView.hpp"
 #include "xtra/lineEdit2.hpp"
+#include "../extra/deckOpts.hpp"
 #include "../base/font.hpp"
 #include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"
@@ -10,7 +11,6 @@
 #include "../help.hpp"
 #include <QLabel>
 #include <QLineEdit>
-#include <QComboBox>
 #include <QTextOption>
 #include <QBoxLayout>
 
@@ -56,7 +56,7 @@ HomeScene::HomeScene() : BaseScene() {
     auto* deckLabl = new QLabel("<h3>Deck: </h3>", this);
     deckLabl->setFont(font2);
     deckLabl->setAlignment(Qt::AlignCenter);
-    auto* deckNam = new QComboBox(this);
+    deckNam = new QComboBox(this);
     deckNam->setEditable(true);
     deckNam->lineEdit()->setFont(font2);
     deckNam->addItems(QStringList(decks.begin(), decks.end()));
@@ -67,6 +67,10 @@ HomeScene::HomeScene() : BaseScene() {
     auto* deckNam2 = new LineEdit2(this);
     deckNam2->setFont(font2);
     deckNam2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    auto* optsBtn = new SvgBtn(":/assets/btn.svg", this);
+    optsBtn->setPadding(20, -20);
+    optsBtn->setFont(font2);
+    optsBtn->setText("Deck options");
     auto indexChanged = [=](int index){
         if (index < 0 || index >= decks.size()) return;
         if (!deckNam2) return;
@@ -113,11 +117,13 @@ HomeScene::HomeScene() : BaseScene() {
         deckNam2->setStyleSheet(QString("QLineEdit { color: %1 }").arg(col));
     });
     connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
+    connect(optsBtn, &SvgBtn::clicked, this, showDeckOpts);
     deckNam->setCurrentIndex(deckIdx());
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);
     hlay3->addWidget(deckNam);
+    hlay3->addWidget(optsBtn);
     hlay3->addStretch();
     auto* hlay4 = new QHBoxLayout();
     hlay4->addStretch();
@@ -130,5 +136,14 @@ HomeScene::HomeScene() : BaseScene() {
     lay->addLayout(hlay3, 1);
     lay->addLayout(hlay4, 1);
     lay->addStretch(2);
+}
+void HomeScene::dialogClose() {
+    QSignalBlocker blocker(deckNam);
+    deckNam->clear();
+    deckNam->addItems(QStringList(decks.begin(), decks.end()));
+    int idx = deckIdx();
+    deckNam->setCurrentIndex(idx);
+    blocker.unblock();
+    emit deckNam->currentIndexChanged(idx);
 }
 

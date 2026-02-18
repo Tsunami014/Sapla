@@ -9,6 +9,7 @@
 const QString MODULE = "getNotes";
 
 std::vector<QString> decks;
+QString curDeck;
 
 QString tryReadLine(QTextStream& in, QString error) {
     QString out;
@@ -183,6 +184,11 @@ int renameDeck(QString newname) {
 }
 int deleteDeck() {
     if (!doubleCheck("delete the deck '"+curDeck+"'")) return -1;
+    QString pth = getPath()+"/"+curDeck;
+    if (!QFile::remove(pth)) {
+        Log::Warn(MODULE) << "Unable to delete deck file!";
+        return -1;
+    }
     QString oldname = curDeck;
     curDeck = "";
     for (auto* n : notesL) delete n;

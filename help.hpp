@@ -27,6 +27,11 @@ const QString HOME_HELP =
         "<p>To make a new deck, first use the deck selector to select the empty deck (the one with no name). Then, rename the deck and voila! A new deck is born.</p>"
     "<h3>Deleting decks</h3>"
         "<p>To delete a deck, backspace the name in the <i>rename deck field</i> then press backspace one more time to give an 'are you sure?' dialog.</p>"
+        "<p>Or, you can use the delete button in the deck options popup.</p>"
+    "<h3>Deck options</h3>"
+        "<ul>"
+            "<li>Delete the current deck (does the same thing as backspacing the name)</li>"
+        "</ul>"
 ;
 
 const QString BROWSE_HELP = 

@@ -24,6 +24,8 @@ set(CORELIB
     base/svgWid.hpp
     base/flowlayout.cpp
 
+    extra/deckOpts.cpp
+
     wids/ovrlWrap.cpp
     wids/listWid.cpp
     wids/svgBtn.cpp

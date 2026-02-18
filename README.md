@@ -4,11 +4,19 @@ A cool flashcard app made in QT!
 If you need any help, please use the `Help -> App help` or `Help -> This screen help` menu item. For FAQ and important things look at the app help.
 
 ## How it works
-You define 'notes' which generate 'cards' based on the content.
+You define 'notes' which you store in 'decks'. Each note generate 'cards' based on the content.
 
-The cards are created when features are added such as `---` for separating notes into single sided cards or `===` for double sided cards
+The cards are created when features are added such as `---` for separating notes into single sided cards or `===` for double sided cards.
 
-There are example cards to help you
+There are example cards to help you and explain many features.
+
+## Screenshots
+![Home screen](https://github.com/user-attachments/assets/fcc389a8-32e2-4148-92df-066c33ac3d7f)
+![Browse scene](https://github.com/user-attachments/assets/fe83ad22-08da-4d54-957a-b668b8e917c4)
+![Playing the default game](https://github.com/user-attachments/assets/395ec4f2-e93e-49c4-9706-bea865f33772)
+
+
+
 
 ## Features
 ### Notes & cards
@@ -47,9 +55,6 @@ There are example cards to help you
 
 ## Usage instructions
 If you need help on anything, look at the `help > this screen help` or `help > application help`
-
-## Demo video
-https://github.com/user-attachments/assets/25ea20ac-16c6-45a0-86a2-5bbb45f343fe
 
 ## Getting it
 ### The easy way

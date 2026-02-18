@@ -72,6 +72,10 @@ Download the executable from the releases tab
         ```
         sudo pacman -S qt6-base qt6-svg
         ```
+        - Nix:
+        ```
+        nix-shell -p cmake qt6.qtbase qt6.qtwayland
+        ```
 3. 
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
@@ -79,9 +83,10 @@ cmake --build build --parallel
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
 ##### Packaging for Linux
+Ensure you have `appimagetool` installed, then run:
 ```bash
 ./makeAppIm
 ```
 #### Windows
-You're on your own
+You're on your own. There was literally no nice way I could think of to do it on windows, I tried for a while then gave up. You could probably compile it with QT creator or something, but there may be a few 'windows bein silly' bugs as I haven't Windows-proofed the app in a while.
 

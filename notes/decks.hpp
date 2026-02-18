@@ -8,7 +8,7 @@ int deckIdx();
 
 void changeDeck(QString newname);
 int renameDeck(QString newname);
-int deleteDeck();
+int deleteDeck(bool ask = true);
 
 enum DeckCopyType {
     Copy_Regular,

@@ -95,8 +95,8 @@ int renameDeck(QString newname) {
         return -1;
     }
 }
-int deleteDeck() {
-    if (!doubleCheck("delete the deck '"+curDeck+"'")) return -1;
+int deleteDeck(bool ask) {
+    if (ask && !doubleCheck("delete the deck '"+curDeck+"'")) return -1;
     QString pth = getPath()+"/"+curDeck;
     if (!QFile::remove(pth)) {
         Log::Error(MODULE) << "Unable to delete deck file!";

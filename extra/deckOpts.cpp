@@ -31,12 +31,12 @@ void showDeckOpts() {
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     layout->addWidget(title);
     layout->addWidget(mkBtn("Delete deck", [dialog](){
-        if (deleteDeck() != -1) {
+        if (deleteDeck(false) != -1) {
             dialog->accept();
         }
     }));
     layout->addWidget(mkBtn("Copy deck", [dialog](){
-        if (copyDeck() != -1) {
+        if (copyDeck()) {
             dialog->accept();
         }
     }));

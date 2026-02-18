@@ -28,9 +28,10 @@ const QString HOME_HELP =
     "<h3>Deleting decks</h3>"
         "<p>To delete a deck, backspace the name in the <i>rename deck field</i> then press backspace one more time to give an 'are you sure?' dialog.</p>"
         "<p>Or, you can use the delete button in the deck options popup.</p>"
-    "<h3>Deck options</h3>"
+    "<h3>Deck options (for the current deck)</h3>"
         "<ul>"
-            "<li>Delete the current deck (does the same thing as backspacing the name)</li>"
+            "<li>Delete the deck (does the same thing as backspacing the name, except does not ask for verification first)</li>"
+            "<li>Copy the deck</li>"
         "</ul>"
 ;
 

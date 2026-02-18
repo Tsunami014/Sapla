@@ -6,6 +6,7 @@
 #include "../base/font.hpp"
 #include "../scenes/homeScn.hpp"
 #include <QDialog>
+#include <QCheckBox>
 #include <QVBoxLayout>
 
 void showDeckOpts() {
@@ -35,8 +36,13 @@ void showDeckOpts() {
             dialog->accept();
         }
     }));
-    layout->addWidget(mkBtn("Copy deck", [dialog](){
-        if (copyDeck()) {
+
+    auto temp = new QCheckBox("Temporarily copy", dialog);
+    temp->setFont(font2);
+    layout->addWidget(temp);
+
+    layout->addWidget(mkBtn("Copy deck", [=](){
+        if (copyDeck(Copy_Regular, temp->checkState() == Qt::Checked)) {
             dialog->accept();
         }
     }));

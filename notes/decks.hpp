@@ -14,4 +14,4 @@ enum DeckCopyType {
     Copy_Regular,
     Copy_NoSchedule
 };
-bool copyDeck(DeckCopyType typ = Copy_Regular);
+bool copyDeck(DeckCopyType typ = Copy_Regular, bool tmp = false);

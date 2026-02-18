@@ -55,7 +55,7 @@ void changeDeck(QString newname) {
     Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " notes from deck " << newname << "!";
 }
 int renameDeck(QString newname) {
-    if (newname == "") {
+    if (newname == "" || newname == ".") {
         //Log::Warn(MODULE) << "Deck name cannot be empty!";
         return -2;
     }
@@ -129,7 +129,7 @@ QString int2word(uint num) {
     }
     return QLocale(QLocale::English).toString(num) + suf;
 }
-bool copyDeck(DeckCopyType typ) {
+bool copyDeck(DeckCopyType typ, bool tmp) {
     QString pth = getPath()+"/";
     QString frompth = pth+curDeck;
     uint idx;
@@ -149,6 +149,13 @@ bool copyDeck(DeckCopyType typ) {
     } else {
         idx = 1;
         nam = curDeck;
+    }
+    if (tmp) {
+        if (!nam.startsWith('.')) nam = "."+nam;
+        idx = 1;
+    } else if (nam.startsWith('.')) {
+        nam = nam.slice(1);
+        idx = 1;
     }
     while (true) {
         idx += 1;

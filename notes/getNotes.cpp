@@ -71,12 +71,36 @@ void loadDefaultNotes() {
     writeNotes();
 }
 
+void clearTempNotes() {
+    QDir d(getPath());
+    uint cleared = 0;
+    bool errored = false;
+    for (const auto& item : d.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
+        if (item.startsWith('.')) {
+            const QString pth = d.absoluteFilePath(item);
+            if (!QFile::moveToTrash(pth)) {
+                if (!QFile::remove(pth)) {
+                    Log::Error(MODULE) << "Failed deleting temporary deck file!";
+                    return;
+                }
+                if (!errored) {
+                    errored = true;
+                    Log::Warn(MODULE) << "Failed moving temporary deck file to trash, deleted permanently instead";
+                }
+                cleared += 1;
+            } else { cleared += 1; }
+        }
+    }
+    if (cleared != 0) {
+        Log::Info(MODULE) << "Cleared " << cleared << " temporary decks!";
+    }
+}
 void initNotes() {
     QDir d(getPath());
     decks.clear();
     decks.push_back("");
-    for (const auto& item : d.entryList()) {
-        if (!item.startsWith('.')) decks.push_back(item);
+    for (const auto& item : d.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
+        decks.push_back(item);
     }
 }
 

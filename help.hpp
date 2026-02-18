@@ -2,8 +2,14 @@
 #include <QString>
 
 const QString APP_HELP = 
-"<h1>Sapla help</h1>"
-"<h2>How the app works</h2>"
+"<h1><b>IMPORTANT THINGS</b></h1>"
+    "<ul>"
+        "<li>"
+            "<p>Decks starting with a '.' are temporary and will be <i>put in the recycle bin</i> next app startup (or on request, see the home screen's help)</p>"
+            "<p>Removing the '.' at the start of a deck name will make it not temporary anymore, and adding one will make it temporary."
+        "</li>"
+    "</ul>"
+"<h1>How the app works</h1>"
     "<p>This app is a flashcard app where you complete flashcards in order to grow a tree.</p>"
     "<p>You'll get it as you go along, but if not you can always check the help for specifc places by the <b>Help->This screen</b> menu.</p>"
 "<h2>Keybinds</h2>"
@@ -14,9 +20,22 @@ const QString APP_HELP =
         "<li>&lt;G&gt; to play the game</li>"
         "<li>&lt;P&gt; to manage plugins</li>"
     "</ul>"
+"<h1>FAQ</h1>"
+    "<ul>"
+        "<li><b>Did it save my changes?</b><br>"
+            "Yes. Every time you change even one letter it saves to the file. This includes renaming.</li>"
+        "<li><b>How do I find the logs/config directory?</b><br>"
+            "To see the logs: `Help` > `Logs`. Config directory is the first log on the list.</li>"
+    "</ul>"
 ;
 
 const QString HOME_HELP = 
+"<h2>Menu items</h2>"
+    "<ul>"
+        "<li><b>File</b><ul>"
+            "<li>Delete all temporary decks (starting with '.') (moves them to the recycle bin if possible)</li>"
+        "</ul></li>"
+    "</ul>"
 "<h2>Decks</h2>"
     "<h3>Basic deck stuff</h3>"
         "<p>Use the first field to select a deck. You can type in the box and it will give suggestions or you can use the dropdown to select a deck.</p>"
@@ -28,10 +47,11 @@ const QString HOME_HELP =
     "<h3>Deleting decks</h3>"
         "<p>To delete a deck, backspace the name in the <i>rename deck field</i> then press backspace one more time to give an 'are you sure?' dialog.</p>"
         "<p>Or, you can use the delete button in the deck options popup.</p>"
+        "<p>OR, you can prefix the deck with '.' and it will be deleted next app reset or on demand through the menu item.</p>"
     "<h3>Deck options (for the current deck)</h3>"
         "<ul>"
             "<li>Delete the deck (does the same thing as backspacing the name, except does not ask for verification first)</li>"
-            "<li>Copy the deck</li>"
+            "<li>Copy the deck with some requirements, e.g. to make it temporary</li>"
         "</ul>"
 ;
 

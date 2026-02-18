@@ -17,6 +17,7 @@ const QString* helpStr = nullptr;
 
 int runApp(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    clearTempNotes();
     initNotes();
     Log::Debug("Main") << "Configuration located at:\n" << getPath();
     MG = new MainGame();

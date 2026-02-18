@@ -1,5 +1,6 @@
 #pragma once
 #include "baseScn.hpp"
+#include "../menu.hpp"
 #include <QLabel>
 #include <QComboBox>
 
@@ -9,5 +10,6 @@ public:
     void dialogClose() override;
 private:
     QComboBox* deckNam;
+    MenuItem deleteTmps;
 };
 

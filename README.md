@@ -1,7 +1,7 @@
 # Sapla
 A cool flashcard app made in QT!
 
-FAQ is at the bottom.
+If you need any help, please use the `Help -> App help` or `Help -> This screen help` menu item. For FAQ and important things look at the app help.
 
 ## How it works
 You define 'notes' which generate 'cards' based on the content.
@@ -13,7 +13,8 @@ There are example cards to help you
 ## Features
 ### Notes & cards
 - Browse all your notes, edit them, delete them or add more
-- Can add, edit and delete decks of notes!
+- Can add, copy, rename and delete decks of notes!
+- Can make temporary decks that vanish on demand or app load
 - Many different card features!
 - Convenient help screen for card features you can look at while making new notes!
 - Example cards to help
@@ -78,13 +79,4 @@ cmake --build build --parallel
 ```
 #### Windows
 You're on your own
-# FAQ
-## Did it save my changes?
-Yes. Every time you change even one letter it saves to the file.
-
-## How do I find the logs/config directory?
-To see the logs: `Help` > `Logs`. Config directory is the first log on the list.
-
-## ChatGPT usage
-Because I have barely coded in C++ or used QT, I required a lot of finding out how to do stuff. BUT, I wrote almost every line of code myself (which means the codebase is much neater than if I'd just chatGPT'd it all). I just used its judgement for *generalised* problems ('how do I do xyz' not '(re)write abc program to do xyz') (like using Google) and helped debugging by pointing out what the problems were (but I fixed the problems myself) as that saved me a lot of unecessary time.
 

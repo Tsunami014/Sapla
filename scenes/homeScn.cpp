@@ -7,6 +7,7 @@
 #include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"
 #include "../notes/decks.hpp"
+#include "../notes/getNotes.hpp"
 #include "../core.hpp"
 #include "../help.hpp"
 #include <QLabel>
@@ -16,7 +17,7 @@
 
 const QString HELP_TXT = HOME_HELP;
 
-HomeScene::HomeScene() : BaseScene() {
+HomeScene::HomeScene() : BaseScene(), deleteTmps("Delete temporary decks", Menues->FileMenu) {
     helpStr = &HELP_TXT;
     MG->changeBG("pretty");
 
@@ -117,6 +118,12 @@ HomeScene::HomeScene() : BaseScene() {
     });
     connect(deckNam, &QComboBox::currentIndexChanged, this, indexChanged);
     connect(optsBtn, &SvgBtn::clicked, this, showDeckOpts);
+    connect(&deleteTmps, &QAction::triggered, this, [this](){
+        clearTempNotes();
+        initNotes();
+        dialogClose(); // For setting the items and idx
+    });
+
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch();
     hlay3->addWidget(deckLabl);

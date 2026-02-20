@@ -58,8 +58,8 @@ const QString HOME_HELP =
 const QString BROWSE_HELP = 
 "<h2>Keybinds</h2>"
     "<ul>"
-        "<li>&lt;Alt+Delete&gt; to delete currently selected item</li>"
-        "<li>&lt;Alt+Enter&gt; to make a new note</li>"
+        "<li>&lt;Ctrl+Shift+Delete&gt; to delete currently selected item</li>"
+        "<li>&lt;Ctrl+Shift+Enter&gt; to make a new note</li>"
         "<li>&lt;Esc&gt; to go back</li>"
     "</ul>"
 "<h2>Menu items</h2>"

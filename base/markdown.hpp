@@ -29,6 +29,7 @@ public:
     void setButton(bool enabled);
 
     void keyPressEvent(QKeyEvent* event) override;
+    void inputMethodEvent(QInputMethodEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
     void focusOutEvent(QFocusEvent *event) override;

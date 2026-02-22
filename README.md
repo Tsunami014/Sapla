@@ -83,10 +83,10 @@ cmake --build build --parallel
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
 ##### Packaging for Linux
-Ensure you have `appimagetool` installed, then run:
 ```bash
 ./makeAppIm
 ```
+If you do not have `appimagetool` installed it will ask if you want to download it.
 #### Windows
 You're on your own. There was literally no nice way I could think of to do it on windows, I tried for a while then gave up. You could probably compile it with QT creator or something, but there may be a few 'windows bein silly' bugs as I haven't Windows-proofed the app in a while.
 

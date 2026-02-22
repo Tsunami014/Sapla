@@ -2,8 +2,39 @@
 set -euo pipefail
 
 if ! command -v appimagetool &>/dev/null; then
-    echo "ERROR: appimagetool not found. Install it first, then run this again."
-    exit 1
+    found=false
+    for pth in \
+        "$HOME/Downloads/appimagetool/appimagetool" \
+        "/tmp/appimagetool/appimagetool"
+    do
+        if [ -f "$pth" ]; then
+            echo "\`appimagetool\` not found in PATH but found at $pth, using that"
+            found=true
+            PATH="$PATH:$(dirname "$pth")"
+            break
+        fi
+    done
+    if ! $found; then
+        echo "\`appimagetool\` not found. Do you want to download it (will not install permanently)?"
+        read -s -n 1 -p "[d - download to ~/Downloads, t - download to /tmp, q - quit] " RESP
+        echo
+        case "$RESP" in
+            d) pth="$HOME/Downloads" ;;
+            t) pth="/tmp" ;;
+            *)
+                echo "Quitting."
+                exit 0
+            ;;
+        esac
+        outpth="$pth/appimagetool"
+        printf "\e[1mDownloading appimagetool to $outpth...\e[0m\n"
+        mkdir -p "$outpth"
+        wget -P "$outpth" https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        mv "$outpth/appimagetool-x86_64.AppImage" "$outpth/appimagetool"
+        chmod +x "$outpth/appimagetool"
+        printf "\e[1mDownloaded to $outpth/appimagetool\e[0m\n"
+        PATH="$PATH:$outpth"
+    fi
 fi
 
 rm -rf AppDir

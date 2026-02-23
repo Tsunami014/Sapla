@@ -1,12 +1,14 @@
 #include <vector>
 #include <QString>
 
+const QString curDeckSetting = "curDeck";
+
 extern std::vector<QString> decks;
 extern QString curDeck;
 bool checkValidDeck();
 int deckIdx();
 
-void changeDeck(QString newname);
+void changeDeck(QString newname, bool createNew = true);
 int renameDeck(QString newname);
 int deleteDeck(bool ask = true);
 

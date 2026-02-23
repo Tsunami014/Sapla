@@ -122,12 +122,12 @@ void writeGlobalSettings() {
         return;
     }
     QTextStream out(&file);
-    for (auto [key, value] : StrLocalSettings.asKeyValueRange()) {
+    for (auto [key, value] : StrGlobalSettings.asKeyValueRange()) {
         out << QString("\nSTR %1 %2")
             .arg(sanitise(key)).arg(sanitise(value))
             << "\n";
     }
-    for (auto [key, value] : NumLocalSettings.asKeyValueRange()) {
+    for (auto [key, value] : NumGlobalSettings.asKeyValueRange()) {
         out << QString("\nNUM %1 %2")
             .arg(sanitise(key)).arg(sanitise(QString::number(value)))
             << "\n";

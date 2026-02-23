@@ -1,6 +1,7 @@
 #include "getNotes.hpp"
 #include "decks.hpp"
 #include "../log.hpp"
+#include "../settings.hpp"
 #include <QFile>
 #include <QLocale>
 #include <QRegularExpression>
@@ -23,21 +24,30 @@ int deckIdx() {
     return std::distance(decks.begin(), it);
 }
 
-void changeDeck(QString newname) {
+void changeDeck(QString newname, bool createNew) {
     for (auto* n : notesL) delete n;
     notesL.clear();
 
-    curDeck = newname;
-    if (curDeck == "") return;
+    if (newname == "") {
+        curDeck = "";
+        setStrSetting(curDeckSetting, "");
+        return;
+    }
     QString fullpth = getDecksPath()+"/"+newname;
     QFile file(fullpth);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        if (!createNew) {
+            Log::Info(MODULE) << "Deck requested (" << newname << ") does not exist!";
+            return;
+        }
         // File does not exist, so MAKE IT EXIST
         writeNotes();
         Log::Debug(MODULE) << "Successfully created deck " << newname << "!";
         return;
     }
+    curDeck = newname;
+    setStrSetting(curDeckSetting, newname);
 
     QTextStream in(&file);
     QString line = in.readLine();

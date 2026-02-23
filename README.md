@@ -19,10 +19,11 @@ There are example cards to help you and explain many features.
 
 
 ## Features
-### Notes & cards
-- Browse all your notes, edit them, delete them or add more
+### Decks
 - Can add, copy, rename and delete decks of notes!
 - Can make temporary decks that vanish on demand or app load
+### Notes & cards
+- Browse all your notes, edit them, delete them or add more
 - Many different card features!
 - Convenient help screen for card features you can look at while making new notes!
 - Example cards to help
@@ -36,6 +37,7 @@ There are example cards to help you and explain many features.
 - Grow a tree with your answers
 - Different short flashcard 'games' to test your knowledge in different ways
 ### App
+- Whole app setings and per-deck settings (which are just a note)
 - Neat logging with popups and a log view
 - Custom UI svgs *hand drawn* by me that change colour based on the theme
 - Responsive layout

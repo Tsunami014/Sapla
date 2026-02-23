@@ -4,26 +4,11 @@
 #include "cardList.hpp"
 #include "../core.hpp"
 #include "../log.hpp"
+#include "../settings.hpp"
 #include <QStandardPaths>
 #include <QDir>
 
 const QString MODULE = "getNotes";
-
-QString tryReadLine(QTextStream& in, QString error) {
-    QString out;
-    while (true) {
-        out = in.readLine();
-        if (out.isNull()) {
-            if (error != "") {
-                Log::Error(MODULE) << error;
-            }
-            return out;
-        }
-        if (out == "" || out[0] == "#") continue;
-        break;
-    }
-    return out;
-}
 
 QString makeSafe(QString str) {
     if (str == "") return "\\";
@@ -46,7 +31,7 @@ QString unSafe(QString str) {
     return str;
 }
 
-QString getPath() {
+QString getDecksPath() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
         + "/decks";
     QDir d(path);
@@ -72,7 +57,7 @@ void loadDefaultNotes() {
 }
 
 void clearTempNotes() {
-    QDir d(getPath());
+    QDir d(getDecksPath());
     uint cleared = 0;
     bool errored = false;
     for (const auto& item : d.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
@@ -96,7 +81,7 @@ void clearTempNotes() {
     }
 }
 void initNotes() {
-    QDir d(getPath());
+    QDir d(getDecksPath());
     decks.clear();
     decks.push_back("");
     for (const auto& item : d.entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
@@ -109,10 +94,11 @@ void updateNoteCards() {
     for (auto* n : notesL) {
         n->updateCards();
     }
+    initDeckSettings();
 }
 
 void writeNotes() {
-    QString fullpth = getPath()+"/"+curDeck;
+    QString fullpth = getDecksPath()+"/"+curDeck;
     QFile file(fullpth);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This *should* never fail but it's still good to check
         Log::Error(MODULE) << "Failed writing to file at `" << fullpth << "`!";

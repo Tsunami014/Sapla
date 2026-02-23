@@ -29,7 +29,7 @@ void changeDeck(QString newname) {
 
     curDeck = newname;
     if (curDeck == "") return;
-    QString fullpth = getPath()+"/"+newname;
+    QString fullpth = getDecksPath()+"/"+newname;
     QFile file(fullpth);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -61,7 +61,7 @@ int renameDeck(QString newname) {
     }
     if (newname == curDeck) return -2;
 
-    QString pth = getPath()+"/";
+    QString pth = getDecksPath()+"/";
     if (curDeck == "") {
         if (QFile::exists(pth+newname)) {
             //Log::Warn(MODULE) << "Deck name already exists! Deck not created.";
@@ -97,7 +97,7 @@ int renameDeck(QString newname) {
 }
 int deleteDeck(bool ask) {
     if (ask && !doubleCheck("delete the deck '"+curDeck+"'")) return -1;
-    QString pth = getPath()+"/"+curDeck;
+    QString pth = getDecksPath()+"/"+curDeck;
     if (!QFile::remove(pth)) {
         Log::Error(MODULE) << "Unable to delete deck file!";
         return -1;
@@ -130,7 +130,7 @@ QString int2word(uint num) {
     return QLocale(QLocale::English).toString(num) + suf;
 }
 bool copyDeck(DeckCopyType typ, bool tmp) {
-    QString pth = getPath()+"/";
+    QString pth = getDecksPath()+"/";
     QString frompth = pth+curDeck;
     uint idx;
     QString nam;

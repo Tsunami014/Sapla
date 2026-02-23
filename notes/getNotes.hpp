@@ -11,10 +11,9 @@ void loadDefaultNotes();
 void clearTempNotes();
 void initNotes();
 
-QString tryReadLine(QTextStream& in, QString error = "");
 QString makeSafe(QString str);
 QString unSafe(QString str);
 
-QString getPath();
+QString getDecksPath();
 void writeNotes();
 

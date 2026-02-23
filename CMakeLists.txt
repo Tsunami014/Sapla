@@ -12,6 +12,7 @@ set(CORELIB
     core.cpp
     game.cpp styles.cpp
     log.cpp  menu.cpp
+    settings.cpp
     resources.qrc
     plugins/getPlugins.cpp
 

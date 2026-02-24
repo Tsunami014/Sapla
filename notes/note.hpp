@@ -17,11 +17,18 @@ enum Side {
 using Duration = std::chrono::duration<long long>;
 struct _scheduleInf {
     _scheduleInf(std::vector<float> ratingScos, QString timings, Duration skipAmnt);
-    std::vector<float> ratingScos; // The score increase/decrease for each rating
+
+    /// The score increase/decrease for each rating
+    std::vector<float> ratingScos;
     int ratesLen() { return ratingScos.size(); }
 
     QString origTs;
+    /// The time of next card for each score
     std::vector<Duration> timings;
+
+    /// The minimum score that means you 'learnt' the card (when the time for next card is at least 3 days)
+    float learntSco;
+
     void setTimings(QString newtimings);
     Duration skipAmnt;
     void setSkip(QString newSkip);
@@ -92,12 +99,12 @@ public:
     bool isAlive();
     bool operator==(const FlashCard& other) const;
 
-    void update(int rating = -1);
+    virtual void update(int rating = -1);
 
     Schedule schd;
     Note* parent;
     QString title;
-    QString getSide(Side s) const;
+    virtual QString getSide(Side s) const;
     QString getSideHtml(Side s) const;
 protected:
     QString front;

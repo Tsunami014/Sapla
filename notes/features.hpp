@@ -51,6 +51,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
+extern const QRegularExpression scheduleInfRe;
 struct TemplateFeats : FeatReg {
     Feat_useCols(2);
     Feat_order(91);

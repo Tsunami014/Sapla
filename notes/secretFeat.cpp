@@ -1,4 +1,5 @@
 #include "features.hpp"
+#include <QRandomGenerator>
 
 const QRegularExpression secretRe(R"((?<!\\){(.*?[^\\\n])(?:::(?<group>.*?[^\\\n]))?(?:\?\?(?<hint>.*?[^\\\n]))?})");
 
@@ -20,6 +21,7 @@ public:
         : FlashCard(parent, front, back, title, s)
     {
         orig = back;
+        orig.replace(scheduleInfRe, "");
 
         uint nxtgroup = 0;
         auto it = secretRe.globalMatch(orig);
@@ -43,14 +45,15 @@ public:
                 hint,
                 m.captured(1)
             });
+            groupNams.insert(group);
         }
         updateDifficulty();
     }
-    void update(int rating = -1) {
+    void update(int rating = -1) override {
         schd.update(rating);
         updateDifficulty();
     }
-    QString getSide(Side s) const {
+    QString getSide(Side s) const override {
         QString txt;
         switch (s) {
             case SIDE_NAME:
@@ -72,19 +75,39 @@ protected:
     QString orig;
 
     QList<GroupContents> groups;
+    QSet<QString> groupNams;
     void updateDifficulty() {
+        uint initSze = groupNams.size();
+        if (initSze == 0) return; // Should never happen
+        uint useAmnt = std::round(
+            qBound(0.0, schd.score / ScheduleInfo.learntSco, 1.0) * (initSze - 1)
+        ) + 1;
+        QSet<QString> touseGroups;
+        QList<QString> gs = groupNams.values();
+        for (uint i = 0; i < useAmnt; i++) {
+            int idx = QRandomGenerator::global()->bounded(initSze-i);
+            touseGroups.insert(gs[idx]);
+            // This is an efficient way to delete the item, but it destroys the order. Good thing I don't care!
+            gs[idx] = std::move(gs.last()); // Move last item to idx
+            gs.removeLast(); // Remove last item
+        }
         front = orig;
         back = orig;
         int froffs = 0;
         int bkoffs = 0;
         for (auto g : groups) {
-            QString frrepl = "\x01" + g.hint + "\x01";
+            bool use = touseGroups.contains(g.group);
+            QString frrepl = use ? (
+                "\x01" + g.hint + "\x01"
+            ) : g.replace;
             int frstart = g.start + froffs;
             int frend = g.end + froffs;
             front.replace(frstart, frend - frstart, frrepl);
             froffs += frrepl.length() - (frend - frstart);
 
-            QString bkrepl = "**\x01" + g.replace + "\x01**";
+            QString bkrepl = use ? (
+                "**\x01" + g.replace + "\x01**"
+            ) : g.replace;
             int bkstart = g.start + bkoffs;
             int bkend = g.end + bkoffs;
             back.replace(bkstart, bkend - bkstart, bkrepl);

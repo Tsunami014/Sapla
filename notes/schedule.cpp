@@ -3,11 +3,6 @@
 
 const QString MODULE = "Schedule";
 
-_scheduleInf::_scheduleInf(std::vector<float> rScos, QString ts, Duration skpAmnt)
-    :ratingScos(rScos), skipAmnt(skpAmnt) {
-        setTimings(ts);
-    }
-
 using DurationFn = std::function<Duration(long long)>;
 #define makeTimeFn(time) [](long long n){ return time(n); }
 static const std::unordered_map<QString, DurationFn> & getUnitMap() {
@@ -95,6 +90,27 @@ Duration parseWholeDuration(QString inp) {
     QString ps;
     return parseWholeDuration(inp, ps);
 }
+
+
+
+_scheduleInf::_scheduleInf(std::vector<float> rScos, QString ts, Duration skpAmnt)
+    :ratingScos(rScos), skipAmnt(skpAmnt) {
+        setTimings(ts);
+        learntSco = -1;
+        QString probs;
+        const Duration mxDuration = parseDuration("3", "days", probs);
+        const size_t timingsSze = timings.size();
+        for (int i = 0; i < timingsSze; i++) {
+            if (timings[i] > mxDuration) {
+                learntSco = i;
+                break;
+            }
+        }
+        if (learntSco == -1) {
+            learntSco = timingsSze-1;
+        }
+    }
+
 void _scheduleInf::setTimings(QString newtimings) {
     auto ntimes = timings;
     QString problems = "";

@@ -39,7 +39,7 @@ QString TemplateFeats::replacements(QString& txt, Side s) const {
     ;
 }
 QString TemplateFeats::markup(QString& line) const {
-    if (line.startsWith("<<") && line.endsWith(">>")) {
+    if (line.startsWith("&lt;&lt;") && line.endsWith("&gt;&gt;")) {
         return "<i style='color:#CCC'>Scheduling info</i>";
     }
     QString nln = line

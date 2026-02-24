@@ -3,20 +3,17 @@
 constexpr auto MO = QRegularExpression::MultilineOption;
 
 const QRegularExpression noteInfRe(R"((?: +|^)#((?:\\ |[^ \n])+) *(?:(?= )|$))", MO);
-const QRegularExpression scheduleInfRe(R"(\n?^\|\|(.*)\|\|$\n*)", MO);
 QString TagFeats::replacements(QString& txt, Side s) const {
-    return txt.replace(scheduleInfRe, "")
-              .replace(noteInfRe, "");
+    return txt.replace(noteInfRe, "");
 }
 QString TagFeats::markup(QString& line) const {
-    static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+( *)(?:(?= )|$))", MO);
+    static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+)( *)(?:(?= )|$))", MO);
     return line
         .replace(re, QString(
             "\\1"
-            "<b style='color:%1;'>#</b>"
-            "<b style='color:%2;'>\\2</b>"
+            "<b style='color:%1;'>#\\2</b>"
             "\\3"
-        ).arg(cols[0], cols[1]));
+        ).arg(cols[0]));
 }
 QMap<QString, QString> TagFeats::help() const {
     return {
@@ -31,40 +28,45 @@ QMap<QString, QString> TagFeats::help() const {
 
 
 
-const QRegularExpression templDefRe(R"(^ *%\|\s*([^|%\n ]+) *[ |\n] *((?:.|\n)*?)\s*\|% *)", MO);
-const QRegularExpression templApplyRe(R"(%%\s*([^%\n ]+)\s*(?:[ |\n]\s*(.*?)(?:\s*[|\n]\s*(.*?))*?)?\s*%%)", MO);
+const QString templBaseRe = R"(\s*([^|:\n]+?)\s*([|:\n](?!\|)(?:.|\n)*?)?)";
+const QRegularExpression templDefRe("^\\s*\\|=" + templBaseRe + "=\\|\\s*$", MO);
+const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|", MO);
+const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
 QString TemplateFeats::replacements(QString& txt, Side s) const {
-    return txt.replace(templDefRe, "");
+    return txt
+        .replace(templDefRe, "")
+        .replace(scheduleInfRe, "")
+    ;
 }
 QString TemplateFeats::markup(QString& line) const {
-    if (line.startsWith("||") && line.endsWith("||")) {
+    if (line.startsWith("<<") && line.endsWith(">>")) {
         return "<i style='color:#CCC'>Scheduling info</i>";
     }
     QString nln = line
-        .replace("%%", QString("<b style='color:%1;'>%%</b>").arg(cols[0]));
+        .replace("||", QString("<b style='color:%1;'>||</b>").arg(cols[0]));
 
     int si = 0;
     while (si < nln.size() && nln[si].isSpace()) si++;
     QString lftstrpln = nln.mid(si);
-    if (lftstrpln.startsWith("%|")) {
-        nln.replace(si, 2, QString("<b style='color:%1;'>%2</b>").arg(cols[1], "%|"));
+    if (lftstrpln.startsWith("|=")) {
+        nln.replace(si, 2, QString("<b style='color:%1;'>%2</b>").arg(cols[1], "|="));
     }
 
     int ei = nln.size() - 1;
     while (ei >= 0 && nln[ei].isSpace()) ei--;
     QString rtstrpln = nln.left(ei+1);
-    if (rtstrpln.endsWith("|%")) {
-        nln.replace(ei-1, 2, QString("<b style='color:%1;'>%2</b>").arg(cols[1], "|%"));
+    if (rtstrpln.endsWith("=|")) {
+        nln.replace(ei-1, 2, QString("<b style='color:%1;'>%2</b>").arg(cols[1], "=|"));
     }
 
     return nln;
 }
 QMap<QString, QString> TemplateFeats::help() const {
     return {
-           {"Template definition\n%||%",
+           {"Template definition\n|= =|",
             "Defines a note template\n"
             "See this screen help for more info"
-        }, {"Template usage\n%%",
+        }, {"Template usage\n|| ||",
             "Uses a template for the note\n"
             "See this screen help for more info"
         }

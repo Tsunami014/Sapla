@@ -6,18 +6,18 @@ const QString MODULE = "CardFeature";
 constexpr auto MO = QRegularExpression::MultilineOption;
 
 QStringList cols = {
-    "#D6E0F0",
     "#E6DDD6",
     "#D6E0D6",
     "#F0D6F0",
+    "#D6E0F0",
     "#F0F0D6",
     "#E6FFF0",
-    "#F0F0F0",
     "#E0E0E0",
-    "#E6DDE6",
+    "#F0F0F0",
     "#DDE6E6",
     "#E6E6DD",
     "#FDDFDF",
+    "#E6DDE6",
     "#DDE6DD"
 };
 QString _AutoColour::nxtCol() {

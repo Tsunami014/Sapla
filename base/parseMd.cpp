@@ -22,15 +22,15 @@ void replace(QString& search, const QRegularExpression& re, std::function<QStrin
 }
 
 const QString codeRepl = "<span style='"
-    "background-color: grey;"
-    "font-family: monospace;"
+    "background-color:" "grey;"
+    "font-family:" "monospace;"
 "'>\\1</span>";
-const QString hlRepl = "<span style='background-color: %1;'>"
+const QString hlRepl = "<span style='background-color:" "%1;'>"
     "&nbsp;\\1&nbsp;"
 "</span>";
 const QString quoteRepl = "<span style='"
-    "color: lightgray;"
-    "font-style: italic;"
+    "color:" "lightgray;"
+    "font-style:" "italic;"
 "'>\\1▎\\2</span>";
 QString parseMarkdownHtml(QString txt) {
     QString esc = txt.toHtmlEscaped();
@@ -65,9 +65,9 @@ QString parseMarkdownHtml(QString txt) {
 
     // *italic*, **bold**, _underline_, `code`, ==highlight==, ~~strikethrough~~
     esc
-       .replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^`\\])\*\*)"), "<b>\\1</b>")
-       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^`\\])\*)"), "<i>\\1</i>")
-       .replace(STATIC_RE(R"((?<!\\)_([^_]*[^`\\])_)"), "<u>\\1</u>")
+       .replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^*\\])\*\*)"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^*\\])\*)"), "<i>\\1</i>")
+       .replace(STATIC_RE(R"((?<!\\)_([^_]*[^_\\])_)"), "<u>\\1</u>")
        .replace(STATIC_RE(R"((?<!\\)`([^`]*[^`\\])`)"), codeRepl)
        .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol))
        .replace(STATIC_RE(R"((?<!\\)~~([^~]*[^~\\])~~)"), "<s>\\1</s>");

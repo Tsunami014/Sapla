@@ -53,7 +53,7 @@ extern const QRegularExpression templApplyRe;
 struct TemplateFeats : FeatReg {
     Feat_useCols(2);
     Feat_order(91)
-    Feat_name("%||%");
+    Feat_name("|| ||");
     Feat_replacements;
     Feat_markup;
     Feat_help;
@@ -61,7 +61,7 @@ struct TemplateFeats : FeatReg {
 extern const QRegularExpression noteInfRe;
 extern const QRegularExpression scheduleInfRe;
 struct TagFeats : FeatReg {
-    Feat_useCols(2);
+    Feat_useCols(1);
     Feat_order(90)
     Feat_name("#");
     Feat_replacements;

@@ -106,9 +106,12 @@ void Note::updateCards() {
                 continue;
             }
             QString templ = globalTemplates[name];
-            QStringList gs = m.capturedTexts().sliced(2);
-            for (auto& g : gs) {
-                templ = templ.arg(g);
+            QString match = m.captured(2);
+            if (!match.isNull()) {
+                QStringList gs = match.sliced(1).split('|');
+                for (auto& g : gs) {
+                    templ = templ.arg(g.trimmed());
+                }
             }
 
             int start = m.capturedStart(0) + offs;
@@ -217,7 +220,7 @@ void Note::updateSchedules() {
     for (auto& fc : cards) {
         infs.append(fc->schd.toInf(fc->title));
     }
-    conts += "\n||"+infs.join("|")+"||";
+    conts += "\n<<"+infs.join("|")+">>";
     orig = conts;
     writeNotes();
 }

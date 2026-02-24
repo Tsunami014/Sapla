@@ -63,6 +63,12 @@ If you need help on anything, look at the `help > this screen help` or `help > a
 Download the executable from the releases tab
 ### The hard way (build from source)
 #### Linux
+##### Automatic building and packaging
+```bash
+./build.sh
+```
+Run `./build.sh --help` for usage options
+##### Manual building
 1. Ensure you have cmake installed (on any Linux just install `cmake`)
 2. Ensure QT is installed (and the svg library too)
     - For Linux, find which package it is.
@@ -84,11 +90,7 @@ cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
 4. Go find the executable in the build folder! (Usually at the top level)
-##### Packaging for Linux
-```bash
-./makeAppIm
-```
-If you do not have `appimagetool` installed it will ask if you want to download it.
+5. If you want to package it run `./build.sh -built build` (or wherever the output folder is)
 #### Windows
 You're on your own. There was literally no nice way I could think of to do it on windows, I tried for a while then gave up. You could probably compile it with QT creator or something, but there may be a few 'windows bein silly' bugs as I haven't Windows-proofed the app in a while.
 

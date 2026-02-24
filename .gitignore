@@ -1,6 +1,8 @@
 build/*
 AppDir/*
 *.AppImage
+*.tar.gz
+
 compile_flags.txt
 CMakeLists.txt.user
 .vscode/*

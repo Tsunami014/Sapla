@@ -69,7 +69,7 @@ const QString BROWSE_HELP =
             "<li>New note/delete current note (with keybind)</li>"
         "</ul></li>"
         "<li><b>Help</b><ul>"
-            "<li>Note feature help screen</li>"
+            "<li>Note feature help screen - <b>very helpful!</b> The features are not described in this help, please look there for help.</li>"
         "</ul></li>"
     "</ul>"
 "<h2>Tree column headers</h2>"

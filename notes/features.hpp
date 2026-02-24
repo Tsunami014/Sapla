@@ -63,7 +63,7 @@ extern const QRegularExpression scheduleInfRe;
 struct TagFeats : FeatReg {
     Feat_useCols(2);
     Feat_order(90)
-    Feat_name("@:@");
+    Feat_name("#");
     Feat_replacements;
     Feat_markup;
     Feat_help;

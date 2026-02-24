@@ -80,29 +80,6 @@ void Note::setContents(const QString& nc) {
         }
     }
 }
-QStringList parseCommas(QString inp) {
-    QStringList out; QString cur;
-    bool esc = false;
-
-    for (QChar c : inp) {
-        if (esc) {
-            cur += c;
-            esc = false;
-        } else if (c == '\\') {
-            esc = true;
-        } else if (c == ',') {
-            out.append(cur.trimmed());
-            cur.clear();
-        } else {
-            cur += c;
-        }
-    }
-
-    if (!cur.isEmpty()) {
-        out.append(cur);
-    }
-    return out;
-}
 void Note::updateCards() {
     error = "";
     prio = 0;
@@ -140,26 +117,21 @@ void Note::updateCards() {
             offs += templ.length() - (end - start);
         }
     } {
+        tags = {};
+        prio = 0;
         auto it = noteInfRe.globalMatch(orig);
         QMap<QString, bool> has;
         while (it.hasNext()) {
             auto m = it.next();
-            QString title = m.captured(1);
-            if (title == "tag" || title == "tags") {
-                if (has.value("tag", false)) {
-                    tags.clear();
-                    error += "Cannot have multiple @tag:...@!\n";
-                } else {
-                    tags = parseCommas(m.captured(2));
-                    has["tag"] = true;
-                }
-            } else if (title == "priority" || title == "prio") {
+            QString txt = m.captured(1).replace("\\ ", " ");
+            QString txt2 = txt.sliced(1);
+            if (txt[0] == '!') {
                 if (has.value("prio", false)) {
                     prio = 0;
-                    error += "Cannot have multiple @priority:...@!\n";
+                    error += "Cannot have multiple #!priority!\n";
                 } else {
                     bool ok;
-                    int value = m.captured(2).toInt(&ok);
+                    int value = txt2.toInt(&ok);
                     if (ok) {
                         prio = value;
                     } else {
@@ -168,7 +140,7 @@ void Note::updateCards() {
                     has["prio"] = true;
                 }
             } else {
-                error += "Unknown note info title: `" + title + "`\n";
+                tags.push_back(txt);
             }
         }
     }

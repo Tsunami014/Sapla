@@ -149,7 +149,7 @@ void writeLocalSettings() {
         settingss.push_back(n);
     }
     auto* n = settingss[0];
-    QString conts = "@tag:settings@";
+    QString conts = "#settings";
     for (auto [key, value] : StrLocalSettings.asKeyValueRange()) {
         conts += QString("\nSTR %1 %2")
             .arg(sanitise(key)).arg(sanitise(value));

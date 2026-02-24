@@ -2,31 +2,29 @@
 
 constexpr auto MO = QRegularExpression::MultilineOption;
 
-const QRegularExpression noteInfRe(R"(^ *@ *([^@: \n]+) *: *(.+?) *@ *$\n?)", MO);
+const QRegularExpression noteInfRe(R"((?: +|^)#((?:\\ |[^ \n])+) *(?:(?= )|$))", MO);
 const QRegularExpression scheduleInfRe(R"(\n?^\|\|(.*)\|\|$\n*)", MO);
 QString TagFeats::replacements(QString& txt, Side s) const {
     return txt.replace(scheduleInfRe, "")
               .replace(noteInfRe, "");
 }
 QString TagFeats::markup(QString& line) const {
-    static const QRegularExpression re(R"((^ *@ *)([^@: \n]+)( *:)(.+?)@ *$)", MO);
+    static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+( *)(?:(?= )|$))", MO);
     return line
         .replace(re, QString(
-            "<b style='color:%1;'>\\1</b>"
+            "\\1"
+            "<b style='color:%1;'>#</b>"
             "<b style='color:%2;'>\\2</b>"
-            "<b style='color:%1;'>\\3</b>"
-            "\\4"
-            "<b style='color:%1;'>@</b>"
+            "\\3"
         ).arg(cols[0], cols[1]));
 }
 QMap<QString, QString> TagFeats::help() const {
     return {
-           {"Tag\n@tag:@",
-            "Add tags (separated by ,) for this note"
-        }, {"Priority\n@prio:@",
-            "(also can be `@priority:@`)\n"
+           {"Tag\n#tag",
+            "Add a tag for this note"
+        }, {"Priority\n#!prio",
             "Give the card a priority\n"
-            "This gets converted to a number, where 0 is the default and positives are more important."
+            "This gets converted to a number, where 0 is the default and the higher the number is, the more important it is."
         }
     };
 }

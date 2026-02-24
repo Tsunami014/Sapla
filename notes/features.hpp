@@ -34,6 +34,7 @@ inline std::vector<CardFeatReg*> CardFeats;
     Feats.push_back(std::move(ptr));\
 }
 void registerNoteFeatures();
+Schedule getSchd(std::map<int, Schedule> schds, int idx);
 
 #define Feat_useCol        void init() override { col = AC.nxtCol(); } QString col
 #define Feat_useCols(amnt) void init() override { for (int i=0; i<amnt; i++) { cols.push_back(AC.nxtCol()); } } std::vector<QString> cols
@@ -52,7 +53,7 @@ extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeats : FeatReg {
     Feat_useCols(2);
-    Feat_order(91)
+    Feat_order(91);
     Feat_name("|| ||");
     Feat_replacements;
     Feat_markup;
@@ -62,8 +63,8 @@ extern const QRegularExpression noteInfRe;
 extern const QRegularExpression scheduleInfRe;
 struct TagFeats : FeatReg {
     Feat_useCol;
-    Feat_order(90)
-    Feat_name("#");
+    Feat_order(90);
+    Feat_name("#tag");
     Feat_replacements;
     Feat_markup;
     Feat_help;
@@ -71,20 +72,30 @@ struct TagFeats : FeatReg {
 
 struct SingleSideFeat : CardFeatReg {
     Feat_useCol;
-    Feat_order(2)
+    Feat_order(2);
     Feat_name("---");
-    Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
+    Feat_markup;
     Feat_help;
 };
 struct DoubleSideFeat : CardFeatReg {
     Feat_useCol;
-    Feat_order(2)
+    Feat_order(2);
     Feat_name("===");
-    Feat_markup;
     Feat_dominance;
     Feat_getFlashCards;
+    Feat_markup;
+    Feat_help;
+};
+
+struct SecretFeat : CardFeatReg {
+    Feat_useCol;
+    Feat_order(10);
+    Feat_name("{ }");
+    Feat_getFlashCards;
+    Feat_replacements;
+    Feat_markup;
     Feat_help;
 };
 

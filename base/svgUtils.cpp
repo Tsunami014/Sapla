@@ -10,7 +10,7 @@ SvgUtils::SvgUtils() : rend() { init(); }
 void SvgUtils::init() {
     hover = false;
     hlcol = Qt::yellow;
-    hlopacity = 0.8;
+    hlopacity = 0.9;
     hlthick = 3;
 }
 

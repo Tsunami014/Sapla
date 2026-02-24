@@ -40,7 +40,7 @@ set(CORELIB
 
     notes/note.cpp
     notes/schedule.cpp
-    notes/features.cpp notes/builtinFeats.cpp
+    notes/features.cpp notes/builtinFeats.cpp notes/secretFeat.cpp
     notes/decks.cpp
     notes/getNotes.cpp
     notes/noteTree.cpp

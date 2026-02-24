@@ -13,6 +13,7 @@ struct spareStyls {
     QString dialogStyl;
     QString logBgCol;
     QString mdHlCol;
+    QString secretCol;
 };
 
 class MainGame : public QMainWindow {

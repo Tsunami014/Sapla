@@ -260,6 +260,10 @@ FlashCard::~FlashCard() {
 }
 bool FlashCard::isAlive() { return alive; }
 
+void FlashCard::update(int rating) {
+    schd.update(rating);
+}
+
 QString FlashCard::getSide(Side s) const {
     QString txt;
     switch (s) {

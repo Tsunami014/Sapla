@@ -37,6 +37,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx) {
 void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
+    REGISTER_CFEAT(SecretFeat);
     REGISTER_FEAT(TagFeats);
     REGISTER_FEAT(TemplateFeats);
     REGISTER_FEAT(HiddenFeat);
@@ -55,18 +56,12 @@ void registerNoteFeatures() {
 
 QString trimNL(const QString& orig) {
     QString nstr = orig;
-    static const QRegularExpression re(R"(^\n+|\n+$)");
+    static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
     return nstr.remove(re);
 }
 
 
-const QRegularExpression ssfRe(R"(^\s*--- *\n*$)", MO);
-QString SingleSideFeat::markup(QString& line) const {
-    if (ssfRe.match(line).hasMatch()) {
-        return QString("<span style='color:%1'>───</span>").arg(col);
-    }
-    return line;
-}
+const QRegularExpression ssfRe(R"(^\s*---\s*$)", MO);
 bool SingleSideFeat::dominance(const QString& txt) const {
     return ssfRe.match(txt).hasMatch();
 }
@@ -84,6 +79,12 @@ bool SingleSideFeat::dominance(const QString& txt) const {
     ));
     return l;
 }
+QString SingleSideFeat::markup(QString& line) const {
+    if (ssfRe.match(line).hasMatch()) {
+        return QString("<span style='color:%1'>───</span>").arg(col);
+    }
+    return line;
+}
 QMap<QString, QString> SingleSideFeat::help() const {
     return {{"Single sided note\n---",
         "Separates the note into a front and a back.\n"
@@ -92,13 +93,7 @@ QMap<QString, QString> SingleSideFeat::help() const {
     }};
 }
 
-const QRegularExpression dsfRe(R"(^\s*=== *\n*$)", MO);
-QString DoubleSideFeat::markup(QString& line) const {
-    if (dsfRe.match(line).hasMatch()) {
-        return QString("<span style='r:%1'>═══</span>").arg(col);
-    }
-    return line;
-}
+const QRegularExpression dsfRe(R"(^\s*===\s*$)", MO);
 bool DoubleSideFeat::dominance(const QString& txt) const {
     return dsfRe.match(txt).hasMatch();
 }
@@ -118,6 +113,12 @@ bool DoubleSideFeat::dominance(const QString& txt) const {
         parent, second, first, getName(), getSchd(schds, 1)
     ));
     return l;
+}
+QString DoubleSideFeat::markup(QString& line) const {
+    if (dsfRe.match(line).hasMatch()) {
+        return QString("<span style='r:%1'>═══</span>").arg(col);
+    }
+    return line;
 }
 QMap<QString, QString> DoubleSideFeat::help() const {
     return {{"Double sided note\n===",
@@ -155,16 +156,11 @@ QString HiddenFeat::markup(QString& line) const {
         auto m = it.next();
         QString front = m.captured(1);
         QString back = m.captured("back");
-        QString repl;
-        if (back.isNull()) {
-            repl = QString(
-                "<b style='color:%1'>[[</b>%2<b style='color:%1'>]]</b>"
-            ).arg(col).arg(front);
-        } else {
-            repl = QString(
-                "<b style='color:%1'>[[</b>%2<b style='color:%1'>::</b>%3<b style='color:%1'>]]</b>"
-            ).arg(col).arg(front).arg(back);
+        QString repl = "<b style='color:" + col + "'>[[</b>" + front;
+        if (!back.isNull()) {
+            repl += "<b style='color:" + col + "'>::</b>" + back;
         }
+        repl += "<b style='color:" + col + "'>]]</b>";
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
         line.replace(start, end - start, repl);

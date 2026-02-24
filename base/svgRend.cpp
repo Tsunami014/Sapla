@@ -17,6 +17,7 @@ void initPallete() {
         {"alight", "#B87333"},
         {"adark",  "#5A280A"},
         {"red",    "#C33931"},
+        {"blue",   "#7194EF"},
     };
 }
 

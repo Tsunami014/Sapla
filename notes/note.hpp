@@ -92,14 +92,17 @@ public:
     bool isAlive();
     bool operator==(const FlashCard& other) const;
 
+    void update(int rating = -1);
+
     Schedule schd;
     Note* parent;
     QString title;
     QString getSide(Side s) const;
     QString getSideHtml(Side s) const;
-private:
+protected:
     QString front;
     QString back;
+private:
     bool alive;
 
     void MoveContents(FlashCard&& other);

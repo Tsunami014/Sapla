@@ -133,6 +133,7 @@ void MainGame::initStyles() {
     styls.listWidCol = getCol("alight", -42, 10);
     styls.logBgCol = getCol("shadow", -200, 20);
     styls.mdHlCol = getCol("light", 20, -60);
+    styls.secretCol = getCol("blue", 20, 20, 10);
 
     setFont(getFont(1.2));
 }

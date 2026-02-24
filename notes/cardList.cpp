@@ -49,7 +49,7 @@ GetFlashCard::~GetFlashCard() {
 
 void GetFlashCard::updateSchedule(int rating) {
     if (ptr && ptr->isAlive()) {
-        ptr->schd.update(rating);
+        ptr->update(rating);
     }
 }
 void GetFlashCard::finish() {

@@ -30,7 +30,7 @@ QMap<QString, QString> TagFeats::help() const {
 
 const QString templBaseRe = R"(\s*([^|:\n]+?)\s*([|:\n](?!\|)(?:.|\n)*?)?)";
 const QRegularExpression templDefRe("^\\s*\\|=" + templBaseRe + "=\\|\\s*$", MO);
-const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|", MO);
+const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|");
 const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
 QString TemplateFeats::replacements(QString& txt, Side s) const {
     return txt

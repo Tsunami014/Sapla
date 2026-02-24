@@ -264,7 +264,7 @@ void BrowseScene::delNote() {
 
 bool BrowseScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
-    if (event->modifiers() == Qt::AltModifier) {
+    if (event->modifiers() & Qt::ControlModifier && event->modifiers() & Qt::ShiftModifier) {
         int key = event->key();
         if (key == Qt::Key_Return) {
             newNote();

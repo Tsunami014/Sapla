@@ -23,24 +23,25 @@ What is `1 + 1`?
 #!2
 
 
-[[What happened i:I]]n _2025_[[?:]]
+[[What happened i::I]]n _2025_[[?::]]
 ===
-[[When was t:T]]his app was made[[?:]]
+[[When was t::T]]his app was made[[?::]]
 
 
 |=debug
-This is the [[front:back]]
+This is the [[front::back]]
 =|
 Here is some text in a note but not in a card so you'll never see it when playing because it doesn't have any features that create a card such as `---`.
 The fact there's a note template here makes no difference.
 #test
 
 
-[[What is this:For]] testing[[?\n(*hint\: it's below*):.]]
+[[What is this::For]] testing[[?\n(*hint\: it's below*)::.]]
 ||debug||
 ===
-Note templates[[ play what role in this card?:.]]
+Note templates[[ play what role in this card?::.]]
 > ||debug||
+[[ Text that will never be seen! ]]
 #test
 
 

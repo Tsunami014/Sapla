@@ -61,7 +61,7 @@ struct TemplateFeats : FeatReg {
 extern const QRegularExpression noteInfRe;
 extern const QRegularExpression scheduleInfRe;
 struct TagFeats : FeatReg {
-    Feat_useCols(1);
+    Feat_useCol;
     Feat_order(90)
     Feat_name("#");
     Feat_replacements;
@@ -90,7 +90,7 @@ struct DoubleSideFeat : CardFeatReg {
 
 struct HiddenFeat : FeatReg {
     Feat_useCol;
-    Feat_name("[[:]]");
+    Feat_name("[[ ]]");
     Feat_replacements;
     Feat_markup;
     Feat_help;

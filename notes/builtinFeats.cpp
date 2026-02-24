@@ -13,7 +13,7 @@ QString TagFeats::markup(QString& line) const {
             "\\1"
             "<b style='color:%1;'>#\\2</b>"
             "\\3"
-        ).arg(cols[0]));
+        ).arg(col));
 }
 QMap<QString, QString> TagFeats::help() const {
     return {

@@ -128,20 +128,61 @@ QMap<QString, QString> DoubleSideFeat::help() const {
 }
 
 
-const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)(?<!\\):((?:.|\n)*?)\]\])");
+const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)(?:(?<!\\)::(?<back>(?:.|\n)*?))?\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) return txt;
-    QString repl = s == SIDE_BACK ? "\\2" : "\\1";
-    return txt.replace(hiddenRe, repl);
+
+    auto it = hiddenRe.globalMatch(txt);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString back = m.captured("back");
+        QString repl = "";
+        if (!back.isNull()) {
+            repl = s == SIDE_BACK ? back : m.captured(1);
+        }
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        txt.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return txt;
 }
 QString HiddenFeat::markup(QString& line) const {
-    return line.replace(hiddenRe, QString("<b style='color:%1'>[[</b>\\1<span style='color:%1'>:</span>\\2<b style='color:%1'>]]</b>").arg(col));
+    auto it = hiddenRe.globalMatch(line);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString front = m.captured(1);
+        QString back = m.captured("back");
+        QString repl;
+        if (back.isNull()) {
+            repl = QString(
+                "<b style='color:%1'>[[</b>%2<b style='color:%1'>]]</b>"
+            ).arg(col).arg(front);
+        } else {
+            repl = QString(
+                "<b style='color:%1'>[[</b>%2<b style='color:%1'>::</b>%3<b style='color:%1'>]]</b>"
+            ).arg(col).arg(front).arg(back);
+        }
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        line.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return line;
 }
 QMap<QString, QString> HiddenFeat::help() const {
-    return {{"Hidden sides\n[[:]]",
-        "Only shows text if it's on a specific side\n"
-        "E.g. `[[hi:bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
-        "Leaving sides blank is ok (e.g. `[[front:]]`)"
-    }};
+    return {
+           {"Always hidden text\n[[]]",
+            "Always hides text (so can be seen as a 'comment')\n"
+            "E.g. [[This text will NEVER be seen and doesn't affect anything!]]\n"
+            "Note features will still do stuff there though (e.g. if you had note templates or something it will still evaluate them)"
+        }, {"Hidden on sides\n[[::]]",
+            "Only shows text if it's on a specific side\n"
+            "E.g. `[[hi::bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
+            "Leaving sides blank is ok (e.g. `[[front::]]`)"
+        }
+    };
 }
 

@@ -63,14 +63,8 @@ If you need help on anything, look at the `help > this screen help` or `help > a
 Download the executable from the releases tab
 ### The hard way (build from source)
 #### Linux
-##### Automatic building and packaging
-```bash
-./build.sh
-```
-Run `./build.sh --help` for usage options
-##### Manual building
-1. Ensure you have cmake installed (on any Linux just install `cmake`)
-2. Ensure QT is installed (and the svg library too)
+- Ensure you have cmake installed (on any Linux just install `cmake`)
+- Ensure QT is installed (and the svg library too)
     - For Linux, find which package it is.
         - Ubuntu:
         ```
@@ -84,13 +78,19 @@ Run `./build.sh --help` for usage options
         ```
         nix-shell -p cmake qt6.qtbase qt6.qtwayland
         ```
-3. 
+##### Automatic building and packaging
+```bash
+./publish.sh
+```
+Run `./publish.sh --help` for usage options
+##### Manual building
 ```bash
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
-4. Go find the executable in the build folder! (Usually at the top level)
-5. If you want to package it run `./build.sh -built build` (or wherever the output folder is)
+Then go find the executable in the build folder! (Usually at the top level)
+
+If you want to package it run `./publish.sh -built build` (or wherever the output folder is)
 #### Windows
 You're on your own. There was literally no nice way I could think of to do it on windows, I tried for a while then gave up. You could probably compile it with QT creator or something, but there may be a few 'windows bein silly' bugs as I haven't Windows-proofed the app in a while.
 

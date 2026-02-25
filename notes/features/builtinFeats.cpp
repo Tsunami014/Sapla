@@ -1,4 +1,4 @@
-#include "features.hpp"
+#include "../features.hpp"
 
 constexpr auto MO = QRegularExpression::MultilineOption;
 

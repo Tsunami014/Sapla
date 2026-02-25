@@ -1,5 +1,5 @@
-#include "features.hpp"
-#include "../log.hpp"
+#include "../features.hpp"
+#include "../../log.hpp"
 #include <QRegularExpression>
 
 const QString MODULE = "CardFeature";

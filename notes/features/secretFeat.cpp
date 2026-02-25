@@ -1,4 +1,4 @@
-#include "features.hpp"
+#include "../features.hpp"
 #include <QRandomGenerator>
 
 const QRegularExpression secretRe(R"((?<!\\){(.*?[^\\\n])(?:::(?<group>.*?[^\\\n]))?(?:\?\?(?<hint>.*?[^\\\n]))?})");

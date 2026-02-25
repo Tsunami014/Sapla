@@ -40,11 +40,13 @@ set(CORELIB
 
     notes/note.cpp
     notes/schedule.cpp
-    notes/features.cpp notes/builtinFeats.cpp notes/secretFeat.cpp
     notes/decks.cpp
     notes/getNotes.cpp
     notes/noteTree.cpp
     notes/cardList.cpp
+        notes/features/features.cpp
+        notes/features/builtinFeats.cpp
+        notes/features/secretFeat.cpp
 
     scenes/baseScn.cpp
     scenes/gameScn.cpp
@@ -52,7 +54,7 @@ set(CORELIB
     scenes/winScn.cpp
     scenes/browseScn.cpp
     scenes/pluginView.cpp
-    scenes/xtra/lineEdit2.hpp
+        scenes/xtra/lineEdit2.hpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)

@@ -1,5 +1,6 @@
 // Misc function definitions for features to use
 #include "features.hpp"
+#include "../../plugins/getPlugins.hpp"
 
 QStringList cols = {
     "#E6DDD6",
@@ -31,12 +32,16 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx) {
 }
 
 void registerNoteFeatures() {
+    CardFeats.clear();
+    Feats.clear();
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_CFEAT(SecretFeat);
     REGISTER_FEAT(TagFeats);
     REGISTER_FEAT(TemplateFeats);
     REGISTER_FEAT(HiddenFeat);
+
+    for (auto* f : PlugFns->loadFeatFns) f();
 
     std::stable_sort(Feats.begin(), Feats.end(), [](const auto& a, const auto& b) {
         return a->order() > b->order();
@@ -67,6 +72,7 @@ QString FeatReg::highersReplace(QString inp) {
         if (!found) {
             if (Feats[i]->getName() == name) {
                 toIdx = i;
+                found = true;
             }
         } else {
             if (Feats[i]->order() == ordr) {

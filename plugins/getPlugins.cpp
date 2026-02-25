@@ -2,6 +2,7 @@
 #include "../log.hpp"
 #include "../menu.hpp"
 #include "../base/svgRend.hpp"
+#include "../notes/features.hpp"
 #include "getPlugins.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
@@ -83,6 +84,7 @@ Plugin::Plugin(QString nme, Registry& r, QLibrary* library, QString pth)
         }
         sync(reg.onStyl, PlugFns->stylFns);
         sync(reg.onPlay, PlugFns->playFns);
+        sync(reg.onLoadFeats, PlugFns->loadFeatFns);
         desc = QString::fromUtf8(reg.desc);
         isBI = false;
     }
@@ -94,7 +96,7 @@ Plugin::~Plugin() {
     delete lib;
 }
 
-void clearPlugins() {
+void clearPlugins(bool updateFeats) {
     for (auto* p : plugs) delete p;
     plugs.clear();
     failedPlugs.clear();
@@ -103,10 +105,13 @@ void clearPlugins() {
         delete PlugFns;
         PlugFns = new _PFuncs();
     }
+    if (updateFeats) {
+        registerNoteFeatures();
+    }
 }
 
 void loadPlugins() {
-    clearPlugins();
+    clearPlugins(false);
 
     const QString biPlugNam = "libbuiltin"+suffix;
     QString fpth = QCoreApplication::applicationDirPath()+"/"+biPlugNam;
@@ -125,6 +130,8 @@ void loadPlugins() {
             }
         }
     }
+
+    registerNoteFeatures();
 
     QDir dir(getPlugsPath());
     QFileInfoList files = dir.entryInfoList(QStringList{"*"+suffix, "*"+suffix+"."+disabl}, QDir::Files);

@@ -12,7 +12,11 @@ private:
 };
 inline _AutoColour AC;
 
+#define FeatDef(nam) \
+    inline static std::unique_ptr<nam> instance = std::make_unique<nam>();
+
 struct FeatReg {
+    inline static std::unique_ptr<FeatReg> instance = nullptr;
     virtual void init() {}
     virtual const QString getName() const = 0;
     virtual int order() const { return 0; }
@@ -20,23 +24,18 @@ struct FeatReg {
     virtual QMap<QString, QString> help() const { return {}; }
     virtual QString replacements(QString& txt, Side s) const { return txt; }
     virtual QString markup(QString& line) const { return line; }
-
-    static std::unique_ptr<FeatReg> instance;
 };
 struct CardFeatReg : public FeatReg {
+    inline static std::unique_ptr<CardFeatReg> instance = nullptr;
     virtual std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const { return {}; }
     virtual bool dominance(const QString& txt) const { return false; }
-
-    static std::unique_ptr<CardFeatReg> instance;
 };
 
 inline std::vector<FeatReg*> Feats;
 inline std::vector<CardFeatReg*> CardFeats;
 #define REGISTER_FEAT(nam) \
-    nam::instance = std::make_unique<nam>();\
     Feats.push_back(nam::instance.get())
 #define REGISTER_CFEAT(nam) \
-    nam::instance = std::make_unique<nam>();\
     CardFeats.push_back(nam::instance.get());\
     Feats.push_back(nam::instance.get());
 
@@ -60,6 +59,7 @@ extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
 extern const QRegularExpression scheduleInfRe;
 struct TemplateFeats : FeatReg {
+    FeatDef(TemplateFeats)
     Feat_useCols(2);
     Feat_order(98);
     Feat_name("|| ||");
@@ -70,6 +70,7 @@ struct TemplateFeats : FeatReg {
 extern const QRegularExpression noteInfRe;
 extern const QRegularExpression scheduleInfRe;
 struct TagFeats : FeatReg {
+    FeatDef(TagFeats)
     Feat_useCol;
     Feat_order(90);
     Feat_name("#tag");
@@ -79,6 +80,7 @@ struct TagFeats : FeatReg {
 };
 
 struct SingleSideFeat : CardFeatReg {
+    FeatDef(SingleSideFeat)
     Feat_useCol;
     Feat_order(2);
     Feat_name("---");
@@ -89,6 +91,7 @@ struct SingleSideFeat : CardFeatReg {
     Feat_help;
 };
 struct DoubleSideFeat : CardFeatReg {
+    FeatDef(DoubleSideFeat)
     Feat_useCol;
     Feat_order(2);
     Feat_name("===");
@@ -100,6 +103,7 @@ struct DoubleSideFeat : CardFeatReg {
 };
 
 struct SecretFeat : CardFeatReg {
+    FeatDef(SecretFeat)
     Feat_useCol;
     Feat_order(1);
     Feat_name("{ }");
@@ -110,6 +114,7 @@ struct SecretFeat : CardFeatReg {
 };
 
 struct HiddenFeat : FeatReg {
+    FeatDef(HiddenFeat)
     Feat_useCol;
     Feat_order(99);
     Feat_name("[[ ]]");

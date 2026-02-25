@@ -37,12 +37,13 @@ using VoidFns = std::vector<void(*)()>;
 struct _PFuncs {
     BoolFns playFns;
     VoidFns stylFns;
+    VoidFns loadFeatFns;
 };
 extern _PFuncs* PlugFns;
 
 extern std::vector<Plugin*> plugs;
 extern std::vector<FailedPlug> failedPlugs;
 extern std::vector<DisabldPlug> disabldPlugs;
-void clearPlugins();
+void clearPlugins(bool updateFeats = true);
 void loadPlugins();
 

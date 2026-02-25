@@ -21,16 +21,15 @@ const QString* helpStr = nullptr;
 int runApp(int argc, char *argv[]) {
     QApplication app(argc, argv);
     initSettings();
+    MG = new MainGame();
+    loadPlugins();
     getDecksPath(); // Create decks folder if does not exist
     clearTempNotes();
     initNotes();
     changeDeck(getStrSetting(curDeckSetting), false);
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     Log::Debug("Main") << "Configuration located at:\n" << path;
-    MG = new MainGame();
     initMenu(MG->menuBar());
-    registerNoteFeatures();
-    loadPlugins();
     MG->initScene();
 
     MG->showMaximized();

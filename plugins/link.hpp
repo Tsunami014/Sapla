@@ -15,6 +15,7 @@ struct BFnArray {
 
 struct Registry {
     VFnArray onLoad;
+    VFnArray onLoadFeats;
     VFnArray onUnload;
     BFnArray onPlay;
     VFnArray onStyl;

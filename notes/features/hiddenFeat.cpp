@@ -52,6 +52,11 @@ QMap<QString, QString> HiddenFeat::help() const {
             "E.g. `[[hi::bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
             "Leaving sides blank is ok (e.g. `[[front::]]`)\n"
             "Note templates will not work inside this."
+        }, {"Randomly hidden\n[[||]]",
+            "Randomly selects one of the listed features to use\n"
+            "E.g. `[[A||B]]` would show either A or B with a 50% chance\n"
+            "This can be combined with hidden on sides, e.g. `[[choice1||choice2front::choice2back||choice3]]`)\n"
+            "Note templates will not work inside this."
         }
     };
 }

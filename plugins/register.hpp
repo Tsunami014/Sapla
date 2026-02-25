@@ -42,24 +42,29 @@
         name##Fns.insert(name##Fns.end(), fns.begin(), fns.end()); \
         return *this; \
     }
+#define _useFn(name) \
+    { name##Fns.data(), int(name##Fns.size()) }
 
 struct RegistryBuilder {
     _makeFns(Load, VoidFn)
     _makeFns(Unload, VoidFn)
+    _makeFns(LoadFeats, VoidFn)
     _makeFns(Play, BoolFn)
     _makeFns(Styl, VoidFn)
 
     Registry build(const char* desc) {
         return Registry{
-            { LoadFns.data(),   int(LoadFns.size()) },
-            { UnloadFns.data(), int(UnloadFns.size()) },
-            { PlayFns.data(),   int(PlayFns.size()) },
-            { StylFns.data(),   int(StylFns.size()) },
+            _useFn(Load),
+            _useFn(Unload),
+            _useFn(LoadFeats),
+            _useFn(Play),
+            _useFn(Styl),
             desc,
         };
     }
 };
 #undef _makeFns
+#undef _useFn
 
 #define REGISTER_PLUG(build, vFrom, vTo) \
     extern "C" Registry _register() { return build; }\

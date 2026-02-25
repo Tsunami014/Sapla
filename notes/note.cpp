@@ -71,7 +71,8 @@ void Note::setContents(const QString& nc) {
     orig = nc;
     reset();
     {
-        auto it = templDefRe.globalMatch(orig);
+        QString hidden = TemplateFeats::instance->highersReplace(orig);
+        auto it = templDefRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
             QString title = m.captured(1);
@@ -85,16 +86,6 @@ void Note::updateCards() {
     prio = 0;
     QString conts = orig;
     {
-        auto it = templDefRe.globalMatch(orig);
-        int offs = 0;
-        while (it.hasNext()) {
-            auto m = it.next();
-            int start = m.capturedStart(0) + offs;
-            int end = m.capturedEnd(0) + offs;
-            conts.replace(start, end - start, "");
-            offs -= (end - start);
-        }
-    } {
         auto it = templApplyRe.globalMatch(conts);
         int offs = 0;
         while (it.hasNext()) {
@@ -215,7 +206,7 @@ QString Note::title() {
 
 void Note::updateSchedules() {
     QString conts = contents()
-        .replace(scheduleInfRe, "");
+        .remove(scheduleInfRe);
     QStringList infs;
     for (auto& fc : cards) {
         infs.append(fc->schd.toInf(fc->title));

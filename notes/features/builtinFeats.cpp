@@ -1,10 +1,9 @@
-#include "../features.hpp"
-
-constexpr auto MO = QRegularExpression::MultilineOption;
+// Features that have hardcoded behaviour built in
+#include "features.hpp"
 
 const QRegularExpression noteInfRe(R"((?: +|^)#((?:\\ |[^ \n])+) *(?:(?= )|$))", MO);
 QString TagFeats::replacements(QString& txt, Side s) const {
-    return txt.replace(noteInfRe, "");
+    return txt.remove(noteInfRe);
 }
 QString TagFeats::markup(QString& line) const {
     static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+)( *)(?:(?= )|$))", MO);
@@ -34,8 +33,8 @@ const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|");
 const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
 QString TemplateFeats::replacements(QString& txt, Side s) const {
     return txt
-        .replace(templDefRe, "")
-        .replace(scheduleInfRe, "")
+        .remove(templDefRe)
+        .remove(scheduleInfRe)
     ;
 }
 QString TemplateFeats::markup(QString& line) const {

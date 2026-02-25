@@ -1,4 +1,4 @@
-#include "../features.hpp"
+#include "features.hpp"
 #include <QRandomGenerator>
 
 const QRegularExpression secretRe(R"((?<!\\){(.*?[^\\\n])(?:::(?<group>.*?[^\\\n]))?(?:\?\?(?<hint>.*?[^\\\n]))?})");
@@ -21,7 +21,7 @@ public:
         : FlashCard(parent, front, back, title, s)
     {
         orig = back;
-        orig.replace(scheduleInfRe, "");
+        orig.remove(scheduleInfRe);
 
         uint nxtgroup = 0;
         auto it = secretRe.globalMatch(orig);
@@ -57,6 +57,7 @@ public:
         QString txt;
         switch (s) {
             case SIDE_NAME:
+            case SIDE_HIDE:
                 return "ERROR";
             case SIDE_FRONT:
                 txt = front;
@@ -162,6 +163,7 @@ QMap<QString, QString> SecretFeat::help() const {
     return {{"Secret note\n{answer::group??hint}",
         "Hides the contents on the front and reveals on the back.\n"
         "This differs from using [[::]] as this creates a card with progressive difficulty (where it randomly hides some and over time more are hidden).\n"
-        "The group and hint are optional. You can have {answer} or {answer::group} or {answer??hint} as well."
+        "The group and hint are optional. You can have {answer} or {answer::group} or {answer??hint} as well.\n"
+        "Note templates will not work inside this."
     }};
 }

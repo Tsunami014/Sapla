@@ -10,6 +10,7 @@ using months = std::chrono::duration<long, std::ratio<2629746>>;
 
 enum Side {
     SIDE_NAME,
+    SIDE_HIDE,
     SIDE_FRONT,
     SIDE_BACK
 };

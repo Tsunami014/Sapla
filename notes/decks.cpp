@@ -147,7 +147,7 @@ bool copyDeck(DeckCopyType typ, bool tmp) {
     auto match = copyre.match(curDeck);
     if (match.hasMatch()) {
         bool ok;
-        uint num = match.captured(1).replace(",", "").toUInt(&ok);
+        uint num = match.captured(1).remove(',').toUInt(&ok);
         if (!ok) { // Should REALLY never happen
             Log::Warn(MODULE) << "Something very wrong happened with the copy deck!";
             idx = 1;

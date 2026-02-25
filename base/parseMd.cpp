@@ -83,6 +83,6 @@ QString parseMarkdownHtml(QString txt) {
     while (i < esc.size() && esc.at(i) == ' ') i++;
     esc = QString("&nbsp;").repeated(i) + esc.mid(i)
         .replace("\n", "<br/>")
-        .replace("\\", "");  // Get rid of backslashes that are only there for escaping stuff (the \\ was handled at the start)
+        .remove('\\');  // Get rid of backslashes that are only there for escaping stuff (the \\ was handled at the start)
     return esc;
 }

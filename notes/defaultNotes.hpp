@@ -2,16 +2,14 @@
 
 QStringList defNotes = QString(R"(
 
-What is **Australia**?
+What _is_ **Australia**?
     *  (This is important to know)
 ---
 A ~~city~~ ==country==
 #!2
 
 
-What _is_ the meaning of life?
----
-42
+The meaning of life is {42}!
 >  From a book or something
 #!1
 
@@ -26,6 +24,12 @@ What is `1 + 1`?
 [[What happened i::I]]n _2025_[[?::]]
 ===
 [[When was t::T]]his app was made[[?::]]
+
+
+[[Notice how this is hidden and both the group1s will always be next to each other? (The groups can be called anything)]]
+1 + 1 = 5 - {3::group1??it's a number} (this is {easy::group1})
+2 + 2 = {-1??it's a number} + 5
+You're doing [[great||excellent||wonderful]]!
 
 
 |=debug

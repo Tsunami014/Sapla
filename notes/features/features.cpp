@@ -37,8 +37,9 @@ void registerNoteFeatures() {
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_CFEAT(SecretFeat);
-    REGISTER_FEAT(TagFeats);
-    REGISTER_FEAT(TemplateFeats);
+    REGISTER_FEAT(ScheduleFeat);
+    REGISTER_FEAT(TagFeat);
+    REGISTER_FEAT(TemplateFeat);
     REGISTER_FEAT(HiddenFeat);
 
     for (auto* f : PlugFns->loadFeatFns) f();

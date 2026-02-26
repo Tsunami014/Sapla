@@ -71,7 +71,7 @@ void Note::setContents(const QString& nc) {
     orig = nc;
     reset();
     {
-        QString hidden = TemplateFeats::instance->highersReplace(orig);
+        QString hidden = TemplateFeat::instance->highersReplace(orig);
         auto it = templDefRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
@@ -86,7 +86,7 @@ void Note::updateCards() {
     prio = 0;
     QString conts = orig;
     {
-        QString hidden = TemplateFeats::instance->highersReplace(orig);
+        QString hidden = TemplateFeat::instance->highersReplace(orig);
         auto it = templApplyRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
@@ -100,7 +100,7 @@ void Note::updateCards() {
     } {
         tags = {};
         prio = 0;
-        QString hidden = TagFeats::instance->highersReplace(orig);
+        QString hidden = TagFeat::instance->highersReplace(orig);
         auto it = noteInfRe.globalMatch(hidden);
         QMap<QString, bool> has;
         while (it.hasNext()) {

@@ -1,11 +1,34 @@
 // Features that have hardcoded behaviour built in
 #include "features.hpp"
 
+const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
+QString ScheduleFeat::replacements(QString& txt, Side s) const {
+    return txt.remove(scheduleInfRe);
+}
+QString ScheduleFeat::markup(QString& line) const {
+    if (line.startsWith("&lt;&lt;") && line.endsWith("&gt;&gt;")) {
+        return "<i style='color:#CCC'>Scheduling info</i>";
+    }
+    return line;
+}
+QMap<QString, QString> ScheduleFeat::help() const {
+    return {{"Schedule",
+        "Warning: only for if you are bothered\n"
+        "Schedule strings have the following format:\n"
+        "<<feat,idx,score,time>>\n"
+        "Where feat is the feature name, "
+            "idx is the idx of the note (used by each feature in a different way), "
+            "score is the score given to the note of how well you remembered it, "
+            "and time is the next time it will be shown.\n"
+        "Multiple can be chained with | e.g. `<<f,i,s,t|f2,i2,s2,t2>>`"
+    }};
+}
+
 const QRegularExpression noteInfRe(R"((?: +|^)#((?:\\ |[^ \n])+) *(?:(?= )|$))", MO);
-QString TagFeats::replacements(QString& txt, Side s) const {
+QString TagFeat::replacements(QString& txt, Side s) const {
     return txt.remove(noteInfRe);
 }
-QString TagFeats::markup(QString& line) const {
+QString TagFeat::markup(QString& line) const {
     static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+)( *)(?:(?= )|$))", MO);
     return line
         .replace(re, QString(
@@ -14,7 +37,7 @@ QString TagFeats::markup(QString& line) const {
             "\\3"
         ).arg(col));
 }
-QMap<QString, QString> TagFeats::help() const {
+QMap<QString, QString> TagFeat::help() const {
     return {
            {"Tag\n#tag",
             "Add a tag for this note"
@@ -30,8 +53,7 @@ QMap<QString, QString> TagFeats::help() const {
 const QString templBaseRe = R"(\s*([^|:\n]+?)\s*([|:\n](?!\|)(?:.|\n)*?)?)";
 const QRegularExpression templDefRe("^\\s*\\|=" + templBaseRe + "=\\|\\s*$", MO);
 const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|");
-const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
-QString TemplateFeats::replacements(QString& txt, Side s) const {
+QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
         return txt
             .remove(templDefRe)
@@ -63,10 +85,7 @@ QString TemplateFeats::replacements(QString& txt, Side s) const {
     }
     return txt.remove(templDefRe);
 }
-QString TemplateFeats::markup(QString& line) const {
-    if (line.startsWith("&lt;&lt;") && line.endsWith("&gt;&gt;")) {
-        return "<i style='color:#CCC'>Scheduling info</i>";
-    }
+QString TemplateFeat::markup(QString& line) const {
     QString nln = line
         .replace("||", QString("<b style='color:%1;'>||</b>").arg(cols[0]));
 
@@ -86,7 +105,7 @@ QString TemplateFeats::markup(QString& line) const {
 
     return nln;
 }
-QMap<QString, QString> TemplateFeats::help() const {
+QMap<QString, QString> TemplateFeat::help() const {
     return {
            {"Template definition\n|= =|",
             "Defines a note template\n"

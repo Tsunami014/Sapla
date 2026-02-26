@@ -55,22 +55,29 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 #define Feat_dominance     bool dominance(const QString& txt) const override
 
 
+extern const QRegularExpression scheduleInfRe;
+struct ScheduleFeat : FeatReg {
+    FeatDef(ScheduleFeat)
+    Feat_order(1000);
+    Feat_name("<<>>");
+    Feat_replacements;
+    Feat_markup;
+    Feat_help;
+};
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templApplyRe;
-extern const QRegularExpression scheduleInfRe;
-struct TemplateFeats : FeatReg {
-    FeatDef(TemplateFeats)
+struct TemplateFeat : FeatReg {
+    FeatDef(TemplateFeat)
     Feat_useCols(2);
-    Feat_order(98);
+    Feat_order(100);
     Feat_name("|| ||");
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 extern const QRegularExpression noteInfRe;
-extern const QRegularExpression scheduleInfRe;
-struct TagFeats : FeatReg {
-    FeatDef(TagFeats)
+struct TagFeat : FeatReg {
+    FeatDef(TagFeat)
     Feat_useCol;
     Feat_order(90);
     Feat_name("#tag");
@@ -116,7 +123,7 @@ struct SecretFeat : CardFeatReg {
 struct HiddenFeat : FeatReg {
     FeatDef(HiddenFeat)
     Feat_useCol;
-    Feat_order(99);
+    Feat_order(110);
     Feat_name("[[ ]]");
     Feat_replacements;
     Feat_markup;

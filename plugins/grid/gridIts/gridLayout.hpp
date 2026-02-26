@@ -1,5 +1,4 @@
 #pragma once
-#include "../game.hpp"
 #include "cardIt.hpp"
 #include <vector>
 #include <QString>

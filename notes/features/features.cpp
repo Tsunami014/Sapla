@@ -1,6 +1,6 @@
 // Misc function definitions for features to use
 #include "features.hpp"
-#include "../../plugins/getPlugins.hpp"
+#include "plugins/getPlugins.hpp"
 
 QStringList cols = {
     "#E6DDD6",

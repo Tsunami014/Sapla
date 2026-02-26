@@ -1,6 +1,7 @@
 #pragma once
-#include "game.hpp"
-#include "items/gridLayout.hpp"
+#include "items/treeItem.hpp"
+#include "gridIts/gridLayout.hpp"
+#include "scenes/gameScn.hpp"
 #include <QGraphicsTextItem>
 
 class PlayScene : public GraphicGameScene {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../game.hpp"
+#include "items/cardIt.hpp"
 
 class GridCGI : public CardGraphicItem {
 public:

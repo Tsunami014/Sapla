@@ -1,5 +1,7 @@
 #pragma once
-#include "game.hpp"
+#include "items/treeItem.hpp"
+#include "items/cardIt.hpp"
+#include "scenes/gameScn.hpp"
 #include <QTimer>
 #include <QGraphicsTextItem>
 

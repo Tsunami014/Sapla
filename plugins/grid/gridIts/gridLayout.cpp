@@ -1,4 +1,5 @@
 #include "gridLayout.hpp"
+#include "base/svgRend.hpp"
 #include <QRandomGenerator>
 
 GLayoutGraphicItem::GLayoutGraphicItem(QGraphicsItem* parent)

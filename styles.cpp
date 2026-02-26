@@ -111,6 +111,9 @@ void MainGame::initStyles() {
             "background-color: %1;"
             "border-radius: 6px;"
         "}"
+        "QDialog * {" // Because otherwise text in e.g. file dialogs are white on white
+            "color: black;"
+        "}"
     )
         .arg(getCol("alight", -100, 0, 20))  // %1 - QSplitter handle colour
     ;

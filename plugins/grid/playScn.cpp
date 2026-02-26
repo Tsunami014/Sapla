@@ -1,5 +1,8 @@
+#include "core.hpp"
+#include "help.hpp"
 #include "playScn.hpp"
-#include "items/cardLayouts.hpp"
+#include "gridIts/cardLayouts.hpp"
+#include "items/scheduleInfTxt.hpp"
 #include <QEvent>
 #include <QKeyEvent>
 #include <QRandomGenerator>

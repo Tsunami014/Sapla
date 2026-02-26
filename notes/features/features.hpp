@@ -1,7 +1,7 @@
 // A file to import containing all the important stuff
 #pragma once
-#include "../features.hpp"
-#include "../../log.hpp"
+#include "notes/features.hpp"
+#include "log.hpp"
 #include <QRegularExpression>
 
 const QString MODULE = "CardFeature";

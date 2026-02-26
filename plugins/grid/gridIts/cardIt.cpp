@@ -1,4 +1,5 @@
 #include "cardIt.hpp"
+#include "core.hpp"
 #include "../playScn.hpp"
 #include "overlay.hpp"
 #include <QGraphicsSceneMouseEvent>

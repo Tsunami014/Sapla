@@ -1,5 +1,7 @@
-#include "game.hpp"
+#include "plugins/link.hpp"
+#include "core.hpp"
 #include "playScn.hpp"
+#include "base/svgRend.hpp"
 
 bool init() {
     if (allCards.size() < 4) return false;

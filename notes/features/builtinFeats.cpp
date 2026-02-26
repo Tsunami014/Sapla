@@ -32,10 +32,36 @@ const QRegularExpression templDefRe("^\\s*\\|=" + templBaseRe + "=\\|\\s*$", MO)
 const QRegularExpression templApplyRe("\\|\\|" + templBaseRe + "\\|\\|");
 const QRegularExpression scheduleInfRe(R"((?:\n+|^)<<(.*)>>\n*(?=\n|$))");
 QString TemplateFeats::replacements(QString& txt, Side s) const {
-    return txt
-        .remove(templDefRe)
-        .remove(scheduleInfRe)
-    ;
+    if (s == SIDE_NAME) {
+        return txt
+            .remove(templDefRe)
+            .remove(scheduleInfRe)
+        ;
+    }
+    auto it = templApplyRe.globalMatch(txt);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+
+        QString name = m.captured(1);
+        if (globalTemplates.find(name) == globalTemplates.end()) {
+            continue;
+        }
+        QString templ = globalTemplates[name];
+        QString match = m.captured(2);
+        if (!match.isNull()) {
+            QStringList gs = match.sliced(1).split('|');
+            for (auto& g : gs) {
+                templ = templ.arg(g.trimmed());
+            }
+        }
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        txt.replace(start, end - start, templ);
+        offs += templ.length() - (end - start);
+    }
+    return txt.remove(templDefRe);
 }
 QString TemplateFeats::markup(QString& line) const {
     if (line.startsWith("&lt;&lt;") && line.endsWith("&gt;&gt;")) {

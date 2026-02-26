@@ -86,8 +86,8 @@ void Note::updateCards() {
     prio = 0;
     QString conts = orig;
     {
-        auto it = templApplyRe.globalMatch(conts);
-        int offs = 0;
+        QString hidden = TemplateFeats::instance->highersReplace(orig);
+        auto it = templApplyRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
 
@@ -96,24 +96,12 @@ void Note::updateCards() {
                 error += "Unknown template name: " + name + "\n";
                 continue;
             }
-            QString templ = globalTemplates[name];
-            QString match = m.captured(2);
-            if (!match.isNull()) {
-                QStringList gs = match.sliced(1).split('|');
-                for (auto& g : gs) {
-                    templ = templ.arg(g.trimmed());
-                }
-            }
-
-            int start = m.capturedStart(0) + offs;
-            int end = m.capturedEnd(0) + offs;
-            conts.replace(start, end - start, templ);
-            offs += templ.length() - (end - start);
         }
     } {
         tags = {};
         prio = 0;
-        auto it = noteInfRe.globalMatch(orig);
+        QString hidden = TagFeats::instance->highersReplace(orig);
+        auto it = noteInfRe.globalMatch(hidden);
         QMap<QString, bool> has;
         while (it.hasNext()) {
             auto m = it.next();

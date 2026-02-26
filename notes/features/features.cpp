@@ -68,7 +68,7 @@ QString FeatReg::highersReplace(QString inp) {
     uint clen = Feats.size();
     uint toIdx;
     bool found = false;
-    for (uint i = 0; i < clen; i++) {
+    for (uint i = clen-1; i >= 0; i--) {
         if (!found) {
             if (Feats[i]->getName() == name) {
                 toIdx = i;
@@ -86,7 +86,7 @@ QString FeatReg::highersReplace(QString inp) {
         Log::Error(MODULE) << "FeatReg not found in feats!";
         return inp;
     }
-    for (uint i = clen-1; i > toIdx; i--) {
+    for (uint i = 0; i < toIdx; i++) {
         inp = Feats[i]->replacements(inp, SIDE_HIDE);
     }
     return inp;

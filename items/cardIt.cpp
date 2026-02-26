@@ -16,7 +16,7 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, QGr
         txt.setMargin(4);
         txt.setStyleSheet("color: black;");
         txt.setAttribute(Qt::WA_TranslucentBackground);
-        txt.setFont(getFont(1.5));
+        txt.setFont(getFont(2.5));
         hlcol = getCol("alight", 100, 50, 100);
     }
 CardGraphicItem::~CardGraphicItem() {

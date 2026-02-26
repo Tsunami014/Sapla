@@ -56,7 +56,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
 
     if (hasOverlay()) {
         GridCGI* git;
-        int resp;
+        int resp = -1;
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
                 git = it.item;

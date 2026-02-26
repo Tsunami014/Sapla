@@ -7,7 +7,7 @@ QFont getFont(double scale) {
     QFont font = QApplication::font();
     font.setStyle(QFont::StyleNormal);
     font.setWeight(QFont::Normal);
-    font.setPointSizeF(font.pointSizeF() * scale);
+    font.setPointSizeF(font.pointSizeF() * 1.25 * scale);
     return font;
 }
 QFont getFontSpan(qreal targetH) {

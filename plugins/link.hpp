@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+// NOTE: If there are strange errors PLEASE ensure the order of the Registry aligns with the order in the RegistryBuilder
+
 extern "C" {
     typedef void (*VoidFn)();
     typedef bool (*BoolFn)();
@@ -45,16 +47,16 @@ extern "C" {
 
 struct RegistryBuilder {
     _makeFns(Load, VoidFn)
-    _makeFns(Unload, VoidFn)
     _makeFns(LoadFeats, VoidFn)
+    _makeFns(Unload, VoidFn)
     _makeFns(Play, BoolFn)
     _makeFns(Styl, VoidFn)
 
     Registry build(const char* desc) {
         return Registry{
             _useFn(Load),
-            _useFn(Unload),
             _useFn(LoadFeats),
+            _useFn(Unload),
             _useFn(Play),
             _useFn(Styl),
             desc,

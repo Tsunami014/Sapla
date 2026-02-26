@@ -4,6 +4,7 @@
 #include "items/scheduleInfTxt.hpp"
 #include <QEvent>
 #include <QKeyEvent>
+#include <QDir>
 
 void PlayScene::resume() {
     if (done) return MG->nextFC();

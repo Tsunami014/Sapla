@@ -37,7 +37,7 @@ MarkdownEdit::MarkdownEdit(const QString& text, QWidget* parent) : QTextEdit(par
 void MarkdownEdit::init() {
     isBtn = false;
     lastCol = -1;
-    setFont(getFont(1));
+    setFont(getFont(2));
     connect(this, &QTextEdit::selectionChanged, this, [this](){
         QSignalBlocker blocker(this);
         SaveCursor savCurs(this);

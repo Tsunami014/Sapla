@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 set(PLUG_NAME grid)
 set(PLUG_SOURCES
-    game.cpp gridResources.qrc
+    game.cpp
+    gridResources.qrc
     playScn.cpp
     gridIts/gridLayout.cpp
     gridIts/cardIt.cpp

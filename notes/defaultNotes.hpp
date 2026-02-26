@@ -58,7 +58,8 @@ Fake newline: \n<- fake newline (try typing here)
 
 
 Can you have note templates with regular cards?
-|= highlight: **==%1==** =|
+(Testing with a local template but it's the same with global templates)
+|: highlight: **==%1==** :|
 ---
 ||highlight: Yes!||
 #test

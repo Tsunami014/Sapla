@@ -56,12 +56,6 @@ void registerNoteFeatures() {
     }
 }
 
-QString trimNL(const QString& orig) {
-    QString nstr = orig;
-    static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
-    return nstr.remove(re);
-}
-
 
 QString FeatReg::highersReplace(QString inp) {
     QString name = getName();

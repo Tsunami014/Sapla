@@ -13,6 +13,12 @@ const QString MODULE = "Note";
 
 std::map<QString, QString> globalTemplates;
 
+QString trimNL(const QString& orig) {
+    QString nstr = orig;
+    static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
+    return nstr.remove(re);
+}
+
 Note::Note(QString conts) {
     error = "";
     setContents(conts);
@@ -85,14 +91,26 @@ void Note::updateCards() {
     error = "";
     prio = 0;
     QString conts = orig;
+    std::map<QString, QString> loclTempls;
+    QString templHidden = TemplateFeat::instance->highersReplace(orig);
     {
-        QString hidden = TemplateFeat::instance->highersReplace(orig);
-        auto it = templApplyRe.globalMatch(hidden);
+        auto it = templLoclDefRe.globalMatch(templHidden);
+        while (it.hasNext()) {
+            auto m = it.next();
+            QString txt = m.captured(2);
+            if (txt.isNull()) txt = "";
+            loclTempls[m.captured(1)] = txt;
+        }
+    } {
+        auto it = templApplyRe.globalMatch(templHidden);
         while (it.hasNext()) {
             auto m = it.next();
 
             QString name = m.captured(1);
-            if (globalTemplates.find(name) == globalTemplates.end()) {
+            if (
+                globalTemplates.find(name) == globalTemplates.end() &&
+                loclTempls.find(name) == loclTempls.end()
+            ) {
                 error += "Unknown template name: " + name + "\n";
                 continue;
             }
@@ -246,19 +264,19 @@ void FlashCard::update(int rating) {
 QString FlashCard::getSide(Side s) const {
     QString txt;
     switch (s) {
-        case SIDE_NAME:
-            return "ERROR";
         case SIDE_FRONT:
             txt = front;
             break;
         case SIDE_BACK:
             txt = back;
             break;
+        default:
+            return "ERROR";
     }
     for (auto& f : Feats) {
         txt = f->replacements(txt, s);
     }
-    return txt;
+    return trimNL(txt);
 }
 QString FlashCard::getSideHtml(Side s) const {
     return parseMarkdownHtml(getSide(s));

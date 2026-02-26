@@ -53,24 +53,6 @@ public:
         schd.update(rating);
         updateDifficulty();
     }
-    QString getSide(Side s) const override {
-        QString txt;
-        switch (s) {
-            case SIDE_NAME:
-            case SIDE_HIDE:
-                return "ERROR";
-            case SIDE_FRONT:
-                txt = front;
-                break;
-            case SIDE_BACK:
-                txt = back;
-                break;
-        }
-        for (auto& f : Feats) {
-            txt = f->replacements(txt, s);
-        }
-        return txt;
-    }
 
 protected:
     QString orig;

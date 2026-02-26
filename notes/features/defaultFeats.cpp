@@ -14,7 +14,7 @@ std::vector<std::unique_ptr<FlashCard>> SingleSideFeat::getFlashCards(Note* pare
     std::vector<std::unique_ptr<FlashCard>> l;
     l.push_back(std::make_unique<FlashCard>(
         parent,
-        trimNL(txt.left(idx)), trimNL(txt.mid(idx + m.capturedLength())),
+        txt.left(idx), txt.mid(idx + m.capturedLength()),
         getName(), getSchd(schds, 0)
     ));
     return l;
@@ -46,8 +46,8 @@ std::vector<std::unique_ptr<FlashCard>> DoubleSideFeat::getFlashCards(Note* pare
         return {};
     }
     int idx = m.capturedStart();
-    QString first = trimNL(txt.left(idx));
-    QString second = trimNL(txt.mid(idx + m.capturedLength()));
+    QString first = txt.left(idx);
+    QString second = txt.mid(idx + m.capturedLength());
     std::vector<std::unique_ptr<FlashCard>> l;
     l.push_back(std::make_unique<FlashCard>(
         parent, first, second, getName(), getSchd(schds, 0)

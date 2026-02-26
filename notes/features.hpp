@@ -65,6 +65,7 @@ struct ScheduleFeat : FeatReg {
     Feat_help;
 };
 extern const QRegularExpression templDefRe;
+extern const QRegularExpression templLoclDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
     FeatDef(TemplateFeat)

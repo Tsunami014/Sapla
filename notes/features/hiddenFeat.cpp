@@ -1,6 +1,7 @@
 #include "features.hpp"
+#include <QRandomGenerator>
 
-const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)(?:(?<!\\)::(?<back>(?:.|\n)*?))?\]\])");
+const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
@@ -9,10 +10,17 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
-        QString back = m.captured("back");
-        QString repl = "";
-        if (!back.isNull()) {
-            repl = s == SIDE_BACK ? back : m.captured(1);
+
+        QStringList opts = m.captured(1).split("||");
+        uint randomIndex = QRandomGenerator::global()->bounded(opts.size());
+        QString item = opts[randomIndex];
+
+        QString repl;
+        if (item.contains("::")) {
+            QStringList sides = item.split("::");
+            repl = s == SIDE_BACK ? sides[1] : sides[0];
+        } else {
+            repl = item;
         }
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -26,13 +34,16 @@ QString HiddenFeat::markup(QString& line) const {
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
-        QString front = m.captured(1);
-        QString back = m.captured("back");
-        QString repl = "<b style='color:" + col + "'>[[</b>" + front;
-        if (!back.isNull()) {
-            repl += "<b style='color:" + col + "'>::</b>" + back;
-        }
-        repl += "<b style='color:" + col + "'>]]</b>";
+        QString conts = m.captured(1);
+        conts
+            .replace("||", "<b style='color:" + col + "'>||</b>")
+            .replace("::", "<b style='color:" + col + "'>::</b>")
+        ;
+        QString repl =
+            "<b style='color:" + col + "'>[[</b>" +
+            conts +
+            "<b style='color:" + col + "'>]]</b>"
+        ;
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
         line.replace(start, end - start, repl);

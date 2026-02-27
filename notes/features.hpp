@@ -58,7 +58,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 extern const QRegularExpression scheduleInfRe;
 struct ScheduleFeat : FeatReg {
     FeatDef(ScheduleFeat)
-    Feat_order(1000);
+    Feat_order(9999);
     Feat_name("<<>>");
     Feat_replacements;
     Feat_markup;
@@ -70,7 +70,7 @@ extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
     FeatDef(TemplateFeat)
     Feat_useCols(2);
-    Feat_order(100);
+    Feat_order(1000);
     Feat_name("|| ||");
     Feat_replacements;
     Feat_markup;
@@ -124,7 +124,7 @@ struct SecretFeat : CardFeatReg {
 struct HiddenFeat : FeatReg {
     FeatDef(HiddenFeat)
     Feat_useCol;
-    Feat_order(110);
+    Feat_order(100);
     Feat_name("[[ ]]");
     Feat_replacements;
     Feat_markup;

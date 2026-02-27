@@ -20,6 +20,7 @@ std::vector<std::unique_ptr<FlashCard>> SingleSideFeat::getFlashCards(Note* pare
     return l;
 }
 QString SingleSideFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_GETFC) return txt;
     return txt.remove(ssfRe);
 }
 QString SingleSideFeat::markup(QString& line) const {
@@ -58,6 +59,7 @@ std::vector<std::unique_ptr<FlashCard>> DoubleSideFeat::getFlashCards(Note* pare
     return l;
 }
 QString DoubleSideFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_GETFC) return txt;
     return txt.remove(dsfRe);
 }
 QString DoubleSideFeat::markup(QString& line) const {

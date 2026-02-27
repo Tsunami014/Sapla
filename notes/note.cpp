@@ -144,21 +144,6 @@ void Note::updateCards() {
             }
         }
     }
-    std::vector<QString> dominants;
-    for (auto& f : CardFeats) {
-        if (f->dominance(conts)) {
-            dominants.push_back(f->getName());
-        }
-    }
-    if (dominants.size() > 1) {
-        error += "Found multiple dominant features on note where there should only be one: `" + dominants.back();
-        dominants.pop_back();
-        for (auto& d : dominants) {
-            error += "`, `" + d;
-        }
-        error += "`\n";
-        return;
-    }
     std::map<QString, std::map<int, Schedule>> scheduleMap;
     auto it = scheduleInfRe.globalMatch(conts);
     while (it.hasNext()) {
@@ -191,6 +176,26 @@ void Note::updateCards() {
                 error += "Schedule idx already exists: `" + spl[1] + "`\n";
             }
         }
+    }
+
+    for (auto& f : Feats) {
+        conts = f->replacements(conts, SIDE_GETFC);
+    }
+
+    std::vector<QString> dominants;
+    for (auto& f : CardFeats) {
+        if (f->dominance(conts)) {
+            dominants.push_back(f->getName());
+        }
+    }
+    if (dominants.size() > 1) {
+        error += "Found multiple dominant features on note where there should only be one: `" + dominants.back();
+        dominants.pop_back();
+        for (auto& d : dominants) {
+            error += "`, `" + d;
+        }
+        error += "`\n";
+        return;
     }
     for (auto& f : CardFeats) {
         auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);

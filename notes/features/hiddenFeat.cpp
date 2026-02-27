@@ -3,7 +3,7 @@
 
 const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
-    if (s == SIDE_NAME) return txt;
+    if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
 
     auto it = hiddenRe.globalMatch(txt);

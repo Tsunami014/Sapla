@@ -62,7 +62,6 @@ const QRegularExpression templApplyRe(
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
         return txt
-            .remove(scheduleInfRe)
             .remove(templDefRe)
             .remove(templLoclDefRe)
         ;
@@ -97,7 +96,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         }
         QString match = m.captured(2);
         if (!match.isNull()) {
-            QStringList gs = match.sliced(1).split('|');
+            QStringList gs = match.split('|');
             for (auto& g : gs) {
                 templ = templ.arg(g.trimmed());
             }

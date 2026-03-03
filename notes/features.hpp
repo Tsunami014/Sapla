@@ -21,6 +21,7 @@ struct FeatReg {
     virtual const QString getName() const = 0;
     virtual int order() const { return 0; }
     QString highersReplace(QString inp);
+    QString othersReplace(QString inp);
     virtual QMap<QString, QString> help() const { return {}; }
     virtual QString replacements(QString& txt, Side s) const { return txt; }
     virtual QString markup(QString& line) const { return line; }

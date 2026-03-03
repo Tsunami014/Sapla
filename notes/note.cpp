@@ -92,8 +92,8 @@ void Note::updateCards() {
     prio = 0;
     QString conts = orig;
     std::map<QString, QString> loclTempls;
-    QString templHidden = TemplateFeat::instance->highersReplace(orig);
     {
+        QString templHidden = TemplateFeat::instance->highersReplace(orig);
         auto it = templLoclDefRe.globalMatch(templHidden);
         while (it.hasNext()) {
             auto m = it.next();
@@ -102,7 +102,8 @@ void Note::updateCards() {
             loclTempls[m.captured(1)] = txt;
         }
     } {
-        auto it = templApplyRe.globalMatch(templHidden);
+        QString templHidden2 = TemplateFeat::instance->othersReplace(orig);
+        auto it = templApplyRe.globalMatch(templHidden2);
         while (it.hasNext()) {
             auto m = it.next();
 

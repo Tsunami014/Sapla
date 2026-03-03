@@ -86,3 +86,13 @@ QString FeatReg::highersReplace(QString inp) {
     }
     return inp;
 }
+
+QString FeatReg::othersReplace(QString inp) {
+    QString name = getName();
+    for (auto f : Feats) {
+        if (f->getName() != name) {
+            inp = f->replacements(inp, SIDE_HIDE);
+        }
+    }
+    return inp;
+}

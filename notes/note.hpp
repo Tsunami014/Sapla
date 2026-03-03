@@ -16,6 +16,8 @@ enum Side {
     SIDE_BACK
 };
 
+QString trimNL(const QString& orig);
+
 using Duration = std::chrono::duration<long long>;
 struct _scheduleInf {
     _scheduleInf(std::vector<float> ratingScos, QString timings, Duration skipAmnt);

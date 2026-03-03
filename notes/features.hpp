@@ -110,6 +110,17 @@ struct DoubleSideFeat : CardFeatReg {
     Feat_markup;
     Feat_help;
 };
+struct MirrorSideFeat : CardFeatReg {
+    FeatDef(MirrorSideFeat)
+    Feat_useCol;
+    Feat_order(2);
+    Feat_name("///");
+    Feat_dominance;
+    Feat_getFlashCards;
+    Feat_replacements;
+    Feat_markup;
+    Feat_help;
+};
 
 struct SecretFeat : CardFeatReg {
     FeatDef(SecretFeat)

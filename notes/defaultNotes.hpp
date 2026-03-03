@@ -64,4 +64,14 @@ Can you have note templates with regular cards?
 ||highlight: Yes!||
 #test
 
+This is a mirror feature!
+The text will be the same on both sides.
+This is a great place to ..shuffle words.. or use the hidden==[[..?::feature!]]==
+#test
+///
+This is a note too but with nothing in it. But because of the mirror feature it will show too!
+#test
+[[It also doesn't include blank notes, as seen by below (unecessary, only to demonstrate)]]
+///
+
 )").trimmed().split("\n\n\n");

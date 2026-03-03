@@ -12,31 +12,37 @@ QString ShuffledFeat::replacements(QString& txt, Side s) const {
     while (it.hasNext()) {
         auto m = it.next();
         QString conts = m.captured(1);
-        QStringList groups;
-        for (auto s : conts.split(' ')) {
-            auto ln = s.length();
-            if (ln <= 3) {
-                groups.append(s);
-            } else {
-                QString str = s.sliced(1, ln-2);
-                if (!str.isUpper()) str = str.toLower();
-                if (
-                    std::all_of(str.begin(), str.end(),
-                        [&](QChar c){ return c == str[0]; })
-                ) {
+        QString out;
+        if (s == SIDE_BACK) {
+            out = conts;
+        } else {
+            QStringList groups;
+            for (auto s : conts.split(' ')) {
+                auto ln = s.length();
+                if (ln <= 3) {
                     groups.append(s);
-                    continue;
+                } else {
+                    QString str = s.sliced(1, ln-2);
+                    if (!str.isUpper()) str = str.toLower();
+                    if (
+                        std::all_of(str.begin(), str.end(),
+                            [&](QChar c){ return c == str[0]; })
+                    ) {
+                        groups.append(s);
+                        continue;
+                    }
+                    QString strorig = str;
+                    do {
+                        std::shuffle(str.begin(), str.end(), *QRandomGenerator::global());
+                    } while (str == strorig);
+                    groups.append(
+                        s[0] + str + s[ln-1]
+                    );
                 }
-                QString strorig = str;
-                do {
-                    std::shuffle(str.begin(), str.end(), *QRandomGenerator::global());
-                } while (str == strorig);
-                groups.append(
-                    s[0] + str + s[ln-1]
-                );
             }
+            out = groups.join(' ');
         }
-        QString repl = groups.join(' ');
+        QString repl = "**\x01" + out + "\x01**";
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -76,7 +82,7 @@ struct hiddenResult {
     QString contents;
 };
 
-const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)\]\])");
+const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
@@ -86,16 +92,21 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
     while (it.hasNext()) {
         auto m = it.next();
 
-        QStringList opts = m.captured(1).split("||");
-        uint randomIndex = QRandomGenerator::global()->bounded(opts.size());
-        QString item = opts[randomIndex];
-
+        QString conts = m.captured(1);
         QString repl;
-        if (item.contains("::")) {
-            QStringList sides = item.split("::");
-            repl = s == SIDE_BACK ? sides[1] : sides[0];
+        if (conts.contains("::") || conts.contains("||")) {
+            QStringList opts = conts.split("||");
+            uint randomIndex = QRandomGenerator::global()->bounded(opts.size());
+            QString item = opts[randomIndex];
+
+            if (item.contains("::")) {
+                QStringList sides = item.split("::");
+                repl = s == SIDE_BACK ? sides[1] : sides[0];
+            } else {
+                repl = item;
+            }
         } else {
-            repl = item;
+            repl = "";
         }
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;

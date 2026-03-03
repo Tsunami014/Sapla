@@ -16,7 +16,7 @@ std::map<QString, QString> globalTemplates;
 QString trimNL(const QString& orig) {
     QString nstr = orig;
     static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
-    return nstr.remove(re).replace("\\\n", "");
+    return nstr.replace("\\\n", "").remove(re);
 }
 
 Note::Note(QString conts) {

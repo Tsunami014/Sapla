@@ -75,3 +75,41 @@ QMap<QString, QString> DoubleSideFeat::help() const {
         "This creates 2 cards: one where the top is on the front and the bottom is on the back, and another the other way around."
     }};
 }
+
+const QRegularExpression msfRe(R"(^\s*\/\/\/\s*$)", MO);
+bool MirrorSideFeat::dominance(const QString& txt) const {
+    return msfRe.match(txt).hasMatch();
+}
+std::vector<std::unique_ptr<FlashCard>> MirrorSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const {
+    QStringList cards = txt.split(msfRe);
+    auto len = cards.length();
+    if (len < 2) {
+        return {};
+    }
+    std::vector<std::unique_ptr<FlashCard>> l;
+    for (uint i = 0; i < len; i++) {
+        QString c = trimNL(cards[i]);
+        if (c != "") {
+            l.push_back(std::make_unique<FlashCard>(
+                parent, c, c, getName(), getSchd(schds, i)
+            ));
+        }
+    }
+    return l;
+}
+QString MirrorSideFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_GETFC) return txt;
+    return txt.remove(msfRe);
+}
+QString MirrorSideFeat::markup(QString& line) const {
+    if (msfRe.match(line).hasMatch()) {
+        return QString("<span style='r:%1'>╱╱╱</span>").arg(col);
+    }
+    return line;
+}
+QMap<QString, QString> MirrorSideFeat::help() const {
+    return {{"Mirror sided note\n///",
+        "Separates the note into any amount of cards.\n"
+        "Each section of the note (separated by ///) is its own card, and the contents will be used for both the front and back."
+    }};
+}

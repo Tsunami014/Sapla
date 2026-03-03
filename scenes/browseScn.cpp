@@ -147,6 +147,7 @@ void BrowseScene::updatePrev() {
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
 }
 void BrowseScene::typed() {
+    QSignalBlocker blocker(te);
     QList<QTreeWidgetItem*> selected = tree->selectedItems();
     if (selected.size() != 1) {
         te->setText("");

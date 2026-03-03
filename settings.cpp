@@ -39,8 +39,8 @@ void loadSettingLine(QString str, bool global) {
     }
     QStringList spl = str.split(' ');
     if (spl[0] == "STR") {
-        if (global) StrGlobalSettings[spl[1]] = spl[2];
-        else StrLocalSettings[spl[1]] = spl[2];
+        if (global) StrGlobalSettings[spl[1]] = unsanitise(spl[2]);
+        else StrLocalSettings[spl[1]] = unsanitise(spl[2]);
     } else if (spl[0] == "NUM") {
         bool ok;
         float num = spl[2].toFloat(&ok);

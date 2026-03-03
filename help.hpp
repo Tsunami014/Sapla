@@ -130,6 +130,7 @@ const QString BROWSE_HELP =
         "<p>Note templates are comprised of a header and contents, and are contained in `|| ... ||` for usage or `|= ... =|` for definitions or `|: ... :|` for local definitions (which means the template is only avaliable in that card).</p>"
         "<p>The header is separated from the body of the template via a : or a | or a newline.</p>"
         "<p>The body for template usages is split up into multiple arguments, which are separated by a | only.</p>"
+        "<p>Please do not put note template things inside other note template things. Nesting is not supported.</p>"
         "<p><b>Unlike other features</b>, this will <i>not</i> keep spacing at the start/end of the definition. "
             "That means that this: `|= hi : bye =|` is the same as this: `|=hi:bye=|`. "
             "The spacing is <i>only</i> stripped at the start/end of the header, contents or between arguments (e.g. `|| hi | arg1 | arg2 ||` -> `||hi|arg1|arg2||`)</p>"

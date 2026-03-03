@@ -1,6 +1,14 @@
 #include "features.hpp"
 #include <QRandomGenerator>
 
+// Instead of a re for hidden implement a parser. This is for nested stuff.
+
+struct hiddenResult {
+    int start;
+    int end;
+    QString contents;
+};
+
 const QRegularExpression hiddenRe(R"(\[\[((?:.|\n)*?)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;

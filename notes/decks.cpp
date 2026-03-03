@@ -96,6 +96,7 @@ int renameDeck(QString newname) {
         return -1;
     }
     if (QFile::rename(pth+curDeck, pth+newname)) {
+        setStrSetting(curDeckSetting, newname);
         int index = std::distance(decks.begin(), it);
         decks[index] = newname;
         curDeck = newname;
@@ -122,6 +123,7 @@ int deleteDeck(bool ask) {
         return -1;
     }
     decks.erase(it);
+    setStrSetting(curDeckSetting, "");
     Log::Debug(MODULE) << "Successfully deleted deck " << oldname << "!";
     return std::distance(decks.begin(), it);
 }

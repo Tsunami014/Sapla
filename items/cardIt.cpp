@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
-CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, QGraphicsItem* parent)
+CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, float fontsze, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)),
       front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
         side = 0;
@@ -16,7 +16,7 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, QGr
         txt.setMargin(4);
         txt.setStyleSheet("color: black;");
         txt.setAttribute(Qt::WA_TranslucentBackground);
-        txt.setFont(getFont(2.5));
+        txt.setFont(getFont(fontsze));
         hlcol = getCol("alight", 100, 50, 100);
     }
 CardGraphicItem::~CardGraphicItem() {

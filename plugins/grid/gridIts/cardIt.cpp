@@ -5,7 +5,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 GridCGI::GridCGI(const QString& fname, GetFlashCard& fc, QGraphicsItem* parent)
-    : CardGraphicItem(fname, fc, parent), ontop(false) {}
+    : CardGraphicItem(fname, fc, 1.5, parent), ontop(false) {}
 
 void GridCGI::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     bool oldHover = hover;

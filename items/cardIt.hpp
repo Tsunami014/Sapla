@@ -7,7 +7,7 @@
 
 class CardGraphicItem : public RectItem, public SvgUtils {
 public:
-    CardGraphicItem(const QString& fname, GetFlashCard& fc, QGraphicsItem* parent = nullptr);   
+    CardGraphicItem(const QString& fname, GetFlashCard& fc, float fontSze = 2.0, QGraphicsItem* parent = nullptr);   
     ~CardGraphicItem();
 
     QRect getRect() override { return rect.toRect(); }

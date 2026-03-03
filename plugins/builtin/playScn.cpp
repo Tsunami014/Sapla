@@ -16,7 +16,7 @@ PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false) {
     GetFlashCard gfc{};
     schdT = getScheduleInfTxt(gfc);
     scn.addItem(schdT);
-    card = new CardGraphicItem(":/BIAssets/card.svg", gfc);
+    card = new CardGraphicItem(":/BIAssets/card.svg", gfc, 2.5);
     scn.addItem(card);
     scn.addItem(&tr);
 }

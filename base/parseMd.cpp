@@ -41,9 +41,13 @@ QString parseMarkdownHtml(QString txt) {
        .replace("\\n", "\n")
     ;
 
+    // Now parse all the features
+    for (auto& f : Feats) {
+        esc = f->markup(esc);
+    }
+
     // Lists
     replace(esc, STATIC_RE(R"(^( *(?:&gt; *)?)([*\-+])[ \t]+(.+)$)"), [](QRegularExpressionMatch m) {
-    // (?:> {1,2})? *
         QString bullet;
         switch (m.captured(2)[0].unicode()) {
             case '-':
@@ -72,11 +76,6 @@ QString parseMarkdownHtml(QString txt) {
        .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol))
        .replace(STATIC_RE(R"((?<!\\)~~([^~]*[^~\\])~~)"), "<s>\\1</s>")
        .replace(STATIC_RE(R"((?<!\\))" "\x01" "([^\x01]*[^\x01\\\\])" "\x01"), hlRepl.arg(MG->styls.secretCol));
-
-    // Now parse all the features
-    for (auto& f : Feats) {
-        esc = f->markup(esc);
-    }
 
     // Fix spaces and finish
     int i = 0;

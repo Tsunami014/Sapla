@@ -7,7 +7,7 @@ QString ScheduleFeat::replacements(QString& txt, Side s) const {
 }
 QString ScheduleFeat::markup(QString& line) const {
     if (line.startsWith("&lt;&lt;") && line.endsWith("&gt;&gt;")) {
-        return "<i style='color:#CCC'>Scheduling info</i>";
+        return "<i style='color:#CCC;font-size:14px'>Scheduling info</i>";
     }
     return line;
 }

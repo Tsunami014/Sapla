@@ -1,7 +1,7 @@
 # Sapla
 A cool flashcard app made in QT!
 
-If you need any help, please use the `Help -> App help` or `Help -> This screen help` menu item. For FAQ and important things look at the app help.
+If you need any help, please use the `Help -> App help` or `Help -> This screen help` menu item. For FAQ, important things or sneaky tricks look at the app help.
 
 ## How it works
 You define 'notes' which you store in 'decks'. Each note generate 'cards' based on the content.

@@ -106,6 +106,7 @@ const QString BROWSE_HELP =
         "Using backslashes in places e.g. <b>-\\--</b> will make the feature not parse as a feature!</p>"
     "<p>To get a regular backslash in your text you can escape it; \\\\</p>"
     "<p>Rules for backslashes: place it wherever it works (try on the inside or the left of features)</p>"
+    "<p>You can also backslash and then have a newline to remove the newline, useful if you want to break a complex statement/expression for one line into multiple</p>"
     "<p><b>HINT</b>: (hopefully) <i>most</i> of the time if you are escaping a feature it will not have its colour, and that can be used to see if it worked.</p>"
 "<h2>Scheduling</h2>"
     "<p>Scheduling for cards is auto generated and updated at the bottom of the file.</p>"

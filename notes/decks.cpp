@@ -1,5 +1,6 @@
 #include "getNotes.hpp"
 #include "decks.hpp"
+#include "../core.hpp"
 #include "../log.hpp"
 #include "../settings.hpp"
 #include <QFile>
@@ -25,6 +26,7 @@ int deckIdx() {
 }
 
 void changeDeck(QString newname, bool createNew) {
+    MG->removeGame();
     for (auto* n : notesL) delete n;
     notesL.clear();
 

@@ -170,6 +170,7 @@ void PlugViewScene::loadF() {
     QStringList deletes;
     enum runOs { GOING, Yall, Nall, EndAll };
     runOs opt = GOING;
+    bool only1 = fnames.size() == 1;
     for (const QString& fname : fnames) {
         bool choice;
         switch (opt) {
@@ -182,11 +183,15 @@ void PlugViewScene::loadF() {
                 choice = false;
                 break;
             case GOING:
+                auto opts = QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::No;
+                if (!only1) {
+                    opts |= QMessageBox::YesAll | QMessageBox::NoAll;
+                }
                 auto reply = QMessageBox::question(this, "Load plugin type", 
                         "Loading plugins moves it to the configuration directory, "
                         "do you wish to keep the original file?\n"
                         "Current file: "+fname,
-                    QMessageBox::Cancel | QMessageBox::Yes | QMessageBox::YesAll | QMessageBox::No | QMessageBox::NoAll, QMessageBox::Yes);
+                     opts);
                 switch (reply) {
                     case QMessageBox::YesAll:
                         opt = Yall;

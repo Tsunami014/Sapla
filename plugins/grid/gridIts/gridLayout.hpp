@@ -34,6 +34,7 @@ public:
 
     std::vector<gridItem> grid;
     inline static int Cols = 2;
+    // Rows is always 2
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;

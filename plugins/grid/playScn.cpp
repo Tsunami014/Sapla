@@ -27,7 +27,8 @@ PlayScene::PlayScene()
 
         overlay = NULL;
 
-        while (true) {
+        uint8_t amnt = QRandomGenerator::global()->bounded(1, GLayoutGraphicItem::Cols * 2 - 1);
+        for (uint8_t i = 0; i < amnt; i++) {
             GetFlashCard fc = GetFlashCard();
             auto lay = Single;
             auto* nCGI = new GridCGI(lay.fname, fc);

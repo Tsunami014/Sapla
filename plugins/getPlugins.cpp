@@ -53,6 +53,13 @@ bool tryLoad(const QFileInfo& file) {
     if (verFn) {
         Version ver = verFn();
         if (ver.from > VERSION || ver.to < VERSION) {
+            if (ver.from == ver.to) {
+                return fail(QString(
+"Incorrect version! \
+Plugin requires version %1, but this app is version %2!")
+                    .arg(ver.from).arg(VERSION)
+                );
+            }
             return fail(QString(
 "Incorrect version! \
 Plugin requires versions in range %1 - %2, but this app is version %3!")

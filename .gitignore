@@ -1,4 +1,5 @@
 build/*
+out/*
 AppDir/*
 *.AppImage
 *.tar.gz

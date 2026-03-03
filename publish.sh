@@ -3,6 +3,8 @@ set -euo pipefail
 
 SRC=$(dirname "${BASH_SOURCE[0]}")
 
+outp="./out"
+doneoutp=false
 HELP="Build &/or package the program in various ways
 
 Optional flags:
@@ -11,6 +13,8 @@ Optional flags:
   -no-pkg - do not create a compressed package or appimage (still puts it in a folder)
   -no-appim - do not package the program into an appimage, only a compressed package
   -no-cmp - do not create a compressed package, only an appimage
+
+  --output <folder> - path to output built stuff to (defaults to $outp)
 "
 built=""
 nopkg="none"
@@ -32,6 +36,15 @@ while [[ $# -gt 0 ]]; do
             exit 1
         fi
         built="$2"
+        shift
+    ;;
+    --output)
+        if doneoutp; then
+            echo "Cannot have multiple --output arguments!"
+            exit 1
+        fi
+        doneoutp=true
+        outp="$2"
         shift
     ;;
     *)
@@ -56,6 +69,11 @@ if [ "$built" = "" ]; then
 else
     fprint "Using built app!"
 fi
+
+fprint "Setting up output folder..."
+rm -rf "$outp"
+mkdir -p "$outp"
+cp "$built"/outPlugs/* "$outp"
 
 
 fprint "Generating appdir..."
@@ -97,7 +115,7 @@ fi
 
 if [ "$nopkg" != "cmp" ]; then
     fprint "Compressing folder..."
-    tar -czf Sapla.tar.gz AppDir/
+    tar -czf "$outp/Sapla.tar.gz" AppDir/
 else
     fprint "Not compressing!"
 fi
@@ -145,6 +163,7 @@ if [ "$nopkg" != "appim" ]; then
     unset SOURCE_DATE_EPOCH
     appimagetool AppDir
     chmod +x $(ls | grep Sapla*.AppImage)
+    mv Sapla*.AppImage "$outp"
 else
     fprint "Not building appimage!"
 fi

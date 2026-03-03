@@ -47,7 +47,7 @@ set(CORELIB
         notes/features/features.cpp
         notes/features/builtinFeats.cpp
         notes/features/defaultFeats.cpp
-        notes/features/hiddenFeat.cpp
+        notes/features/hideShuffFeats.cpp
         notes/features/secretFeat.cpp
 
     scenes/baseScn.cpp

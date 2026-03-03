@@ -1,7 +1,74 @@
+// Hidden and shuffle features
 #include "features.hpp"
 #include <QRandomGenerator>
 
-// Instead of a re for hidden implement a parser. This is for nested stuff.
+const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?)\.\.)");
+QString ShuffledFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
+    if (s == SIDE_HIDE) return txt.remove(scramblRe);
+
+    auto it = scramblRe.globalMatch(txt);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString conts = m.captured(1);
+        QStringList groups;
+        for (auto s : conts.split(' ')) {
+            auto ln = s.length();
+            if (ln <= 3) {
+                groups.append(s);
+            } else {
+                QString str = s.sliced(1, ln-2);
+                if (!str.isUpper()) str = str.toLower();
+                if (
+                    std::all_of(str.begin(), str.end(),
+                        [&](QChar c){ return c == str[0]; })
+                ) {
+                    groups.append(s);
+                    continue;
+                }
+                QString strorig = str;
+                do {
+                    std::shuffle(str.begin(), str.end(), *QRandomGenerator::global());
+                } while (str == strorig);
+                groups.append(
+                    s[0] + str + s[ln-1]
+                );
+            }
+        }
+        QString repl = groups.join(' ');
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        txt.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return txt;
+}
+QString ShuffledFeat::markup(QString& line) const {
+    auto it = scramblRe.globalMatch(line);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString dots = "<b style='color:" + col + "'>..</b>";
+        QString repl = dots+m.captured(1)+dots;
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        line.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return line;
+}
+QMap<QString, QString> ShuffledFeat::help() const {
+    return {
+           {"Scrambled text\n... ...",
+            "Scrambles each word, keeping the start and end letters and removing capitalisation\n"
+            "E.g. `..Hello wOrLd..` might scramble to `Hlelo wlord`"
+        }
+    };
+}
+
 
 struct hiddenResult {
     int start;

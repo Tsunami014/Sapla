@@ -41,6 +41,7 @@ void registerNoteFeatures() {
     REGISTER_FEAT(TagFeat);
     REGISTER_FEAT(TemplateFeat);
     REGISTER_FEAT(HiddenFeat);
+    REGISTER_FEAT(ShuffledFeat);
 
     for (auto* f : PlugFns->loadFeatFns) f();
 

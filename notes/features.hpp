@@ -132,3 +132,13 @@ struct HiddenFeat : FeatReg {
     Feat_help;
 };
 
+struct ShuffledFeat : FeatReg {
+    FeatDef(ShuffledFeat)
+    Feat_useCol;
+    Feat_order(100);
+    Feat_name(".. ..");
+    Feat_replacements;
+    Feat_markup;
+    Feat_help;
+};
+

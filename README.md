@@ -11,9 +11,14 @@ The cards are created when features are added such as `---` for separating notes
 There are example cards to help you and explain many features.
 
 ## Screenshots
-![Home screen](https://github.com/user-attachments/assets/fcc389a8-32e2-4148-92df-066c33ac3d7f)
-![Browse scene](https://github.com/user-attachments/assets/fe83ad22-08da-4d54-957a-b668b8e917c4)
-![Playing the default game](https://github.com/user-attachments/assets/395ec4f2-e93e-49c4-9706-bea865f33772)
+Home screen
+![](https://github.com/user-attachments/assets/fcc389a8-32e2-4148-92df-066c33ac3d7f)
+Browse scene
+![](https://github.com/user-attachments/assets/fe83ad22-08da-4d54-957a-b668b8e917c4)
+Playing the default game
+![](https://github.com/user-attachments/assets/395ec4f2-e93e-49c4-9706-bea865f33772)
+Playing the grid game (a plugin) with a winter colour scheme (another plugin)
+![](https://github.com/user-attachments/assets/b05dcf5e-827b-404c-bab2-20eda070ac51)
 
 
 

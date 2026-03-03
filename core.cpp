@@ -32,6 +32,6 @@ int runApp(int argc, char *argv[]) {
     initMenu(MG->menuBar());
     MG->initScene();
 
-    MG->showMaximized();
+    MG->show();
     return app.exec();
 }

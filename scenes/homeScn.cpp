@@ -125,11 +125,11 @@ HomeScene::HomeScene() : BaseScene(), deleteTmps("Delete temporary decks", Menue
     });
 
     auto* hlay3 = new QHBoxLayout();
-    hlay3->addStretch();
+    hlay3->addStretch(1);
     hlay3->addWidget(deckLabl);
-    hlay3->addWidget(deckNam);
+    hlay3->addWidget(deckNam, 2);
     hlay3->addWidget(optsBtn);
-    hlay3->addStretch();
+    hlay3->addStretch(1);
     auto* hlay4 = new QHBoxLayout();
     hlay4->addStretch();
     hlay4->addWidget(deckLabl2);

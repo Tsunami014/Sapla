@@ -40,6 +40,10 @@ Duration parseDuration(QString amount, QString unit, QString& problems) {
     problems += "Unit not found: " + unit + "\n";
     return {};
 }
+Duration parseDuration(QString amount, QString unit) {
+    QString ps;
+    return parseDuration(amount, unit, ps);
+}
 enum Parts { NUM, TXT, UNKNOWN, END };
 Duration parseWholeDuration(QString inp, QString& problems) {
     QString part;
@@ -97,8 +101,7 @@ _scheduleInf::_scheduleInf(std::vector<float> rScos, QString ts, Duration skpAmn
     :ratingScos(rScos), skipAmnt(skpAmnt) {
         setTimings(ts);
         learntSco = -1;
-        QString probs;
-        const Duration mxDuration = parseDuration("3", "days", probs);
+        const Duration mxDuration = parseDuration("3", "days");
         const size_t timingsSze = timings.size();
         for (int i = 0; i < timingsSze; i++) {
             if (timings[i] > mxDuration) {
@@ -137,34 +140,42 @@ void _scheduleInf::setSkip(QString newSkip) {
 }
 
 _scheduleInf ScheduleInfo(
-    {-4, -1, 0.5, 1},
+    {-7, -2.5, 0.5, 1.25},
     "30sec\n"
     "1min\n"
-    "1min\n"
     "2min\n"
+    "3min\n"
     "5mins\n"
+    "7mins\n"
     "10mins\n"
+    "15mins\n"
     "20mins\n"
+    "30mins\n"
     "40mins\n"
     "1hr\n"
-    "1hr30min\n"
+    "1hr20min\n"
+    "1hr40min\n"
     "2hrs\n"
+    "2hrs30min\n"
+    "3hrs\n"
     "4hrs\n"
     "6hrs\n"
+    "12hrs\n"
     "1day\n"
     "1day12hours\n"
     "2days\n"
+    "3days\n"
     "4days\n"
     "6days\n"
     "1wk\n"
-    "1wk5days\n"
+    "1wk2days\n"
+    "1wk4days\n"
     "2wks\n"
     "3wks\n"
-    "4wks\n"
     "1mo\n"
     "1mo2wks\n"
     "2mo\n"
-    , parseWholeDuration("40mins")
+    , parseDuration("30", "mins")  // Skip amount
 );
 
 Schedule::Schedule(int id, float sco, long long nxtTime) : idx(id), score(sco) {
@@ -195,7 +206,7 @@ void Schedule::update(int rating) {
 }
 Duration Schedule::getUpdatedTime(int rating) {
     return ScheduleInfo.timings[std::round(
-        std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-1))
+        std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-2))
     )];
 }
 

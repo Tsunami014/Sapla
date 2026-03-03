@@ -70,7 +70,7 @@ void MainGame::changeScene(BaseScene* newScene, bool resm) {
     }
 
     QWidget* old = takeCentralWidget();
-    if (old != curGame) old->deleteLater();
+    if (old && old != curGame) old->deleteLater();
     setCentralWidget(newScene);
     if (!newScene->isVisible()) newScene->show();
     curScene = newScene;

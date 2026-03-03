@@ -3,6 +3,7 @@
 #include "../menu.hpp"
 #include "../notes/note.hpp"
 #include "../base/markdown.hpp"
+#include "../wids/schdInfWid.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -28,6 +29,7 @@ protected:
 
     void updatePrev();
     Side side;
+    SchdInfoWid* siw;
     MarkdownEdit* preview;
     struct prevIdxTyp {
         int idx;

@@ -87,10 +87,44 @@ void Note::setContents(const QString& nc) {
         }
     }
 }
+ScheduleMap Note::getSchdMap() {
+    ScheduleMap scheduleMap;
+    auto it = scheduleInfRe.globalMatch(orig);
+    while (it.hasNext()) {
+        auto m = it.next();
+        for (QString part : m.captured(1).split("|")) {
+            QStringList spl = part.split(",");
+            if (spl.size() != 4) {
+                error += "Found not 4 parts in schedule string: `" + part + "`\n";
+                continue;
+            }
+            bool ok;
+            int idx = spl[1].toInt(&ok);
+            if (!ok) {
+                error += "Could not convert idx to int: `" + spl[1] + "`\n";
+                continue;
+            }
+            float sco = spl[2].toFloat(&ok);
+            if (!ok) {
+                error += "Could not convert score to float: `" + spl[2] + "`\n";
+                continue;
+            }
+            long long nxtTime = spl[3].toLongLong(&ok);
+            if (!ok) {
+                error += "Could not convert time to long long: `" + spl[3] + "`\n";
+                continue;
+            }
+            auto [_, inserted] = scheduleMap[spl[0]].try_emplace(idx, idx, sco, nxtTime);
+            if (!inserted) {
+                error += "Schedule idx already exists: `" + spl[1] + "`\n";
+            }
+        }
+    }
+    return scheduleMap;
+}
 void Note::updateCards() {
     error = "";
     prio = 0;
-    QString conts = orig;
     std::map<QString, QString> loclTempls;
     {
         QString templHidden = TemplateFeat::instance->highersReplace(orig);
@@ -145,46 +179,10 @@ void Note::updateCards() {
             }
         }
     }
-    std::map<QString, std::map<int, Schedule>> scheduleMap;
-    auto it = scheduleInfRe.globalMatch(conts);
-    while (it.hasNext()) {
-        auto m = it.next();
-        for (QString part : m.captured(1).split("|")) {
-            QStringList spl = part.split(",");
-            if (spl.size() != 4) {
-                error += "Found not 4 parts in schedule string: `" + part + "`\n";
-                continue;
-            }
-            bool ok;
-            int idx = spl[1].toInt(&ok);
-            if (!ok) {
-                error += "Could not convert idx to int: `" + spl[1] + "`\n";
-                continue;
-            }
-            float sco = spl[2].toFloat(&ok);
-            if (!ok) {
-                error += "Could not convert score to float: `" + spl[2] + "`\n";
-                continue;
-            }
-            long long nxtTime = spl[3].toLongLong(&ok);
-            if (!ok) {
-                error += "Could not convert time to long long: `" + spl[3] + "`\n";
-                continue;
-            }
-            auto [_, inserted] = scheduleMap[spl[0]].try_emplace(idx, idx, sco, nxtTime);
-            if (!inserted) {
-                error += "Schedule idx already exists: `" + spl[1] + "`\n";
-            }
-        }
-    }
-
-    for (auto& f : Feats) {
-        conts = f->replacements(conts, SIDE_GETFC);
-    }
 
     std::vector<QString> dominants;
     for (auto& f : CardFeats) {
-        if (f->dominance(conts)) {
+        if (f->dominance(orig)) {
             dominants.push_back(f->getName());
         }
     }
@@ -197,6 +195,13 @@ void Note::updateCards() {
         error += "`\n";
         return;
     }
+
+    QString conts = orig;
+    for (auto& f : Feats) {
+        conts = f->replacements(conts, SIDE_GETFC);
+    }
+
+    auto scheduleMap = getSchdMap();
     for (auto& f : CardFeats) {
         auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
         std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));

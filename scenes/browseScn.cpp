@@ -58,6 +58,7 @@ BrowseScene::BrowseScene()
             }
         });
 
+        siw = new SchdInfoWid(this);
         preview = new MarkdownEdit(this);
         preview->setButton(true);
         connect(preview, &MarkdownEdit::clicked, this, [=](){
@@ -76,6 +77,7 @@ BrowseScene::BrowseScene()
 
         auto* vLay = new QVBoxLayout();
         vLay->addWidget(te, 2);
+        vLay->addWidget(siw);
         vLay->addLayout(hlay);
         vLay->addWidget(preview, 1);
         auto* vLayW = new QWidget(this);
@@ -126,6 +128,7 @@ void BrowseScene::updatePrev() {
     if (tree->selectedItems().size() == 0) {
         prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
+        siw->chngNote();
         return;
     }
     Note* n = getSelNote();
@@ -135,6 +138,7 @@ void BrowseScene::updatePrev() {
         side = SIDE_FRONT;
         return;
     }
+    siw->chngNote(n);
     if (prevIdx.idx == 0) {
         prevIdxLabl->setText("No cards to preview!");
         preview->setMarkdown("");

@@ -32,6 +32,7 @@ set(CORELIB
     wids/svgBtn.cpp
     wids/svgPic.cpp
     wids/featInfo.cpp
+    wids/schdInfWid.cpp
 
     items/cardIt.cpp
     items/progress.cpp

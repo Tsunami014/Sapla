@@ -54,6 +54,8 @@ struct Schedule {
 
 extern std::map<QString, QString> globalTemplates;
 
+using ScheduleMap = std::map<QString, std::map<int, Schedule>>;
+
 class FlashCard; // Forward reference
 class Note {
 public:
@@ -80,6 +82,7 @@ public:
     QString contents() const;
     QString title();
 
+    ScheduleMap getSchdMap();
     void updateSchedules();
 
     void destroy();

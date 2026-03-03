@@ -23,5 +23,5 @@ public:
 private:
     QGraphicsRectItem* overlay;
     QGraphicsTextItem* schdT;
-    Tree& tr;
+    Tree tr;
 };

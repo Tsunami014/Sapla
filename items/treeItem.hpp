@@ -1,23 +1,36 @@
 #pragma once
+#include "../log.hpp"
 #include "../base/rectIt.hpp"
 #include "progress.hpp"
 #include <QSvgRenderer>
 
 QByteArray rendTreePhase(int phase);
 
-class Tree : public RectItem {
-public:
+struct _treeInfo {
+    _treeInfo();
     bool grow(double amount, bool canChangePhase = true);
     bool isDone();
     void nextPhase();
-    void setRect(const QRectF& newRect) override;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
+    void restart();
+    float percentage();
+    int getPhase();
+private:
+    double growth;
+    double toNext;
+    int phase;
+};
+extern _treeInfo TreeInfo;
+
+class Tree : public RectItem {
+public:
+    Tree(QGraphicsItem* parent = nullptr);
+    ~Tree();
+    bool grow(double amount, bool canChangePhase = true);
+    void nextPhase();
     void restart();
 
-    static Tree& getTree() {
-        static Tree inst;
-        return inst;
-    }
+    void setRect(const QRectF& newRect) override;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
     // Stop copying or moving
     Tree(const Tree&) = delete;
@@ -26,14 +39,11 @@ public:
     Tree& operator=(Tree&&) = delete;
 
 protected:
-    Tree();
-    double growth;
-    double toNext;
+    void nextPhase(bool updateInfo);
     ProgressBarItem pb;
-    static QSvgRenderer* baseRend;
+    QSvgRenderer* baseRend;
     QSvgRenderer* treeRend;
 
 private:
-    int phase;
     bool isSmall;
 };

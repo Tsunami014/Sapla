@@ -3,6 +3,7 @@
 #include "../menu.hpp"
 #include "../base/svgRend.hpp"
 #include "../notes/features.hpp"
+#include "../items/treeItem.hpp"
 #include "getPlugins.hpp"
 #include <QStandardPaths>
 #include <QCoreApplication>
@@ -97,6 +98,7 @@ Plugin::~Plugin() {
 }
 
 void clearPlugins(bool updateFeats) {
+    MG->removeGame(true);
     for (auto* p : plugs) delete p;
     plugs.clear();
     failedPlugs.clear();
@@ -147,7 +149,6 @@ void loadPlugins() {
     for (auto* f : PlugFns->stylFns) f();
     initColours();
     MG->initStyles();
-    MG->removeGame();
     Log::Info(MODULE) << "Loaded plugins:\n" << plugs.size() << " successfully\n"
                                              << failedPlugs.size() << " unsuccessfully\n"
                                              << disabldPlugs.size() << " disabled!";

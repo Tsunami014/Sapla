@@ -35,7 +35,7 @@ void movFile(QString fromName, QString toName) {
 
 PlugViewScene::PlugViewScene()
     : BaseScene(), m("Load plugin") {
-        qRegisterMetaType<ListData>("PVSData");
+        qRegisterMetaType<ListData>("ListData");
         helpStr = &PLUGVIEW_HELP;
         MG->changeBG("dirt");
         connect(&m, &QAction::triggered, this, &PlugViewScene::loadF);

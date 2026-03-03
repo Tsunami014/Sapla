@@ -15,7 +15,7 @@ void loadCols() {
 }
 
 auto r = RegistryBuilder()
-    .addLoad([](){ Q_INIT_RESOURCE(BIResources); qDebug() << "hi"; })
+    .addLoad([](){ Q_INIT_RESOURCE(BIResources); })
     .addUnload([](){ Q_CLEANUP_RESOURCE(BIResources); })
     .addStyl(loadCols)
     .addPlay(init);

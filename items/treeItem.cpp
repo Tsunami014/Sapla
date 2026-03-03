@@ -5,7 +5,51 @@
 
 #define MAX_PHASE 5
 
-QSvgRenderer* Tree::baseRend = NULL;
+_treeInfo::_treeInfo() {
+    restart();
+}
+
+void _treeInfo::restart() {
+    phase = 0;
+    growth = 0;
+    nextPhase();
+}
+
+bool _treeInfo::isDone() {
+    return phase == MAX_PHASE;
+}
+
+bool _treeInfo::grow(double amount, bool canChangePhase) {
+    if (growth + amount >= toNext && !canChangePhase) return false;
+    growth += amount;
+    if (growth < 0) {
+        growth = 0;
+    }
+    if (growth >= toNext) {
+        growth -= toNext;
+        if (phase+1 >= MAX_PHASE) {
+            MG->changeScene(new WinScene());
+            restart();
+            return true;
+        }
+        nextPhase();
+    }
+    return false;
+}
+void _treeInfo::nextPhase() {
+    toNext = 100 + (++phase)*50;
+}
+
+float _treeInfo::percentage() {
+    return growth/toNext;
+}
+
+int _treeInfo::getPhase() {
+    return phase;
+}
+
+_treeInfo TreeInfo{};
+
 
 QByteArray rendTreePhase(int phase) {
     if (phase == -1) phase = MAX_PHASE;
@@ -14,20 +58,20 @@ QByteArray rendTreePhase(int phase) {
     ));
 }
 
-Tree::Tree() : RectItem(), pb(this) {
-    if (!baseRend) baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
+Tree::Tree(QGraphicsItem* parent) : RectItem(parent), pb(this) {
+    baseRend = new QSvgRenderer(RenderSvg(":/assets/treeGround.svg"));
     treeRend = nullptr;
-    restart();
+    pb.setValue(TreeInfo.percentage());
+    nextPhase(false);
 }
-void Tree::restart() {
-    phase = 0;
-    growth = 0;
-    toNext = 50;
-    nextPhase();
+Tree::~Tree() {
+    if (baseRend) baseRend->deleteLater();
+    if (treeRend) treeRend->deleteLater();
 }
 
-bool Tree::isDone() {
-    return phase == MAX_PHASE;
+void Tree::restart() {
+    TreeInfo.restart();
+    nextPhase(false);
 }
 
 void Tree::setRect(const QRectF& newRect) {
@@ -45,31 +89,24 @@ void Tree::setRect(const QRectF& newRect) {
 }
 
 bool Tree::grow(double amount, bool canChangePhase) {
-    if (growth + amount >= toNext && !canChangePhase) return false;
-    growth += amount;
-    if (growth < 0) {
-        growth = 0;
+    bool ret = TreeInfo.grow(amount, canChangePhase);
+    if (!ret) {
+        pb.setValue(TreeInfo.percentage());
     }
-    if (growth >= toNext) {
-        growth -= toNext;
-        if (phase+1 >= MAX_PHASE) {
-            MG->changeScene(new WinScene());
-            restart();
-            return true;
-        }
-        nextPhase();
-    }
-    pb.setValue(growth/toNext);
-    return false;
+    return ret;
 }
-void Tree::nextPhase() {
+void Tree::nextPhase(bool updateInfo) {
     if (treeRend) delete treeRend;
-    treeRend = new QSvgRenderer(rendTreePhase(++phase));
+    if (updateInfo) TreeInfo.nextPhase();
+    int phase = TreeInfo.getPhase();
+    treeRend = new QSvgRenderer(rendTreePhase(phase));
     isSmall = treeRend->defaultSize().height() == 16;
-    toNext = ((toNext - 50)/100 + 1)*100 + 50;
 
     if (phase == MAX_PHASE) pb.hide();
     update();
+}
+void Tree::nextPhase() {
+    nextPhase(true);
 }
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {

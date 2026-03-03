@@ -15,7 +15,7 @@ public:
     void resize() override;
 private:
     bool done;
-    Tree& tr;
+    Tree tr;
     CardGraphicItem* card;
     QGraphicsTextItem* schdT;
 };

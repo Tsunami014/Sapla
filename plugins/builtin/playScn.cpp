@@ -11,7 +11,7 @@ void PlayScene::resume() {
     helpStr = &GAME_HELP;
     MG->changeBG("pretty");
 }
-PlayScene::PlayScene() : GraphicGameScene(), tr(Tree::getTree()), done(false) {
+PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false) {
     resume();
     GetFlashCard gfc{};
     schdT = getScheduleInfTxt(gfc);
@@ -31,7 +31,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
     int key = event->key();
 
     if (card->side == 255) {
-        switch (MG->cardFin(card->fc, key)) {
+        switch (MG->cardFin(card->fc, key, &tr)) {
             case 0:
                 card->fc.finish();
                 MG->nextFC();

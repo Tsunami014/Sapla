@@ -171,8 +171,7 @@ void Note::updateCards() {
                 error += "Could not convert time to long long: `" + spl[3] + "`\n";
                 continue;
             }
-            auto schdMap = scheduleMap[spl[0]];
-            auto [_, inserted] = schdMap.try_emplace(idx, idx, sco, nxtTime);
+            auto [_, inserted] = scheduleMap[spl[0]].try_emplace(idx, idx, sco, nxtTime);
             if (!inserted) {
                 error += "Schedule idx already exists: `" + spl[1] + "`\n";
             }

@@ -16,7 +16,7 @@ void PlayScene::resume() {
     MG->changeBG("pretty");
 }
 PlayScene::PlayScene()
-    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(Tree::getTree()) {
+    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr() {
         scn.addItem(main);
         scn.addItem(&tr);
 
@@ -61,7 +61,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
         for (auto& it : main->grid) {
             if (it.item->side == 255) {
                 git = it.item;
-                resp = MG->cardFin(it.item->fc, key);
+                resp = MG->cardFin(it.item->fc, key, &tr);
                 break;
             }
         }

@@ -1,12 +1,10 @@
 #include "game.hpp"
 #include "core.hpp"
-#include "log.hpp"
 #include "scenes/homeScn.hpp"
 #include "scenes/browseScn.hpp"
 #include "scenes/pluginView.hpp"
 #include "plugins/getPlugins.hpp"
 #include "notes/note.hpp"
-#include "items/treeItem.hpp"
 #include "base/font.hpp"
 #include "base/svgRend.hpp"
 #include <QRandomGenerator>
@@ -37,8 +35,14 @@ void MainGame::changeBG(QString bgName) {
     bg->renderer()->load(RenderSvg(pth));
 }
 
-void MainGame::removeGame() {
-    if (curGame) curGame->deleteLater();
+void MainGame::removeGame(bool force) {
+    if (curGame) {
+        if (force) {
+            delete curGame;
+        } else {
+            curGame->deleteLater();
+        }
+    }
     curGame = nullptr;
 }
 
@@ -105,7 +109,7 @@ void MainGame::nextFC() {
     }
 }
 
-int MainGame::cardFin(FlashCard* card, int key) {
+int MainGame::cardFin(FlashCard* card, int key, Tree* tree) {
     int rating;
     if (key >= Qt::Key_1 && key < Qt::Key_1+ScheduleInfo.ratesLen()) {
         rating = key - Qt::Key_1;
@@ -117,7 +121,7 @@ int MainGame::cardFin(FlashCard* card, int key) {
     card->update(rating);
     card->parent->updateSchedules();
     int grow = std::max(rating * 10 + 5, 0);
-    return Tree::getTree().grow(grow, rating >= ScheduleInfo.ratesLen()/4);
+    return tree->grow(grow, rating >= ScheduleInfo.ratesLen()/4);
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {

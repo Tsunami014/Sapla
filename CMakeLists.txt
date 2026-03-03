@@ -9,7 +9,7 @@ set(SOURCES
     main.cpp
 )
 set(CORELIB
-    core.cpp
+    core.cpp help.cpp
     game.cpp styles.cpp
     log.cpp  menu.cpp
     settings.cpp

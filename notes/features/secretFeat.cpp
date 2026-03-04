@@ -112,7 +112,7 @@ std::vector<std::unique_ptr<FlashCard>>SecretFeat::getFlashCards(Note* parent, c
     return result;
 }
 QString SecretFeat::replacements(QString& txt, Side s) const {
-    if (s == SIDE_NAME) {
+    if (s == SIDE_NAME || s == SIDE_GETFC) {
         return txt;
     }
     static const QRegularExpression simpleSecretRe(R"((?<!\\){.*?[^\\\n]})");

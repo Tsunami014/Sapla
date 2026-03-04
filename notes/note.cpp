@@ -231,6 +231,11 @@ void Note::updateSchedules() {
     orig = conts;
     writeNotes();
 }
+void Note::removeSchedules() {
+    orig = contents()
+        .remove(scheduleInfRe);
+    writeNotes();
+}
 
 FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk, QString t, Schedule s)
     : front(fr), back(bk), parent(p), title(t), schd(s), alive(true) {}

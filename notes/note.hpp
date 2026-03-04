@@ -50,6 +50,7 @@ struct Schedule {
     float score;
     TimePoint nxt;
     int idx;
+    float percentage();
 };
 
 extern std::map<QString, QString> globalTemplates;
@@ -84,6 +85,7 @@ public:
 
     ScheduleMap getSchdMap();
     void updateSchedules();
+    void removeSchedules();
 
     void destroy();
 private:

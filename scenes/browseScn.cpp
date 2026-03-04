@@ -38,6 +38,7 @@ BrowseScene::BrowseScene()
         QObject::connect(te, &MarkdownEdit::altEnter, this, &BrowseScene::newNote);
         QObject::connect(te, &MarkdownEdit::altDelete, this, &BrowseScene::delNote);
 
+        side = SIDE_FRONT;
         prevIdx = {0, 0};
         prevIdxLabl = new QLabel(this);
         prevIdxLabl->setFont(getFont(1.5));
@@ -132,6 +133,21 @@ void BrowseScene::updatePrev() {
         return;
     }
     Note* n = getSelNote();
+    int nOO = n->getNumCards();
+    if (prevIdx.max != nOO) {
+        int idx = prevIdx.idx;
+        if (idx > nOO) {
+            idx = nOO;
+            side = SIDE_FRONT;
+        }
+        prevIdx.idx = idx;
+        prevIdx.max = nOO;
+    }
+    if (nOO == 0) { prevIdx.idx = 0; }
+    else {
+        if (prevIdx.idx == 0)
+            prevIdx.idx = 1;
+    }
     if (n->error != "") {
         prevIdxLabl->setText("<span style='color:red;'>Encountered errors!</span>");
         preview->setMarkdown(n->error);
@@ -164,23 +180,23 @@ void BrowseScene::typed() {
     n->setContents(te->getMarkdown());
     n->updateCards();
 
-    int nOO = n->getNumCards();
-    if (prevIdx.max != nOO) {
-        int idx = prevIdx.idx;
-        if (idx > nOO) {
-            idx = nOO;
-            side = SIDE_FRONT;
-        }
-        prevIdx.idx = idx;
-        prevIdx.max = nOO;
-    }
-    if (nOO == 0) { prevIdx.idx = 0; }
-    else {
-        if (prevIdx.idx == 0)
-            prevIdx.idx = 1;
-    }
     updatePrev();
-
+    updateItem(selected.first(), n);
+    writeNotes();
+}
+void BrowseScene::noteUpdated() {
+    QSignalBlocker blocker(te);
+    QList<QTreeWidgetItem*> selected = tree->selectedItems();
+    if (selected.size() != 1) {
+        te->setText("");
+        te->setDisabled(true);
+        prevIdx.reset();
+        updatePrev();
+        return;
+    }
+    Note* n = getSelNote();
+    te->setMarkdown(n->contents());
+    updatePrev();
     updateItem(selected.first(), n);
     writeNotes();
 }
@@ -199,14 +215,6 @@ void BrowseScene::selectionChange() {
     te->setMarkdown(n->contents());
     te->setDisabled(false);
 
-    int outOf = n->getNumCards();
-    side = SIDE_FRONT;
-    if (outOf > 0) {
-        prevIdx.idx = 1;
-        prevIdx.max = outOf;
-    } else {
-        prevIdx.reset();
-    }
     updatePrev();
 }
 

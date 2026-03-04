@@ -16,6 +16,7 @@ public:
 
 public slots:
     void typed();
+    void noteUpdated();
     void selectionChange();
     void newNote();
     void delNote();

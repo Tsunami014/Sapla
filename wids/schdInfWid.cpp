@@ -1,6 +1,8 @@
 #include "schdInfWid.hpp"
+#include "../core.hpp"
 #include "../base/font.hpp"
 #include "../wids/svgBtn.hpp"
+#include "../scenes/browseScn.hpp"
 #include <QHBoxLayout>
 #include <QMessageBox>
 
@@ -75,6 +77,8 @@ void SchdInfoWid::removeSchdls() {
     if (n != nullptr) {
         n->removeSchedules();
     }
+    auto scn = dynamic_cast<BrowseScene*>(MG->curScene);
+    if (scn) scn->noteUpdated();
 }
 void SchdInfoWid::schdInfoDialog() {
 

@@ -76,8 +76,8 @@ void Tree::restart() {
 
 void Tree::setRect(const QRectF& newRect) {
     prepareGeometryChange();
-    qreal hei = newRect.height()/2;
-    qreal wid = (newRect.width()*0.3 + hei/2) / 2;
+    qreal hei = newRect.height()/3;
+    qreal wid = (newRect.width()*0.2 + hei/2) / 2;
     rect = {
         newRect.right()-wid, newRect.y(), 
         wid, hei

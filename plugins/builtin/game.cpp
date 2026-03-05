@@ -4,7 +4,7 @@
 #include "base/svgRend.hpp"
 
 bool init() {
-    if (allCards.empty()) return false;
+    if (CLlen() == 0) return false;
     MG->changeScene(new PlayScene());
     return true;
 }

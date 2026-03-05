@@ -1,11 +1,20 @@
 #pragma once
 #include "note.hpp"
-#include <deque>
+#include <QString>
 
+struct _progressVal {
+    QString label;
+    unsigned int cur;
+};
+std::vector<_progressVal> getProgresses();
+
+const std::vector<FlashCard*>& CardList(bool sorted);
 void CLaddCard(FlashCard* newCard);
+bool CLremoveCard(FlashCard* card);
 void CLclear();
-extern std::vector<FlashCard*> allCards;
+size_t CLlen();
 
+void resetCurPile();
 class GetFlashCard {
 public:
     explicit GetFlashCard();

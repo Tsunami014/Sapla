@@ -20,7 +20,13 @@ QString trimNL(const QString& orig);
 
 using Duration = std::chrono::duration<long long>;
 struct _scheduleInf {
-    _scheduleInf(std::vector<float> ratingScos, QString timings, Duration skipAmnt);
+    _scheduleInf(
+        std::vector<float> ratingScos,
+        QString timings,
+        Duration skipAmnt,
+        Duration learntAmnt,
+        Duration leaveAmnt
+    );
 
     /// The score increase/decrease for each rating
     std::vector<float> ratingScos;
@@ -32,6 +38,8 @@ struct _scheduleInf {
 
     /// The minimum score that means you 'learnt' the card (when the time for next card is at least 3 days)
     float learntSco;
+    /// The minimum score that means if you pass this then the card should leave the current pile
+    float leaveSco;
 
     void setTimings(QString newtimings);
     Duration skipAmnt;
@@ -111,6 +119,7 @@ public:
     virtual void update(int rating = -1);
 
     Schedule schd;
+    bool isnew();
     Note* parent;
     QString title;
     virtual QString getSide(Side s) const;

@@ -5,30 +5,150 @@
 
 const QString MODULE = "CardList";
 
-struct CompareFC {
-    bool operator()(const FlashCard* a, const FlashCard* b) const {
-        return a->schd.nxt > b->schd.nxt;
+std::vector<FlashCard*> allCards;
+
+class Pile {
+public:
+    Pile() : cards() {}
+    void sort() {
+        if (dirty) {
+            std::sort(cards.begin(), cards.end(),
+                [](const FlashCard* a, const FlashCard* b) {
+                    return a->schd.nxt < b->schd.nxt;
+                });
+            dirty = false;
+        }
     }
+
+    void clear() { cards.clear(); }
+    FlashCard* top() { return cards.back(); }
+    FlashCard* pop_top(bool dosort = true) {
+        if (dosort) { sort(); }
+        else { dirty = true; }
+        auto card = cards.back();
+        cards.pop_back();
+        return card;
+    }
+    void push(FlashCard* card) {
+        dirty = true;
+        cards.push_back(card);
+    }
+    bool erase(FlashCard* card) {
+        auto it = std::find(cards.begin(), cards.end(), card);
+        if (it != cards.end()) {
+            cards.erase(it);
+            dirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    size_t size() { return cards.size(); }
+    bool empty() { return cards.empty(); }
+    const std::vector<FlashCard*>& cardList() { return cards; }
+private:
+    bool dirty = false;
+    std::vector<FlashCard*> cards;
 };
 
-std::vector<FlashCard*> allCards;
-std::priority_queue<FlashCard*, std::vector<FlashCard*>, CompareFC> cardQ;
 
+const unsigned int maxCurPileLen = 6;
+
+Pile newpile{};
+Pile learnpile{};
+Pile curpile{};
+
+std::vector<_progressVal> getProgresses() {
+    unsigned int cardsln = allCards.size();
+    unsigned int news = 0;
+    unsigned int learns = 0;
+    for (auto* fc : allCards) {
+        if (fc->isnew()) news++;
+        else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
+    }
+    return {
+        {"New", news},
+        {"Learning", learns},
+        {"Learnt", cardsln-(news+learns)}
+    };
+}
+
+const std::vector<FlashCard*>& CardList(bool sorted) {
+    return allCards;
+}
+
+void resetCurPile() {
+    curpile.clear();
+}
+
+size_t CLlen() {
+    return allCards.size();
+}
+
+void addCard(FlashCard* newCard) {
+    if (newCard->isnew()) {
+        newpile.push(newCard);
+    } else {
+        learnpile.push(newCard);
+    }
+}
 void CLaddCard(FlashCard* newCard) {
     allCards.push_back(newCard);
-    cardQ.push(newCard);
+    addCard(newCard);
 }
 
 void CLclear() {
     allCards.clear();
-    while (!cardQ.empty()) cardQ.pop();
+    newpile.clear();
+    learnpile.clear();
+    curpile.clear();
+}
+bool CLremoveCard(FlashCard* card) {
+    {
+        auto it = std::find(allCards.begin(), allCards.end(), card);
+        if (it != allCards.end()) {
+            allCards.erase(it);
+        } else {
+            return false;
+        }
+    }
+    return
+        newpile.erase(card) ||
+        learnpile.erase(card) ||
+        curpile.erase(card)
+    ;
+}
+
+void refreshCurPile() {
+    static bool newnext = true;
+    while (curpile.size() < maxCurPileLen) {
+        int left = 2;
+        if (newnext && newpile.empty()) {
+            newnext = false;
+            left--;
+        }
+        if (!newnext && learnpile.empty()) {
+            newnext = true;
+            left--;
+        }
+        if (left == 0) {
+            break;
+        }
+        if (newnext) {
+            curpile.push(newpile.pop_top());
+        } else {
+            curpile.push(learnpile.pop_top());
+        }
+        newnext = !newnext;
+    }
 }
 
 GetFlashCard::GetFlashCard() {
     bool ptrAlive = false;
-    while (!(cardQ.empty() || ptrAlive)) {
-        ptr = cardQ.top();
-        cardQ.pop();
+    refreshCurPile();
+    while (ptrAlive && !curpile.empty()) {
+        ptr = curpile.top();
+        curpile.pop_top();
         ptrAlive = ptr->isAlive();
     }
     if (!ptrAlive) {
@@ -53,7 +173,13 @@ void GetFlashCard::updateSchedule(int rating) {
     }
 }
 void GetFlashCard::finish() {
-    if (modify && ptr && ptr->isAlive()) cardQ.push(ptr);
+    if (modify && ptr && ptr->isAlive()) {
+        if (ptr->schd.score >= ScheduleInfo.leaveSco) {
+            learnpile.push(ptr);
+        } else {
+            curpile.push(ptr);
+        }
+    }
     modify = false;
 }
 
@@ -67,7 +193,7 @@ GetFlashCard::GetFlashCard(GetFlashCard&& other) noexcept
 GetFlashCard& GetFlashCard::operator=(GetFlashCard&& other) noexcept {
     if (this != &other) {
         if (modify && ptr && ptr->isAlive()) {
-            cardQ.push(ptr);
+            addCard(ptr);
         }
         ptr = other.ptr;
         modify = other.modify;

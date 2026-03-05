@@ -97,20 +97,30 @@ Duration parseWholeDuration(QString inp) {
 
 
 
-_scheduleInf::_scheduleInf(std::vector<float> rScos, QString ts, Duration skpAmnt)
+_scheduleInf::_scheduleInf(
+    std::vector<float> rScos,
+    QString ts,
+    Duration skpAmnt,
+    Duration learntAmnt,
+    Duration leaveAmnt)
     :ratingScos(rScos), skipAmnt(skpAmnt) {
         setTimings(ts);
-        learntSco = -1;
-        const Duration mxDuration = parseDuration("3", "days");
-        const size_t timingsSze = timings.size();
-        for (int i = 0; i < timingsSze; i++) {
-            if (timings[i] > mxDuration) {
+        const size_t maxSze = timings.size()-1;
+
+        uint8_t untilbreak = 2;
+        learntSco = maxSze;
+        leaveSco = maxSze;
+        for (int i = 0; i <= maxSze; i++) {
+            auto t = timings[i];
+            if (learntSco == maxSze && t > learntAmnt) {
                 learntSco = i;
-                break;
+                untilbreak--;
             }
-        }
-        if (learntSco == -1) {
-            learntSco = timingsSze-1;
+            if (leaveSco == maxSze && t > leaveAmnt) {
+                leaveSco = i;
+                untilbreak--;
+            }
+            if (untilbreak == 0) break;
         }
     }
 
@@ -176,6 +186,8 @@ _scheduleInf ScheduleInfo(
     "1mo2wks\n"
     "2mo\n"
     , parseDuration("30", "mins")  // Skip amount
+    , parseDuration("3", "days")   // Learnt amount
+    , parseDuration("15", "mins")  // Leave amount
 );
 
 Schedule::Schedule(int id, float sco, long long nxtTime) : idx(id), score(sco) {

@@ -263,14 +263,15 @@ FlashCard& FlashCard::operator=(FlashCard&& other) noexcept {
 FlashCard::~FlashCard() {
     if (!alive) return;
     alive = false;
-    auto it = std::find(allCards.begin(), allCards.end(), this);
-    if (it != allCards.end()) {
-        allCards.erase(it);
-    } else {
+    if (!CLremoveCard(this)) {
         Log::Error(MODULE) << "Failed to erase flashcard from list!";
     }
 }
 bool FlashCard::isAlive() { return alive; }
+
+bool FlashCard::isnew() {
+    return schd.nxt == TimePoint{}; // If is new, next time is epoch
+}
 
 void FlashCard::update(int rating) {
     schd.update(rating);

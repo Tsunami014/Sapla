@@ -2,7 +2,7 @@
 #include "browseScn.hpp"
 #include "pluginView.hpp"
 #include "xtra/lineEdit2.hpp"
-#include "../extra/deckOpts.hpp"
+#include "xtra/deckOpts.hpp"
 #include "../base/font.hpp"
 #include "../base/svgRend.hpp"
 #include "../wids/svgBtn.hpp"

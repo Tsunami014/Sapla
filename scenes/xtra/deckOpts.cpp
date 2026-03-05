@@ -1,10 +1,10 @@
 #include "deckOpts.hpp"
-#include "../core.hpp"
-#include "../menu.hpp"
-#include "../notes/decks.hpp"
-#include "../wids/svgBtn.hpp"
-#include "../base/font.hpp"
-#include "../scenes/homeScn.hpp"
+#include "core.hpp"
+#include "menu.hpp"
+#include "notes/decks.hpp"
+#include "wids/svgBtn.hpp"
+#include "base/font.hpp"
+#include "../homeScn.hpp"
 #include <QDialog>
 #include <QCheckBox>
 #include <QVBoxLayout>

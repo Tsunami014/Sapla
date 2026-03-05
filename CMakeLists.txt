@@ -25,8 +25,6 @@ set(CORELIB
     base/svgWid.hpp
     base/flowlayout.cpp
 
-    extra/deckOpts.cpp
-
     wids/ovrlWrap.cpp
     wids/listWid.cpp
     wids/svgBtn.cpp
@@ -58,6 +56,7 @@ set(CORELIB
     scenes/browseScn.cpp
     scenes/pluginView.cpp
         scenes/xtra/lineEdit2.hpp
+        scenes/xtra/deckOpts.cpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)

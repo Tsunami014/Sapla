@@ -1,5 +1,6 @@
 #pragma once
 #include "items/treeItem.hpp"
+#include "items/deckProgress.hpp"
 #include "items/cardIt.hpp"
 #include "scenes/gameScn.hpp"
 #include <QTimer>
@@ -16,6 +17,7 @@ public:
 private:
     bool done;
     Tree tr;
+    DeckProgress dp;
     CardGraphicItem* card;
     QGraphicsTextItem* schdT;
 };

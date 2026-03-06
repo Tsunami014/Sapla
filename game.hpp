@@ -16,6 +16,7 @@ struct spareStyls {
     QString logBgCol;
     QString mdHlCol;
     QString secretCol;
+    std::vector<QColor> pbcols;
 };
 
 class MainGame : public QMainWindow {

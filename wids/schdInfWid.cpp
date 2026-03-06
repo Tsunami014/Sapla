@@ -23,6 +23,7 @@ SchdInfoWid::SchdInfoWid(QWidget* parent) : QWidget(parent) {
     btn1->setFont(font2);
     btn1->setText("Unschedule");
     connect(btn1, &SvgBtn::clicked, this, [this](){
+        if (n == nullptr) return;
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Are you sure?", "Are you sure you want to remove all schedules on this card?",
               QMessageBox::Yes | QMessageBox::No);
@@ -47,7 +48,7 @@ void SchdInfoWid::chngNote(Note* note) {
     n = note;
     map = ScheduleMap();
     if (n == nullptr) {
-        txt->setText("-");
+        txt->setText("");
     } else {
         auto nmap = n->getSchdMap();
         unsigned int amnt = 0;
@@ -74,12 +75,11 @@ void SchdInfoWid::chngNote(Note* note) {
 }
 
 void SchdInfoWid::removeSchdls() {
-    if (n != nullptr) {
-        n->removeSchedules();
-    }
+    if (n == nullptr) return;
+    n->removeSchedules();
     auto scn = dynamic_cast<BrowseScene*>(MG->curScene);
     if (scn) scn->noteUpdated();
 }
 void SchdInfoWid::schdInfoDialog() {
-
+    if (n == nullptr) return;
 }

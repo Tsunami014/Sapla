@@ -32,6 +32,8 @@ public:
     void setRect(const QRectF& newRect) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
 
+    QRectF getRect();
+
     // Stop copying or moving
     Tree(const Tree&) = delete;
     Tree& operator=(const Tree&) = delete;

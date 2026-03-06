@@ -61,15 +61,19 @@ Pile curpile{};
 std::vector<_progressVal> getProgresses() {
     unsigned int cardsln = allCards.size();
     unsigned int news = 0;
+    unsigned int pracs = 0;
     unsigned int learns = 0;
     for (auto* fc : allCards) {
         if (fc->isnew()) news++;
+        else if (fc->schd.score < ScheduleInfo.leaveSco) pracs++;
         else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
     }
+    qDebug() << "Tot:" << cardsln << "Learn:" << learns << "Cur:" << pracs << "New:" << news;
     return {
-        {"New", news},
+        {"Revising", cardsln-(news+pracs+learns)},
         {"Learning", learns},
-        {"Learnt", cardsln-(news+learns)}
+        {"Current", pracs},
+        {"New", news},
     };
 }
 

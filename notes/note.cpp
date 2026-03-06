@@ -232,9 +232,10 @@ void Note::updateSchedules() {
     writeNotes();
 }
 void Note::removeSchedules() {
-    orig = contents()
-        .remove(scheduleInfRe);
-    writeNotes();
+    for (auto& fc : cards) {
+        fc->schd = Schedule(fc->schd.idx);
+    }
+    updateSchedules();
 }
 
 FlashCard::FlashCard(Note* p, const QString& fr, const QString& bk, QString t, Schedule s)

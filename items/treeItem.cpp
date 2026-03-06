@@ -37,7 +37,7 @@ bool _treeInfo::grow(double amount, bool canChangePhase) {
     return false;
 }
 void _treeInfo::nextPhase() {
-    toNext = 100 + (++phase)*50;
+    toNext = 150 + (++phase)*100;
 }
 
 float _treeInfo::percentage() {
@@ -88,6 +88,11 @@ void Tree::setRect(const QRectF& newRect) {
     });
 }
 
+QRectF Tree::getRect() {
+    auto pbRec = pb.boundingRect();
+    return {rect.topLeft(), pbRec.bottomRight()};
+}
+
 bool Tree::grow(double amount, bool canChangePhase) {
     bool ret = TreeInfo.grow(amount, canChangePhase);
     if (!ret) {
@@ -111,7 +116,7 @@ void Tree::nextPhase() {
 
 void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
     // Because the svg is smaller than the bounding rect, and I really want to show them off
-    QRectF fitR = rect.adjusted(-rect.width()*0.1, -rect.height()*0.1, rect.width()*0.1, rect.height()*0.1);
+    QRectF fitR = rect.adjusted(-rect.width()*0.1, -rect.height()*0.2, rect.width()*0.1, rect.height()*0.2);
     QRectF sTreeR{
         fitR.x(), fitR.y() + fitR.height()/2, fitR.width(), fitR.height()/2
     };

@@ -36,6 +36,8 @@ set(CORELIB
     items/progress.cpp
     items/treeItem.cpp
     items/scheduleInfTxt.cpp
+    items/multiprogress.cpp
+    items/deckProgress.cpp
 
     notes/note.cpp
     notes/schedule.cpp

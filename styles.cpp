@@ -137,6 +137,17 @@ void MainGame::initStyles() {
     styls.logBgCol = getCol("shadow", -200, 20);
     styls.mdHlCol = getCol("light", 20, -60);
     styls.secretCol = getCol("blue", 20, 20, 10);
+    styls.pbcols = {
+        getQCol("adark", 5, 10), // The dark border
+        getQCol("alight", -40, 70, 10), // The light, faded bg
+        getQCol("light", 20, -50, 10), // The default progressbar colour
+        // The rest of the progressbar colour options
+        getQCol("alight", 0, 0, 20),
+        getQCol("red", 0, 0, 20),
+        getQCol("adark", 0, 40, 20),
+        getQCol("shadow", -20, 20, 20),
+        getQCol("blue", 40, 20, 20),
+    };
 
     setFont(getFont(1.2));
 }

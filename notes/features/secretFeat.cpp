@@ -37,7 +37,7 @@ public:
                 }
             }
             QString hint = m.captured("hint");
-            if (hint.isNull() || hint == "") hint = "...";
+            if (hint.isNull() || hint == "") hint = "\\.\\.\\.";
             groups.append({
                 group,
                 m.capturedStart(0),

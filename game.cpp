@@ -36,7 +36,7 @@ void MainGame::changeBG(QString bgName) {
 }
 
 void MainGame::removeGame(bool force) {
-    if (curGame) {
+    if (curGame != nullptr) {
         if (force) {
             delete curGame;
         } else {

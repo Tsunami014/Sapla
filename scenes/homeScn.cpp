@@ -75,6 +75,7 @@ HomeScene::HomeScene() : BaseScene(), deleteTmps("Delete temporary decks", Menue
     auto indexChanged = [=](int index){
         if (index < 0 || index >= decks.size()) return;
         if (!deckNam2) return;
+        if (curDeck == decks[index]) return;
         changeDeck(decks[index]);
         QSignalBlocker blocker(deckNam2);
         deckNam2->setText(decks[index]);

@@ -15,6 +15,8 @@
 #include "plugins/getPlugins.hpp"
 #include <QStandardPaths>
 
+const int VERSION = 13;
+
 MainGame* MG = nullptr;
 const QString* helpStr = nullptr;
 

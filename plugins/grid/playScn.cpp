@@ -14,11 +14,13 @@ void PlayScene::resume() {
     }
     helpStr = &GAME_HELP;
     MG->changeBG("pretty");
+    dp.upd();
 }
 PlayScene::PlayScene()
-    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr() {
+    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(), dp() {
         scn.addItem(main);
         scn.addItem(&tr);
+        scn.addItem(&dp);
 
         schdT = new QGraphicsTextItem();
         scn.addItem(schdT);
@@ -36,19 +38,20 @@ PlayScene::PlayScene()
                 delete nCGI;
                 break;
             }
+            QObject::connect(nCGI, &CardGraphicItem::flipped, nCGI, [=](bool back){
+                if (back) setScheduleInfTxt(schdT, nCGI->fc);
+                else schdT->setPlainText("");
+            });
         }
         main->update();
         resume();
     }
 PlayScene::~PlayScene() {
-    if (tr.scene() == &scn) {
+    if (tr.scene() == &scn)
         scn.removeItem(&tr);
-    }
+    if (dp.scene() == &scn)
+        scn.removeItem(&dp);
     scn.clear();
-}
-
-void PlayScene::cardClicked(FlashCard* card) {
-    setScheduleInfTxt(schdT, card);
 }
 
 bool PlayScene::keyEv(QKeyEvent* event) {
@@ -82,15 +85,20 @@ bool PlayScene::keyEv(QKeyEvent* event) {
 void PlayScene::resize() {
     QRectF rect = view.sceneRect();
     tr.setRect(rect);
-    int trW = tr.boundingRect().width();
-    main->setRect({rect.x(), rect.y(), rect.width()-trW, rect.height()});
-    if (overlay != NULL) {
+    dp.setRect(rect);
+    auto trRec = tr.getRect();
+    auto dpRec = dp.boundingRect();
+    main->setRect({
+        dpRec.right(),
+        rect.y(),
+        rect.width()-trRec.width()-(dpRec.right()-rect.left()),
+        rect.height()
+    });
+    if (overlay != NULL)
         overlay->setRect(rect);
-    }
-    int thei = rect.height()*0.35;
-    QRectF rec(rect.x()+rect.width()-trW, rect.y()+rect.height()-thei, trW, thei);
-    schdT->document()->setTextWidth(rec.width());
-    schdT->setPos(rec.topLeft());
+
+    schdT->document()->setTextWidth(trRec.width());
+    schdT->setPos(trRec.left(), trRec.bottom()+rect.height()*0.05);
 }
 
 void PlayScene::setOverlay(QGraphicsRectItem* ovl) {

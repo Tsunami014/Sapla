@@ -1,5 +1,6 @@
 #pragma once
 #include "items/treeItem.hpp"
+#include "items/deckProgress.hpp"
 #include "gridIts/gridLayout.hpp"
 #include "scenes/gameScn.hpp"
 #include <QGraphicsTextItem>
@@ -13,8 +14,6 @@ public:
     void resume() override;
     void resize() override;
 
-    void cardClicked(FlashCard* card);
-
     void setOverlay(QGraphicsRectItem* newOverlay);
     bool hasOverlay();
     void removeOverlay();
@@ -24,4 +23,5 @@ private:
     QGraphicsRectItem* overlay;
     QGraphicsTextItem* schdT;
     Tree tr;
+    DeckProgress dp;
 };

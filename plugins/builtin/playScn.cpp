@@ -15,20 +15,24 @@ void PlayScene::resume() {
 PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false), dp() {
     resume();
     GetFlashCard gfc{};
-    schdT = getScheduleInfTxt(gfc);
+    schdT = new QGraphicsTextItem();
+    styleScheduleInfTxt(schdT);
     scn.addItem(schdT);
     card = new CardGraphicItem(":/BIAssets/card.svg", gfc, 2.5);
     scn.addItem(card);
     scn.addItem(&tr);
     scn.addItem(&dp);
+
+    QObject::connect(card, &CardGraphicItem::flipped, card, [=](bool back){
+        if (back) setScheduleInfTxt(schdT, card->fc);
+        else schdT->setPlainText("");
+    });
 }
 PlayScene::~PlayScene() {
-    if (tr.scene() == &scn) {
+    if (tr.scene() == &scn)
         scn.removeItem(&tr);
-    }
-    if (dp.scene() == &scn) {
+    if (dp.scene() == &scn)
         scn.removeItem(&dp);
-    }
     delete card;
 }
 bool PlayScene::keyEv(QKeyEvent* event) {

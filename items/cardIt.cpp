@@ -4,11 +4,11 @@
 #include <QCursor>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
+#include <QKeyEvent>
 
 CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, float fontsze, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)),
       front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
-        side = 0;
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);
         txt.setWordWrap(true);
@@ -17,8 +17,20 @@ CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, flo
         txt.setStyleSheet("color: black;");
         txt.setAttribute(Qt::WA_TranslucentBackground);
         txt.setFont(getFont(fontsze));
-        hlcol = getCol("alight", 100, 50, 100);
+        onflip(false);
     }
+void CardGraphicItem::onflip(bool back) {
+    // TODO: Animations
+    if (back) {
+        side = 255;
+        hlcol = getCol("adark", 100, 50, 100);
+    } else {
+        hlcol = getCol("alight", 100, 50, 100);
+        side = 0;
+    }
+    emit flipped(back);
+    update();
+}
 CardGraphicItem::~CardGraphicItem() {
     txt.deleteLater();
 }
@@ -48,14 +60,32 @@ void CardGraphicItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
     hover = false;
     update();
 }
+void CardGraphicItem::focusInEvent(QFocusEvent *event) {
+    hover = true;
+    if (event != nullptr) QGraphicsItem::focusInEvent(event);
+    update();
+}
+void CardGraphicItem::focusOutEvent(QFocusEvent *event) {
+    hover = false;
+    if (event != nullptr) QGraphicsItem::focusOutEvent(event);
+    update();
+}
 void CardGraphicItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (touching(event->pos())) {
-        if (side == 0) {
-            unsetCursor();
-            side = 255;  // TODO: Animations
-            hlcol = getCol("adark", 100, 50, 100);
-            hover = false;
-        }
+    if (touching(event->pos())) flip();
+}
+void CardGraphicItem::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Enter) {
+        flip();
+    } else {
+        QGraphicsItem::keyPressEvent(event);
+    }
+}
+
+void CardGraphicItem::flip() {
+    if (side == 0) {
+        onflip(true);
+    } else if (side == 255) {
+        onflip(false);
     }
 }
 

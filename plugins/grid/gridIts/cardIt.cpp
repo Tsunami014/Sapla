@@ -9,7 +9,9 @@ GridCGI::GridCGI(const QString& fname, GetFlashCard& fc, QGraphicsItem* parent)
 
 void GridCGI::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     bool oldHover = hover;
-    if (touching(event->pos()) && !((PlayScene*)MG->curScene)->hasOverlay()) {
+    if (touching(event->pos()) && (
+        ontop || !((PlayScene*)MG->curScene)->hasOverlay()
+    )) {
         hover = true;
         setCursor(Qt::PointingHandCursor);
     } else {
@@ -19,26 +21,28 @@ void GridCGI::hoverMoveEvent(QGraphicsSceneHoverEvent* event) {
     if (oldHover != hover) { update(); }
 }
 
+void GridCGI::onflip(bool back) {
+    if (back && !ontop) {
+        ontop = true;
+        setParentItem(nullptr); // So the item can be placed on the very top
+        setPos(mapToScene(QPointF(0, 0)));
+        setZValue(4);
+        auto* overl = new Overlay();
+        PlayScene* curS = (PlayScene*)MG->curScene;
+        curS->scn.addItem(overl);
+        overl->setZValue(3);
+        curS->setOverlay(overl);
+        curS->main->updateAllChildren();
+    }
+    CardGraphicItem::onflip(back);
+}
 void GridCGI::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (touching(event->pos())) {
-        PlayScene* curS = (PlayScene*)MG->curScene;
-        if (curS->hasOverlay()) return;
-        if (side == 0 && touching(event->pos())) {
-            ontop = true;
-            unsetCursor();
-            side = 255; // TODO: Animations
-            hover = true;
-            setAcceptHoverEvents(false);
-            setParentItem(nullptr); // So the item can be placed on the very top
-            setPos(mapToScene(QPointF(0, 0)));
-            setZValue(4);
-            auto* overl = new Overlay();
-            curS->scn.addItem(overl);
-            overl->setZValue(3);
-            curS->setOverlay(overl);
-            curS->main->updateAllChildren();
-            static_cast<PlayScene*>(MG->curScene)->cardClicked(fc);
+        if (!ontop) {
+            PlayScene* curS = (PlayScene*)MG->curScene;
+            if (curS->hasOverlay()) return;
         }
+        flip();
     }
 }
 

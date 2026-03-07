@@ -76,6 +76,15 @@ std::vector<_progressVal> getProgresses() {
         {"New", news},
     };
 }
+_overallProgr getOverallProgress() {
+    unsigned int cardsln = allCards.size();
+    float completes = 0;
+    for (auto* fc : allCards) {
+        // Add percentage of the way through the card
+        completes += std::min(fc->schd.score / ScheduleInfo.learntSco, 1.0f);
+    }
+    return { cardsln, completes };
+}
 
 const std::vector<FlashCard*>& CardList(bool sorted) {
     return allCards;

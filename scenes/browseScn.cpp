@@ -20,6 +20,7 @@ void BrowseScene::prevIdxTyp::reset() {
 
 BrowseScene::BrowseScene()
     : BaseScene(),
+    info(""),
     newnote("New note (alt+enter)", Menues->FileMenu),
     delnote("Delete note (alt+delete)", Menues->FileMenu),
     helps("Note feature help", Menues->HelpMenu),
@@ -117,6 +118,7 @@ BrowseScene::BrowseScene()
                 selectionChange();
             }
         });
+        updateInfo();
     }
 Note* BrowseScene::getNote(QTreeWidgetItem* item) {
     return static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
@@ -125,7 +127,19 @@ Note* BrowseScene::getSelNote() {
     return getNote(tree->selectedItems().first());
 }
 
+void BrowseScene::updateInfo() {
+    auto progs = getOverallProgress();
+    float perc = std::round((
+            progs.complete/progs.totCards
+        ) * 10000)/100;
+    info.setText(
+        QString("%1 cards, %2% complete")
+            .arg(progs.totCards)
+            .arg(perc)
+    );
+}
 void BrowseScene::updatePrev() {
+    updateInfo();
     if (tree->selectedItems().size() == 0) {
         prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
@@ -166,6 +180,7 @@ void BrowseScene::updatePrev() {
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
 }
+
 void BrowseScene::typed() {
     QSignalBlocker blocker(te);
     QList<QTreeWidgetItem*> selected = tree->selectedItems();

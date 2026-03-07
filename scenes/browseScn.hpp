@@ -29,6 +29,7 @@ protected:
     MarkdownEdit* te;
 
     void updatePrev();
+    void updateInfo();
     Side side;
     SchdInfoWid* siw;
     MarkdownEdit* preview;
@@ -46,4 +47,5 @@ private:
     MenuItem helps;
     MenuItem resetIt;
     MenuItem clearIt;
+    MenuAction info;
 };

@@ -7,6 +7,11 @@ struct _progressVal {
     unsigned int cur;
 };
 std::vector<_progressVal> getProgresses();
+struct _overallProgr {
+    unsigned int totCards;
+    float complete;
+};
+_overallProgr getOverallProgress();
 
 const std::vector<FlashCard*>& CardList(bool sorted);
 void CLaddCard(FlashCard* newCard);

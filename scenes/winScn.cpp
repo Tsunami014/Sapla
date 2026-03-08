@@ -9,7 +9,7 @@
 #include <QKeyEvent>
 #include <QHBoxLayout>
 
-const QString HELP_TXT = "&lt;Esc&gt; to resume playing";
+const QString HELP_TXT = "&lt;Esc&gt; or double click to resume playing";
 
 WinScene::WinScene() {
     helpStr = &HELP_TXT;
@@ -35,4 +35,6 @@ bool WinScene::keyEv(QKeyEvent* event) {
     }
     return MG->handleEv(event);
 }
-
+void WinScene::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) MG->showFC();
+}

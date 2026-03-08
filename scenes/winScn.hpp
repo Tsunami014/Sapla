@@ -6,4 +6,5 @@ class WinScene : public BaseScene {
 public:
     WinScene();
     bool keyEv(QKeyEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 };

@@ -10,11 +10,20 @@ std::vector<FlashCard*> allCards;
 class Pile {
 public:
     Pile() : cards() {}
+    ~Pile() {
+        Log::Error(MODULE) << "A pile just got deleted, OH NO!!!";
+    }
     void sort() {
         if (dirty) {
             std::sort(cards.begin(), cards.end(),
                 [](const FlashCard* a, const FlashCard* b) {
-                    return a->schd.nxt < b->schd.nxt;
+                    if (a->schd.nxt == b->schd.nxt) {
+                        return static_cast<bool>(
+                            QRandomGenerator::global()->bounded(2)
+                        );
+                    }
+                    // Other way around because we use the back as the highest
+                    return a->schd.nxt > b->schd.nxt;
                 });
             dirty = false;
         }
@@ -22,10 +31,12 @@ public:
 
     void clear() { cards.clear(); }
     FlashCard* top(bool dosort = true) {
+        if (cards.empty()) return nullptr;
         if (dosort) { sort(); }
         return cards.back();
     }
     FlashCard* pop_top(bool dosort = true) {
+        if (cards.empty()) return nullptr;
         if (dosort) { sort(); }
         else { dirty = true; }
         auto card = cards.back();
@@ -55,7 +66,7 @@ private:
 };
 
 
-const unsigned int maxCurPileLen = 6;
+const unsigned int maxCurPileLen = 20;
 
 Pile newpile{};
 Pile learnpile{};
@@ -71,7 +82,6 @@ std::vector<_progressVal> getProgresses() {
         else if (fc->schd.score < ScheduleInfo.leaveSco) pracs++;
         else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
     }
-    qDebug() << "Tot:" << cardsln << "Learn:" << learns << "Cur:" << pracs << "New:" << news;
     return {
         {"Revising", cardsln-(news+pracs+learns)},
         {"Learning", learns},
@@ -177,9 +187,8 @@ GetFlashCard::GetFlashCard() {
     bool ptrAlive = false;
     refreshCurPile();
     while (!ptrAlive && !curpile.empty()) {
-        ptr = curpile.top();
-        curpile.pop_top();
-        ptrAlive = ptr->isAlive();
+        ptr = curpile.pop_top();
+        ptrAlive = ptr && ptr->isAlive();
     }
     if (!ptrAlive) {
         // This should NEVER happen, as all games should before running check if the cards list is the right size.

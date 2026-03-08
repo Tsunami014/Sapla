@@ -44,6 +44,7 @@ void initMenu(QMenuBar* b) {
 
     auto* gmenu = new _MenuBase("Go To");
     gmenu->addAction("Go home", []() { MG->changeScene(new HomeScene()); });
+    gmenu->addAction("Go to game", []() { MG->showFC(); });
     gmenu->addAction("Browse cards", []() { MG->changeScene(new BrowseScene()); });
     gmenu->addAction("Manage plugins", []() { MG->changeScene(new PlugViewScene()); });
     gmenu->addSeparator();

@@ -47,27 +47,17 @@ void styleScheduleInfTxt(QGraphicsTextItem* it) {
 void setScheduleInfTxt(QGraphicsTextItem* it, FlashCard* card) {
     QString txt = "<h2>";
 
-    bool doneRedo = false;
-    QString redoTxt = QString("<b>-</b> Redo +%1<br>").arg(format_duration(ScheduleInfo.redoAmnt));
-    bool doneSkip = false;
-    QString skipTxt = QString("<b>=</b> Skip +%1<br>").arg(format_duration(ScheduleInfo.skipAmnt));
     for (int i = 0; i < ScheduleInfo.ratesLen(); i++) {
-        auto time = card->schd.getUpdatedTime(i);
-        if (!doneRedo && time > ScheduleInfo.redoAmnt) {
-            txt += redoTxt;
-            doneRedo = true;
-        }
-        if (!doneSkip && time > ScheduleInfo.skipAmnt) {
-            txt += skipTxt;
-            doneSkip = true;
-        }
-        txt += "<b>" + std::to_string(i+1) + "</b>: +" + format_duration(time) + "<br>";
+        txt += "<b>" + std::to_string(i+1) + "</b>: +" + format_duration(card->schd.getUpdatedTime(i)) + "<br>";
     }
-    if (!doneRedo) txt += redoTxt;
-    if (!doneSkip) txt += skipTxt;
-    txt += "</h2>";
+    txt += QString(
+        "<b>-</b> Redo +%1<br>"
+        "<b>=</b> Skip +%2<br>"
+        "</h2>"
+    )
+        .arg(format_duration(ScheduleInfo.redoAmnt))
+        .arg(format_duration(ScheduleInfo.skipAmnt))
+    ;
 
-    it->setHtml(
-        txt
-    );
+    it->setHtml(txt);
 }

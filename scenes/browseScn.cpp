@@ -129,9 +129,14 @@ Note* BrowseScene::getSelNote() {
 
 void BrowseScene::updateInfo() {
     auto progs = getOverallProgress();
-    float perc = std::round((
+    float perc;
+    if (progs.totCards > 0) {
+        perc = std::round((
             progs.complete/progs.totCards
         ) * 10000)/100;
+    } else {
+        perc = 100;
+    }
     info.setText(
         QString("%1 cards, %2% complete")
             .arg(progs.totCards)

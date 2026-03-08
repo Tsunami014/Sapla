@@ -88,8 +88,8 @@ std::vector<_progressVal> getProgresses() {
     return {
         {"Revising", cardsln-(news+pracs+learns)},
         {"Learning", learns},
-        {"Current", pracs},
-        {"New", news},
+        {"New", pracs},
+        {"Unseen", news},
     };
 }
 _overallProgr getOverallProgress() {

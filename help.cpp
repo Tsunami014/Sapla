@@ -185,7 +185,7 @@ const QString PLUGVIEW_HELP =
 ;
 
 const QString GAME_HELP =
-"<p>Click while hovering over a card to flip (can press again to unflip), and once flipped press a button as listed on the right to finish and reschedule the card.</p>"
+"<p>Click while hovering over a card to flip (can press again to unflip), and once flipped press a button or key on your keyboard as listed on the right to finish and reschedule the card.</p>"
 "<p>Reset and Skip both don't change the score of the card but just reschedule it for later (skip a lot longer away than reset)</p>"
 "<p>The times present are only an aim. The app gives you cards sorted based on these times, so when you will recieve these cards is independent of the times.</p>"
 "<p>Press &lt;Esc&gt; to go back to the home screen.</p>";

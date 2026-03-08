@@ -1,6 +1,7 @@
 #pragma once
 #include "items/treeItem.hpp"
 #include "items/deckProgress.hpp"
+#include "items/scheduleInfTxt.hpp"
 #include "gridIts/gridLayout.hpp"
 #include "scenes/gameScn.hpp"
 #include <QGraphicsTextItem>
@@ -21,7 +22,7 @@ public:
     GLayoutGraphicItem* main;
 private:
     QGraphicsRectItem* overlay;
-    QGraphicsTextItem* schdT;
+    ScheduleInfoTxt* schdT;
     Tree tr;
     DeckProgress dp;
 };

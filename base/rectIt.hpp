@@ -15,4 +15,3 @@ public:
     virtual void setRect(const QRectF& newRect) override;
     QRectF boundingRect() const override;
 };
-

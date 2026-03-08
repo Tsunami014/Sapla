@@ -53,5 +53,6 @@ void SvgBtn::paintEvent(QPaintEvent* event) {
     constexpr int rPad = 5;
     QPainter p(this);
     paintSvg(&p, rect().adjusted(rPad, rPad, -rPad, -rPad));
+    p.end();
     QLabel::paintEvent(event);
 }

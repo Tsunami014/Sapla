@@ -1,7 +1,6 @@
 #include "core.hpp"
 #include "help.hpp"
 #include "playScn.hpp"
-#include "items/scheduleInfTxt.hpp"
 #include <QEvent>
 #include <QKeyEvent>
 #include <QDir>
@@ -15,8 +14,7 @@ void PlayScene::resume() {
 PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false), dp() {
     resume();
     GetFlashCard gfc{};
-    schdT = new QGraphicsTextItem();
-    styleScheduleInfTxt(schdT);
+    schdT = new ScheduleInfoTxt();
     scn.addItem(schdT);
     card = new CardGraphicItem(":/BIAssets/card.svg", gfc, 2.5);
     scn.addItem(card);
@@ -24,8 +22,8 @@ PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false), dp() {
     scn.addItem(&dp);
 
     QObject::connect(card, &CardGraphicItem::flipped, card, [=](bool back){
-        if (back) setScheduleInfTxt(schdT, card->fc);
-        else schdT->setPlainText("");
+        if (back) schdT->generate(card->fc);
+        else schdT->remove();
     });
 }
 PlayScene::~PlayScene() {
@@ -65,7 +63,11 @@ void PlayScene::resize() {
         rect.height()
     });
 
-    schdT->document()->setTextWidth(trRec.width());
-    schdT->setPos(trRec.left(), trRec.bottom()+rect.height()*0.05);
+    double spacing = rect.width()*0.005;
+    double bot = trRec.bottom()+rect.height()*0.03;
+    schdT->setRect({
+        trRec.left()+spacing, bot,
+        rect.right()-trRec.left()-spacing*2, rect.bottom()-bot
+    });
 }
 

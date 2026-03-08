@@ -2,9 +2,9 @@
 #include "items/treeItem.hpp"
 #include "items/deckProgress.hpp"
 #include "items/cardIt.hpp"
+#include "items/scheduleInfTxt.hpp"
 #include "scenes/gameScn.hpp"
 #include <QTimer>
-#include <QGraphicsTextItem>
 
 class PlayScene : public GraphicGameScene {
 public:
@@ -19,5 +19,5 @@ private:
     Tree tr;
     DeckProgress dp;
     CardGraphicItem* card;
-    QGraphicsTextItem* schdT;
+    ScheduleInfoTxt* schdT;
 };

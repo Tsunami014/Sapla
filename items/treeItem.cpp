@@ -83,7 +83,7 @@ void Tree::setRect(const QRectF& newRect) {
         wid, hei
     };
     pb.setRect({
-        rect.x(), rect.bottom() + newRect.height()*0.1,
+        rect.left(), rect.bottom() + newRect.height()*0.1,
         rect.width(), newRect.height()*0.04
     });
 }

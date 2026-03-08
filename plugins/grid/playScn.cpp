@@ -22,10 +22,9 @@ PlayScene::PlayScene()
         scn.addItem(&tr);
         scn.addItem(&dp);
 
-        schdT = new QGraphicsTextItem();
+        schdT = new ScheduleInfoTxt();
         scn.addItem(schdT);
         schdT->setZValue(5);
-        styleScheduleInfTxt(schdT);
 
         overlay = NULL;
 
@@ -39,8 +38,8 @@ PlayScene::PlayScene()
                 break;
             }
             QObject::connect(nCGI, &CardGraphicItem::flipped, nCGI, [=](bool back){
-                if (back) setScheduleInfTxt(schdT, nCGI->fc);
-                else schdT->setPlainText("");
+                if (back) schdT->generate(nCGI->fc);
+                else schdT->remove();
             });
         }
         main->update();
@@ -69,7 +68,7 @@ bool PlayScene::keyEv(QKeyEvent* event) {
             }
         }
         if (resp == -1 || !git) return false;
-        schdT->setPlainText("");
+        schdT->remove();
         removeOverlay();
         scn.removeItem(git);
         main->removeItem(git);
@@ -97,8 +96,12 @@ void PlayScene::resize() {
     if (overlay != NULL)
         overlay->setRect(rect);
 
-    schdT->document()->setTextWidth(trRec.width());
-    schdT->setPos(trRec.left(), trRec.bottom()+rect.height()*0.05);
+    double spacing = rect.width()*0.005;
+    double bot = trRec.bottom()+rect.height()*0.03;
+    schdT->setRect({
+        trRec.left()+spacing, bot,
+        rect.right()-trRec.left()-spacing*2, rect.bottom()-bot
+    });
 }
 
 void PlayScene::setOverlay(QGraphicsRectItem* ovl) {

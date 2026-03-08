@@ -1,9 +1,14 @@
 #include "scheduleInfTxt.hpp"
+#include "../core.hpp"
 #include "../notes/note.hpp"
+#include "../wids/svgBtn.hpp"
+#include "../base/font.hpp"
 #include <QTextDocument>
 #include <QTextOption>
+#include <QGridLayout>
+#include <QApplication>
 
-std::string format_duration(Duration dur) {
+QString format_duration(Duration dur) {
     using namespace std::chrono;
 
     auto mo = duration_cast<months>(dur);
@@ -18,46 +23,93 @@ std::string format_duration(Duration dur) {
     dur -= m;
     auto s = duration_cast<seconds>(dur);
 
-    std::string result;
-    if (mo.count() > 0)result += std::to_string(mo.count())+ "mo ";
-    if (w.count() > 0) result += std::to_string(w.count()) + "w ";
-    if (d.count() > 0) result += std::to_string(d.count()) + "d ";
-    if (h.count() > 0) result += std::to_string(h.count()) + "h ";
-    if (m.count() > 0) result += std::to_string(m.count()) + "m ";
-    if (s.count() > 0) result += std::to_string(s.count()) + "s ";
+    QString result;
+    if (mo.count() > 0)result += QString::number(mo.count())+ "mo ";
+    if (w.count() > 0) result += QString::number(w.count()) + "w ";
+    if (d.count() > 0) result += QString::number(d.count()) + "d ";
+    if (h.count() > 0) result += QString::number(h.count()) + "h ";
+    if (m.count() > 0) result += QString::number(m.count()) + "m ";
+    if (s.count() > 0) result += QString::number(s.count()) + "s ";
 
-    if (result.empty()) result = "0s";
+    if (result.isEmpty()) result = "0s";
 
-    if (result.back() == ' ') result.pop_back();
+    if (result.back() == ' ') result.chop(1);
     return result;
 }
 
-QGraphicsTextItem* getScheduleInfTxt(FlashCard* card, QGraphicsItem* parent) {
-    auto* gti = new QGraphicsTextItem(parent);
-    styleScheduleInfTxt(gti);
-    setScheduleInfTxt(gti, card);
-    return gti;
+ScheduleInfoTxt::ScheduleInfoTxt(QGraphicsItem* parent)
+    : RectItem(parent), proxy(this) { remove(); }
+void ScheduleInfoTxt::remove() {
+    if (last == nullptr) return;
+    proxy.setWidget(nullptr);
+    last = nullptr;
+    setRect(rect);
 }
-void styleScheduleInfTxt(QGraphicsTextItem* it) {
-    it->document()->setDefaultTextOption(
-        QTextOption(Qt::AlignCenter)
-    );
-    it->setDefaultTextColor(Qt::black);
-}
-void setScheduleInfTxt(QGraphicsTextItem* it, FlashCard* card) {
-    QString txt = "<h2>";
+
+void ScheduleInfoTxt::generate(FlashCard* card) {
+    if (card == last) return;
+    last = card;
+
+    auto font = getFont(1);
+    auto* container = new QWidget();
+    container->setAttribute(Qt::WA_TranslucentBackground);
+    container->setAutoFillBackground(false);
+    container->setStyleSheet("background: transparent; color: black;");
+    auto* lay = new QGridLayout();
+    lay->setContentsMargins(0, 0, 0, 0);
+    lay->setSpacing(0);
+
+    unsigned int idx = 0;
+    auto mkBtn = [=, &idx](QString txt, Duration increase, int key) {
+        auto btn = new SvgBtn(":/assets/btn2.svg", container);
+        btn->setFont(font);
+        btn->setText(QString("<b>%1</b><br>+%2")
+            .arg(txt)
+            .arg(format_duration(increase))
+        );
+        btn->setPadding(0, 0);
+        QObject::connect(btn, &SvgBtn::clicked, container, [=](){
+            pressKey(key);
+        });
+        lay->addWidget(btn, idx / 2, idx % 2);
+        idx += 1;
+    };
 
     for (int i = 0; i < ScheduleInfo.ratesLen(); i++) {
-        txt += "<b>" + std::to_string(i+1) + "</b>: +" + format_duration(card->schd.getUpdatedTime(i)) + "<br>";
+        mkBtn(
+            QString::number(i+1),
+            card->schd.getUpdatedTime(i),
+            Qt::Key_1 + i
+        );
     }
-    txt += QString(
-        "<b>-</b> Redo +%1<br>"
-        "<b>=</b> Skip +%2<br>"
-        "</h2>"
-    )
-        .arg(format_duration(ScheduleInfo.redoAmnt))
-        .arg(format_duration(ScheduleInfo.skipAmnt))
-    ;
+    mkBtn(
+        "- Redo",
+        ScheduleInfo.redoAmnt,
+        Qt::Key_Minus
+    );
+    mkBtn(
+        "= Skip",
+        ScheduleInfo.skipAmnt,
+        Qt::Key_Equal
+    );
 
-    it->setHtml(txt);
+    container->setLayout(lay);
+    proxy.setWidget(container);
+    setRect(rect);
+}
+
+void ScheduleInfoTxt::pressKey(int key) {
+    MG->curScene->setFocus(); 
+
+    QKeyEvent* keyPress = new QKeyEvent(QEvent::KeyPress, key, Qt::NoModifier, "");
+    QApplication::sendEvent(MG->curScene, keyPress);
+
+    QKeyEvent* keyRelease = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier, "");
+    QApplication::sendEvent(MG->curScene, keyRelease);
+}
+
+void ScheduleInfoTxt::setRect(const QRectF& newRect) {
+    RectItem::setRect(newRect);
+    setPos(newRect.topLeft());
+    proxy.setGeometry(QRectF({0,0}, newRect.size()));
 }

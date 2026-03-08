@@ -1,6 +1,7 @@
 #include "cardList.hpp"
 #include "../log.hpp"
 #include <QRandomGenerator>
+#include <QApplication>
 #include <queue>
 
 const QString MODULE = "CardList";
@@ -11,17 +12,19 @@ class Pile {
 public:
     Pile() : cards() {}
     ~Pile() {
-        Log::Error(MODULE) << "A pile just got deleted, OH NO!!!";
+        if (!QApplication::closingDown()) {
+            Log::Error(MODULE) << "A pile just got deleted, OH NO!!!";
+        }
     }
     void sort() {
         if (dirty) {
+            cards.erase(
+                std::remove(cards.begin(), cards.end(), nullptr),
+                cards.end()
+            );
+            std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global()); // Shuffle first
             std::sort(cards.begin(), cards.end(),
                 [](const FlashCard* a, const FlashCard* b) {
-                    if (a->schd.nxt == b->schd.nxt) {
-                        return static_cast<bool>(
-                            QRandomGenerator::global()->bounded(2)
-                        );
-                    }
                     // Other way around because we use the back as the highest
                     return a->schd.nxt > b->schd.nxt;
                 });

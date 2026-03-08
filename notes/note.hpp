@@ -24,6 +24,7 @@ struct _scheduleInf {
         std::vector<float> ratingScos,
         QString timings,
         Duration skipAmnt,
+        Duration redoAmnt,
         Duration learntAmnt,
         Duration leaveAmnt
     );
@@ -43,6 +44,7 @@ struct _scheduleInf {
 
     void setTimings(QString newtimings);
     Duration skipAmnt;
+    Duration redoAmnt;
     void setSkip(QString newSkip);
 };
 extern _scheduleInf ScheduleInfo;
@@ -59,6 +61,7 @@ struct Schedule {
     TimePoint nxt;
     int idx;
     float percentage();
+    bool dueNow();
 };
 
 extern std::map<QString, QString> globalTemplates;

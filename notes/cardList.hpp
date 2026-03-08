@@ -16,6 +16,7 @@ _overallProgr getOverallProgress();
 const std::vector<FlashCard*>& CardList(bool sorted);
 void CLaddCard(FlashCard* newCard);
 bool CLremoveCard(FlashCard* card);
+void CLrefreshCard(FlashCard* card);
 void CLclear();
 size_t CLlen();
 

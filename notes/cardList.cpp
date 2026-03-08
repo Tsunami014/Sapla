@@ -21,7 +21,10 @@ public:
     }
 
     void clear() { cards.clear(); }
-    FlashCard* top() { return cards.back(); }
+    FlashCard* top(bool dosort = true) {
+        if (dosort) { sort(); }
+        return cards.back();
+    }
     FlashCard* pop_top(bool dosort = true) {
         if (dosort) { sort(); }
         else { dirty = true; }
@@ -132,15 +135,29 @@ bool CLremoveCard(FlashCard* card) {
     ;
 }
 
+void CLrefreshCard(FlashCard* card) {
+    newpile.erase(card) ||
+    learnpile.erase(card) ||
+    curpile.erase(card)
+    ;
+    addCard(card);
+}
+
+int active = 0;
 void refreshCurPile() {
     static bool newnext = true;
-    while (curpile.size() < maxCurPileLen) {
+    while (curpile.size() < maxCurPileLen - active) {
         int left = 2;
         if (newnext && newpile.empty()) {
             newnext = false;
             left--;
         }
-        if (!newnext && learnpile.empty()) {
+        if (!newnext && (
+            learnpile.empty() || (!newpile.empty() && (
+                learnpile.top()->schd.score >= ScheduleInfo.learntSco &&
+                !learnpile.top()->schd.dueNow()
+            ))
+        )) {
             newnext = true;
             left--;
         }
@@ -159,7 +176,7 @@ void refreshCurPile() {
 GetFlashCard::GetFlashCard() {
     bool ptrAlive = false;
     refreshCurPile();
-    while (ptrAlive && !curpile.empty()) {
+    while (!ptrAlive && !curpile.empty()) {
         ptr = curpile.top();
         curpile.pop_top();
         ptrAlive = ptr->isAlive();
@@ -173,6 +190,8 @@ GetFlashCard::GetFlashCard() {
             ptr = allCards[QRandomGenerator::global()->bounded(int(allCards.size()))];
             Log::Debug(MODULE) << "Not enough cards avaliable, using random!";
         }
+    } else {
+        active++;
     }
     modify = ptr->isAlive();
 }
@@ -192,6 +211,7 @@ void GetFlashCard::finish() {
         } else {
             curpile.push(ptr);
         }
+        active--;
     }
     modify = false;
 }
@@ -205,9 +225,7 @@ GetFlashCard::GetFlashCard(GetFlashCard&& other) noexcept
 // Move assignment.
 GetFlashCard& GetFlashCard::operator=(GetFlashCard&& other) noexcept {
     if (this != &other) {
-        if (modify && ptr && ptr->isAlive()) {
-            addCard(ptr);
-        }
+        finish();
         ptr = other.ptr;
         modify = other.modify;
         other.ptr = nullptr;
@@ -223,4 +241,3 @@ FlashCard& GetFlashCard::operator*() const {
     if (!*this) throw std::runtime_error("Dereferencing null FlashCard");
     return *ptr;
 }
-

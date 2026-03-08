@@ -234,6 +234,7 @@ void Note::updateSchedules() {
 void Note::removeSchedules() {
     for (auto& fc : cards) {
         fc->schd = Schedule(fc->schd.idx);
+        CLrefreshCard(fc.get());
     }
     updateSchedules();
 }

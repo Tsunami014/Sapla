@@ -101,9 +101,10 @@ _scheduleInf::_scheduleInf(
     std::vector<float> rScos,
     QString ts,
     Duration skpAmnt,
+    Duration rdoAmnt,
     Duration learntAmnt,
     Duration leaveAmnt)
-    :ratingScos(rScos), skipAmnt(skpAmnt) {
+    :ratingScos(rScos), skipAmnt(skpAmnt), redoAmnt(rdoAmnt) {
         setTimings(ts);
         const size_t maxSze = timings.size()-1;
 
@@ -186,6 +187,7 @@ _scheduleInf ScheduleInfo(
     "1mo2wks\n"
     "2mo\n"
     , parseDuration("30", "mins")  // Skip amount
+    , parseDuration("1", "min")  // Redo amount
     , parseDuration("3", "days")   // Learnt amount
     , parseDuration("15", "mins")  // Leave amount
 );
@@ -200,13 +202,12 @@ QString Schedule::toInf(QString title) {
         QString::number(std::chrono::duration_cast<std::chrono::seconds>(nxt.time_since_epoch()).count());
 }
 
-Duration redoAmount = std::chrono::minutes(1);
 void Schedule::update(int rating) {
     if (rating == -1) {
         nxt += ScheduleInfo.skipAmnt;
         return;
     } else if (rating == -2) {
-        nxt += redoAmount;
+        nxt += ScheduleInfo.redoAmnt;
         return;
     }
     if (rating < 0 || rating >= ScheduleInfo.ratesLen()) {
@@ -222,3 +223,6 @@ Duration Schedule::getUpdatedTime(int rating) {
     )];
 }
 
+bool Schedule::dueNow() {
+    return nxt <= std::chrono::system_clock::now();
+}

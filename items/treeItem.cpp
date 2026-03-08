@@ -79,11 +79,11 @@ void Tree::setRect(const QRectF& newRect) {
     qreal hei = newRect.height()/3;
     qreal wid = (newRect.width()*0.2 + hei/2) / 2;
     rect = {
-        newRect.right()-wid, newRect.y(), 
+        newRect.right()-wid*1.05, newRect.y(),
         wid, hei
     };
     pb.setRect({
-        rect.x(), rect.y() + rect.height()*1.1,
+        rect.x(), rect.bottom() + newRect.height()*0.1,
         rect.width(), newRect.height()*0.04
     });
 }
@@ -121,12 +121,7 @@ void Tree::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) {
         fitR.x(), fitR.y() + fitR.height()/2, fitR.width(), fitR.height()/2
     };
     baseRend->render(painter, sTreeR);
-    QRectF drawR;
-    if (isSmall) {
-        drawR = sTreeR;
-    } else {
-        drawR = fitR;
-    }
+    QRectF drawR = isSmall ? sTreeR : fitR;
     treeRend->render(painter, drawR);
 }
 

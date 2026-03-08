@@ -26,7 +26,7 @@ int deckIdx() {
 }
 
 void changeDeck(QString newname, bool createNew) {
-    MG->removeGame();
+    MG->removeGame(true); // Force it to delete GetFlashCard objects
     for (auto* n : notesL) delete n;
     notesL.clear();
 

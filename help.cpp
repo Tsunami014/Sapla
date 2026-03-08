@@ -188,6 +188,16 @@ const QString GAME_HELP =
 "<p>Click while hovering over a card to flip (can press again to unflip), and once flipped press a button or key on your keyboard as listed on the right to finish and reschedule the card.</p>"
 "<p>Reset and Skip both don't change the score of the card but just reschedule it for later (skip a lot longer away than reset)</p>"
 "<p>The times present are only an aim. The app gives you cards sorted based on these times, so when you will recieve these cards is independent of the times.</p>"
-"<p>Press &lt;Esc&gt; to go back to the home screen.</p>";
+"<h2>Keybinds</h2>"
+    "<ul>"
+        "<li>&lt;Esc&gt; to go back to the home screen</li>"
+        "<li>All the keys shown on the buttons that show when you press on a card. The numbers/symbols in bold aren't just for pretty you know</li>"
+    "</ul>"
+"<h2>Menu items</h2>"
+    "<ul>"
+        "<li><b>File</b><ul>"
+            "<li>Reset current set of cards you're looking at. This will mean you get a whole new set of cards (tho the card you're looking at will stay)</li>"
+        "</ul></li>"
+    "</ul>"
 ;
 

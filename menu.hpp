@@ -38,3 +38,10 @@ private:
     QMenu* parentMen;
 };
 
+
+class GameMenues {
+public:
+    GameMenues();
+protected:
+    MenuItem rc;
+};

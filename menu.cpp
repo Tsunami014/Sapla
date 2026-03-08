@@ -8,6 +8,9 @@
 #include <QDialog>
 #include <QTextEdit>
 
+#include "notes/cardList.hpp"
+#include <QMessageBox>
+
 QMenuBar* bar = nullptr;
 QAction* last = nullptr;
 _MenuesTyp* Menues = new _MenuesTyp;
@@ -90,3 +93,15 @@ MenuItem::~MenuItem() {
     parentMen->removeAction(this);
 }
 
+
+GameMenues::GameMenues()
+: rc("Reset current cards", Menues->FileMenu) {
+    QObject::connect(&rc, &QAction::triggered, [=](){
+        auto reply = QMessageBox::question(MG, "Are you sure?",
+                "Are you sure you want to reset the current card pile?",
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            resetCurPile();
+        }
+    });
+}

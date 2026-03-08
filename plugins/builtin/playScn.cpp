@@ -11,7 +11,8 @@ void PlayScene::resume() {
     MG->changeBG("pretty");
     dp.upd();
 }
-PlayScene::PlayScene() : GraphicGameScene(), tr(), done(false), dp() {
+PlayScene::PlayScene()
+: GraphicGameScene(), tr(), done(false), dp(), ms() {
     resume();
     GetFlashCard gfc{};
     schdT = new ScheduleInfoTxt();

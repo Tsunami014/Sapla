@@ -1,4 +1,5 @@
 #pragma once
+#include "menu.hpp"
 #include "items/treeItem.hpp"
 #include "items/deckProgress.hpp"
 #include "items/scheduleInfTxt.hpp"
@@ -25,4 +26,5 @@ private:
     ScheduleInfoTxt* schdT;
     Tree tr;
     DeckProgress dp;
+    GameMenues ms;
 };

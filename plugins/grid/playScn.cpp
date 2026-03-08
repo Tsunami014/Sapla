@@ -17,34 +17,34 @@ void PlayScene::resume() {
     dp.upd();
 }
 PlayScene::PlayScene()
-    : GraphicGameScene(), main(new GLayoutGraphicItem()), tr(), dp() {
-        scn.addItem(main);
-        scn.addItem(&tr);
-        scn.addItem(&dp);
+: GraphicGameScene(), main(new GLayoutGraphicItem()), tr(), dp(), ms() {
+    scn.addItem(main);
+    scn.addItem(&tr);
+    scn.addItem(&dp);
 
-        schdT = new ScheduleInfoTxt();
-        scn.addItem(schdT);
-        schdT->setZValue(5);
+    schdT = new ScheduleInfoTxt();
+    scn.addItem(schdT);
+    schdT->setZValue(5);
 
-        overlay = NULL;
+    overlay = NULL;
 
-        uint8_t amnt = QRandomGenerator::global()->bounded(1, GLayoutGraphicItem::Cols * 2 - 1);
-        for (uint8_t i = 0; i < amnt; i++) {
-            GetFlashCard fc = GetFlashCard();
-            auto lay = Single;
-            auto* nCGI = new GridCGI(lay.fname, fc);
-            if (!main->addItem(nCGI, lay)) {
-                delete nCGI;
-                break;
-            }
-            QObject::connect(nCGI, &CardGraphicItem::flipped, nCGI, [=](bool back){
-                if (back) schdT->generate(nCGI->fc);
-                else schdT->remove();
-            });
+    uint8_t amnt = QRandomGenerator::global()->bounded(1, GLayoutGraphicItem::Cols * 2 - 1);
+    for (uint8_t i = 0; i < amnt; i++) {
+        GetFlashCard fc = GetFlashCard();
+        auto lay = Single;
+        auto* nCGI = new GridCGI(lay.fname, fc);
+        if (!main->addItem(nCGI, lay)) {
+            delete nCGI;
+            break;
         }
-        main->update();
-        resume();
+        QObject::connect(nCGI, &CardGraphicItem::flipped, nCGI, [=](bool back){
+            if (back) schdT->generate(nCGI->fc);
+            else schdT->remove();
+        });
     }
+    main->update();
+    resume();
+}
 PlayScene::~PlayScene() {
     if (tr.scene() == &scn)
         scn.removeItem(&tr);

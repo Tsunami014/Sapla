@@ -21,6 +21,8 @@ MainGame* MG = nullptr;
 const QString* helpStr = nullptr;
 
 int runApp(int argc, char *argv[]) {
+    QCoreApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents);
+    QCoreApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTabletEvents);
     QApplication app(argc, argv);
     initSettings();
     MG = new MainGame();

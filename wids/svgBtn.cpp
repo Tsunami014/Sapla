@@ -41,8 +41,11 @@ void SvgBtn::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 void SvgBtn::mousePressEvent(QMouseEvent* event) {
-    if (touching(mapFromGlobal(QCursor::pos()))) {
+    if (event->button() == Qt::LeftButton && touching(event->pos())) {
         emit clicked();
+        event->accept();
+    } else {
+        QLabel::mousePressEvent(event);
     }
 }
 

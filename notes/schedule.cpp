@@ -151,7 +151,7 @@ void _scheduleInf::setSkip(QString newSkip) {
 }
 
 _scheduleInf ScheduleInfo(
-    {-2.5, -1, 0.5, 1, 2},
+    {-4, -1.5, 0.5, 1.5, 3},
     "30sec\n"
     "2min\n"
     "5mins\n"

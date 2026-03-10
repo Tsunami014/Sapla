@@ -69,7 +69,7 @@ private:
 };
 
 
-const unsigned int maxCurPileLen = 20;
+const unsigned int maxCurPileLen = 15;
 
 Pile newpile{};
 Pile learnpile{};

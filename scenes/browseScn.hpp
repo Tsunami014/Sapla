@@ -11,7 +11,7 @@
 
 class BrowseScene : public BaseScene {
 public:
-    BrowseScene();
+    BrowseScene(Note* sel = nullptr);
     bool keyEv(QKeyEvent* event) override;
 
 public slots:

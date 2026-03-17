@@ -18,7 +18,7 @@ void BrowseScene::prevIdxTyp::reset() {
     idx = 0; max = 0;
 }
 
-BrowseScene::BrowseScene()
+BrowseScene::BrowseScene(Note* sel)
     : BaseScene(),
     info(""),
     newnote("New note (alt+enter)", Menues->FileMenu),
@@ -119,6 +119,16 @@ BrowseScene::BrowseScene()
             }
         });
         updateInfo();
+
+        if (sel != nullptr) {
+            for (int i = 0; i < tree->topLevelItemCount(); ++i) {
+                QTreeWidgetItem* item = tree->topLevelItem(i);
+                if (getNote(item) == sel) {
+                    tree->setCurrentItem(item, 0);
+                    break;
+                }
+            }
+        }
     }
 Note* BrowseScene::getNote(QTreeWidgetItem* item) {
     return static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;

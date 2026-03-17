@@ -40,6 +40,7 @@ public:
     void fixLogs();
 
     int cardFin(FlashCard* card, int key, Tree* tree);
+    void editCard(FlashCard* card);
     QVBoxLayout logLay;
     OverlayWrapper logLayWrap;
     BaseScene* curScene;

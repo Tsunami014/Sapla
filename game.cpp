@@ -109,7 +109,14 @@ void MainGame::nextFC() {
     }
 }
 
+void MainGame::editCard(FlashCard* card) {
+    changeScene(new BrowseScene(card->parent));
+}
 int MainGame::cardFin(FlashCard* card, int key, Tree* tree) {
+    if (key == Qt::Key_E) {
+        editCard(card);
+        return -1;
+    }
     int rating;
     if (key >= Qt::Key_1 && key < Qt::Key_1+ScheduleInfo.ratesLen()) {
         rating = key - Qt::Key_1;

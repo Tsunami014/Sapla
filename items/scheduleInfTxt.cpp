@@ -60,19 +60,22 @@ void ScheduleInfoTxt::generate(FlashCard* card) {
     lay->setSpacing(0);
 
     unsigned int idx = 0;
-    auto mkBtn = [=, &idx](QString txt, Duration increase, int key) {
+    auto mkBtnBase = [=, &idx](QString title, int key) {
         auto btn = new SvgBtn(":/assets/btn2.svg", container);
         btn->setFont(font);
-        btn->setText(QString("<b>%1</b><br>+%2")
-            .arg(txt)
-            .arg(format_duration(increase))
-        );
+        btn->setText(title);
         btn->setPadding(0, 0);
         QObject::connect(btn, &SvgBtn::clicked, container, [=](){
             pressKey(key);
         });
         lay->addWidget(btn, idx / 2, idx % 2);
         idx += 1;
+    };
+    auto mkBtn = [=](QString txt, Duration increase, int key, QString extra="") {
+        mkBtnBase(QString("<b>%1</b><br>+%2"+extra)
+            .arg(txt)
+            .arg(format_duration(increase))
+        , key);
     };
 
     for (int i = 0; i < ScheduleInfo.ratesLen(); i++) {
@@ -83,14 +86,20 @@ void ScheduleInfoTxt::generate(FlashCard* card) {
         );
     }
     mkBtn(
-        "- Redo",
+        "-",
         ScheduleInfo.redoAmnt,
-        Qt::Key_Minus
+        Qt::Key_Minus,
+        "<br><i>Redo</i>"
     );
     mkBtn(
-        "= Skip",
+        "=",
         ScheduleInfo.skipAmnt,
-        Qt::Key_Equal
+        Qt::Key_Equal,
+        "<br><i>Skip</i>"
+    );
+    mkBtnBase(
+        "<b>E</b><br><i>Edit</i>",
+        Qt::Key_E
     );
 
     container->setLayout(lay);

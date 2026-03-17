@@ -85,6 +85,11 @@ QString MarkdownEdit::getMarkdown() {
 void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
     if (isBtn) return;
     int key = event->key();
+    if (key == Qt::Key_Escape) {
+        clearFocus();
+        event->accept();
+        return;
+    }
     if (event->modifiers() & Qt::ControlModifier) {
         if (event->modifiers() & Qt::ShiftModifier) {
             if (key == Qt::Key_Return) {

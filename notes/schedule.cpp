@@ -102,23 +102,29 @@ _scheduleInf::_scheduleInf(
     QString ts,
     Duration skpAmnt,
     Duration rdoAmnt,
+
+    Duration notnewAmnt,
     Duration learntAmnt,
     Duration leaveAmnt)
     :ratingScos(rScos), skipAmnt(skpAmnt), redoAmnt(rdoAmnt) {
         setTimings(ts);
         const size_t maxSze = timings.size()-1;
 
-        uint8_t untilbreak = 2;
+        uint8_t untilbreak = 3;
         learntSco = maxSze;
         leaveSco = maxSze;
         for (int i = 0; i <= maxSze; i++) {
             auto t = timings[i];
-            if (learntSco == maxSze && t > learntAmnt) {
-                learntSco = i;
-                untilbreak--;
-            }
             if (leaveSco == maxSze && t > leaveAmnt) {
                 leaveSco = i;
+                untilbreak--;
+            }
+            if (notnewSco == maxSze && t > notnewAmnt) {
+                notnewSco = i;
+                untilbreak--;
+            }
+            if (learntSco == maxSze && t > learntAmnt) {
+                learntSco = i;
                 untilbreak--;
             }
             if (untilbreak == 0) break;
@@ -173,8 +179,11 @@ _scheduleInf ScheduleInfo(
     "2mo\n"
     , parseDuration("30", "mins")  // Skip amount
     , parseDuration("1", "min")  // Redo amount
-    , parseDuration("3", "days")   // Learnt amount
-    , parseDuration("15", "mins")  // Leave amount
+
+    , parseDuration("45", "mins")  // NotNew amount
+    , parseDuration("1", "day")  // Learnt amount
+
+    , parseDuration("6", "mins")  // Leave amount
 );
 
 Schedule::Schedule(int id, float sco, long long nxtTime) : idx(id), score(sco) {
@@ -208,6 +217,18 @@ Duration Schedule::getUpdatedTime(int rating) {
     )];
 }
 
-bool Schedule::dueNow() {
+float Schedule::percentage() const {
+    return std::clamp(score / ScheduleInfo.learntSco, 1.0f, 0.0f);
+}
+TimePoint Schedule::trueNxt() const {
+    if (nxt == TimePoint{}) {
+        return std::chrono::system_clock::now();
+    }
+    return nxt;
+}
+bool Schedule::dueNow() const {
     return nxt <= std::chrono::system_clock::now();
+}
+bool Schedule::isNew() const {
+    return nxt == TimePoint{};
 }

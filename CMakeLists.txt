@@ -43,8 +43,9 @@ set(CORELIB
     notes/schedule.cpp
     notes/decks.cpp
     notes/getNotes.cpp
-    notes/noteTree.cpp
     notes/cardList.cpp
+    notes/pile.hpp
+    notes/noteTree.cpp
         notes/features/features.cpp
         notes/features/builtinFeats.cpp
         notes/features/defaultFeats.cpp

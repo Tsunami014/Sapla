@@ -1,79 +1,16 @@
 #include "cardList.hpp"
+#include "pile.hpp"
 #include "../log.hpp"
 #include <QRandomGenerator>
-#include <QApplication>
-#include <queue>
 
 const QString MODULE = "CardList";
 
 std::vector<FlashCard*> allCards;
 
-class Pile {
-public:
-    Pile() : cards() {}
-    ~Pile() {
-        if (!QApplication::closingDown()) {
-            Log::Error(MODULE) << "A pile just got deleted, OH NO!!!";
-        }
-    }
-    void sort() {
-        if (dirty) {
-            cards.erase(
-                std::remove(cards.begin(), cards.end(), nullptr),
-                cards.end()
-            );
-            std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global()); // Shuffle first
-            std::sort(cards.begin(), cards.end(),
-                [](const FlashCard* a, const FlashCard* b) {
-                    // Other way around because we use the back as the highest
-                    return a->schd.nxt > b->schd.nxt;
-                });
-            dirty = false;
-        }
-    }
+const unsigned int maxCurPileWeight = 6; // new cards - if a card is known well, the curpile can hold more cards (up to double this)
 
-    void clear() { cards.clear(); }
-    FlashCard* top(bool dosort = true) {
-        if (cards.empty()) return nullptr;
-        if (dosort) { sort(); }
-        return cards.back();
-    }
-    FlashCard* pop_top(bool dosort = true) {
-        if (cards.empty()) return nullptr;
-        if (dosort) { sort(); }
-        else { dirty = true; }
-        auto card = cards.back();
-        cards.pop_back();
-        return card;
-    }
-    void push(FlashCard* card) {
-        dirty = true;
-        cards.push_back(card);
-    }
-    bool erase(FlashCard* card) {
-        auto it = std::find(cards.begin(), cards.end(), card);
-        if (it != cards.end()) {
-            cards.erase(it);
-            dirty = true;
-            return true;
-        }
-        return false;
-    }
-
-    size_t size() { return cards.size(); }
-    bool empty() { return cards.empty(); }
-    const std::vector<FlashCard*>& cardList() { return cards; }
-private:
-    bool dirty = false;
-    std::vector<FlashCard*> cards;
-};
-
-
-const unsigned int maxCurPileLen = 15;
-
-Pile newpile{};
-Pile learnpile{};
-Pile curpile{};
+Pile otherpile{}; // Cards that aren't in the curpile
+CurPile curpile{};
 
 std::vector<_progressVal> getProgresses() {
     unsigned int cardsln = allCards.size();
@@ -81,8 +18,8 @@ std::vector<_progressVal> getProgresses() {
     unsigned int pracs = 0;
     unsigned int learns = 0;
     for (auto* fc : allCards) {
-        if (fc->isnew()) news++;
-        else if (fc->schd.score < ScheduleInfo.leaveSco) pracs++;
+        if (fc->schd.isNew()) news++;
+        else if (fc->schd.score < ScheduleInfo.notnewSco) pracs++;
         else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
     }
     return {
@@ -97,7 +34,7 @@ _overallProgr getOverallProgress() {
     float completes = 0;
     for (auto* fc : allCards) {
         // Add percentage of the way through the card
-        completes += std::min(fc->schd.score / ScheduleInfo.learntSco, 1.0f);
+        completes += fc->schd.percentage();
     }
     return { cardsln, completes };
 }
@@ -115,11 +52,7 @@ size_t CLlen() {
 }
 
 void addCard(FlashCard* newCard) {
-    if (newCard->isnew()) {
-        newpile.push(newCard);
-    } else {
-        learnpile.push(newCard);
-    }
+    otherpile.push(newCard);
 }
 void CLaddCard(FlashCard* newCard) {
     allCards.push_back(newCard);
@@ -128,8 +61,7 @@ void CLaddCard(FlashCard* newCard) {
 
 void CLclear() {
     allCards.clear();
-    newpile.clear();
-    learnpile.clear();
+    otherpile.clear();
     curpile.clear();
 }
 bool CLremoveCard(FlashCard* card) {
@@ -142,47 +74,26 @@ bool CLremoveCard(FlashCard* card) {
         }
     }
     return
-        newpile.erase(card) ||
-        learnpile.erase(card) ||
+        otherpile.erase(card) ||
         curpile.erase(card)
     ;
 }
 
 void CLrefreshCard(FlashCard* card) {
-    newpile.erase(card) ||
-    learnpile.erase(card) ||
+    otherpile.erase(card) ||
     curpile.erase(card)
     ;
     addCard(card);
 }
 
-int active = 0;
+double activeWeight = 0;
 void refreshCurPile() {
-    static bool newnext = true;
-    while (curpile.size() < maxCurPileLen - active) {
-        int left = 2;
-        if (newnext && newpile.empty()) {
-            newnext = false;
-            left--;
-        }
-        if (!newnext && (
-            learnpile.empty() || (!newpile.empty() && (
-                learnpile.top()->schd.score >= ScheduleInfo.learntSco &&
-                !learnpile.top()->schd.dueNow()
-            ))
-        )) {
-            newnext = true;
-            left--;
-        }
-        if (left == 0) {
+    while (1) {
+        double newWeight = cardweight(otherpile.top());
+        if (curpile.weight() + newWeight >= maxCurPileWeight - activeWeight) {
             break;
         }
-        if (newnext) {
-            curpile.push(newpile.pop_top());
-        } else {
-            curpile.push(learnpile.pop_top());
-        }
-        newnext = !newnext;
+        curpile.push(otherpile.pop_top());
     }
 }
 
@@ -203,7 +114,7 @@ GetFlashCard::GetFlashCard() {
             Log::Debug(MODULE) << "Not enough cards avaliable, using random!";
         }
     } else {
-        active++;
+        activeWeight += cardweight(ptr);
     }
     modify = ptr->isAlive();
 }
@@ -219,11 +130,11 @@ void GetFlashCard::updateSchedule(int rating) {
 void GetFlashCard::finish() {
     if (modify && ptr && ptr->isAlive()) {
         if (ptr->schd.score >= ScheduleInfo.leaveSco) {
-            learnpile.push(ptr);
+            otherpile.push(ptr);
         } else {
             curpile.push(ptr);
         }
-        active--;
+        activeWeight -= cardweight(ptr);
     }
     modify = false;
 }

@@ -25,7 +25,10 @@ struct _scheduleInf {
         QString timings,
         Duration skipAmnt,
         Duration redoAmnt,
+
+        Duration notnewAmnt,
         Duration learntAmnt,
+
         Duration leaveAmnt
     );
 
@@ -39,6 +42,8 @@ struct _scheduleInf {
 
     /// The minimum score that means you 'learnt' the card (when the time for next card is at least 3 days)
     float learntSco;
+    /// The minimum score that means the card is not new anymore (from new to learning)
+    float notnewSco;
     /// The minimum score that means if you pass this then the card should leave the current pile
     float leaveSco;
 
@@ -60,8 +65,10 @@ struct Schedule {
     float score;
     TimePoint nxt;
     int idx;
-    float percentage();
-    bool dueNow();
+    float percentage() const;
+    TimePoint trueNxt() const;
+    bool dueNow() const;
+    bool isNew() const;
 };
 
 extern std::map<QString, QString> globalTemplates;
@@ -122,7 +129,6 @@ public:
     virtual void update(int rating = -1);
 
     Schedule schd;
-    bool isnew();
     Note* parent;
     QString title;
     virtual QString getSide(Side s) const;

@@ -64,6 +64,7 @@ Can you have note templates with regular cards?
 ||highlight: Yes!||
 #test
 
+
 This is a mirror feature!
 The text will be the same on both sides.
 This is a great place to ..shuffle words.. or use the hidden==[[..?::feature!]]==

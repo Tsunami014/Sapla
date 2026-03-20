@@ -271,10 +271,6 @@ FlashCard::~FlashCard() {
 }
 bool FlashCard::isAlive() { return alive; }
 
-bool FlashCard::isnew() {
-    return schd.nxt == TimePoint{}; // If is new, next time is epoch
-}
-
 void FlashCard::update(int rating) {
     schd.update(rating);
 }

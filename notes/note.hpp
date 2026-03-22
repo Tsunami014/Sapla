@@ -66,7 +66,7 @@ struct Schedule {
     TimePoint nxt;
     int idx;
     float percentage() const;
-    TimePoint trueNxt() const;
+    TimePoint trueNxt(TimePoint now) const;
     bool dueNow() const;
     bool isNew() const;
 };

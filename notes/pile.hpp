@@ -13,11 +13,7 @@ double cardweight(FlashCard* card) {
 
 class PileBase {
 public:
-    ~PileBase() {
-        if (!QApplication::closingDown()) {
-            Log::Error("CardPile") << "A pile just got deleted, OH NO!!!";
-        }
-    }
+    virtual ~PileBase() = default;
 
     virtual double weight() = 0;
     virtual void clear() = 0;
@@ -39,10 +35,11 @@ public:
                 cards.end()
             );
             std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global()); // Shuffle first
+            TimePoint now = std::chrono::system_clock::now();
             std::sort(cards.begin(), cards.end(),
-                [](const FlashCard* a, const FlashCard* b) {
+                [now](const FlashCard* a, const FlashCard* b) {
                     // Other way around because we use the back as the highest
-                    return a->schd.trueNxt() > b->schd.trueNxt();
+                    return a->schd.trueNxt(now) > b->schd.trueNxt(now);
                 });
             dirty = false;
         }

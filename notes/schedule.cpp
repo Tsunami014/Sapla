@@ -220,9 +220,9 @@ Duration Schedule::getUpdatedTime(int rating) {
 float Schedule::percentage() const {
     return std::clamp(score / ScheduleInfo.learntSco, 1.0f, 0.0f);
 }
-TimePoint Schedule::trueNxt() const {
+TimePoint Schedule::trueNxt(TimePoint now) const {
     if (nxt == TimePoint{}) {
-        return std::chrono::system_clock::now();
+        return now;
     }
     return nxt;
 }

@@ -115,15 +115,15 @@ _scheduleInf::_scheduleInf(
         leaveSco = maxSze;
         for (int i = 0; i <= maxSze; i++) {
             auto t = timings[i];
-            if (leaveSco == maxSze && t > leaveAmnt) {
+            if (leaveSco == maxSze && t >= leaveAmnt) {
                 leaveSco = i;
                 untilbreak--;
             }
-            if (notnewSco == maxSze && t > notnewAmnt) {
+            if (notnewSco == maxSze && t >= notnewAmnt) {
                 notnewSco = i;
                 untilbreak--;
             }
-            if (learntSco == maxSze && t > learntAmnt) {
+            if (learntSco == maxSze && t >= learntAmnt) {
                 learntSco = i;
                 untilbreak--;
             }
@@ -160,8 +160,8 @@ _scheduleInf ScheduleInfo(
     {-4, -1.5, 0.5, 1.5, 3},
     "30sec\n"
     "2min\n"
-    "5mins\n"
-    "10mins\n"
+    "6mins\n"
+    "15mins\n"
     "30mins\n"
     "1hr\n"
     "1hr30min\n"
@@ -180,7 +180,7 @@ _scheduleInf ScheduleInfo(
     , parseDuration("30", "mins")  // Skip amount
     , parseDuration("1", "min")  // Redo amount
 
-    , parseDuration("45", "mins")  // NotNew amount
+    , parseDuration("1", "hour")  // NotNew amount
     , parseDuration("1", "day")  // Learnt amount
 
     , parseDuration("6", "mins")  // Leave amount

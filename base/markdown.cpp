@@ -161,7 +161,7 @@ void MarkdownEdit::focusInEvent(QFocusEvent *event) {
         QTextCursor c = textCursor();
         int blkLen = c.block().length();
         int newPos = c.block().position() + qMin(lastCol, blkLen - 1);
-        c.setPosition(qMin(newPos, blkLen));
+        c.setPosition(newPos);
         setTextCursor(c);
         lastCol = -1;
     }

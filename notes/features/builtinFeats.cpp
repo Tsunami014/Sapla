@@ -41,9 +41,6 @@ QMap<QString, QString> TagFeat::help() const {
     return {
            {"Tag\n#tag",
             "Add a tag for this note"
-        }, {"Priority\n#!prio",
-            "Give the card a priority\n"
-            "This gets converted to a number, where 0 is the default and the higher the number is, the more important it is."
         }
     };
 }

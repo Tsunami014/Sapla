@@ -6,19 +6,16 @@ What _is_ **Australia**?
     *  (This is important to know)
 ---
 A ~~city~~ ==country==
-#!2
 
 
 The meaning of life is {42}!
 >  From a book or something
-#!1
 
 
 What is `1 + 1`?
 ---
 - ==2==
 > + *You should know this*!
-#!2
 
 
 [[What happened i::I]]n _2025_[[?::]]

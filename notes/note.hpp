@@ -92,7 +92,6 @@ public:
     int getNumTemplates();
 
     QStringList tags;
-    int prio;
 
     QString error;
 

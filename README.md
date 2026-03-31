@@ -35,7 +35,7 @@ Playing the grid game (a plugin) with a winter colour scheme (another plugin)
 - A note preview which also reveals errors
 - Markdown support - and reveals text underneath on selection
 - Saves notes to a configuration file automatically as you type
-- Tags & priority for ease of sorting
+- Tags for ease of sorting
 - Scheduling - cards revised based on their schedule time!
 - Rate whether you know the card based on a scale!
 ### Gameplay

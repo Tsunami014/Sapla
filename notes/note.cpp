@@ -124,7 +124,6 @@ ScheduleMap Note::getSchdMap() {
 }
 void Note::updateCards() {
     error = "";
-    prio = 0;
     std::map<QString, QString> loclTempls;
     {
         QString templHidden = TemplateFeat::instance->highersReplace(orig);
@@ -152,7 +151,6 @@ void Note::updateCards() {
         }
     } {
         tags = {};
-        prio = 0;
         QString hidden = TagFeat::instance->highersReplace(orig);
         auto it = noteInfRe.globalMatch(hidden);
         QMap<QString, bool> has;
@@ -160,23 +158,10 @@ void Note::updateCards() {
             auto m = it.next();
             QString txt = m.captured(1).replace("\\ ", " ");
             QString txt2 = txt.sliced(1);
-            if (txt[0] == '!') {
-                if (has.value("prio", false)) {
-                    prio = 0;
-                    error += "Cannot have multiple #!priority!\n";
-                } else {
-                    bool ok;
-                    int value = txt2.toInt(&ok);
-                    if (ok) {
-                        prio = value;
-                    } else {
-                        error += "Priority could not be converted to an int: `" + m.captured(2) + "`\n";
-                    }
-                    has["prio"] = true;
-                }
-            } else {
+            /*if (txt[0] == '!') {
+            } else {*/
                 tags.push_back(txt);
-            }
+            //}
         }
     }
 

@@ -107,7 +107,6 @@ const QString BROWSE_HELP =
     "<ul>"
         "<li><i>Name</i> - the name of the note (a one-line representation of the note's contents)</li>"
         "<li>📚 - <b>Cards</b> (The amount of cards produced by the note)</li>"
-        "<li>🚩 - <b>Priority</b> (The priority of the card, 0 being default, positives being more important)"
         "<li>‼️ - <b>Errors</b> (The amount of errors in the note)</li>"
         "<li>📝 - <b>Templates</b> (The amount of templates specified by the note)</li>"
         "<li>🏷️ - <b>Tags</b> (The list of tags provided)</li>"

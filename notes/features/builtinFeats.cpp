@@ -47,15 +47,16 @@ QMap<QString, QString> TagFeat::help() const {
 
 
 
-const QString templBaseRe = R"(\s*([^|:\n]+?)\s*(?:[|:\n](?!\|)\s*((?:.|\n)*?)\s*)?)";
+const QString templBaseContentsRe = R"((?!\|)\s*((?:.|\n)*?)\s*)";
+const QString templBaseRe = QString(R"(\s*([^|: \n]+?)\s*(?:[|: \n]%1)?)").arg(templBaseContentsRe);
 const QString templDefPref = R"(\s*^\s*)";
 const QString templDefSuff = R"(\s*$\s*?(?=\n)?)";
 const QRegularExpression templDefRe(
-    templDefPref + QString(R"(\|=%1=\|\s*$)").arg(templBaseRe) + templDefSuff, MO);
+    templDefPref + QString(R"(\|=%1=\|)").arg(templBaseRe) + templDefSuff, MO);
 const QRegularExpression templLoclDefRe(
-    templDefPref + QString(R"(\|:%1:\|\s*$)").arg(templBaseRe) + templDefSuff, MO);
+    templDefPref + QString(R"(\|:%1:\|)").arg(templBaseRe) + templDefSuff, MO);
 const QRegularExpression templApplyRe(
-    QString(R"(\|\|%1\|\|)").arg(templBaseRe), MO);
+    QString(R"(\|(?:\|%1|!(\S)\s*(%2)?)\|\|)").arg(templBaseRe).arg(templBaseContentsRe), MO);
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
         return txt
@@ -82,7 +83,8 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     while (it.hasNext()) {
         auto m = it.next();
 
-        QString name = m.captured(1);
+        QString g1 = m.captured(1);
+        QString name = g1.isNull() ? m.captured(3) : g1;
         QString templ;
         if (loclTempls.find(name) != loclTempls.end()) {
             templ = loclTempls[name];
@@ -91,7 +93,8 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         } else {
             continue;
         }
-        QString match = m.captured(2);
+        g1 = m.captured(2);
+        QString match = g1.isNull() ? m.captured(4) : g1;
         if (!match.isNull()) {
             QStringList gs = match.split('|');
             for (auto& g : gs) {
@@ -106,10 +109,12 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     }
     return txt;
 }
+const QRegularExpression templApplyReplRe(R"((\|!\S))");
 QString TemplateFeat::markup(QString& line) const {
     const QString boldify = "<b style='color:%1;'>%2</b>";
     QString nln = line
-        .replace("||", QString(boldify).arg(cols[0]).arg("||"));
+        .replace("||", QString(boldify).arg(cols[0]).arg("||"))
+        .replace(templApplyReplRe, QString(boldify).arg(cols[0]).arg("\\1"));
 
     int si = 0;
     while (si < nln.size() && nln[si].isSpace()) si++;

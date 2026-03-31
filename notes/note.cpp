@@ -140,7 +140,8 @@ void Note::updateCards() {
         while (it.hasNext()) {
             auto m = it.next();
 
-            QString name = m.captured(1);
+            QString g1 = m.captured(1);
+            QString name = g1.isNull() ? m.captured(3) : g1;
             if (
                 globalTemplates.find(name) == globalTemplates.end() &&
                 loclTempls.find(name) == loclTempls.end()

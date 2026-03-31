@@ -69,13 +69,13 @@ QString parseMarkdownHtml(QString txt) {
 
     // *italic*, **bold**, _underline_, `code`, ==highlight==, ~~strikethrough~~
     esc
-       .replace(STATIC_RE(R"((?<!\\)\*\*([^*]*[^*\\])\*\*)"), "<b>\\1</b>")
-       .replace(STATIC_RE(R"((?<!\\)\*([^*]*[^*\\])\*)"), "<i>\\1</i>")
-       .replace(STATIC_RE(R"((?<!\\)_([^_]*[^_\\])_)"), "<u>\\1</u>")
-       .replace(STATIC_RE(R"((?<!\\)`([^`]*[^`\\])`)"), codeRepl)
-       .replace(STATIC_RE(R"((?<!\\)==([^=]*[^=\\])==)"), hlRepl.arg(MG->styls.mdHlCol))
-       .replace(STATIC_RE(R"((?<!\\)~~([^~]*[^~\\])~~)"), "<s>\\1</s>")
-       .replace(STATIC_RE(R"((?<!\\))" "\x01" "([^\x01]*[^\x01\\\\])" "\x01"), hlRepl.arg(MG->styls.secretCol));
+       .replace(STATIC_RE(R"((?<!\\)\*\*((?:[^*]|\\\*)*)\*\*)"), "<b>\\1</b>")
+       .replace(STATIC_RE(R"((?<!\\)\*((?:[^*]|\\\*)*)\*)"), "<i>\\1</i>")
+       .replace(STATIC_RE(R"((?<!\\)_((?:[^_]|\\_)*)_)"), "<u>\\1</u>")
+       .replace(STATIC_RE(R"((?<!\\)`((?:[^`]|\\`)*)`)"), codeRepl)
+       .replace(STATIC_RE(R"((?<!\\)==((?:[^=]|\\=)*)==)"), hlRepl.arg(MG->styls.mdHlCol))
+       .replace(STATIC_RE(R"((?<!\\)~~((?:[^~]|\\~)*)~~)"), "<s>\\1</s>")
+       .replace(STATIC_RE(R"((?<!\\))""\x01((?:[^\x01]|\\\\\x01)*)\x01"), hlRepl.arg(MG->styls.secretCol));
 
     // Fix spaces and finish
     int i = 0;

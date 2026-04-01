@@ -29,7 +29,7 @@ QString TagFeat::replacements(QString& txt, Side s) const {
     return txt.remove(noteInfRe);
 }
 QString TagFeat::markup(QString& line) const {
-    static const QRegularExpression re(R"(( +|^)#((?:\\ |[^ \n])+)( *)(?:(?= )|$))", MO);
+    static const QRegularExpression re(R"(( +|^|(?<=>))#((?:\\ |[^ \n<])+)( *)(?:(?=[ <])|$))", MO);
     return line
         .replace(re, QString(
             "\\1"
@@ -109,11 +109,10 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     }
     return txt;
 }
-const QRegularExpression templApplyReplRe(R"((?<!\\)(\|[^ \t\n:=|]))");
+const QRegularExpression templApplyReplRe(R"((?<!\\)(\|[^ \t\n:=<]))");
 QString TemplateFeat::markup(QString& line) const {
     const QString boldify = "<b style='color:%1;'>%2</b>";
     QString nln = line
-        .replace("||", QString(boldify).arg(cols[0]).arg("||"))
         .replace(templApplyReplRe, QString(boldify).arg(cols[0]).arg("\\1"));
 
     int si = 0;

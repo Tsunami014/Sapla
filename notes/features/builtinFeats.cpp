@@ -48,7 +48,7 @@ QMap<QString, QString> TagFeat::help() const {
 
 
 const QString templBaseContentsRe = R"((?!\|)\s*((?:.|\n)*?)\s*)";
-const QString templBaseRe = QString(R"(\s*([^|: \n]+?)\s*(?:[|: \n]%1)?)").arg(templBaseContentsRe);
+const QString templBaseRe = QString(R"(\s*([^|: \n]+?)\s*(?:[|: \n]%1)?(?<!\\))").arg(templBaseContentsRe);
 const QString templDefPref = R"(\s*^\s*)";
 const QString templDefSuff = R"(\s*$\s*?(?=\n)?)";
 const QRegularExpression templDefRe(
@@ -56,7 +56,7 @@ const QRegularExpression templDefRe(
 const QRegularExpression templLoclDefRe(
     templDefPref + QString(R"(\|:%1:\|)").arg(templBaseRe) + templDefSuff, MO);
 const QRegularExpression templApplyRe(
-    QString(R"(\|(?:\|%1|!(\S)\s*(%2)?)\|\|)").arg(templBaseRe).arg(templBaseContentsRe), MO);
+    QString(R"((?<!\\)\|(?:\|%1|([^ \t\n:=|])\s*(%2)?(?<!\\))\|\|)").arg(templBaseRe).arg(templBaseContentsRe), MO);
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
         return txt
@@ -109,7 +109,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     }
     return txt;
 }
-const QRegularExpression templApplyReplRe(R"((\|!\S))");
+const QRegularExpression templApplyReplRe(R"((?<!\\)(\|[^ \t\n:=|]))");
 QString TemplateFeat::markup(QString& line) const {
     const QString boldify = "<b style='color:%1;'>%2</b>";
     QString nln = line

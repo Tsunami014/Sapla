@@ -75,7 +75,7 @@ QString parseMarkdownHtml(QString txt) {
        .replace(STATIC_RE(R"((?<!\\)`((?:[^`]|\\`)*)`)"), codeRepl)
        .replace(STATIC_RE(R"((?<!\\)==((?:[^=]|\\=)*)==)"), hlRepl.arg(MG->styls.mdHlCol))
        .replace(STATIC_RE(R"((?<!\\)~~((?:[^~]|\\~)*)~~)"), "<s>\\1</s>")
-       .replace(STATIC_RE(R"((?<!\\))""\x01((?:[^\x01]|\\\\\x01)*)\x01"), hlRepl.arg(MG->styls.secretCol));
+       .replace(STATIC_RE(R"((?<!\\))""\x01([^\x01]*)\x01"), hlRepl.arg(MG->styls.secretCol));
 
     // Fix spaces and finish
     int i = 0;

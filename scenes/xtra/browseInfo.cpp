@@ -1,6 +1,7 @@
 #include "browseInfo.hpp"
 #include "notes/features.hpp"
 #include "browseInfoBase.hpp"
+#include "help.hpp"
 
 
 void showDialog(QString title, QMap<QString, QString> objs) {
@@ -55,20 +56,7 @@ class FeatInfo : public SelectInfo {
 class ArgInfo : public TextInfo {
     virtual QString title() { return "ArgInfo"; }
     virtual QString getTxt() {
-        return
-//"<h2>Argument specifier options</h2>"
-//"<p>The argument name in the argument specifier can have some suffixes, for example "+code("[hi]")+"</p>"
-"<h2>Argument usage</h2>"
-// and suffixes
-"<p>Arguments can be used with prefixes, for example "+cod("%.name")+".</p>"
-"<p>They can be stacked and will be executed in the order you put them in, so e.g. "+cod("^.")+" would end out being lower case (first upper <i>then</i> lower case).</p>"
-"<h3>Argument prefixes</h3>"
-"<ul>"
-    "<li>"+cod(".")+" - converts text to lower case</li>"
-    "<li>"+cod("^")+" - converts text to upper case</li>"
-"</ul>"
-//"<h3>Argument suffixes</h3>"
-;
+        return ARGUMENT_HELP;
     }
 };
 

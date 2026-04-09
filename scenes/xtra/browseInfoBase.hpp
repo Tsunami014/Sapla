@@ -4,14 +4,6 @@
 #include <QTextEdit>
 #include <QMap>
 
-const QString cod(const QString str) {
-    const QString codeRepl = "<span style='"
-        "background-color:" "grey;"
-        "font-family:" "monospace;"
-        "padding:" "2px;"
-    "'>%1</span>";
-    return codeRepl.arg(str);
-}
 
 class Dialog {
 public:

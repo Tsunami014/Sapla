@@ -98,7 +98,7 @@ QString Template::replace(QStringList args) {
                                 bool words = apply == '{';
                                 auto spl = sofar.split(':');
                                 auto splln = spl.length();
-                                if (splln == 0 || splln > 2) {
+                                if (splln == 0 || splln > 3) {
                                     good = false;
                                     break;
                                 }
@@ -118,7 +118,7 @@ QString Template::replace(QStringList args) {
                                         break;
                                     }
                                 }
-                                if (from < 0) from = replln + from;
+                                if (from < 0) from = replln + from - 1;
                                 if (splln == 1) {
                                     if (from >= replln || from < 0) {
                                         repl = {};
@@ -142,17 +142,58 @@ QString Template::replace(QStringList args) {
                                             break;
                                         }
                                     }
+                                    int step;
+                                    if (splln == 2 || spl[2] == "") {
+                                        step = 1;
+                                    } else {
+                                        bool ok;
+                                        step = spl[2].toInt(&ok);
+                                        if (!ok) {
+                                            good = false;
+                                            break;
+                                        }
+                                    }
+                                    if (step == 0) {
+                                        good = false;
+                                        break;
+                                    }
+                                    bool reverse = step < 0;
+                                    if (reverse) {
+                                        step = -step;
+                                        int toOld = to;
+                                        to = from;
+                                        from = to;
+                                    }
                                     if (from < 0) from = 0;
-                                    if (to < 0) to = replln + to;
+                                    if (to < 0) to = replln + to - 1;
                                     if (from > to || from >= replln || to < 0) {
                                         repl = {};
                                         break;
                                     }
                                     if (to >= replln) to = replln-1;
                                     if (words) {
-                                        repl = repl.split(' ').sliced(from, to-from+1).join(' ');
+                                        int ln = to-from+1;
+                                        auto li = repl.split(' ').sliced(from, ln);
+                                        if (step != 1) {
+                                            QStringList li2 = {};
+                                            for (uint i = 0; i <= ln; i += step) {
+                                                li2.append(li[i]);
+                                            }
+                                            li = std::move(li2);
+                                        }
+                                        if (reverse) std::reverse(li.begin(), li.end());
+                                        repl = li.join(' ');
                                     } else {
-                                        repl.slice(from, to-from+1);
+                                        if (step != 1) {
+                                            QString out;
+                                            for (uint i = from; i <= to; i += step) {
+                                                out += repl[i];
+                                            }
+                                            repl = std::move(out);
+                                        } else {
+                                            repl.slice(from, to-from+1);
+                                        }
+                                        if (reverse) std::reverse(repl.begin(), repl.end());
                                     }
                                 }
                                 break;}

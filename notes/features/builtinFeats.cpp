@@ -73,11 +73,16 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         auto it = templLoclDefRe.globalMatch(txt);
         while (it.hasNext()) {
             auto m = it.next();
-            globalTemplates.emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(m.captured("nam")),
-                std::forward_as_tuple(m.captured("conts"), m.captured("ptn"))
-            );
+            QString title = m.captured("nam");
+            if (loclTempls.find(title) != loclTempls.end()) {
+                loclTempls.emplace(title, std::move(Template(
+                    "==<UNKNOWN>==", QString()
+                )));
+            } else {
+                loclTempls.try_emplace(title, 
+                    m.captured("conts"), m.captured("ptn")
+                );
+            }
         }
     }
     txt = txt

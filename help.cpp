@@ -14,7 +14,6 @@ const QString hl(const QString str) {
     "</span>";
     return hlRepl.arg(str);
 }
-
 const QString nl(const QString str) {
     const QString nlRepl = "<div style='"
         "display:" "inline-block;"
@@ -22,6 +21,7 @@ const QString nl(const QString str) {
     "'>%1</div>";
     return nlRepl.arg(str);
 }
+const QString qu = "<span style='background-color:" "#AAAAAA;'>&nbsp;</span>&nbsp;";
 
 const QString APP_HELP = 
 "<h1><b>IMPORTANT THINGS</b></h1>"
@@ -195,6 +195,7 @@ const QString BROWSE_HELP =
             "<br>Another example for understanding: If the note template was named "+code("!")+" Then it could be used like this: "+code("|!! args ||")+" (as stated above, there can be extra spaces. But keep in mind if you have "+code("|! ! arg ||")+" it will use the note template with name "+code(" ")+"!)"
             "<br><i>Please remember for these that the name must be one character long</i>"
             )+"</p>"
+        "<p>"+qu+"Multiple note templates of the same type (global&global or local&local) cannot have the same name, but if a local note template has the same name as a global one the local one will be used instead.</p>"
     "<h3>Arguments</h3>"
         "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
         "<p>Arguments can be used either by their index (%1 for the first argument) or their name (%name) (only if argument specifier exists)</p>"

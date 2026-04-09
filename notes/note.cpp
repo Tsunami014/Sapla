@@ -73,20 +73,34 @@ void Note::reset() {
 void Note::setContents(const QString& nc) {
     orig = nc;
     reset();
+    bool updAll = false;
+    QString er = "";
     {
         QString hidden = TemplateFeat::instance->highersReplace(orig);
         auto it = templDefRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
             QString title = m.captured("nam");
-            globalTemplates.emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(title),
-                std::forward_as_tuple(m.captured("conts"), m.captured("ptn"))
-            );
-            templates.push_back(title);
+            if (globalTemplates.find(title) != globalTemplates.end()) {
+                er += "Multiple global templates named `" + title + "`!\n";
+                globalTemplates.emplace(title, std::move(Template(
+                    "==<UNKNOWN>==", QString()
+                )));
+            } else {
+                globalTemplates.try_emplace(title, 
+                    m.captured("conts"), m.captured("ptn")
+                );
+                templates.push_back(title);
+            }
+            updAll = true;
         }
     }
+    if (updAll) {
+        updateNoteCards();
+    } else {
+        updateCards();
+    }
+    error += er;
 }
 ScheduleMap Note::getSchdMap() {
     ScheduleMap scheduleMap;
@@ -125,15 +139,16 @@ ScheduleMap Note::getSchdMap() {
 }
 void Note::updateCards() {
     error = "";
-    std::map<QString, QString> loclTempls;
+    std::vector<QString> loclTemplNams; // Only need to verify here, actual handling of templates occurs in builtinFeats.cpp
     {
         QString templHidden = TemplateFeat::instance->highersReplace(orig);
         auto it = templLoclDefRe.globalMatch(templHidden);
         while (it.hasNext()) {
             auto m = it.next();
-            QString txt = m.captured(2);
-            if (txt.isNull()) txt = "";
-            loclTempls[m.captured(1)] = txt;
+            QString title = m.captured("nam");
+            if (std::find(loclTemplNams.begin(), loclTemplNams.end(), title) != loclTemplNams.end()) {
+                error += "Multiple local templates named `" + title + "`!\n";
+            }
         }
     } {
         QString templHidden2 = TemplateFeat::instance->othersReplace(orig);
@@ -144,8 +159,8 @@ void Note::updateCards() {
             QString g1 = m.captured("nam");
             QString name = g1.isNull() ? m.captured("nam2") : g1;
             if (
-                globalTemplates.find(name) == globalTemplates.end() &&
-                loclTempls.find(name) == loclTempls.end()
+                std::find(loclTemplNams.begin(), loclTemplNams.end(), name) != loclTemplNams.end() &&
+                globalTemplates.find(name) == globalTemplates.end()
             ) {
                 error += "Unknown template name: " + name + "\n";
                 continue;

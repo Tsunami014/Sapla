@@ -43,8 +43,9 @@ QString Template::replace(QStringList args) {
         QString conts = m.captured("conts");
         bool ok;
         if (unsigned int num = conts.toUInt(&ok); ok) {
-            if (num >= argsln) continue;
-            repl = args[num];
+            if (num == 0) continue;
+            if (num > argsln) continue;
+            repl = args[num-1];
         } else {
             if (ptns.find(conts) != ptns.end()) {
                 auto it = ptns.find(conts);

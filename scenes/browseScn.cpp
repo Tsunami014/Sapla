@@ -208,7 +208,6 @@ void BrowseScene::typed() {
     }
     Note* n = getSelNote();
     n->setContents(te->getMarkdown());
-    n->updateCards();
 
     updatePrev();
     updateItem(selected.first(), n);

@@ -159,7 +159,6 @@ void writeLocalSettings() {
             .arg(sanitise(key)).arg(sanitise(QString::number(value)));
     }
     n->setContents(conts);
-    n->updateCards();
     writeNotes();
 }
 

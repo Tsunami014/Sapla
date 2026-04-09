@@ -205,14 +205,17 @@ const QString BROWSE_HELP =
 
 const QString ARGUMENT_HELP =
 "<h1>Arguments quick reference</h1>"
-"<h2>Argument specifier</h2>"
+"<h2><u>Argument specifier</u></h2>"
 "<p>The argument specifier is in between the template name and contents, and is contained within "+code("[]")+"."
     +nl("It is separated from both by either a "+code(":")+" or a "+code("|")+" or a space or a newline."
    )+"</p>"
 "<p>Inside the brackets is a space separated list of names. The arguments will be named by this in the order they are passed in.</p>"
-// "<p>The argument name in the argument specifier can have some suffixes, for example "+code("[hi]")+"</p>"
-// "<h3>Argument specifier options (suffixes)</h3>"
-"<h2>Argument usage</h2>"
+"<p>The argument name in the argument specifier can have some suffixes, for example "+code("[name|default]")+"</p>"
+"<h3>Argument specifier options (suffixes)</h3>"
+"<ul>"
+    "<li>"+code("|def")+" - if the output is null (e.g. no argument was provided), display the text after instead.</li>"
+"</ul>"
+"<h2><u>Argument usage</u></h2>"
 "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier).</p>"
 "<p>Arguments can be used with prefixes and/or suffixes, for example "+code("%.name")+", "+code("%name[1")+" or "+code("%.name[0")+".</p>"
 "<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code(".^")+" would first lower <i>then</i> title case, converting e.g. "+hl("hElLo wOrLd!")+" to "+hl("Hello World!")+".</p>"
@@ -227,6 +230,8 @@ const QString ARGUMENT_HELP =
 "<ul>"
     "<li>"+code("[num")+" - get the <num>th char of the input (can be negative to get the last characters instead of the first)</li>"
     "<li>"+code("[num1:num2")+" - get the <num1>th to <num2>th chars of the input (can both also be negative)</li>"
+    "<li>"+code("|def")+" - if the output is currently null (e.g. no argument or you indexed out of bounds), display the text after instead."
+        "<br>Overrides the one set for the variable as a whole if used at the start of the suffix.</li>"
 "</ul>"
 ;
 

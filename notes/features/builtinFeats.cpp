@@ -48,8 +48,8 @@ QMap<QString, QString> TagFeat::help() const {
 
 
 const QString templBaseNameRe = R"(\s*(?<nam>[^|: \n]+?)\s*)";
-const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:\\\]|[^|\n[\]])+)\]\s*)?)";
-const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:.|\n)*?)\s*)?)";
+const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:\\\]|[^\n\]])+)\]\s*)?)";
+const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:.|\n)*?)\s*)??)";
 const QString templDefBase =
     templBaseNameRe + templBasePatternRe + templBaseContentsRe;
 const QString templDefPref = R"(\s*^\s*)";
@@ -59,7 +59,7 @@ const QRegularExpression templDefRe(
 const QRegularExpression templLoclDefRe(
     templDefPref + QString(R"(\|:%1:\|)").arg(templDefBase) + templDefSuff, MO);
 const QRegularExpression templApplyRe(
-    QString(R"((?<!\\)\|(?:\|%1|(?<nam2>[^ \t\n:=|])\s*)%2(?<!\\)\|\|)")
+    QString(R"((?<!\\)\|(?:\|%1|!(?<nam2>[^ \t\n:=|])\s*)%2(?<!\\)\|\|)")
         .arg(templBaseNameRe).arg(templBaseContentsRe), MO);
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
@@ -123,7 +123,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     }
     return txt;
 }
-const QRegularExpression templApplyReplRe(R"((?<!\\)(\|[^ \t\n:=<]))");
+const QRegularExpression templApplyReplRe(R"((?<!\\)(\|![^ \t\n:=<]))");
 QString TemplateFeat::markup(QString& line) const {
     const QString boldify = "<b style='color:%1;'>%2</b>";
     QString nln = line

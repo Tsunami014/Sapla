@@ -5,11 +5,8 @@
 class TemplPattern {
 public:
     TemplPattern(QString conts, uint idx);
-    QString apply();
-    QString apply(QString arg);
     QString name;
     unsigned int idx;
-protected:
     QString def;
 };
 

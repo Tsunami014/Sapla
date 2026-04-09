@@ -5,15 +5,13 @@
 std::map<QString, Template> globalTemplates;
 
 TemplPattern::TemplPattern(QString conts, uint i) {
-    name = conts;
-    def = "";
+    const static auto splby = QRegularExpression(R"((?<!\\)\|)");
+
+    auto spl = conts.split(splby);
+    name = spl.front();
+    spl.pop_front();
+    def = spl.join('|');
     idx = i;
-}
-QString TemplPattern::apply() {
-    return def;
-}
-QString TemplPattern::apply(QString arg) {
-    return arg;
 }
 
 Template::Template(QString c, QString p) {
@@ -29,7 +27,11 @@ Template::Template(QString c, QString p) {
     }
 }
 
-const QRegularExpression replRe(R"(%(?<pref>[.^*"]+)?(?<conts>[^|\[.^*"% \n]+)(?<suff>(?:[\[|](?:[^|\[% \n]|\\.)+)+)?(?:%|$|(?=[ \n])))");
+const QRegularExpression replRe(
+    R"(%(?<pref>[.^*\"]+)?)"
+    R"((?<conts>(?:\\[^\n\r]|[^|\[.^*"% \n\r])+))"
+    R"((?<suff>(?:[\[|](?:\\[^\n\r]|[^|\[% \n\r])+)+)?)"
+    R"((?:%|$|(?=[ \n\r])))");
 QString Template::replace(QStringList args) {
     unsigned int argsln = args.length();
     QString out = conts;
@@ -40,35 +42,44 @@ QString Template::replace(QStringList args) {
         auto m = it.next();
 
         QString repl;
-        QString conts = m.captured("conts");
+        QString def;
+        QString conts = m.captured("conts").replace('\\', "");
         bool ok;
         if (unsigned int num = conts.toUInt(&ok); ok) {
             if (num == 0) continue;
-            if (num > argsln) continue;
-            repl = args[num-1];
+            if (num <= argsln) {
+                repl = args[num-1];
+            }
+            def = "";
         } else {
             if (ptns.find(conts) != ptns.end()) {
                 auto it = ptns.find(conts);
                 if (it == ptns.end()) continue;
                 auto& p = it->second;
-                if (p.idx >= argsln) {
-                    repl = p.apply();
-                } else {
-                    repl = p.apply(args[p.idx]);
+                if (p.idx < argsln) {
+                    repl = args[p.idx];
                 }
+                def = p.def;
             } else {
                 continue;
             }
         }
-        if (repl.isNull()) continue;
-        if (QString suff = m.captured("suff"); !suff.isNull()) {
+        QString suff = m.captured("suff").replace('\\', "");
+        if (suff.isEmpty()) {
+            suff = '\n'+def+'\r';
+        } else if (suff[0] == '|') {
+            suff += '\r';
+        } else {
+            suff = '\n'+def+'\r'+suff+'\r';
+        }
+        {
             QChar apply;
             QString sofar;
-            const static std::vector<QChar> suffs = {'[', '\n'};
+            const static std::vector<QChar> suffs = {'|', '[', '\r', '\n'};
             bool good = true;
             bool esc = false;
-            for (auto& c : suff+'\n') {
-                if (c == '\n') esc = false;
+            for (auto& c : suff) {
+                if (c == '\n' || c == '\r') esc = false;
                 if (esc) {
                     sofar += c;
                     esc = false;
@@ -82,7 +93,6 @@ QString Template::replace(QStringList args) {
                         }
                     } else {
                         switch (apply.unicode()) {
-                            case '\n':
                             case '[': {
                                 auto spl = sofar.split(':');
                                 auto splln = spl.length();
@@ -100,7 +110,7 @@ QString Template::replace(QStringList args) {
                                 if (from < 0) from = replln + from;
                                 if (splln == 1) {
                                     if (from >= replln || from < 0) {
-                                        repl = "";
+                                        repl = {};
                                         break;
                                     }
                                     repl.slice(from, 1);
@@ -114,13 +124,19 @@ QString Template::replace(QStringList args) {
                                     if (from < 0) from = 0;
                                     if (to < 0) to = replln + to;
                                     if (from > to || from >= replln || to < 0) {
-                                        repl = "";
+                                        repl = {};
                                         break;
                                     }
                                     if (to >= replln) to = replln-1;
                                     repl.slice(from, to-from+1);
                                 }
                                 break;}
+                            case '\n':
+                            case '|':
+                                if (repl.isNull()) {
+                                    repl = sofar;
+                                }
+                                break;
                             default:
                                 good = false;
                                 break;
@@ -132,10 +148,13 @@ QString Template::replace(QStringList args) {
                     sofar += c;
                 }
                 if (!good) break;
+                if (c == '\r') {
+                    apply = {};
+                }
             }
             if (!good) continue;
         }
-        if (QString pref = m.captured("pref"); !pref.isNull()) {
+        if (QString pref = m.captured("pref").replace('\\', ""); !pref.isNull()) {
             bool good = true;
             for (auto& c : pref) {
                 switch (c.unicode()) {

@@ -29,8 +29,8 @@ Template::Template(QString c, QString p) {
 
 const QRegularExpression replRe(
     R"(%(?<pref>[.^*\"]+)?)"
-    R"((?<conts>(?:\\[^\n\r]|[^|\[.^*"% \n\r])+))"
-    R"((?<suff>(?:[\[|](?:\\[^\n\r]|[^|\[% \n\r])+)+)?)"
+    R"((?<conts>(?:\\[^\n\r]|[^|\[{.^*"% \n\r])+))"
+    R"((?<suff>(?:[\[|{](?:\\[^\n\r]|[^|\[{% \n\r])+)+)?)"
     R"((?:%|$|(?=[ \n\r])))");
 QString Template::replace(QStringList args) {
     unsigned int argsln = args.length();
@@ -75,7 +75,7 @@ QString Template::replace(QStringList args) {
         {
             QChar apply;
             QString sofar;
-            const static std::vector<QChar> suffs = {'|', '[', '\r', '\n'};
+            const static std::vector<QChar> suffs = {'|', '[', '{', '\r', '\n'};
             bool good = true;
             bool esc = false;
             for (auto& c : suff) {
@@ -93,19 +93,30 @@ QString Template::replace(QStringList args) {
                         }
                     } else {
                         switch (apply.unicode()) {
+                            case '{':
                             case '[': {
+                                bool words = apply == '{';
                                 auto spl = sofar.split(':');
                                 auto splln = spl.length();
                                 if (splln == 0 || splln > 2) {
                                     good = false;
                                     break;
                                 }
-                                uint replln = repl.length();
-                                bool ok;
-                                int from = spl[0].toInt(&ok);
-                                if (!ok) {
-                                    good = false;
-                                    break;
+                                uint replln = words ? repl.count(' ')+1 : repl.length();
+                                int from;
+                                if (spl[0] == "") {
+                                    if (splln == 1) {
+                                        good = false;
+                                        break;
+                                    }
+                                    from = 0;
+                                } else {
+                                    bool ok;
+                                    from = spl[0].toInt(&ok);
+                                    if (!ok) {
+                                        good = false;
+                                        break;
+                                    }
                                 }
                                 if (from < 0) from = replln + from;
                                 if (splln == 1) {
@@ -113,13 +124,23 @@ QString Template::replace(QStringList args) {
                                         repl = {};
                                         break;
                                     }
-                                    repl.slice(from, 1);
+                                    if (words) {
+                                        repl = repl.split(' ').sliced(from, 1).join(' ');
+                                    } else {
+                                        repl.slice(from, 1);
+                                    }
                                 } else {
                                     bool ok2;
-                                    int to = spl[1].toInt(&ok2);
-                                    if (!ok2) {
-                                        good = false;
-                                        break;
+                                    int to;
+                                    if (spl[1] == "") {
+                                        to = replln-1;
+                                    } else {
+                                        bool ok;
+                                        to = spl[1].toInt(&ok);
+                                        if (!ok) {
+                                            good = false;
+                                            break;
+                                        }
                                     }
                                     if (from < 0) from = 0;
                                     if (to < 0) to = replln + to;
@@ -128,7 +149,11 @@ QString Template::replace(QStringList args) {
                                         break;
                                     }
                                     if (to >= replln) to = replln-1;
-                                    repl.slice(from, to-from+1);
+                                    if (words) {
+                                        repl = repl.split(' ').sliced(from, to-from+1).join(' ');
+                                    } else {
+                                        repl.slice(from, to-from+1);
+                                    }
                                 }
                                 break;}
                             case '\n':
@@ -167,7 +192,8 @@ QString Template::replace(QStringList args) {
                     case '^': {
                         QStringList words = repl.split(' ');
                         for (QString &w : words) {
-                            w[0] = w[0].toUpper();
+                            if (!w.isEmpty())
+                                w[0] = w[0].toUpper();
                         }
                         repl = words.join(' ');
                         break;}

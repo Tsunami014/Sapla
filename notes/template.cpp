@@ -62,50 +62,115 @@ QString Template::replace(QStringList args) {
         }
         if (repl.isNull()) continue;
         if (QString suff = m.captured("suff"); !suff.isNull()) {
-            continue;
-        }
-        if (QString pref = m.captured("pref"); !pref.isNull()) {
-            std::vector<QChar> done;
+            QChar apply;
+            QString sofar;
+            const static std::vector<QChar> suffs = {'[', '\n'};
             bool good = true;
-            for (auto& c : pref) {
-                if (std::find(done.begin(), done.end(), c) == done.end()) {
-                    done.push_back(c);
-                    switch (c.unicode()) {
-                        case '.':
-                            repl = repl.toLower();
-                            break;
-                        case '*':
-                            repl = repl.toUpper();
-                            break;
-                        case '^': {
-                            QStringList words = repl.split(' ');
-                            for (QString &w : words) {
-                                w[0] = w[0].toUpper();
-                            }
-                            repl = words.join(' ');
-                            break;}
-                        case '"': {
-                            uint cap = 2;
-                            for (int i = 0; i < repl.size(); ++i) {
-                                QChar &c = repl[i];
-                                if (cap != 0 && c.isLetterOrNumber()) {
-                                    if (cap == 2) c = c.toUpper();
-                                    cap = 0;
-                                } else if (c == '.' || c == '!' || c == '?') {
-                                    cap = 1;
-                                } else if (cap == 1 && c.isSpace()) {
-                                    cap = 2;
-                                }
-                            }
-                            break;}
-                        default:
+            bool esc = false;
+            for (auto& c : suff+'\n') {
+                if (c == '\n') esc = false;
+                if (esc) {
+                    sofar += c;
+                    esc = false;
+                } else if (c == '\\') {
+                    esc = true;
+                } else if (std::find(suffs.begin(), suffs.end(), c) != suffs.end()) {
+                    if (apply.isNull()) {
+                        if (!sofar.isEmpty()) {
                             good = false;
                             break;
+                        }
+                    } else {
+                        switch (apply.unicode()) {
+                            case '\n':
+                            case '[': {
+                                auto spl = sofar.split(':');
+                                auto splln = spl.length();
+                                if (splln == 0 || splln > 2) {
+                                    good = false;
+                                    break;
+                                }
+                                uint replln = repl.length();
+                                bool ok;
+                                int from = spl[0].toInt(&ok);
+                                if (!ok) {
+                                    good = false;
+                                    break;
+                                }
+                                if (from < 0) from = replln + from;
+                                if (splln == 1) {
+                                    if (from >= replln || from < 0) {
+                                        repl = "";
+                                        break;
+                                    }
+                                    repl.slice(from, 1);
+                                } else {
+                                    bool ok2;
+                                    int to = spl[1].toInt(&ok2);
+                                    if (!ok2) {
+                                        good = false;
+                                        break;
+                                    }
+                                    if (from < 0) from = 0;
+                                    if (to < 0) to = replln + to;
+                                    if (from > to || from >= replln || to < 0) {
+                                        repl = "";
+                                        break;
+                                    }
+                                    if (to >= replln) to = replln-1;
+                                    repl.slice(from, to-from+1);
+                                }
+                                break;}
+                            default:
+                                good = false;
+                                break;
+                        }
                     }
+                    apply = c;
+                    sofar = "";
                 } else {
-                    good = false;
-                    break;
+                    sofar += c;
                 }
+                if (!good) break;
+            }
+            if (!good) continue;
+        }
+        if (QString pref = m.captured("pref"); !pref.isNull()) {
+            bool good = true;
+            for (auto& c : pref) {
+                switch (c.unicode()) {
+                    case '.':
+                        repl = repl.toLower();
+                        break;
+                    case '*':
+                        repl = repl.toUpper();
+                        break;
+                    case '^': {
+                        QStringList words = repl.split(' ');
+                        for (QString &w : words) {
+                            w[0] = w[0].toUpper();
+                        }
+                        repl = words.join(' ');
+                        break;}
+                    case '"': {
+                        uint cap = 2;
+                        for (int i = 0; i < repl.size(); ++i) {
+                            QChar &c = repl[i];
+                            if (cap != 0 && c.isLetterOrNumber()) {
+                                if (cap == 2) c = c.toUpper();
+                                cap = 0;
+                            } else if (c == '.' || c == '!' || c == '?') {
+                                cap = 1;
+                            } else if (cap == 1 && c.isSpace()) {
+                                cap = 2;
+                            }
+                        }
+                        break;}
+                    default:
+                        good = false;
+                        break;
+                }
+                if (!good) break;
             }
             if (!good) continue;
         }

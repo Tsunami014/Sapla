@@ -214,8 +214,7 @@ const QString ARGUMENT_HELP =
 // "<h3>Argument specifier options (suffixes)</h3>"
 "<h2>Argument usage</h2>"
 "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier).</p>"
-// and/or suffixes
-"<p>Arguments can be used with prefixes, for example "+code("%.name")+".</p>"
+"<p>Arguments can be used with prefixes and/or suffixes, for example "+code("%.name")+", "+code("%name[1")+" or "+code("%.name[0")+".</p>"
 "<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code(".^")+" would first lower <i>then</i> title case, converting e.g. "+hl("hElLo wOrLd!")+" to "+hl("Hello World!")+".</p>"
 "<h3>Argument prefixes</h3>"
 "<ul>"
@@ -224,7 +223,11 @@ const QString ARGUMENT_HELP =
     "<li>"+code("^")+" - converts text to Title Case (<i>other letters will not be touched</i>)</li>"
     "<li>"+code("\"")+" - converts text to Sentence case (<i>other letters will not be touched</i>)</li>"
 "</ul>"
-//"<h3>Argument suffixes</h3>"
+"<h3>Argument suffixes</h3>"
+"<ul>"
+    "<li>"+code("[num")+" - get the <num>th char of the input (can be negative to get the last characters instead of the first)</li>"
+    "<li>"+code("[num1:num2")+" - get the <num1>th to <num2>th chars of the input (can both also be negative)</li>"
+"</ul>"
 ;
 
 const QString PLUGVIEW_HELP = 

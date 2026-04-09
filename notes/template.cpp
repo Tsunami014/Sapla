@@ -10,7 +10,7 @@ TemplPattern::TemplPattern(QString conts, uint i) {
     idx = i;
 }
 QString TemplPattern::apply() {
-    return def;
+    return def.trimmed();
 }
 QString TemplPattern::apply(QString arg) {
     return arg.trimmed();

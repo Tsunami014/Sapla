@@ -146,7 +146,9 @@ void Note::updateCards() {
         while (it.hasNext()) {
             auto m = it.next();
             QString title = m.captured("nam");
-            if (std::find(loclTemplNams.begin(), loclTemplNams.end(), title) != loclTemplNams.end()) {
+            if (std::find(loclTemplNams.begin(), loclTemplNams.end(), title) == loclTemplNams.end()) {
+                loclTemplNams.push_back(title);
+            } else {
                 error += "Multiple local templates named `" + title + "`!\n";
             }
         }
@@ -159,10 +161,10 @@ void Note::updateCards() {
             QString g1 = m.captured("nam");
             QString name = g1.isNull() ? m.captured("nam2") : g1;
             if (
-                std::find(loclTemplNams.begin(), loclTemplNams.end(), name) != loclTemplNams.end() &&
+                std::find(loclTemplNams.begin(), loclTemplNams.end(), name) == loclTemplNams.end() &&
                 globalTemplates.find(name) == globalTemplates.end()
             ) {
-                error += "Unknown template name: " + name + "\n";
+                error += "Unknown template name: `" + name + "`\n";
                 continue;
             }
         }

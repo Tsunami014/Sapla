@@ -16,6 +16,7 @@ protected:
 class Template {
 public:
     Template(QString conts, QString ptn);
+    QString replace();
     QString replace(QStringList args);
 protected:
     QString conts;

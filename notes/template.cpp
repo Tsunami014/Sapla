@@ -75,3 +75,6 @@ QString Template::replace(QStringList args) {
     }
     return out.replace("%%", "%");
 }
+QString Template::replace() {
+    return replace({});
+}

@@ -10,10 +10,10 @@ TemplPattern::TemplPattern(QString conts, uint i) {
     idx = i;
 }
 QString TemplPattern::apply() {
-    return def.trimmed();
+    return def;
 }
 QString TemplPattern::apply(QString arg) {
-    return arg.trimmed();
+    return arg;
 }
 
 Template::Template(QString c, QString p) {

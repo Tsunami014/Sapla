@@ -107,7 +107,11 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         }
         QString match = m.captured("conts");
         if (!match.isNull()) {
-            repl = templ->replace(match.split("|"));
+            QStringList parts = match.split("|");
+            for (QString &p : parts) {
+                p = p.trimmed();
+            }
+            repl = templ->replace(parts);
         } else {
             repl = templ->replace();
         }

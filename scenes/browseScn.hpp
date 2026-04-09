@@ -4,6 +4,7 @@
 #include "../notes/note.hpp"
 #include "../base/markdown.hpp"
 #include "../wids/schdInfWid.hpp"
+#include "xtra/browseInfo.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -44,7 +45,7 @@ private:
 
     MenuItem newnote;
     MenuItem delnote;
-    MenuItem helps;
+    BrowseInfos helps;
     MenuItem resetIt;
     MenuItem clearIt;
     MenuAction info;

@@ -65,7 +65,25 @@ QString Template::replace(QStringList args) {
             continue;
         }
         if (QString pref = m.captured("pref"); !pref.isNull()) {
-            continue;
+            std::vector<QChar> done;
+            bool good = true;
+            for (auto& c : pref) {
+                if (std::find(done.begin(), done.end(), c) == done.end()) {
+                    done.push_back(c);
+                    switch (c.unicode()) {
+                        case '.':
+                            repl = repl.toLower();
+                            break;
+                        case '^':
+                            repl = repl.toUpper();
+                            break;
+                    }
+                } else {
+                    good = false;
+                    break;
+                }
+            }
+            if (!good) continue;
         }
 
         int start = m.capturedStart(0) + offs;

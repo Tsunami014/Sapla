@@ -199,9 +199,8 @@ const QString BROWSE_HELP =
     "<h3>Arguments</h3>"
         "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
         "<p>Arguments can be used either by their index (%1 for the first argument) or their name (%name) (only if argument specifier exists)</p>"
-        "<h4>Argument specifier</h4>"
-            "<p>The argument specifier is a space separated list of argument names which match up to their indexes.</p>"
-        //"<h4>Argument prefixes/suffixes</h4>"
+        "<p>The argument specifier is a space separated list of argument names which match up to their indexes.</p>"
+        "<p>For more methods on utilising arguments, see the <b>Help &gt; Arguments</b> menu.</p>"
 ;
 
 const QString PLUGVIEW_HELP = 

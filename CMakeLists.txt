@@ -29,7 +29,6 @@ set(CORELIB
     wids/listWid.cpp
     wids/svgBtn.cpp
     wids/svgPic.cpp
-    wids/featInfo.cpp
     wids/schdInfWid.cpp
 
     items/cardIt.cpp
@@ -61,6 +60,7 @@ set(CORELIB
     scenes/pluginView.cpp
         scenes/xtra/lineEdit2.hpp
         scenes/xtra/deckOpts.cpp
+        scenes/xtra/browseInfo.cpp
 )
 
 # Do not complain about 'not used directly' things (as they are used, just indirectly)

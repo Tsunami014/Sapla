@@ -7,7 +7,6 @@
 #include "../notes/decks.hpp"
 #include "../notes/cardList.hpp"
 #include "../base/font.hpp"
-#include "../wids/featInfo.hpp"
 #include <QTimer>
 #include <QHeaderView>
 #include <QKeyEvent>
@@ -23,7 +22,6 @@ BrowseScene::BrowseScene(Note* sel)
     info(""),
     newnote("New note (alt+enter)", Menues->FileMenu),
     delnote("Delete note (alt+delete)", Menues->FileMenu),
-    helps("Note feature help", Menues->HelpMenu),
     clearIt("Clear notes", Menues->FileMenu),
     resetIt("Reset notes to default", Menues->FileMenu) {
         helpStr = &BROWSE_HELP;
@@ -102,7 +100,6 @@ BrowseScene::BrowseScene(Note* sel)
 
         connect(&newnote, &QAction::triggered, this, &BrowseScene::newNote);
         connect(&delnote, &QAction::triggered, this, &BrowseScene::delNote);
-        connect(&helps, &QAction::triggered, this, &showFeatInfo);
         connect(&clearIt, &QAction::triggered, this, [this](){
             if (doubleCheck("delete all your notes")) {
                 for (auto* n : notesL) delete n;

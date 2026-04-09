@@ -29,7 +29,7 @@ Template::Template(QString c, QString p) {
     }
 }
 
-const QRegularExpression replRe(R"(%(?<pref>[.^]+)?(?<conts>[^|\[.^% \n]+)(?<suff>(?:[\[|](?:[^|\[% \n]|\\.)+)+)?(?:%|$|(?=[ \n])))");
+const QRegularExpression replRe(R"(%(?<pref>[.^*"]+)?(?<conts>[^|\[.^*"% \n]+)(?<suff>(?:[\[|](?:[^|\[% \n]|\\.)+)+)?(?:%|$|(?=[ \n])))");
 QString Template::replace(QStringList args) {
     unsigned int argsln = args.length();
     QString out = conts;
@@ -74,8 +74,32 @@ QString Template::replace(QStringList args) {
                         case '.':
                             repl = repl.toLower();
                             break;
-                        case '^':
+                        case '*':
                             repl = repl.toUpper();
+                            break;
+                        case '^': {
+                            QStringList words = repl.split(' ');
+                            for (QString &w : words) {
+                                w[0] = w[0].toUpper();
+                            }
+                            repl = words.join(' ');
+                            break;}
+                        case '"': {
+                            uint cap = 2;
+                            for (int i = 0; i < repl.size(); ++i) {
+                                QChar &c = repl[i];
+                                if (cap != 0 && c.isLetterOrNumber()) {
+                                    if (cap == 2) c = c.toUpper();
+                                    cap = 0;
+                                } else if (c == '.' || c == '!' || c == '?') {
+                                    cap = 1;
+                                } else if (cap == 1 && c.isSpace()) {
+                                    cap = 2;
+                                }
+                            }
+                            break;}
+                        default:
+                            good = false;
                             break;
                     }
                 } else {

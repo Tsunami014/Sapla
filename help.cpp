@@ -216,11 +216,13 @@ const QString ARGUMENT_HELP =
 "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier).</p>"
 // and/or suffixes
 "<p>Arguments can be used with prefixes, for example "+code("%.name")+".</p>"
-"<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code("^.")+" would end out being lower case (first upper <i>then</i> lower case).</p>"
+"<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code(".^")+" would first lower <i>then</i> title case, converting e.g. "+hl("hElLo wOrLd!")+" to "+hl("Hello World!")+".</p>"
 "<h3>Argument prefixes</h3>"
 "<ul>"
     "<li>"+code(".")+" - converts text to lower case</li>"
-    "<li>"+code("^")+" - converts text to upper case</li>"
+    "<li>"+code("*")+" - converts text to UPPER CASE</li>"
+    "<li>"+code("^")+" - converts text to Title Case (<i>other letters will not be touched</i>)</li>"
+    "<li>"+code("\"")+" - converts text to Sentence case (<i>other letters will not be touched</i>)</li>"
 "</ul>"
 //"<h3>Argument suffixes</h3>"
 ;

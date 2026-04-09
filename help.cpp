@@ -174,12 +174,16 @@ const QString BROWSE_HELP =
 "<h2>Note templates</h2>"
     "<p>Note templates are used in 2 phases - defining them, then using them.</p>"
     "<p>There are some examples of note template uses in the example cards</p>"
-    "<h3>Note template structure</h3>"
-        "<p>Note templates are comprised of a header and contents, and are contained in "+code("|| ... ||")+" or "+code("|! ... ||")+" for usage or "+code("|= ... =|")+" for definitions or "+code("|: ... :|")+" for local definitions (which means the template is only avaliable in that card).</p>"
-        "<p>The header is separated from the body of the template via a "+code(":")+" or a "+code("|")+" or a space or a newline.</p>"
+    "<h3>Structure</h3>"
+        "<p>Note templates are comprised of a header and contents, and are contained in "+code("|| ... ||")+" for usage (or "+code("|! ... ||")+" for one char usage) or "+code("|= ... =|")+" for definitions (or "+code("|: ... :|")+" for local definitions).</p>"
+        "<p>The header is separated from the body of the template via a "+code(":")+" or a "+code("|")+" or a space or a newline <i>unless you use a one char usage (see below)</i>.</p>"
+        "<p>After the header is an optional argument specification. This is contained within "+code("[]")+" and is separated from the body in the exact same way as the header. See below for more info about arguments."
+            +nl(
+            "Here are example structures: "+code("|| name [stuff here] conts ||")+"  "+code("|!- [stuff here]: conts ||")
+            )+"</p>"
         "<p>The body for template usages is split up into multiple arguments, which are separated by a "+code("|")+" only.</p>"
         "<p>Please do not put note template things inside other note template things. Nesting is not supported.</p>"
-        "<p><b>Unlike other features</b>, this will <i>not</i> keep spacing at the start/end of the definition."
+        "<p><b>Unlike other features</b>, this will not keep spacing in between arguments (so it still will before and after)."
             +nl(
             "That means that this: "+code("|= hi : bye =|")+" is the same as this: "+code("|=hi:bye=|")+"."
             "<br>The spacing is <i>only</i> stripped at the start/end of the header, contents or between arguments (e.g. "+code("|| hi | arg1 | arg2 ||")+" -> "+code("||hi|arg1|arg2||")+")"
@@ -188,9 +192,15 @@ const QString BROWSE_HELP =
         "<p><b>The note template usage with "+code("|!")+" is special and does not follow the rules above.</b> Instead if having "+code("|| name args ||")+" the first character after "+code("!")+" is the name."
             +nl(
             "For example, if a note template had the name "+code("-")+" then a usage that would work is "+code("|!-args||")+"."
-            "<br>Another example for understanding: If the note template was named "+code("!")+" Then it could be used like this: "+code("|!! args ||")+" (There are extra spaces, but they don't do anything. The first example could've had extra spacing, and this example will work even without them)"
-            "<br><i>Please remember for these though that the name must be one character long</i>"
+            "<br>Another example for understanding: If the note template was named "+code("!")+" Then it could be used like this: "+code("|!! args ||")+" (as stated above, there can be extra spaces. But keep in mind if you have "+code("|! ! arg ||")+" it will use the note template with name "+code(" ")+"!)"
+            "<br><i>Please remember for these that the name must be one character long</i>"
             )+"</p>"
+    "<h3>Arguments</h3>"
+        "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
+        "<p>Arguments can be used either by their index (%1 for the first argument) or their name (%name) (only if argument specifier exists)</p>"
+        "<h4>Argument specifier</h4>"
+            "<p>The argument specifier is a space separated list of argument names which match up to their indexes.</p>"
+        //"<h4>Argument prefixes/suffixes</h4>"
 ;
 
 const QString PLUGVIEW_HELP = 

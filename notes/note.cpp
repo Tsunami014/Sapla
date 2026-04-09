@@ -11,8 +11,6 @@
 
 const QString MODULE = "Note";
 
-std::map<QString, QString> globalTemplates;
-
 QString trimNL(const QString& orig) {
     QString nstr = orig;
     static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
@@ -55,7 +53,6 @@ Note& Note::operator=(Note&& other) noexcept {
     return *this;
 }
 
-
 FlashCard* Note::getFlashCard(int idx) {
     return cards[idx].get();
 }
@@ -81,8 +78,12 @@ void Note::setContents(const QString& nc) {
         auto it = templDefRe.globalMatch(hidden);
         while (it.hasNext()) {
             auto m = it.next();
-            QString title = m.captured(1);
-            globalTemplates[title] = m.captured(2);
+            QString title = m.captured("nam");
+            globalTemplates.emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(title),
+                std::forward_as_tuple(m.captured("conts"), m.captured("ptn"))
+            );
             templates.push_back(title);
         }
     }
@@ -140,8 +141,8 @@ void Note::updateCards() {
         while (it.hasNext()) {
             auto m = it.next();
 
-            QString g1 = m.captured(1);
-            QString name = g1.isNull() ? m.captured(3) : g1;
+            QString g1 = m.captured("nam");
+            QString name = g1.isNull() ? m.captured("nam2") : g1;
             if (
                 globalTemplates.find(name) == globalTemplates.end() &&
                 loclTempls.find(name) == loclTempls.end()

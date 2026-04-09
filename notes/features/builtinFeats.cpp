@@ -47,16 +47,20 @@ QMap<QString, QString> TagFeat::help() const {
 
 
 
-const QString templBaseContentsRe = R"((?!\|)\s*((?:.|\n)*?)\s*)";
-const QString templBaseRe = QString(R"(\s*([^|: \n]+?)\s*(?:[|: \n]%1)?(?<!\\))").arg(templBaseContentsRe);
+const QString templBaseNameRe = R"(\s*(?<nam>[^|: \n]+?)\s*)";
+const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:\\\]|[^|\n[\]])+)\]\s*)?)";
+const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:.|\n)*?)\s*)?)";
+const QString templDefBase =
+    templBaseNameRe + templBasePatternRe + templBaseContentsRe;
 const QString templDefPref = R"(\s*^\s*)";
 const QString templDefSuff = R"(\s*$\s*?(?=\n)?)";
 const QRegularExpression templDefRe(
-    templDefPref + QString(R"(\|=%1=\|)").arg(templBaseRe) + templDefSuff, MO);
+    templDefPref + QString(R"(\|=%1=\|)").arg(templDefBase) + templDefSuff, MO);
 const QRegularExpression templLoclDefRe(
-    templDefPref + QString(R"(\|:%1:\|)").arg(templBaseRe) + templDefSuff, MO);
+    templDefPref + QString(R"(\|:%1:\|)").arg(templDefBase) + templDefSuff, MO);
 const QRegularExpression templApplyRe(
-    QString(R"((?<!\\)\|(?:\|%1|([^ \t\n:=|])\s*(%2)?(?<!\\))\|\|)").arg(templBaseRe).arg(templBaseContentsRe), MO);
+    QString(R"((?<!\\)\|(?:\|%1|(?<nam2>[^ \t\n:=|])\s*)%2(?<!\\)\|\|)")
+        .arg(templBaseNameRe).arg(templBaseContentsRe), MO);
 QString TemplateFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) {
         return txt
@@ -64,14 +68,16 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
             .remove(templLoclDefRe)
         ;
     }
-    std::map<QString, QString> loclTempls;
+    std::map<QString, Template> loclTempls;
     {
         auto it = templLoclDefRe.globalMatch(txt);
         while (it.hasNext()) {
             auto m = it.next();
-            QString txt = m.captured(2);
-            if (txt.isNull()) txt = "";
-            loclTempls[m.captured(1)] = txt;
+            globalTemplates.emplace(
+                std::piecewise_construct,
+                std::forward_as_tuple(m.captured("nam")),
+                std::forward_as_tuple(m.captured("conts"), m.captured("ptn"))
+            );
         }
     }
     txt = txt
@@ -83,29 +89,26 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
     while (it.hasNext()) {
         auto m = it.next();
 
-        QString g1 = m.captured(1);
-        QString name = g1.isNull() ? m.captured(3) : g1;
-        QString templ;
-        if (loclTempls.find(name) != loclTempls.end()) {
-            templ = loclTempls[name];
-        } else if (globalTemplates.find(name) != globalTemplates.end()) {
-            templ = globalTemplates[name];
+        QString g1 = m.captured("nam");
+        QString name = g1.isNull() ? m.captured("nam2") : g1;
+        Template* templ;
+        QString repl;
+        if (auto it = loclTempls.find(name); it != loclTempls.end()) {
+            templ = &it->second;
+        } else if (auto it = globalTemplates.find(name); it != globalTemplates.end()) {
+            templ = &it->second;
         } else {
             continue;
         }
-        g1 = m.captured(2);
-        QString match = g1.isNull() ? m.captured(4) : g1;
+        QString match = m.captured("conts");
         if (!match.isNull()) {
-            QStringList gs = match.split('|');
-            for (auto& g : gs) {
-                templ = templ.arg(g.trimmed());
-            }
+            repl = templ->replace(match.split("|"));
         }
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
-        txt.replace(start, end - start, templ);
-        offs += templ.length() - (end - start);
+        txt.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
     }
     return txt;
 }

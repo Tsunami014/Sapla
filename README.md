@@ -8,8 +8,6 @@ You define 'notes' which you store in 'decks'. Each note generate 'cards' based 
 
 The cards are created when features are added such as `---` for separating notes into single sided cards or `===` for double sided cards.
 
-There are example cards to help you and explain many features.
-
 ## Screenshots
 Home screen
 ![](https://github.com/user-attachments/assets/fcc389a8-32e2-4148-92df-066c33ac3d7f)
@@ -20,17 +18,14 @@ Playing the default game
 Playing the grid game (a plugin) with a winter colour scheme (another plugin)
 ![](https://github.com/user-attachments/assets/b05dcf5e-827b-404c-bab2-20eda070ac51)
 
-
-
-
 ## Features
+- Example cards, comprehensive help screens and quick references to help you and explain every feature
 ### Decks
 - Can add, copy, rename and delete decks of notes!
 - Can make temporary decks that vanish on demand or app load
 ### Notes & cards
 - Browse all your notes, edit them, delete them or add more
 - Many different card features!
-- Convenient help screen for card features you can look at while making new notes!
 - Example cards to help
 - A note preview which also reveals errors
 - Markdown support - and reveals text underneath on selection
@@ -52,6 +47,10 @@ Playing the grid game (a plugin) with a winter colour scheme (another plugin)
 - Ease of plugin creation through the extensable code structure
 - Import/disable/remove plugins
 - Plugins can add new games, features, change the colour scheme or whatever!
+#### Templates
+- Note templates for creating many custom fancy notes with ease!
+- Global and local templates
+- Custom argument parsing
 #### Plugins
 - Built in plugin which comes with the app, which adds
     - A simple flashcard game - just a regular flashcard

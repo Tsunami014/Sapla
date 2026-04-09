@@ -41,6 +41,7 @@ set(CORELIB
 
     notes/note.cpp
     notes/schedule.cpp
+    notes/template.cpp
     notes/decks.cpp
     notes/getNotes.cpp
     notes/cardList.cpp

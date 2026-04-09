@@ -1,4 +1,4 @@
-#include "note.hpp"
+#include "schedule.hpp"
 #include "../log.hpp"
 
 const QString MODULE = "Schedule";

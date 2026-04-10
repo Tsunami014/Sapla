@@ -91,9 +91,10 @@ void initNotes() {
 
 void updateNoteCards() {
     CLclear();
-    for (auto* n : notesL) {
+    for (auto* n : notesL)
+        n->updateBegin();
+    for (auto* n : notesL)
         n->updateCards();
-    }
     initDeckSettings();
 }
 

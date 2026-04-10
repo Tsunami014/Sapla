@@ -61,13 +61,7 @@ const QRegularExpression templLoclDefRe(
 const QRegularExpression templApplyRe(
     QString(R"((?<!\\)\|(?:\|%1|!(?<nam2>[^ \t\n:=|])\s*)%2(?<!\\)\|\|)")
         .arg(templBaseNameRe).arg(templBaseContentsRe), MO);
-QString TemplateFeat::replacements(QString& txt, Side s) const {
-    if (s == SIDE_NAME) {
-        return txt
-            .remove(templDefRe)
-            .remove(templLoclDefRe)
-        ;
-    }
+QString TemplateFeat::check(QString& txt, QString& err) const {
     std::map<QString, Template> loclTempls;
     {
         auto it = templLoclDefRe.globalMatch(txt);
@@ -75,6 +69,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
             auto m = it.next();
             QString title = m.captured("nam");
             if (loclTempls.find(title) != loclTempls.end()) {
+                err += "Multiple local templates named `" + title + "`!\n";
                 loclTempls.emplace(title, std::move(Template(
                     "==<UNKNOWN>==", QString()
                 )));
@@ -103,6 +98,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         } else if (auto it = globalTemplates.find(name); it != globalTemplates.end()) {
             templ = &it->second;
         } else {
+            err += "Unknown template name: `" + name + "`\n";
             continue;
         }
         QString match = m.captured("conts");
@@ -122,6 +118,12 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         offs += repl.length() - (end - start);
     }
     return txt;
+}
+QString TemplateFeat::replacements(QString& txt, Side s) const {
+    return txt
+        .remove(templDefRe)
+        .remove(templLoclDefRe)
+    ;
 }
 const QRegularExpression templApplyReplRe(R"((?<!\\)(\|![^ \t\n:=<]))");
 QString TemplateFeat::markup(QString& line) const {

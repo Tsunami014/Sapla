@@ -73,34 +73,34 @@ void Note::reset() {
 void Note::setContents(const QString& nc) {
     orig = nc;
     reset();
-    bool updAll = false;
-    QString er = "";
-    {
-        QString hidden = TemplateFeat::instance->highersReplace(orig);
-        auto it = templDefRe.globalMatch(hidden);
-        while (it.hasNext()) {
-            auto m = it.next();
-            QString title = m.captured("nam");
-            if (globalTemplates.find(title) != globalTemplates.end()) {
-                er += "Multiple global templates named `" + title + "`!\n";
-                globalTemplates.emplace(title, std::move(Template(
-                    "==<UNKNOWN>==", QString()
-                )));
-            } else {
-                globalTemplates.try_emplace(title, 
-                    m.captured("conts"), m.captured("ptn")
-                );
-                templates.push_back(title);
-            }
-            updAll = true;
-        }
-    }
-    if (updAll) {
+    if (updateBegin()) {
         updateNoteCards();
     } else {
         updateCards();
     }
-    error += er;
+}
+bool Note::updateBegin() {
+    error = "";
+    bool updAll = false;
+    QString hidden = TemplateFeat::instance->highersReplace(orig);
+    auto it = templDefRe.globalMatch(hidden);
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString title = m.captured("nam");
+        auto [it, inserted] = globalTemplates.insert_or_assign(
+            title, Template(
+            m.captured("conts"), m.captured("ptn")
+        ));
+
+        if (inserted) {
+            templates.push_back(title);
+        } else {
+            error += "Multiple global templates named `" + title + "`!\n";
+            it->second = Template("==<UNKNOWN>==", QString());
+        }
+        updAll = true;
+    }
+    return updAll;
 }
 ScheduleMap Note::getSchdMap() {
     ScheduleMap scheduleMap;
@@ -138,39 +138,14 @@ ScheduleMap Note::getSchdMap() {
     return scheduleMap;
 }
 void Note::updateCards() {
-    error = "";
-    std::vector<QString> loclTemplNams; // Only need to verify here, actual handling of templates occurs in builtinFeats.cpp
-    {
-        QString templHidden = TemplateFeat::instance->highersReplace(orig);
-        auto it = templLoclDefRe.globalMatch(templHidden);
-        while (it.hasNext()) {
-            auto m = it.next();
-            QString title = m.captured("nam");
-            if (std::find(loclTemplNams.begin(), loclTemplNams.end(), title) == loclTemplNams.end()) {
-                loclTemplNams.push_back(title);
-            } else {
-                error += "Multiple local templates named `" + title + "`!\n";
-            }
-        }
-    } {
-        QString templHidden2 = TemplateFeat::instance->othersReplace(orig);
-        auto it = templApplyRe.globalMatch(templHidden2);
-        while (it.hasNext()) {
-            auto m = it.next();
+    QString conts = orig;
+    for (auto& f : Feats) {
+        conts = f->check(conts, error);
+    }
 
-            QString g1 = m.captured("nam");
-            QString name = g1.isNull() ? m.captured("nam2") : g1;
-            if (
-                std::find(loclTemplNams.begin(), loclTemplNams.end(), name) == loclTemplNams.end() &&
-                globalTemplates.find(name) == globalTemplates.end()
-            ) {
-                error += "Unknown template name: `" + name + "`\n";
-                continue;
-            }
-        }
-    } {
+    {
         tags = {};
-        QString hidden = TagFeat::instance->highersReplace(orig);
+        QString hidden = TagFeat::instance->highersReplace(conts);
         auto it = noteInfRe.globalMatch(hidden);
         QMap<QString, bool> has;
         while (it.hasNext()) {
@@ -186,7 +161,7 @@ void Note::updateCards() {
 
     std::vector<QString> dominants;
     for (auto& f : CardFeats) {
-        if (f->dominance(orig)) {
+        if (f->dominance(conts)) {
             dominants.push_back(f->getName());
         }
     }
@@ -200,7 +175,6 @@ void Note::updateCards() {
         return;
     }
 
-    QString conts = orig;
     for (auto& f : Feats) {
         conts = f->replacements(conts, SIDE_GETFC);
     }

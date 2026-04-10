@@ -38,6 +38,7 @@ public:
     QString error;
 
     void setContents(const QString& newContents);
+    bool updateBegin();
     void updateCards();
     QString contents() const;
     QString title();

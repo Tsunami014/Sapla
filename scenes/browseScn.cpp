@@ -247,7 +247,6 @@ void BrowseScene::selectionChange() {
 void BrowseScene::newNote() {
     if (!checkValidDeck()) return;
     auto* n = new Note("");
-    n->updateCards();
     notesL.push_back(n);
     auto* it = addToTree(tree, n);
     tree->setCurrentItem(it);

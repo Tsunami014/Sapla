@@ -12,7 +12,7 @@ private:
 };
 inline _AutoColour AC;
 
-#define FeatDef(nam) \
+#define Feat_Instance(nam) \
     inline static std::unique_ptr<nam> instance = std::make_unique<nam>();
 
 struct FeatReg {
@@ -23,6 +23,7 @@ struct FeatReg {
     QString highersReplace(QString inp);
     QString othersReplace(QString inp);
     virtual QMap<QString, QString> help() const { return {}; }
+    virtual QString check(QString& txt, QString& err) const { return txt; }
     virtual QString replacements(QString& txt, Side s) const { return txt; }
     virtual QString markup(QString& line) const { return line; }
 };
@@ -49,16 +50,17 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 #define Feat_name(nam)     inline const QString getName() const override { return nam; }
 
 #define Feat_help          QMap<QString, QString> help() const override
+#define Feat_check         QString check(QString& txt, QString& err) const override;
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
 #define Feat_markup        QString markup(QString& line) const override
 
-#define Feat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const override
-#define Feat_dominance     bool dominance(const QString& txt) const override
+#define CFeat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const override
+#define CFeat_dominance     bool dominance(const QString& txt) const override
 
 
 extern const QRegularExpression scheduleInfRe;
 struct ScheduleFeat : FeatReg {
-    FeatDef(ScheduleFeat)
+    Feat_Instance(ScheduleFeat)
     Feat_order(9999);
     Feat_name("<<>>");
     Feat_replacements;
@@ -69,17 +71,18 @@ extern const QRegularExpression templDefRe;
 extern const QRegularExpression templLoclDefRe;
 extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
-    FeatDef(TemplateFeat)
+    Feat_Instance(TemplateFeat)
     Feat_useCols(2);
     Feat_order(1000);
     Feat_name("|| ||");
+    Feat_check;
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 extern const QRegularExpression noteInfRe;
 struct TagFeat : FeatReg {
-    FeatDef(TagFeat)
+    Feat_Instance(TagFeat)
     Feat_useCol;
     Feat_order(90);
     Feat_name("#tag");
@@ -89,52 +92,62 @@ struct TagFeat : FeatReg {
 };
 
 struct SingleSideFeat : CardFeatReg {
-    FeatDef(SingleSideFeat)
+    Feat_Instance(SingleSideFeat)
     Feat_useCol;
     Feat_order(2);
     Feat_name("---");
-    Feat_dominance;
-    Feat_getFlashCards;
+    CFeat_dominance;
+    CFeat_getFlashCards;
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 struct DoubleSideFeat : CardFeatReg {
-    FeatDef(DoubleSideFeat)
+    Feat_Instance(DoubleSideFeat)
     Feat_useCol;
     Feat_order(2);
     Feat_name("===");
-    Feat_dominance;
-    Feat_getFlashCards;
+    CFeat_dominance;
+    CFeat_getFlashCards;
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 struct MirrorSideFeat : CardFeatReg {
-    FeatDef(MirrorSideFeat)
+    Feat_Instance(MirrorSideFeat)
     Feat_useCol;
     Feat_order(2);
     Feat_name("///");
-    Feat_dominance;
-    Feat_getFlashCards;
+    CFeat_dominance;
+    CFeat_getFlashCards;
+    Feat_replacements;
+    Feat_markup;
+    Feat_help;
+};
+struct TemplateSideFeat : FeatReg {
+    Feat_Instance(TemplateSideFeat)
+    Feat_useCol;
+    Feat_order(1001);
+    Feat_name("|||");
+    Feat_check;
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 
 struct SecretFeat : CardFeatReg {
-    FeatDef(SecretFeat)
+    Feat_Instance(SecretFeat)
     Feat_useCol;
     Feat_order(1);
     Feat_name("{ }");
-    Feat_getFlashCards;
+    CFeat_getFlashCards;
     Feat_replacements;
     Feat_markup;
     Feat_help;
 };
 
 struct HiddenFeat : FeatReg {
-    FeatDef(HiddenFeat)
+    Feat_Instance(HiddenFeat)
     Feat_useCol;
     Feat_order(100);
     Feat_name("[[ ]]");
@@ -144,7 +157,7 @@ struct HiddenFeat : FeatReg {
 };
 
 struct ShuffledFeat : FeatReg {
-    FeatDef(ShuffledFeat)
+    Feat_Instance(ShuffledFeat)
     Feat_useCol;
     Feat_order(100);
     Feat_name(".. ..");

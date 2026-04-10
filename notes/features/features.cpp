@@ -34,15 +34,16 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx) {
 void registerNoteFeatures() {
     CardFeats.clear();
     Feats.clear();
+    REGISTER_FEAT(TemplateSideFeat);
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_CFEAT(MirrorSideFeat);
     REGISTER_CFEAT(SecretFeat);
-    REGISTER_FEAT(ScheduleFeat);
-    REGISTER_FEAT(TagFeat);
-    REGISTER_FEAT(TemplateFeat);
     REGISTER_FEAT(HiddenFeat);
     REGISTER_FEAT(ShuffledFeat);
+    REGISTER_FEAT(TagFeat);
+    REGISTER_FEAT(TemplateFeat);
+    REGISTER_FEAT(ScheduleFeat);
 
     for (auto* f : PlugFns->loadFeatFns) f();
 

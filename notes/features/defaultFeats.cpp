@@ -64,7 +64,7 @@ QString DoubleSideFeat::replacements(QString& txt, Side s) const {
 }
 QString DoubleSideFeat::markup(QString& line) const {
     if (dsfRe.match(line).hasMatch()) {
-        return QString("<span style='r:%1'>═══</span>").arg(col);
+        return QString("<span style='color:%1'>═══</span>").arg(col);
     }
     return line;
 }
@@ -103,7 +103,7 @@ QString MirrorSideFeat::replacements(QString& txt, Side s) const {
 }
 QString MirrorSideFeat::markup(QString& line) const {
     if (msfRe.match(line).hasMatch()) {
-        return QString("<span style='r:%1'>╱╱╱</span>").arg(col);
+        return QString("<span style='color:%1'>╱╱╱</span>").arg(col);
     }
     return line;
 }
@@ -111,5 +111,64 @@ QMap<QString, QString> MirrorSideFeat::help() const {
     return {{"Mirror sided note\n///",
         "Separates the note into any amount of cards.\n"
         "Each section of the note (separated by ///) is its own card, and the contents will be used for both the front and back."
+    }};
+}
+
+const QRegularExpression tsfRe(R"(^\s*\|\|\|[ \t]*(.*?)\s*$)", MO);
+const QRegularExpression tsfRe2(R"(^\s*\|\|\|[ \t]*(?=(.+?)\s*$))", MO);
+QString TemplateSideFeat::check(QString& txt, QString& err) const {
+    auto spl = txt.split(tsfRe2);
+    if (spl.length() == 1) return txt;
+    QStringList parts;
+    QStringList titles;
+
+    uint end = 0;
+    auto it = tsfRe2.globalMatch(txt);
+    while (it.hasNext()) {
+        QRegularExpressionMatch m = it.next();
+        parts << txt.mid(end, m.capturedStart() - end);
+        titles << m.captured(1);
+        end = m.capturedEnd();
+    }
+    parts << txt.mid(end);
+
+    QString title;
+    for (auto t : titles) {
+        if (!t.isEmpty()) {
+            if (title.isNull()) {
+                title = t;
+            } else {
+                err += "Multiple template titles!\n";
+                return "";
+            }
+        }
+    }
+    if (title.isNull()) {
+        err += "No template titles!\n";
+        return "";
+    }
+
+    if (auto it = globalTemplates.find(title); it != globalTemplates.end()) {
+        return it->second.replace(parts);
+    }
+    err += "Could not find a global template called `"+title+"`!\n";
+    return "";
+}
+QString TemplateSideFeat::replacements(QString& txt, Side s) const {
+    if (tsfRe.match(txt).hasMatch())
+        return "";
+    return txt;
+}
+QString TemplateSideFeat::markup(QString& line) const {
+    if (auto m = tsfRe.match(line); m.hasMatch()) {
+        return QString("<span style='color:%1'>│││ %2</span>")
+            .arg(col).arg(m.captured(1));
+    }
+    return line;
+}
+QMap<QString, QString> TemplateSideFeat::help() const {
+    return {{"Template sided note\n|||",
+        "Separates the note into parts, then each part is an argument into a note template.\n"
+        "Only one ||| must have a name after it, the rest must all have nothing afterwards."
     }};
 }

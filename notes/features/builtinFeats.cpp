@@ -70,9 +70,8 @@ QString TemplateFeat::check(QString& txt, QString& err) const {
             QString title = m.captured("nam");
             if (loclTempls.find(title) != loclTempls.end()) {
                 err += "Multiple local templates named `" + title + "`!\n";
-                loclTempls.emplace(title, std::move(Template(
-                    "==<UNKNOWN>==", QString()
-                )));
+                if (!loclTempls[title].failed())
+                    loclTempls.emplace(title, Template());
             } else {
                 loclTempls.try_emplace(title, 
                     m.captured("conts"), m.captured("ptn")
@@ -99,6 +98,10 @@ QString TemplateFeat::check(QString& txt, QString& err) const {
             templ = &it->second;
         } else {
             err += "Unknown template name: `" + name + "`\n";
+            continue;
+        }
+        if (templ->failed()) {
+            err += "Template `" + name + "` failed!\n";
             continue;
         }
         QString match = m.captured("conts");

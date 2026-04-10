@@ -91,8 +91,9 @@ void initNotes() {
 
 void updateNoteCards() {
     CLclear();
+    globalTemplates.clear();
     for (auto* n : notesL)
-        n->updateBegin();
+        n->updateGlobals();
     for (auto* n : notesL)
         n->updateCards();
     initDeckSettings();

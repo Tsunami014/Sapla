@@ -104,6 +104,7 @@ BrowseScene::BrowseScene(Note* sel)
             if (doubleCheck("delete all your notes")) {
                 for (auto* n : notesL) delete n;
                 notesL.clear();
+                updateNoteCards(); // Also updates globals and stuff
                 tree->clear();
                 selectionChange();
             }
@@ -281,6 +282,7 @@ void BrowseScene::delNote() {
     Note* data = getNote(item);
     notesL.erase(std::remove(notesL.begin(), notesL.end(), data), notesL.end());
     delete data;
+    updateNoteCards(); // Also updates globals and stuff
     writeNotes();
     QTreeWidgetItem* nxtSel;
     if (parent) {

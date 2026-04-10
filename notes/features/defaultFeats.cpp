@@ -149,7 +149,12 @@ QString TemplateSideFeat::check(QString& txt, QString& err) const {
     }
 
     if (auto it = globalTemplates.find(title); it != globalTemplates.end()) {
-        return it->second.replace(parts);
+        auto templ = it->second;
+        if (templ.failed()) {
+            err += "Template `" + title + "` failed!\n";
+            return "";
+        }
+        return templ.replace(parts);
     }
     err += "Could not find a global template called `"+title+"`!\n";
     return "";

@@ -26,6 +26,14 @@ Template::Template(QString c, QString p) {
         }
     }
 }
+Template::Template() {
+    conts = QString();
+    ptns = {};
+}
+
+bool Template::failed() {
+    return conts.isNull();
+}
 
 const QRegularExpression replRe(
     R"(%(?<pref>[.^*\"]+)?)"
@@ -33,6 +41,7 @@ const QRegularExpression replRe(
     R"((?<suff>(?:[\[|{](?:\\[^\n\r]|[^|\[{% \n\r])+)+)?)"
     R"((?:%|$|(?=[ \n\r])))");
 QString Template::replace(QStringList args) {
+    if (failed()) return "==<ERROR>==";
     unsigned int argsln = args.length();
     QString out = conts;
 

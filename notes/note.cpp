@@ -23,7 +23,8 @@ Note::Note(QString conts) {
 }
 Note::~Note() {
     if (!QApplication::closingDown()) {  // If it is closing down this will fail
-        reset();
+        cards.clear();
+        templates.clear();
     }
 }
 bool Note::operator==(const Note& other) const {
@@ -63,24 +64,25 @@ int Note::getNumTemplates() {
     return templates.size();
 }
 
+bool Note::isGlobal() {
+    QString hidden = TemplateFeat::instance->highersReplace(orig);
+    return templDefRe.match(hidden).hasMatch();
+}
 void Note::reset() {
-    cards.clear();
-    for (auto& t : templates) {
-        globalTemplates.erase(t);
-    }
+    error = "";
     templates.clear();
 }
 void Note::setContents(const QString& nc) {
     orig = nc;
-    reset();
-    if (updateBegin()) {
+    if (isGlobal()) { // Update everything if it defines a global template
         updateNoteCards();
     } else {
+        reset();
         updateCards();
     }
 }
-bool Note::updateBegin() {
-    error = "";
+bool Note::updateGlobals() {
+    reset();
     bool updAll = false;
     QString hidden = TemplateFeat::instance->highersReplace(orig);
     auto it = templDefRe.globalMatch(hidden);
@@ -96,7 +98,8 @@ bool Note::updateBegin() {
             templates.push_back(title);
         } else {
             error += "Multiple global templates named `" + title + "`!\n";
-            it->second = Template("==<UNKNOWN>==", QString());
+            if (!it->second.failed())
+                it->second = Template();
         }
         updAll = true;
     }
@@ -138,6 +141,7 @@ ScheduleMap Note::getSchdMap() {
     return scheduleMap;
 }
 void Note::updateCards() {
+    cards.clear();
     QString conts = orig;
     for (auto& f : Feats) {
         conts = f->check(conts, error);
@@ -243,9 +247,7 @@ FlashCard& FlashCard::operator=(FlashCard&& other) noexcept {
 FlashCard::~FlashCard() {
     if (!alive) return;
     alive = false;
-    if (!CLremoveCard(this)) {
-        Log::Error(MODULE) << "Failed to erase flashcard from list!";
-    }
+    CLremoveCard(this);
 }
 bool FlashCard::isAlive() { return alive; }
 

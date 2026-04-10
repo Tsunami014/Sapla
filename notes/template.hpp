@@ -13,6 +13,8 @@ public:
 class Template {
 public:
     Template(QString conts, QString ptn);
+    Template();
+    bool failed();
     QString replace();
     QString replace(QStringList args);
 protected:

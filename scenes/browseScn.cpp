@@ -128,9 +128,6 @@ BrowseScene::BrowseScene(Note* sel)
             }
         }
     }
-Note* BrowseScene::getNote(QTreeWidgetItem* item) {
-    return static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
-}
 Note* BrowseScene::getSelNote() {
     return getNote(tree->selectedItems().first());
 }
@@ -206,26 +203,11 @@ void BrowseScene::typed() {
     }
     Note* n = getSelNote();
     n->setContents(te->getMarkdown());
+    writeNotes();
 
     updatePrev();
     updateItem(selected.first(), n);
-    writeNotes();
-}
-void BrowseScene::noteUpdated() {
-    QSignalBlocker blocker(te);
-    QList<QTreeWidgetItem*> selected = tree->selectedItems();
-    if (selected.size() != 1) {
-        te->setText("");
-        te->setDisabled(true);
-        prevIdx.reset();
-        updatePrev();
-        return;
-    }
-    Note* n = getSelNote();
-    te->setMarkdown(n->contents());
-    updatePrev();
-    updateItem(selected.first(), n);
-    writeNotes();
+    if (n->isGlobal()) updateAllItems(tree);
 }
 void BrowseScene::selectionChange() {
     QList<QTreeWidgetItem*> selected = tree->selectedItems();
@@ -280,6 +262,7 @@ void BrowseScene::delNote() {
     if (nxt && idx == maxlen-1) idx--;
 
     Note* data = getNote(item);
+    bool glob = data->isGlobal();
     notesL.erase(std::remove(notesL.begin(), notesL.end(), data), notesL.end());
     delete data;
     updateNoteCards(); // Also updates globals and stuff
@@ -300,6 +283,7 @@ void BrowseScene::delNote() {
     }
     selectionChange();
     delete item;
+    if (glob) updateAllItems(tree);
 }
 
 bool BrowseScene::keyEv(QKeyEvent* event) {

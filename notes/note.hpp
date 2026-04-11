@@ -42,6 +42,7 @@ public:
     void updateCards();
     QString contents() const;
     QString title();
+    bool isGlobal();
 
     ScheduleMap getSchdMap();
     void updateSchedules();
@@ -49,7 +50,6 @@ public:
 
     void destroy();
 private:
-    bool isGlobal();
     void reset();
     QString orig;
     std::vector<std::unique_ptr<FlashCard>> cards;

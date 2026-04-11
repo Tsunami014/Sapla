@@ -17,14 +17,12 @@ public:
 
 public slots:
     void typed();
-    void noteUpdated();
     void selectionChange();
     void newNote();
     void delNote();
 
 protected:
     Note* getSelNote();
-    Note* getNote(QTreeWidgetItem* item);
     QTreeWidget* tree;
     QVBoxLayout* form;
     MarkdownEdit* te;

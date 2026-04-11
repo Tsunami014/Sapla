@@ -3,6 +3,10 @@
 #include "../wids/listWid.hpp"
 #include <QHeaderView>
 
+Note* getNote(QTreeWidgetItem* item) {
+    return static_cast<TreeData*>(item->data(0, Qt::UserRole).value<void*>())->note;
+}
+
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
     int cols = 5;
@@ -42,6 +46,14 @@ void updateItem(QTreeWidgetItem* it, Note* note) {
     it->setData(4, Qt::DisplayRole, QVariant(note->error.count("\n")));
 
     //item->setIcon(0, QIcon(":/icons/file.png"));
+}
+
+void updateAllItems(QTreeWidget* tree) {
+    int count = tree->topLevelItemCount();
+    for (int i = 0; i < count; ++i) {
+        QTreeWidgetItem* item = tree->topLevelItem(i);
+        updateItem(item, getNote(item));
+    }
 }
 
 QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* note) {

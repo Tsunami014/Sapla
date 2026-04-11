@@ -182,6 +182,8 @@ QString TemplateSideFeat::markup(QString& line) const {
 QMap<QString, QString> TemplateSideFeat::help() const {
     return {{"Template sided note\n|||",
         "Separates the note into parts, then each part is an argument into a note template.\n"
-        "Only one ||| must have a name after it, the rest must all have nothing afterwards."
+        "Only one ||| must have a name after it, the rest must all have nothing afterwards.\n"
+        "After the name can be a separator and arguments exactly like a regular template application"
+            "(see this screen help for more info)."
     }};
 }

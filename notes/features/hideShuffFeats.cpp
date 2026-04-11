@@ -68,7 +68,7 @@ QString ShuffledFeat::markup(QString& line) const {
 }
 QMap<QString, QString> ShuffledFeat::help() const {
     return {
-           {"Scrambled text\n... ...",
+           {"Scrambled text\n.. ..",
             "Scrambles each word, keeping the start and end letters and removing capitalisation\n"
             "E.g. `..Hello wOrLd..` might scramble to `Hlelo wlord`"
         }

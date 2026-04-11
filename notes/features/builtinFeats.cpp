@@ -12,15 +12,16 @@ QString ScheduleFeat::markup(QString& line) const {
     return line;
 }
 QMap<QString, QString> ScheduleFeat::help() const {
-    return {{"Schedule",
-        "Warning: only for if you are bothered\n"
+    return {{"Schedule\n<< >>",
+        "WARNING: only for if you are bothered - this is auto generated and you do not need to know ANY of this.\n"
         "Schedule strings have the following format:\n"
         "<<feat,idx,score,time>>\n"
         "Where feat is the feature name, "
             "idx is the idx of the note (used by each feature in a different way), "
             "score is the score given to the note of how well you remembered it, "
             "and time is the next time it will be shown.\n"
-        "Multiple can be chained with | e.g. `<<f,i,s,t|f2,i2,s2,t2>>`"
+        "Multiple can be chained with | e.g. `<<f,i,s,t|f2,i2,s2,t2>>`\n"
+        "They must not have anything before or after them on the same line."
     }};
 }
 

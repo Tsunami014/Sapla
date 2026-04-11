@@ -22,35 +22,42 @@ Playing the grid game (a plugin) with a winter colour scheme (another plugin)
 - Example cards, comprehensive help screens and quick references to help you and explain every feature
 ### Decks
 - Can add, copy, rename and delete decks of notes!
-- Can make temporary decks that vanish on demand or app load
+- Can make temporary decks that vanish on the next app load (or manually)
 ### Notes & cards
 - Browse all your notes, edit them, delete them or add more
 - Many different card features!
 - Example cards to help
 - A note preview which also reveals errors
-- Markdown support - and reveals text underneath on selection
-- Saves notes to a configuration file automatically as you type
+- Extended markdown support
+    - Including underlines and highlights!
+    - Markdown editors that reveal text underneath on selection
+- Saves notes to a file automatically as you type
 - Tags for ease of sorting
 - Scheduling - cards revised based on their schedule time!
-- Rate whether you know the card based on a scale!
+- Rate whether you know the card based on a scale and it reschedules accordingly!
+#### Note features
+- Single/double sided notes
+- Hidden text (gradually hides more as you get better)
+- Random text
+- Word scrambling
+And much, much more!
 ### Gameplay
 - Grow a tree with your answers
 - Different short flashcard 'games' to test your knowledge in different ways
 ### App
-- Whole app setings and per-deck settings (which are just a note)
+- Whole app setings and per-deck settings (tho currently not used much)
 - Neat logging with popups and a log view
 - Custom UI svgs *hand drawn* by me that change colour based on the theme
 - Responsive layout
-- Help information for ease of use
-- Menu with updating items
+- Dynamic menubar
 ### Customisability
 - Ease of plugin creation through the extensable code structure
 - Import/disable/remove plugins
-- Plugins can add new games, features, change the colour scheme or whatever!
+- Plugins can add new games, features, change the colour scheme and more!
 #### Templates
 - Note templates for creating many custom fancy notes with ease!
 - Global and local templates
-- Custom argument parsing
+- Custom argument parsing with fancy options
 #### Plugins
 - Built in plugin which comes with the app, which adds
     - A simple flashcard game - just a regular flashcard

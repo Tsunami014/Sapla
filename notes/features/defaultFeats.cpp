@@ -114,23 +114,26 @@ QMap<QString, QString> MirrorSideFeat::help() const {
     }};
 }
 
-const QRegularExpression tsfRe(R"(^\s*\|\|\|[ \t]*(.*?)\s*$)", MO);
-const QRegularExpression tsfRe2(R"(^\s*\|\|\|[ \t]*(?=(.+?)\s*$))", MO);
+const QRegularExpression tsfRe(R"(^\s*\|\|\|[ \t]*(.*?)(?=\s*$))", MO);
 QString TemplateSideFeat::check(QString& txt, QString& err) const {
-    auto spl = txt.split(tsfRe2);
+    auto spl = txt.split(tsfRe);
     if (spl.length() == 1) return txt;
     QStringList parts;
     QStringList titles;
 
     uint end = 0;
-    auto it = tsfRe2.globalMatch(txt);
+    auto it = tsfRe.globalMatch(txt);
     while (it.hasNext()) {
         QRegularExpressionMatch m = it.next();
-        parts << txt.mid(end, m.capturedStart() - end);
+        QString p = txt.mid(end, m.capturedStart() - end).trimmed();
+        if (!p.isEmpty()) parts << p;
         titles << m.captured(1);
         end = m.capturedEnd();
     }
-    parts << txt.mid(end);
+    {
+        QString p = txt.mid(end).trimmed();
+        if (!p.isEmpty()) parts << p;
+    }
 
     QString title;
     for (auto t : titles) {
@@ -160,6 +163,7 @@ QString TemplateSideFeat::check(QString& txt, QString& err) const {
     return "";
 }
 QString TemplateSideFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_NAME) return txt;
     if (tsfRe.match(txt).hasMatch())
         return "";
     return txt;

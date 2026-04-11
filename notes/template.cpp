@@ -36,12 +36,21 @@ bool Template::failed() {
 }
 
 const QString prefs = ".^*\"";
-const QString suffs = "\\[|{:";
+const QString suffs = "\\[|{:=";
 const QRegularExpression replRe(
     "%(?<pref>["+prefs+"]+)?"
   R"((?<conts>(?:\\[^\n\r]|[^% \n\r)"+prefs+suffs+"])+)"
     "(?<suff>(?:["+suffs+R"(](?:\\[^\n\r]|[^% \n\r)"+suffs+"])+)+)?"
   R"((?:%|$|(?=[ \n\r])))");
+const std::vector<QChar> suffsList() {
+    std::vector<QChar> vec;
+    vec.reserve(suffs.size() + 2);
+
+    vec.insert(vec.end(), suffs.begin(), suffs.end());
+    vec.push_back(QChar('\r'));
+    vec.push_back(QChar('\n'));
+    return vec;
+}
 QString Template::replace(QStringList args) {
     if (failed()) return "==<ERROR>==";
     unsigned int argsln = args.length();
@@ -54,7 +63,7 @@ QString Template::replace(QStringList args) {
 
         QString repl;
         QString def;
-        QString conts = m.captured("conts").replace('\\', "");
+        QString conts = m.captured("conts");
         bool ok; // Only for the number check
         if (conts == "#") {
             repl = args.join('|');
@@ -78,7 +87,7 @@ QString Template::replace(QStringList args) {
                 continue;
             }
         }
-        QString suff = m.captured("suff").replace('\\', "");
+        QString suff = m.captured("suff");
         if (suff.isEmpty()) {
             suff = '\n'+def+'\r';
         } else if (suff[0] == '|') {
@@ -89,7 +98,7 @@ QString Template::replace(QStringList args) {
         {
             QChar apply;
             QString sofar;
-            const static std::vector<QChar> suffs = {'|', '[', '{', ':', '\r', '\n'};
+            const static std::vector<QChar> suffs = suffsList();
             bool good = true;
             bool esc = false;
             for (auto& c : suff) {
@@ -111,6 +120,9 @@ QString Template::replace(QStringList args) {
                                 repl.replace(' ', '\3');
                                 sofar.replace(' ', '\3');
                                 repl.replace(sofar, " ");
+                                break;
+                            case '=':
+                                repl.replace(' ', sofar);
                                 break;
                             case '{':
                             case '[': {
@@ -239,7 +251,7 @@ QString Template::replace(QStringList args) {
             }
             if (!good) continue;
         }
-        if (QString pref = m.captured("pref").replace('\\', ""); !pref.isNull()) {
+        if (QString pref = m.captured("pref"); !pref.isNull()) {
             bool good = true;
             for (auto& c : pref) {
                 switch (c.unicode()) {

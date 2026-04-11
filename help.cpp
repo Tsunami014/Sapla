@@ -237,7 +237,10 @@ const QString ARGUMENT_HELP =
         "<li>"+code("{idx")+" or "+code("{start:stop")+" or "+code("{start:stop:step")+" - same as above, but for words instead of characters."
         "<li>"+code("|def")+" - if the output is currently null (e.g. no argument or you indexed out of bounds), display the text after instead."
             "<br>Overrides the one set for the variable as a whole if used at the start of the suffix.</li>"
-        "<li>"+code(":sep")+" - splits the text by 'sep' (handles spaces and converts all sep characters to spaces so you can use "+code("{")+" to index)</li>"
+        "<li>"+code(":sep")+" - splits the text by 'sep' (converts all sep characters to spaces so you can use "+code("{")+" to index)"
+            "<br><b>NOTE<b>: It replaces all existing spaces with a special character that gets replaced with a space at the end to make everything work. "
+            "But don't worry, you can still split by a space (remember to escape it tho)</li>"
+        "<li>"+code("=sep")+" - joins the text with 'sep' (replaces all spacing)"
     "</ul>"
 ;
 

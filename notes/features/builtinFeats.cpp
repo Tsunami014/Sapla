@@ -57,7 +57,7 @@ QStringList splTemplArgs(QString args) {
 }
 const QString templBaseNameRe = R"(\s*(?<nam>[^|: \n]+?)\s*)";
 const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:\\\]|[^\n\]])+)\]\s*)?)";
-const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:.|\n)*?)\s*)??)";
+const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:\\.|.|\n)*?)\s*)??)";
 const QString templDefBase =
     templBaseNameRe + templBasePatternRe + templBaseContentsRe;
 const QString templDefPref = R"(\s*^\s*)";

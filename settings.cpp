@@ -145,6 +145,7 @@ void writeLocalSettings() {
         return;
     } else if (settingsss == 0) {
         auto* n = new Note("");
+        n->update();
         notesL.push_back(n);
         settingss.push_back(n);
     }

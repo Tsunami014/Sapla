@@ -45,7 +45,7 @@ public:
     inline operator FlashCard*() const { return ptr; }
 
 private:
-    FlashCard* ptr;
-    bool modify;
+    FlashCard* ptr = nullptr;
+    bool modify = false;
 };
 

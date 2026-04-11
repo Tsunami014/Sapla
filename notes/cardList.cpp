@@ -89,6 +89,7 @@ void CLrefreshCard(FlashCard* card) {
 double activeWeight = 0;
 void refreshCurPile() {
     while (1) {
+        if (otherpile.empty()) break;
         double newWeight = cardweight(otherpile.top());
         if (curpile.weight() + newWeight >= maxCurPileWeight - activeWeight) {
             break;

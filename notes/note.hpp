@@ -38,7 +38,8 @@ public:
     QString error;
 
     void setContents(const QString& newContents);
-    bool updateGlobals();
+    void update();
+    void updateGlobals();
     void updateCards();
     QString contents() const;
     QString title();

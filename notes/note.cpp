@@ -19,7 +19,7 @@ QString trimNL(const QString& orig) {
 
 Note::Note(QString conts) {
     error = "";
-    setContents(conts);
+    orig = conts;
 }
 Note::~Note() {
     if (!QApplication::closingDown()) {  // If it is closing down this will fail
@@ -74,6 +74,9 @@ void Note::reset() {
 }
 void Note::setContents(const QString& nc) {
     orig = nc;
+    update();
+}
+void Note::update() {
     if (isGlobal()) { // Update everything if it defines a global template
         updateNoteCards();
     } else {
@@ -81,9 +84,8 @@ void Note::setContents(const QString& nc) {
         updateCards();
     }
 }
-bool Note::updateGlobals() {
+void Note::updateGlobals() {
     reset();
-    bool updAll = false;
     QString hidden = TemplateFeat::instance->highersReplace(orig);
     auto it = templDefRe.globalMatch(hidden);
     while (it.hasNext()) {
@@ -101,9 +103,7 @@ bool Note::updateGlobals() {
             if (!it->second.failed())
                 it->second = Template();
         }
-        updAll = true;
     }
-    return updAll;
 }
 ScheduleMap Note::getSchdMap() {
     ScheduleMap scheduleMap;
@@ -247,7 +247,9 @@ FlashCard& FlashCard::operator=(FlashCard&& other) noexcept {
 FlashCard::~FlashCard() {
     if (!alive) return;
     alive = false;
-    CLremoveCard(this);
+    if (!CLremoveCard(this)) {
+        Log::Warn(MODULE) << "Unable to remove flashcard from list!";
+    }
 }
 bool FlashCard::isAlive() { return alive; }
 

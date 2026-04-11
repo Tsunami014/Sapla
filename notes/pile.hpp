@@ -28,12 +28,12 @@ public:
 class Pile : public PileBase {
 public:
     Pile() : cards() {}
-    void sort() {
-        if (dirty) {
-            cards.erase(
-                std::remove(cards.begin(), cards.end(), nullptr),
-                cards.end()
-            );
+    void sort(bool dosort = true) {
+        cards.erase(
+            std::remove(cards.begin(), cards.end(), nullptr),
+            cards.end()
+        );
+        if (dosort && dirty && !cards.empty()) {
             std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global()); // Shuffle first
             TimePoint now = std::chrono::system_clock::now();
             std::sort(cards.begin(), cards.end(),
@@ -55,14 +55,14 @@ public:
 
     void clear() override { cards.clear(); }
     FlashCard* top(bool dosort = true) override {
+        sort(dosort);
         if (cards.empty()) return nullptr;
-        if (dosort) { sort(); }
         return cards.back();
     }
     FlashCard* pop_top(bool dosort = true) override {
+        sort(dosort);
         if (cards.empty()) return nullptr;
-        if (dosort) { sort(); }
-        else { dirty = true; }
+        if (!dosort) { dirty = true; }
         auto card = cards.back();
         cards.pop_back();
         return card;
@@ -81,8 +81,14 @@ public:
         return false;
     }
 
-    size_t size() override { return cards.size(); }
-    bool empty() override { return cards.empty(); }
+    size_t size() override {
+        sort(false);
+        return cards.size();
+    }
+    bool empty() override {
+        sort(false);
+        return cards.empty();
+    }
     const std::vector<FlashCard*>& cardList() { return cards; }
 protected:
     bool dirty = false;

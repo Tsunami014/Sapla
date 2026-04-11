@@ -35,11 +35,13 @@ bool Template::failed() {
     return conts.isNull();
 }
 
+const QString prefs = ".^*\"";
+const QString suffs = "\\[|{:";
 const QRegularExpression replRe(
-    R"(%(?<pref>[.^*\"]+)?)"
-    R"((?<conts>(?:\\[^\n\r]|[^|\[{.^*"% \n\r])+))"
-    R"((?<suff>(?:[\[|{](?:\\[^\n\r]|[^|\[{% \n\r])+)+)?)"
-    R"((?:%|$|(?=[ \n\r])))");
+    "%(?<pref>["+prefs+"]+)?"
+  R"((?<conts>(?:\\[^\n\r]|[^% \n\r)"+prefs+suffs+"])+)"
+    "(?<suff>(?:["+suffs+R"(](?:\\[^\n\r]|[^% \n\r)"+suffs+"])+)+)?"
+  R"((?:%|$|(?=[ \n\r])))");
 QString Template::replace(QStringList args) {
     if (failed()) return "==<ERROR>==";
     unsigned int argsln = args.length();
@@ -53,8 +55,11 @@ QString Template::replace(QStringList args) {
         QString repl;
         QString def;
         QString conts = m.captured("conts").replace('\\', "");
-        bool ok;
-        if (unsigned int num = conts.toUInt(&ok); ok) {
+        bool ok; // Only for the number check
+        if (conts == "#") {
+            repl = args.join('|');
+            def = "";
+        } else if (unsigned int num = conts.toUInt(&ok); ok) {
             if (num == 0) continue;
             if (num <= argsln) {
                 repl = args[num-1];
@@ -84,7 +89,7 @@ QString Template::replace(QStringList args) {
         {
             QChar apply;
             QString sofar;
-            const static std::vector<QChar> suffs = {'|', '[', '{', '\r', '\n'};
+            const static std::vector<QChar> suffs = {'|', '[', '{', ':', '\r', '\n'};
             bool good = true;
             bool esc = false;
             for (auto& c : suff) {
@@ -102,6 +107,11 @@ QString Template::replace(QStringList args) {
                         }
                     } else {
                         switch (apply.unicode()) {
+                            case ':':
+                                repl.replace(' ', '\3');
+                                sofar.replace(' ', '\3');
+                                repl.replace(sofar, " ");
+                                break;
                             case '{':
                             case '[': {
                                 bool words = apply == '{';
@@ -275,7 +285,7 @@ QString Template::replace(QStringList args) {
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
-    return out.replace("%%", "%");
+    return out.replace("%%", "%").replace('\3', ' ');
 }
 QString Template::replace() {
     return replace({});

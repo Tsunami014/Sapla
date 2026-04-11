@@ -114,7 +114,8 @@ QMap<QString, QString> MirrorSideFeat::help() const {
     }};
 }
 
-const QRegularExpression tsfRe(R"(^\s*\|\|\|[ \t]*(.*?)(?=\s*$))", MO);
+const QRegularExpression tsfRe(
+    R"(^\s*\|\|\|[ \t]*((?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)?(?=\s*$))", MO);
 QString TemplateSideFeat::check(QString& txt, QString& err) const {
     auto spl = txt.split(tsfRe);
     if (spl.length() == 1) return txt;
@@ -125,13 +126,16 @@ QString TemplateSideFeat::check(QString& txt, QString& err) const {
     auto it = tsfRe.globalMatch(txt);
     while (it.hasNext()) {
         QRegularExpressionMatch m = it.next();
-        QString p = txt.mid(end, m.capturedStart() - end).trimmed();
+        QString p = trimNL(txt.mid(end, m.capturedStart() - end));
         if (!p.isEmpty()) parts << p;
-        titles << m.captured(1);
+        if (QString conts = m.captured("conts"); !conts.isNull()) {
+            parts = splTemplArgs(conts) + parts;
+        }
+        titles << m.captured("nam");
         end = m.capturedEnd();
     }
     {
-        QString p = txt.mid(end).trimmed();
+        QString p = trimNL(txt.mid(end));
         if (!p.isEmpty()) parts << p;
     }
 

@@ -67,6 +67,7 @@ struct ScheduleFeat : FeatReg {
     Feat_markup;
     Feat_help;
 };
+QStringList splTemplArgs(QString args);
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templLoclDefRe;
 extern const QRegularExpression templApplyRe;

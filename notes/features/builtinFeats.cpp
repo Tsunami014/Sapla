@@ -46,7 +46,14 @@ QMap<QString, QString> TagFeat::help() const {
 }
 
 
-
+const QRegularExpression staRe(R"((?<!\\)(?:\\\\)*\|)", MO);
+QStringList splTemplArgs(QString args) {
+    QStringList parts = args.split(staRe);
+    for (QString &p : parts) {
+        p = p.trimmed();
+    }
+    return parts;
+}
 const QString templBaseNameRe = R"(\s*(?<nam>[^|: \n]+?)\s*)";
 const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:\\\]|[^\n\]])+)\]\s*)?)";
 const QString templBaseContentsRe = R"(([|: \n]\s*(?<conts>(?:.|\n)*?)\s*)??)";
@@ -106,11 +113,7 @@ QString TemplateFeat::check(QString& txt, QString& err) const {
         }
         QString match = m.captured("conts");
         if (!match.isNull()) {
-            QStringList parts = match.split("|");
-            for (QString &p : parts) {
-                p = p.trimmed();
-            }
-            repl = templ->replace(parts);
+            repl = templ->replace(splTemplArgs(match));
         } else {
             repl = templ->replace();
         }

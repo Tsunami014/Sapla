@@ -78,10 +78,16 @@ void MainGame::initStyles() {
         "QTextEdit:focus, QLineEdit:focus {"
             "border: 2px solid #333;"
         "}"
-        "QLabel { color: %2; }"
+        "QTextEdit:disabled, QLineEdit:disabled {"
+            "background-color: %2;"
+            "color: #DADADA;"
+            "border: 1px solid #999;"
+        "}"
+        "QLabel { color: %3; }"
     )
          .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
-         .arg(getCol("adark", -100, 70))  // %2 - QLabel text colour
+         .arg(rgba(getQCol("alight", 10, 0), 0.84)) // %2 - Disabled QTextEdit bg
+         .arg(getCol("adark", -100, 70))  // %3 - QLabel text colour
     ;
     QString comboBox = QString(
         "QComboBox, QComboBox::drop-down {"

@@ -150,6 +150,7 @@ void BrowseScene::updateInfo() {
 }
 void BrowseScene::updatePrev() {
     updateInfo();
+    preview->setDisabled(true);
     if (tree->selectedItems().size() == 0) {
         prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
@@ -181,9 +182,14 @@ void BrowseScene::updatePrev() {
     siw->chngNote(n);
     if (prevIdx.idx == 0) {
         prevIdxLabl->setText("No cards to preview!");
-        preview->setMarkdown("");
+        QString txt = n->contents();
+        for (auto* f : Feats) {
+            txt = f->replacements(txt, SIDE_GETFC);
+        }
+        preview->setMarkdown(txt);
         return;
     }
+    preview->setDisabled(false);
     QString sidestr;
     if (side == SIDE_FRONT) sidestr = " (front)";
     else if (side == SIDE_BACK) sidestr = " (back)";

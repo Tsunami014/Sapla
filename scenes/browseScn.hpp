@@ -19,7 +19,7 @@ public slots:
     void typed();
     void selectionChange();
     void newNote();
-    void delNote();
+    void delNote(bool desel = false);
 
 protected:
     Note* getSelNote();

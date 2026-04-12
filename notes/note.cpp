@@ -64,6 +64,10 @@ int Note::getNumTemplates() {
     return templates.size();
 }
 
+void Note::rmCards() {
+    cards.clear();
+}
+
 bool Note::isGlobal() {
     QString hidden = TemplateFeat::instance->highersReplace(orig);
     return templDefRe.match(hidden).hasMatch();

@@ -1,4 +1,5 @@
 #include "cardList.hpp"
+#include "getNotes.hpp"
 #include "pile.hpp"
 #include "../log.hpp"
 #include <QRandomGenerator>
@@ -60,6 +61,9 @@ void CLaddCard(FlashCard* newCard) {
 }
 
 void CLclear() {
+    for (auto* n : notesL) {
+        n->rmCards();
+    }
     allCards.clear();
     otherpile.clear();
     curpile.clear();

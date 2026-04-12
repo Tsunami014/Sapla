@@ -50,6 +50,7 @@ public:
     void removeSchedules();
 
     void destroy();
+    void rmCards();
 private:
     void reset();
     QString orig;

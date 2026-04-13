@@ -195,6 +195,16 @@ void Note::updateCards() {
     for (auto& item : cards)
         CLaddCard(item.get());
 }
+QString Note::preview() {
+    QString conts = orig;
+    for (auto& f : Feats) {
+        conts = f->check(conts, error);
+    }
+    for (auto& f : Feats) {
+        conts = f->replacements(conts, SIDE_GETFC);
+    }
+    return trimNL(conts);
+}
 QString Note::contents() const {
     return orig;
 }

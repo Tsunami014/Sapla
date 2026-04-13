@@ -183,11 +183,7 @@ void BrowseScene::updatePrev() {
     siw->chngNote(n);
     if (prevIdx.idx == 0) {
         prevIdxLabl->setText("No cards to preview!");
-        QString txt = n->contents();
-        for (auto* f : Feats) {
-            txt = f->replacements(txt, SIDE_GETFC);
-        }
-        preview->setMarkdown(txt);
+        preview->setMarkdown(n->preview());
         return;
     }
     preview->setDisabled(false);

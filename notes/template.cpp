@@ -68,12 +68,18 @@ QString Template::replace(QStringList args) {
         if (conts == "#") {
             repl = args.join('|');
             def = "";
-        } else if (unsigned int num = conts.toUInt(&ok); ok) {
-            if (num == 0) continue;
-            if (num <= argsln) {
-                repl = args[num-1];
-            }
+        } else if (int num = conts.toInt(&ok); ok) {
             def = "";
+            if (num == 0) {
+                repl = args.join('|');
+            } else {
+                if (num < 0) {
+                    num = args.length()+num + 1;
+                }
+                if (num <= argsln) {
+                    repl = args[num-1];
+                }
+            }
         } else {
             if (ptns.find(conts) != ptns.end()) {
                 auto it = ptns.find(conts);

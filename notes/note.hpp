@@ -34,15 +34,17 @@ public:
     int getNumTemplates();
 
     QStringList tags;
-
     QString error;
 
     void setContents(const QString& newContents);
     void update();
     void updateGlobals();
     void updateCards();
+
     QString contents() const;
     QString title();
+    QString preview();
+
     bool isGlobal();
 
     ScheduleMap getSchdMap();

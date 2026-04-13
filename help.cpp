@@ -218,6 +218,7 @@ const QString ARGUMENT_HELP =
     "</ul>"
 "<h2><u>Argument usage</u></h2>"
     "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier) or "+code("%#")+" (for every argument separated by "+code("|")+").</p>"
+    "<p>%index arguments can be negative, e.g. "+code("%-1")+" which would give the last argument. Also, "+code("%0")+" is equivalent to "+code("%#")+" for convenience</p>"
     "<p>Arguments can be used with prefixes and/or suffixes, for example "+code("%.name")+", "+code("%name[1")+" or "+code("%.name[0")+".</p>"
     "<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code(".^")+" would first lower <i>then</i> title case, converting e.g. "+hl("hElLo wOrLd!")+" to "+hl("Hello World!")+".</p>"
     "<h3>Argument prefixes</h3>"

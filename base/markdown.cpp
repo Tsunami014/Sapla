@@ -270,6 +270,8 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
 
             blkCurs.beginEditBlock();
             if (plain) {
+                blkCurs.setCharFormat(plainfmt);
+                blkCurs.setBlockFormat(QTextBlockFormat());
                 blkCurs.insertText(line, plainfmt);
             } else {
                 blkCurs.insertHtml(parseMarkdownHtml(line));

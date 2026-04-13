@@ -61,6 +61,7 @@ void MarkdownEdit::setButton(bool enabled) {
 
 void MarkdownEdit::setMarkdown(const QString& text) {
     QSignalBlocker blocker(this);
+    SaveCursor savCurs(this);
     setPlainText(text);
     updateTxt(true, false);
     update();

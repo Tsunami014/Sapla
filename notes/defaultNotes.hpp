@@ -26,7 +26,7 @@ What is `1 + 1`?
 [[Notice how this is hidden and both the group1s will always be next to each other? (The groups can be called anything)]]
 1 + 1 = 5 - {3::group1??it's a number} (this is {easy::group1})
 2 + 2 = {-1??it's a number} + 5
-You're doing [[great||excellent||wonderful]]!
+You're doing [[great//excellent//wonderful]]!
 
 
 |=debug

@@ -82,7 +82,7 @@ struct hiddenResult {
     QString contents;
 };
 
-const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?)\]\])");
+const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?)(?<!\\)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
@@ -94,8 +94,8 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
 
         QString conts = m.captured(1);
         QString repl;
-        if (conts.contains("::") || conts.contains("||")) {
-            QStringList opts = conts.split("||");
+        if (conts.contains("::") || conts.contains("//")) {
+            QStringList opts = conts.split("//");
             uint randomIndex = QRandomGenerator::global()->bounded(opts.size());
             QString item = opts[randomIndex];
 
@@ -122,7 +122,7 @@ QString HiddenFeat::markup(QString& line) const {
         auto m = it.next();
         QString conts = m.captured(1);
         conts
-            .replace("||", "<b style='color:" + col + "'>||</b>")
+            .replace("//", "<b style='color:" + col + "'>//</b>")
             .replace("::", "<b style='color:" + col + "'>::</b>")
         ;
         QString repl =
@@ -149,10 +149,10 @@ QMap<QString, QString> HiddenFeat::help() const {
             "E.g. `[[hi::bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
             "Leaving sides blank is ok (e.g. `[[front::]]`)\n"
             "Note templates will not work inside this."
-        }, {"Randomly hidden\n[[||]]",
+        }, {"Randomly hidden\n[[//]]",
             "Randomly selects one of the listed features to use\n"
-            "E.g. `[[A||B]]` would show either A or B with a 50% chance\n"
-            "This can be combined with hidden on sides, e.g. `[[choice1||choice2front::choice2back||choice3]]`)\n"
+            "E.g. `[[A//B]]` would show either A or B with a 50% chance\n"
+            "This can be combined with hidden on sides, e.g. `[[choice1//choice2front::choice2back//choice3]]`)\n"
             "Note templates will not work inside this."
         }
     };

@@ -169,6 +169,10 @@ QMap<QString, QString> TemplateFeat::help() const {
         }, {"Template usage\n|| ||",
             "Uses a template for the note\n"
             "See this screen help for more info"
+        }, {"Template usage\n|! ||",
+            "Uses a template for the note\n"
+            "The name for the template must come directly after the ! and be one character long (e.g. |!= ||)\n"
+            "See this screen help for more info"
         }
     };
 }

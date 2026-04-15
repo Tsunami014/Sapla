@@ -15,6 +15,7 @@ struct _scheduleInf {
         QString timings,
         Duration skipAmnt,
         Duration redoAmnt,
+        Duration failAmnt,
 
         Duration notnewAmnt,
         Duration learntAmnt,
@@ -40,6 +41,7 @@ struct _scheduleInf {
     void setTimings(QString newtimings);
     Duration skipAmnt;
     Duration redoAmnt;
+    Duration failAmnt;
     void setSkip(QString newSkip);
 };
 extern _scheduleInf ScheduleInfo;

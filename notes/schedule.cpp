@@ -103,11 +103,12 @@ _scheduleInf::_scheduleInf(
     QString ts,
     Duration skpAmnt,
     Duration rdoAmnt,
+    Duration flAmnt,
 
     Duration notnewAmnt,
     Duration learntAmnt,
     Duration leaveAmnt)
-    :ratingScos(rScos), skipAmnt(skpAmnt), redoAmnt(rdoAmnt) {
+    :ratingScos(rScos), skipAmnt(skpAmnt), redoAmnt(rdoAmnt), failAmnt(flAmnt) {
         setTimings(ts);
         const size_t maxSze = timings.size()-1;
 
@@ -159,7 +160,7 @@ void _scheduleInf::setSkip(QString newSkip) {
 }
 
 _scheduleInf ScheduleInfo(
-    {-4, -1.5, 0.5, 1.5, 3},
+    {-2, -1, 0.5, 1.5, 3},
     "30sec\n"
     "2min\n"
     "5mins\n"
@@ -185,6 +186,7 @@ _scheduleInf ScheduleInfo(
     "1yr\n"
     , parseDuration("30", "mins")  // Skip amount
     , parseDuration("1", "min")  // Redo amount
+    , parseDuration("1", "min")  // Fail amount
 
     , parseDuration("2", "hours")  // NotNew amount
     , parseDuration("4", "days")  // Learnt amount
@@ -214,12 +216,21 @@ void Schedule::update(int rating) {
         Log::Error(MODULE) << "Found bad rating value: " << rating << "!";
         return;
     }
-    score = std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-1));
-    nxt = std::chrono::system_clock::now() + ScheduleInfo.timings[std::round(score)];
+    auto diff = ScheduleInfo.ratingScos[rating];
+    score = std::clamp(score + diff, 0.0f, float(ScheduleInfo.timings.size()-1));
+    if (diff <= 0) {
+        nxt = std::chrono::system_clock::now() + ScheduleInfo.failAmnt;
+    } else {
+        nxt = std::chrono::system_clock::now() + ScheduleInfo.timings[std::round(score)];
+    }
 }
 Duration Schedule::getUpdatedTime(int rating) {
+    auto diff = ScheduleInfo.ratingScos[rating];
+    if (diff <= 0) {
+        return ScheduleInfo.failAmnt;
+    }
     return ScheduleInfo.timings[std::round(
-        std::clamp(score + ScheduleInfo.ratingScos[rating], 0.0f, float(ScheduleInfo.timings.size()-2))
+        std::clamp(score + diff, 0.0f, float(ScheduleInfo.timings.size()-2))
     )];
 }
 

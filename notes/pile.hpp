@@ -147,6 +147,12 @@ public:
     void push(FlashCard* card) override {
         dirty = true;
         cards.push_front(card);
+        if (cards.size() < 2) return;
+        if (QRandomGenerator::global()->bounded(2)) {
+            auto last = cards.end() - 1;
+            auto secondLast = cards.end() - 2;
+            std::iter_swap(last, secondLast);
+        }
     }
 
     bool erase(FlashCard* card) override {

@@ -111,6 +111,7 @@ _scheduleInf::_scheduleInf(
         const size_t maxSze = timings.size()-1;
 
         uint8_t untilbreak = 3;
+        notnewSco = maxSze;
         learntSco = maxSze;
         leaveSco = maxSze;
         for (int i = 0; i <= maxSze; i++) {

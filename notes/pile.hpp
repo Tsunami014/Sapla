@@ -54,12 +54,12 @@ public:
     }
 
     void clear() override { cards.clear(); }
-    FlashCard* top(bool dosort = true) override {
+    virtual FlashCard* top(bool dosort = true) override {
         sort(dosort);
         if (cards.empty()) return nullptr;
         return cards.back();
     }
-    FlashCard* pop_top(bool dosort = true) override {
+    virtual FlashCard* pop_top(bool dosort = true) override {
         sort(dosort);
         if (cards.empty()) return nullptr;
         if (!dosort) { dirty = true; }
@@ -67,7 +67,7 @@ public:
         cards.pop_back();
         return card;
     }
-    void push(FlashCard* card) override {
+    virtual void push(FlashCard* card) override {
         dirty = true;
         cards.push_back(card);
     }
@@ -97,7 +97,7 @@ protected:
 
 class RandPile : public Pile {
 public:
-    virtual void sort(bool dosort = true) {
+    void sort(bool dosort = true) override {
         cards.erase(
             std::remove(cards.begin(), cards.end(), nullptr),
             cards.end()
@@ -106,6 +106,19 @@ public:
             std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global());
             dirty = false;
         }
+    }
+};
+class BacklogPile : public Pile {
+public:
+    FlashCard* top(bool dosort = true) override {
+        sort(dosort);
+        if (cards.empty()) return nullptr;
+        for (auto it = cards.rbegin(); it != cards.rend(); ++it) {
+            if (QRandomGenerator::global()->bounded(2)) { // 50% chance
+                return *it;
+            }
+        }
+        return cards.front();
     }
 };
 

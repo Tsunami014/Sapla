@@ -14,7 +14,7 @@ const uint otherCards = 8;
 const uint newCards = 5;
 
 RandPile newpile{};
-Pile otherpile{}; // Cards that aren't new
+BacklogPile otherpile{}; // Cards that aren't new
 CurPile curpile{};
 double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for display
 
@@ -110,7 +110,8 @@ void refreshCurPile() {
     bool empty = false;
     while (1) {
         uint mx = state == 0 ? newCards : otherCards;
-        auto* pile = state == 0 ? &newpile : &otherpile;
+        Pile* pile = state == 0 ?
+            static_cast<Pile*>(&newpile) : static_cast<Pile*>(&otherpile);
         if (pile->empty()) {
             if (empty) {
                 break;

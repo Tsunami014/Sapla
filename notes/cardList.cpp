@@ -8,10 +8,15 @@ const QString MODULE = "CardList";
 
 std::vector<FlashCard*> allCards;
 
-const unsigned int maxCurPileWeight = 6; // new cards - if a card is known well, the curpile can hold more cards (up to double this)
+const uint maxCurPileWeight = 6; // new cards - if a card is known well, the curpile can hold more cards (up to double this)
+// 8 revising then 5 new etc.
+const uint otherCards = 8;
+const uint newCards = 5;
 
-Pile otherpile{}; // Cards that aren't in the curpile
+RandPile newpile{};
+Pile otherpile{}; // Cards that aren't new
 CurPile curpile{};
+double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for display
 
 std::vector<_progressVal> getProgresses() {
     unsigned int cardsln = allCards.size();
@@ -46,6 +51,7 @@ const std::vector<FlashCard*>& CardList(bool sorted) {
 
 void resetCurPile() {
     curpile.clear();
+    activeWeight = 0;
 }
 
 size_t CLlen() {
@@ -53,7 +59,11 @@ size_t CLlen() {
 }
 
 void addCard(FlashCard* newCard) {
-    otherpile.push(newCard);
+    if (newCard->schd.isNew()) {
+        newpile.push(newCard);
+    } else {
+        otherpile.push(newCard);
+    }
 }
 void CLaddCard(FlashCard* newCard) {
     allCards.push_back(newCard);
@@ -65,8 +75,10 @@ void CLclear() {
         n->rmCards();
     }
     allCards.clear();
+    newpile.clear();
     otherpile.clear();
     curpile.clear();
+    activeWeight = 0;
 }
 bool CLremoveCard(FlashCard* card) {
     {
@@ -78,27 +90,48 @@ bool CLremoveCard(FlashCard* card) {
         }
     }
     return
+        newpile.erase(card) ||
         otherpile.erase(card) ||
         curpile.erase(card)
     ;
 }
 
 void CLrefreshCard(FlashCard* card) {
+    newpile.erase(card) ||
     otherpile.erase(card) ||
     curpile.erase(card)
     ;
     addCard(card);
 }
 
-double activeWeight = 0;
 void refreshCurPile() {
+    static uint i = 0;
+    static uint state = 1;
+    bool empty = false;
     while (1) {
-        if (otherpile.empty()) break;
-        double newWeight = cardweight(otherpile.top());
+        uint mx = state == 0 ? newCards : otherCards;
+        auto* pile = state == 0 ? &newpile : &otherpile;
+        if (pile->empty()) {
+            if (empty) {
+                break;
+            } else {
+                empty = true;
+                i = 0;
+                state = 1 - state;
+                continue;
+            }
+        }
+        if (!empty && i >= mx) { // If the other pile is empty don't switch to it and just keep going
+            i = 0;
+            state = 1 - state;
+            continue;
+        }
+        double newWeight = cardweight(pile->top());
         if (curpile.weight() + newWeight >= maxCurPileWeight - activeWeight) {
             break;
         }
-        curpile.push(otherpile.pop_top());
+        curpile.push(pile->pop_top());
+        i++;
     }
 }
 
@@ -118,7 +151,8 @@ GetFlashCard::GetFlashCard() {
             ptr = allCards[QRandomGenerator::global()->bounded(int(allCards.size()))];
             Log::Debug(MODULE) << "Not enough cards avaliable, using random!";
         }
-    } else {
+    }
+    if (ptr && ptr->isAlive()) {
         activeWeight += cardweight(ptr);
     }
     modify = ptr->isAlive();

@@ -28,7 +28,7 @@ public:
 class Pile : public PileBase {
 public:
     Pile() : cards() {}
-    void sort(bool dosort = true) {
+    virtual void sort(bool dosort = true) {
         cards.erase(
             std::remove(cards.begin(), cards.end(), nullptr),
             cards.end()
@@ -93,6 +93,20 @@ public:
 protected:
     bool dirty = false;
     std::vector<FlashCard*> cards;
+};
+
+class RandPile : public Pile {
+public:
+    virtual void sort(bool dosort = true) {
+        cards.erase(
+            std::remove(cards.begin(), cards.end(), nullptr),
+            cards.end()
+        );
+        if (dosort && dirty && !cards.empty()) {
+            std::shuffle(cards.begin(), cards.end(), *QRandomGenerator::global());
+            dirty = false;
+        }
+    }
 };
 
 class CurPile : public PileBase {

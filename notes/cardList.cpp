@@ -9,9 +9,10 @@ const QString MODULE = "CardList";
 std::vector<FlashCard*> allCards;
 
 const uint maxCurPileWeight = 6; // new cards - if a card is known well, the curpile can hold more cards (up to double this)
-// 8 revising then 5 new etc.
-const uint otherCards = 8;
-const uint newCards = 5;
+
+// Max/min number of cards a pile can provide the curpile before rolling for a new pile
+const uint minPileStreak = 2;
+const uint maxPileStreak = 8;
 
 RandPile newpile{};
 BacklogPile otherpile{}; // Cards that aren't new
@@ -106,25 +107,42 @@ void CLrefreshCard(FlashCard* card) {
 
 void refreshCurPile() {
     static uint i = 0;
-    static uint state = 1;
+    static uint mx = 0;
+    static int state = -1; // Start on any pile that isn't new
     bool empty = false;
     while (1) {
-        uint mx = state == 0 ? newCards : otherCards;
-        Pile* pile = state == 0 ?
-            static_cast<Pile*>(&newpile) : static_cast<Pile*>(&otherpile);
+        if (state < 0) {
+            i = 0;
+            int oldstate = -state-1;
+            /*
+            state = QRandomGenerator().global()->bounded(2-1);
+            if (state >= oldstate) {
+                state++;
+            }*/
+            // Because there's only 2 options
+            state = 1 - oldstate;
+            mx = QRandomGenerator().global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;
+        }
+        if (state >= 2) {
+            state = -1;
+            continue;
+        }
+        Pile* pile;
+        switch (state) {
+            case 0: pile = static_cast<Pile*>(&newpile); break;
+            case 1: pile = static_cast<Pile*>(&otherpile); break;
+        };
         if (pile->empty()) {
             if (empty) {
                 break;
             } else {
                 empty = true;
-                i = 0;
-                state = 1 - state;
+                state = -state-1;
                 continue;
             }
         }
         if (!empty && i >= mx) { // If the other pile is empty don't switch to it and just keep going
-            i = 0;
-            state = 1 - state;
+            state = -state-1;
             continue;
         }
         double newWeight = cardweight(pile->top());

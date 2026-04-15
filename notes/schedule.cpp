@@ -11,6 +11,7 @@ static const std::unordered_map<QString, DurationFn> & getUnitMap() {
         auto add = [&](const QStringList &keys, DurationFn fn) {
             for (const auto &k : keys) m.emplace(k, fn);
         };
+        add({ "y", "yr", "ys", "yrs", "year", "years" }, makeTimeFn(years));
         add({ "mo", "mos", "mth", "mths", "month", "months" }, makeTimeFn(months));
         add({ "w", "wk", "wks", "week", "weeks" }, makeTimeFn(weeks));
         add({ "d", "dy", "dys", "day", "days" }, makeTimeFn(days));
@@ -161,28 +162,32 @@ _scheduleInf ScheduleInfo(
     {-4, -1.5, 0.5, 1.5, 3},
     "30sec\n"
     "2min\n"
-    "6mins\n"
-    "15mins\n"
+    "5mins\n"
+    "10mins\n"
     "30mins\n"
     "1hr\n"
     "1hr30min\n"
     "3hrs\n"
-    "6hrs\n"
-    "12hrs\n"
+    "5hrs\n"
+    "10hrs\n"
+    "16hrs\n"
     "1day\n"
     "2days\n"
-    "3days\n"
-    "6days\n"
-    "1wk5days\n"
-    "3wks\n"
-    "1mo\n"
-    "1mo2wks\n"
-    "2mo\n"
+    "4days\n"
+    "1wk\n"
+    "1wk4days\n"
+    "2wks3days\n"
+    "4wks\n"
+    "2mos\n"
+    "4mos\n"
+    "6mos\n"
+    "10mos\n"
+    "1yr\n"
     , parseDuration("30", "mins")  // Skip amount
     , parseDuration("1", "min")  // Redo amount
 
-    , parseDuration("1", "hour")  // NotNew amount
-    , parseDuration("1", "day")  // Learnt amount
+    , parseDuration("2", "hours")  // NotNew amount
+    , parseDuration("4", "days")  // Learnt amount
 
     , parseDuration("6", "mins")  // Leave amount
 );

@@ -6,6 +6,7 @@
 using days = std::chrono::duration<long, std::ratio<86400>>;
 using weeks = std::chrono::duration<long, std::ratio<604800>>;
 using months = std::chrono::duration<long, std::ratio<2629746>>;
+using years = std::chrono::duration<long, std::ratio<31556952>>;
 
 using Duration = std::chrono::duration<long long>;
 struct _scheduleInf {

@@ -11,18 +11,13 @@ public:
         dialog = new QDialog;
         dialog->resize(500, 700);
         dialog->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
-        dialog->setWindowModality(Qt::ApplicationModal); 
         MG->styliseDialog(dialog);
     }
     virtual ~Dialog() {}
     void run() {
         dialog->setWindowTitle(title());
         addItems();
-
-        MG->curScene->dialogOpen();
-        QObject::connect(dialog, &QDialog::finished, [this](int){
-            MG->curScene->dialogClose();
-        });
+        dialog->setModal(false);
         dialog->show();
     }
 protected:

@@ -36,7 +36,7 @@ bool Template::failed() {
 }
 
 const QString prefs = ".^*\"";
-const QString suffs = "\\[|{:=";
+const QString suffs = "\\[|{;=";
 const QRegularExpression replRe(
     "%(?<pref>["+prefs+"]+)?"
   R"((?<conts>(?:\\[^\n\r]|[^% \n\r)"+prefs+suffs+"])+)"

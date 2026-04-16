@@ -15,7 +15,11 @@ const uint minPileStreak = 2;
 const uint maxPileStreak = 8;
 
 RandPile newpile{};
-BacklogPile otherpile{}; // Cards that aren't new
+BacklogPile earlypile{};
+BacklogPile otherpile{};
+std::vector<Pile*> pilepile{
+    &newpile, &earlypile, &otherpile
+};
 CurPile curpile{};
 double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for display
 
@@ -62,6 +66,8 @@ size_t CLlen() {
 void addCard(FlashCard* newCard) {
     if (newCard->schd.isNew()) {
         newpile.push(newCard);
+    } else if (newCard->schd.score >= ScheduleInfo.notnewSco) {
+        earlypile.push(newCard);
     } else {
         otherpile.push(newCard);
     }
@@ -76,8 +82,9 @@ void CLclear() {
         n->rmCards();
     }
     allCards.clear();
-    newpile.clear();
-    otherpile.clear();
+    for (auto* p : pilepile) {
+        p->clear();
+    }
     curpile.clear();
     activeWeight = 0;
 }
@@ -90,59 +97,77 @@ bool CLremoveCard(FlashCard* card) {
             return false;
         }
     }
-    return
-        newpile.erase(card) ||
-        otherpile.erase(card) ||
-        curpile.erase(card)
-    ;
+    if (curpile.erase(card)) return true;
+    for (auto* p : pilepile) {
+        if (p->erase(card)) return true;
+    }
+    return false;
 }
 
 void CLrefreshCard(FlashCard* card) {
-    newpile.erase(card) ||
-    otherpile.erase(card) ||
-    curpile.erase(card)
-    ;
+    if (!curpile.erase(card)) {
+        for (auto* p : pilepile) {
+            if (p->erase(card)) break;
+        }
+    }
     addCard(card);
 }
 
 void refreshCurPile() {
     static uint i = 0;
     static uint mx = 0;
-    static int state = -1; // Start on any pile that isn't new
-    bool empty = false;
-    while (1) {
-        if (state < 0) {
-            i = 0;
-            int oldstate = -state-1;
-            /*
-            state = QRandomGenerator().global()->bounded(2-1);
-            if (state >= oldstate) {
-                state++;
-            }*/
-            // Because there's only 2 options
-            state = 1 - oldstate;
-            mx = QRandomGenerator().global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;
-        }
-        if (state >= 2) {
-            state = -1;
-            continue;
-        }
-        Pile* pile;
-        switch (state) {
-            case 0: pile = static_cast<Pile*>(&newpile); break;
-            case 1: pile = static_cast<Pile*>(&otherpile); break;
-        };
-        if (pile->empty()) {
-            if (empty) {
-                break;
-            } else {
-                empty = true;
-                state = -state-1;
-                continue;
+    static Pile* last = nullptr;
+    int state = 0; // < 0; pick new that isn't (-state), =0; pick new, >0; use that-1
+
+    std::vector<Pile*> nonemptypiles;
+    uint idx = 0;
+    for (auto* p : pilepile) {
+        if (!p->empty()) {
+            nonemptypiles.push_back(p);
+            idx++;
+            if (p == last) {
+                state = idx;
             }
         }
-        if (!empty && i >= mx) { // If the other pile is empty don't switch to it and just keep going
-            state = -state-1;
+    }
+    const int nepln = nonemptypiles.size();
+
+    while (1) {
+        if (state <= 0) {
+            i = 0;
+            mx = QRandomGenerator::global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;
+
+            if (nepln == 0) return;
+            if (nepln == 1) {
+                state = 1;
+            } else if (state == 0) {
+                state = QRandomGenerator::global()->bounded(nepln)+1;
+            } else {
+                int oldstate = -state;
+                if (nepln == 2) {
+                    state = 2 - (oldstate-1);
+                } else {
+                    state = QRandomGenerator::global()->bounded(nepln-1)+1;
+                    if (state >= oldstate) {
+                        state++;
+                    }
+                }
+            }
+            last = nonemptypiles[state-1];
+        }
+        if (state-1 >= nepln) {
+            state = 0;
+            continue;
+        }
+        Pile* pile = nonemptypiles[state-1];
+        if (pile->empty()) {
+            nonemptypiles[state-1] = nonemptypiles.back();
+            nonemptypiles.pop_back();
+            state = 0;
+            continue;
+        }
+        if (i >= mx) {
+            state = -state;
             continue;
         }
         double newWeight = cardweight(pile->top());
@@ -188,7 +213,7 @@ void GetFlashCard::updateSchedule(int rating) {
 void GetFlashCard::finish() {
     if (modify && ptr && ptr->isAlive()) {
         if (ptr->schd.score >= ScheduleInfo.leaveSco) {
-            otherpile.push(ptr);
+            addCard(ptr);
         } else {
             curpile.push(ptr);
         }

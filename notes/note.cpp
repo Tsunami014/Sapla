@@ -145,15 +145,15 @@ ScheduleMap Note::getSchdMap() {
     return scheduleMap;
 }
 void Note::updateCards() {
+    QString totconts = orig;
     cards.clear();
-    QString conts = orig;
     for (auto& f : Feats) {
-        conts = f->check(conts, error);
+        totconts = f->check(totconts, error);
     }
 
     {
         tags = {};
-        QString hidden = TagFeat::instance->highersReplace(conts);
+        QString hidden = TagFeat::instance->highersReplace(totconts);
         auto it = noteInfRe.globalMatch(hidden);
         QMap<QString, bool> has;
         while (it.hasNext()) {
@@ -167,33 +167,35 @@ void Note::updateCards() {
         }
     }
 
-    std::vector<QString> dominants;
-    for (auto& f : CardFeats) {
-        if (f->dominance(conts)) {
-            dominants.push_back(f->getName());
+    for (QString conts : totconts.split(mnsRe)) {
+        std::vector<QString> dominants;
+        for (auto& f : CardFeats) {
+            if (f->dominance(conts)) {
+                dominants.push_back(f->getName());
+            }
         }
-    }
-    if (dominants.size() > 1) {
-        error += "Found multiple dominant features on note where there should only be one: `" + dominants.back();
-        dominants.pop_back();
-        for (auto& d : dominants) {
-            error += "`, `" + d;
+        if (dominants.size() > 1) {
+            error += "Found multiple dominant features on note where there should only be one: `" + dominants.back();
+            dominants.pop_back();
+            for (auto& d : dominants) {
+                error += "`, `" + d;
+            }
+            error += "`\n";
+            return;
         }
-        error += "`\n";
-        return;
-    }
 
-    for (auto& f : Feats) {
-        conts = f->replacements(conts, SIDE_GETFC);
-    }
+        for (auto& f : Feats) {
+            conts = f->replacements(conts, SIDE_GETFC);
+        }
 
-    auto scheduleMap = getSchdMap();
-    for (auto& f : CardFeats) {
-        auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
-        std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));
+        auto scheduleMap = getSchdMap();
+        for (auto& f : CardFeats) {
+            auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
+            std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));
+        }
+        for (auto& item : cards)
+            CLaddCard(item.get());
     }
-    for (auto& item : cards)
-        CLaddCard(item.get());
 }
 QString Note::preview() {
     QString conts = orig;

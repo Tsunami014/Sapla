@@ -67,6 +67,15 @@ struct ScheduleFeat : FeatReg {
     Feat_markup;
     Feat_help;
 };
+extern const QRegularExpression mnsRe;
+struct MultinoteSepFeat : FeatReg {
+    Feat_Instance(MultinoteSepFeat)
+    Feat_useCol;
+    Feat_order(9999);
+    Feat_name("~~~");
+    Feat_markup;
+    Feat_help;
+};
 QStringList splTemplArgs(QString args);
 extern const QRegularExpression templDefRe;
 extern const QRegularExpression templLoclDefRe;

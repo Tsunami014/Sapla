@@ -1,7 +1,7 @@
 // Some features that come by default in the app (that are small enough to go in only one file)
 #include "features.hpp"
 
-const QRegularExpression ssfRe(R"(^\s*---\s*$)", MO);
+const QRegularExpression ssfRe(R"(^ *--- *$)", MO);
 bool SingleSideFeat::dominance(const QString& txt) const {
     return ssfRe.match(txt).hasMatch();
 }
@@ -37,7 +37,7 @@ QMap<QString, QString> SingleSideFeat::help() const {
     }};
 }
 
-const QRegularExpression dsfRe(R"(^\s*===\s*$)", MO);
+const QRegularExpression dsfRe(R"(^ *=== *$)", MO);
 bool DoubleSideFeat::dominance(const QString& txt) const {
     return dsfRe.match(txt).hasMatch();
 }
@@ -76,7 +76,7 @@ QMap<QString, QString> DoubleSideFeat::help() const {
     }};
 }
 
-const QRegularExpression msfRe(R"(^\s*\/\/\/\s*$)", MO);
+const QRegularExpression msfRe(R"(^ *\/\/\/ *$)", MO);
 bool MirrorSideFeat::dominance(const QString& txt) const {
     return msfRe.match(txt).hasMatch();
 }
@@ -115,7 +115,7 @@ QMap<QString, QString> MirrorSideFeat::help() const {
 }
 
 const QRegularExpression tsfRe(
-    R"(^\s*\|\|\|[ \t]*((?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)?(?=\s*$))", MO);
+    R"(^ *\|\|\|[ \t]*((?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)? *$)", MO);
 QString TemplateSideFeat::check(QString& txt, QString& err) const {
     auto spl = txt.split(tsfRe);
     if (spl.length() == 1) return txt;

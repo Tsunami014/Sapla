@@ -25,6 +25,20 @@ QMap<QString, QString> ScheduleFeat::help() const {
     }};
 }
 
+const QRegularExpression mnsRe("^ *~~~ *$", MO);
+QString MultinoteSepFeat::markup(QString& line) const {
+    if (auto m = mnsRe.match(line); m.hasMatch()) {
+        return QString("<span style='color:%1'>～～～</span>").arg(col);
+    }
+    return line;
+}
+QMap<QString, QString> MultinoteSepFeat::help() const {
+    return {{"Multinote separator\n~~~",
+        "This splits the note into multiple notes, allowing for features to be used more than once.\n"
+        "Very useful in note templates."
+    }};
+}
+
 const QRegularExpression noteInfRe(R"((?: +|^)#((?:\\ |[^ \n])+) *(?:(?= )|$))", MO);
 QString TagFeat::replacements(QString& txt, Side s) const {
     return txt.remove(noteInfRe);

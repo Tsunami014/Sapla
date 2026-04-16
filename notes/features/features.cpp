@@ -34,6 +34,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx) {
 void registerNoteFeatures() {
     CardFeats.clear();
     Feats.clear();
+    REGISTER_FEAT(MultinoteSepFeat);
     REGISTER_FEAT(TemplateSideFeat);
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);

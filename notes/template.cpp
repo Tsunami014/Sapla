@@ -131,7 +131,7 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                     }
                 } else {
                     switch (apply.unicode()) {
-                        case ':':
+                        case ';':
                             repl.replace(' ', '\3');
                             sofar.replace(' ', '\3');
                             repl.replace(sofar, " ");

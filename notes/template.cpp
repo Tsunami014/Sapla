@@ -5,6 +5,10 @@
 std::map<QString, Template> globalTemplates;
 
 void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) {
+    if (conts == "-") {
+        i++;
+        return;
+    }
     const static auto splby = QRegularExpression(R"((?<!\\)(?=/))");
     QString name;
     QString repl;

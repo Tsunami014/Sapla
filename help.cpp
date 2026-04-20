@@ -206,7 +206,7 @@ const QString BROWSE_HELP =
 const QString ARGUMENT_HELP =
 "<h1>Arguments quick reference</h1>"
     "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
-    "<p><i>Argument names must only contain letters and numbers</i></p>"
+    "<p><i>Argument names must only contain letters and numbers</i> (except you can have arguments called "+code("-")+" which will skip that argument)</p>"
 "<h2><u>Argument specifier</u></h2>"
     "<p>The argument specifier is in between the template name and contents, and is contained within "+code("[]")+"."
         +nl("It is separated from both by either a "+code(":")+" or a "+code("|")+" or a space or a newline."

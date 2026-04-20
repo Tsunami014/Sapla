@@ -33,6 +33,12 @@ BrowseScene::BrowseScene(Note* sel)
         tree = getNoteTree(this);
         QWidget::connect(tree, &QTreeWidget::itemSelectionChanged, this, &BrowseScene::selectionChange);
 
+        filter = new QLineEdit(this);
+        filter->setFont(getFont(1.2));
+        filter->setPlaceholderText("Filter...");
+        QObject::connect(filter, &QLineEdit::textChanged, this, &BrowseScene::filterChanged);
+        filterChanged();
+
         te = new MarkdownEdit(this);
         QObject::connect(te, &MarkdownEdit::textChanged, this, &BrowseScene::typed);
         QObject::connect(te, &MarkdownEdit::altEnter, this, &BrowseScene::newNote);
@@ -69,6 +75,12 @@ BrowseScene::BrowseScene(Note* sel)
         });
         updatePrev();
 
+        auto* vLay = new QVBoxLayout();
+        vLay->addWidget(filter);
+        vLay->addWidget(tree);
+        auto* vLayW = new QWidget(this);
+        vLayW->setLayout(vLay);
+
         auto* hlay = new QHBoxLayout();
         hlay->addStretch();
         hlay->addWidget(prevIdxLabl);
@@ -76,17 +88,17 @@ BrowseScene::BrowseScene(Note* sel)
         hlay->addWidget(prevBtn);
         hlay->addWidget(nxtBtn);
 
-        auto* vLay = new QVBoxLayout();
-        vLay->addWidget(te, 2);
-        vLay->addWidget(siw);
-        vLay->addLayout(hlay);
-        vLay->addWidget(preview, 1);
-        auto* vLayW = new QWidget(this);
-        vLayW->setLayout(vLay);
+        auto* vLay2 = new QVBoxLayout();
+        vLay2->addWidget(te, 2);
+        vLay2->addWidget(siw);
+        vLay2->addLayout(hlay);
+        vLay2->addWidget(preview, 1);
+        auto* vLayW2 = new QWidget(this);
+        vLayW2->setLayout(vLay2);
 
         auto* mSplit = new QSplitter(Qt::Horizontal, this);
-        mSplit->addWidget(tree);
         mSplit->addWidget(vLayW);
+        mSplit->addWidget(vLayW2);
         mSplit->setHandleWidth(6);
         mSplit->setStretchFactor(0, 1);
         mSplit->setStretchFactor(1, 1);
@@ -192,6 +204,10 @@ void BrowseScene::updatePrev() {
     else if (side == SIDE_BACK) sidestr = " (back)";
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
+}
+
+void BrowseScene::filterChanged() {
+    filterTree(tree, filter->text());
 }
 
 void BrowseScene::typed() {

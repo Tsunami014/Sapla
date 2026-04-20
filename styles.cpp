@@ -85,8 +85,8 @@ void MainGame::initStyles() {
         "}"
         "QLabel { color: %3; }"
     )
-         .arg(rgba(getQCol("alight", 0, -18), 0.86)) // %1 - QTextEdit bg
-         .arg(rgba(getQCol("alight", 10, 0), 0.84)) // %2 - Disabled QTextEdit bg
+         .arg(getCol("alight", 0, -18)) // %1 - QTextEdit bg
+         .arg(rgba(getQCol("alight", 10, 0), 0.86)) // %2 - Disabled QTextEdit bg
          .arg(getCol("adark", -100, 70))  // %3 - QLabel text colour
     ;
     QString comboBox = QString(

@@ -1,5 +1,6 @@
 #include "noteTree.hpp"
 #include "getNotes.hpp"
+#include "filter.hpp"
 #include "../wids/listWid.hpp"
 #include <QHeaderView>
 
@@ -66,3 +67,10 @@ QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* note) {
     return item;
 }
 
+void filterTree(QTreeWidget* tree, QString filter) {
+    int count = tree->topLevelItemCount();
+    for (int i = 0; i < count; ++i) {
+        QTreeWidgetItem* item = tree->topLevelItem(i);
+        item->setHidden(!matchesFilter(getNote(item), filter));
+    }
+}

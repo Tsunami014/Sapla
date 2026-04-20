@@ -15,5 +15,7 @@ void resetNoteTree(QTreeWidget* tree);
 void updateItem(QTreeWidgetItem* it, Note* note);
 void updateAllItems(QTreeWidget* tree);
 
+void filterTree(QTreeWidget* tree, QString filter);
+
 QTreeWidgetItem* addToTree(QTreeWidget* tree, Note* card);
 

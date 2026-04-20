@@ -8,6 +8,7 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QMenuBar>
+#include <QLineEdit>
 #include <QLabel>
 
 class BrowseScene : public BaseScene {
@@ -18,11 +19,13 @@ public:
 public slots:
     void typed();
     void selectionChange();
+    void filterChanged();
     void newNote();
     void delNote(bool desel = false);
 
 protected:
     Note* getSelNote();
+    QLineEdit* filter;
     QTreeWidget* tree;
     QVBoxLayout* form;
     MarkdownEdit* te;

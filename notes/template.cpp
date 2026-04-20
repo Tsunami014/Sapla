@@ -112,14 +112,7 @@ const std::vector<QChar> suffsList() {
     vec.push_back(QChar('\n'));
     return vec;
 }
-QString Template::replace(QStringList args, QString out, uint depth) {
-    if (depth == 0) {
-        if (failed()) return "==<ERROR>==";
-        for (auto& str : args) {
-            str = ScheduleFeat::instance->replacements(str, SIDE_HIDE);
-        }
-    }
-
+QString Template::replace_inner(QStringList args, QString out, uint depth) {
     auto it = replRe.globalMatch(out);
     int offs = 0;
     while (it.hasNext()) {
@@ -130,7 +123,7 @@ QString Template::replace(QStringList args, QString out, uint depth) {
         if (conts.isNull()) conts = m.captured("conts2");
         if (auto it = ptns.find(conts); it != ptns.end()) {
             if (depth+1 > MAX_RECURSION) continue;
-            repl = replace(args, it->second, depth+1);
+            repl = replace_inner(args, it->second, depth+1);
         } else {
             if (conts == "#") {
                 conts = "0";
@@ -160,13 +153,46 @@ QString Template::replace(QStringList args, QString out, uint depth) {
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
+    if (depth != 0) return out;
     return out.replace("%%", "%").replace('\3', ' ').replace('\5', "");
 }
+const QString varRe = R"()";
+const QRegularExpression loopRe(
+    R"(\s*@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@@\s*(?<conts>(?:\n|.)+?)@@\s*)");
+QString Template::replace_main(QStringList args) {
+    if (failed()) return "==<ERROR>==";
+    for (auto& str : args) {
+        str = ScheduleFeat::instance->replacements(str, SIDE_HIDE);
+    }
+    QString out = conts;
+    auto it = loopRe.globalMatch(out);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString repl;
+
+        QString nam = m.captured("nam");
+        QString inner = m.captured("conts");
+        auto oldptns = ptns;
+        QStringList items = replace_inner(args, m.captured("its"), 1).split(' ');
+        for (auto& it : items) {
+            if (it.isEmpty()) continue;
+            ptns[nam] = it;
+            repl += replace_inner(args, inner, 1);
+        }
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        out.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return replace_inner(args, out, 0);
+}
 QString Template::replace(QStringList args) {
-    return replace(args, conts);
+    return replace_main(args);
 }
 QString Template::replace() {
-    return replace({}, conts);
+    return replace_main({});
 }
 
 bool Template::parseArg(QString& repl, QString pref, QString suff) {

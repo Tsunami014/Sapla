@@ -2,7 +2,7 @@
 #include <QString>
 #include <map>
 
-const uint MAX_RECURSION = 10;
+const uint MAX_RECURSION = 15;
 
 class Template {
 public:
@@ -17,7 +17,8 @@ protected:
 
     void GeneratePatterns(QString conts, uint& i);
     bool parseArg(QString& repl, QString pref, QString suff);
-    QString replace(QStringList args, QString conts, uint depth=0);
+    QString replace_main(QStringList args);
+    QString replace_inner(QStringList args, QString conts, uint depth);
 };
 
 extern std::map<QString, Template> globalTemplates;

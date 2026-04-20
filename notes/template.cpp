@@ -93,12 +93,12 @@ bool Template::failed() {
     return conts.isNull();
 }
 
-const QString prefs = ".^*\"";
+const QString prefs = "\".^*_";
 const QString suffs = "\\[|{;=>\r";
 const QRegularExpression replRe(
     "(?<!%)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9]+)"
-    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
+    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
     "(?:\x05|%|$|(?=[ \n$]))"
 
   R"(|(?<!\$)\$(?<conts2>[a-zA-Z0-9]+))");
@@ -186,11 +186,18 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                     }
                 } else {
                     sofar = deescape(sofar);
+                    if (sofar == "" && apply != ';') {
+                        good = false;
+                        break;
+                    }
                     switch (apply.unicode()) {
                         case ';':
                             repl.replace(' ', '\3');
                             sofar.replace(' ', '\3');
                             repl.replace(sofar, " ");
+                            if (sofar == "") {
+                                repl.slice(1, repl.length()-2);
+                            }
                             break;
                         case '=':
                             repl.replace(' ', sofar);
@@ -353,6 +360,9 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                         }
                     }
                     break;}
+                case '_':
+                    repl = QString::number(repl.count(' ')+1);
+                    break;
                 default:
                     good = false;
                     break;

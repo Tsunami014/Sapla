@@ -240,6 +240,7 @@ const QString ARGUMENT_HELP =
         "<li>"+code("*")+" - converts text to UPPER CASE</li>"
         "<li>"+code("^")+" - converts text to Title Case (<i>other letters will not be touched</i>)</li>"
         "<li>"+code("\"")+" - converts text to Sentence case (<i>other letters will not be touched</i>)</li>"
+        "<li>"+code("_")+" - replaces the text with its length in words (can split by nothing to get length in characters)</li>"
     "</ul>"
     "<h3>Argument suffixes</h3>"
     "<ul>"

@@ -2,14 +2,6 @@
 #include <QString>
 #include <map>
 
-class TemplPattern {
-public:
-    TemplPattern(QString conts, uint idx);
-    QString name;
-    unsigned int idx;
-    QString def;
-};
-
 class Template {
 public:
     Template(QString conts, QString ptn);
@@ -19,7 +11,7 @@ public:
     QString replace(QStringList args);
 protected:
     QString conts;
-    std::map<QString, TemplPattern> ptns;
+    std::map<QString, QString> ptns;
 };
 
 extern std::map<QString, Template> globalTemplates;

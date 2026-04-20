@@ -4,14 +4,25 @@
 
 std::map<QString, Template> globalTemplates;
 
-TemplPattern::TemplPattern(QString conts, uint i) {
-    const static auto splby = QRegularExpression(R"((?<!\\)\|)");
-
-    auto spl = conts.split(splby);
-    name = spl.front();
-    spl.pop_front();
-    def = spl.join('|');
-    idx = i;
+void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) {
+    const static auto splby = QRegularExpression(R"((?<!\\)(?=/))");
+    QString name;
+    QString repl;
+    bool usedi = false;
+    for (auto sect : (conts).split(splby)) {
+        const static auto re = QRegularExpression("([a-zA-Z0-9]+)(.*)");
+        auto m = re.match(sect);
+        if (!m.hasMatch()) continue;
+        QString name = m.captured(1);
+        QString repl = m.captured(2);
+        if (!repl.isEmpty() && repl[0] == '=') {
+            ptns.emplace(name, '%'+repl.sliced(1));
+        } else {
+            ptns.emplace(name, '%'+QString::number(i+1)+repl);
+            usedi = true;
+        }
+    }
+    if (usedi) i++;
 }
 
 Template::Template(QString c, QString p) {
@@ -19,10 +30,10 @@ Template::Template(QString c, QString p) {
     ptns = {};
     if (p.isNull()) return;
     uint idx = 0;
-    for (auto sub : p.split(" ")) {
+    const static auto splby = QRegularExpression(R"((?<!\\) )");
+    for (auto sub : p.replace('\n', " ").split(splby)) {
         if (sub != "") {
-            auto p = TemplPattern(sub, idx++);
-            ptns.emplace(p.name, std::move(p));
+            GeneratePatterns(sub, idx, ptns);
         }
     }
 }
@@ -39,15 +50,14 @@ const QString prefs = ".^*\"";
 const QString suffs = "\\[|{;=";
 const QRegularExpression replRe(
     "%(?<pref>["+prefs+"]+)?"
-  R"((?<conts>(?:\\[^\n\r]|[^% \n\r)"+prefs+suffs+"])+)"
-    "(?<suff>(?:["+suffs+R"(](?:\\[^\n\r]|[^% \n\r)"+suffs+"])+)+)?"
-  R"((?:%|$|(?=[ \n\r])))");
+  R"((?<conts>(?:\\[^\n]|[^% \n)"+prefs+suffs+"])+)"
+    "(?<suff>(?:["+suffs+R"(](?:\\[^\n]|[^% \n)"+suffs+"])+)+)?"
+  R"((?:%|$|(?=[ \n])))");
 const std::vector<QChar> suffsList() {
     std::vector<QChar> vec;
     vec.reserve(suffs.size() + 2);
 
     vec.insert(vec.end(), suffs.begin(), suffs.end());
-    vec.push_back(QChar('\r'));
     vec.push_back(QChar('\n'));
     return vec;
 }
@@ -60,16 +70,21 @@ QString Template::replace(QStringList args) {
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
 
         QString repl;
-        QString def;
         QString conts = m.captured("conts");
         bool ok; // Only for the number check
+        if (auto it = ptns.find(conts); it != ptns.end()) {
+            m = replRe.match(it->second);
+            if (!m.hasMatch()) continue;
+            conts = m.captured("conts");
+        }
         if (conts == "#") {
-            repl = args.join('|');
-            def = "";
-        } else if (int num = conts.toInt(&ok); ok) {
-            def = "";
+            conts = "0";
+        }
+        if (int num = conts.toInt(&ok); ok) {
             if (num == 0) {
                 repl = args.join('|');
             } else {
@@ -81,34 +96,15 @@ QString Template::replace(QStringList args) {
                 }
             }
         } else {
-            if (ptns.find(conts) != ptns.end()) {
-                auto it = ptns.find(conts);
-                if (it == ptns.end()) continue;
-                auto& p = it->second;
-                if (p.idx < argsln) {
-                    repl = args[p.idx];
-                }
-                def = p.def;
-            } else {
-                continue;
-            }
+            continue;
         }
-        QString suff = m.captured("suff");
-        if (suff.isEmpty()) {
-            suff = '\n'+def+'\r';
-        } else if (suff[0] == '|') {
-            suff += '\r';
-        } else {
-            suff = '\n'+def+'\r'+suff+'\r';
-        }
-        {
+        if (QString suff = m.captured("suff"); !suff.isNull()) {
             QChar apply;
             QString sofar;
             const static std::vector<QChar> suffs = suffsList();
             bool good = true;
             bool esc = false;
             for (auto& c : suff) {
-                if (c == '\n' || c == '\r') esc = false;
                 if (esc) {
                     sofar += c;
                     esc = false;
@@ -234,7 +230,6 @@ QString Template::replace(QStringList args) {
                                     }
                                 }
                                 break;}
-                            case '\n':
                             case '|':
                                 if (repl.isNull()) {
                                     repl = sofar;
@@ -251,9 +246,6 @@ QString Template::replace(QStringList args) {
                     sofar += c;
                 }
                 if (!good) break;
-                if (c == '\r') {
-                    apply = {};
-                }
             }
             if (!good) continue;
         }
@@ -298,8 +290,6 @@ QString Template::replace(QStringList args) {
             if (!good) continue;
         }
 
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }

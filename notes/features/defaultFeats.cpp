@@ -115,32 +115,29 @@ QMap<QString, QString> MirrorSideFeat::help() const {
 }
 
 const QRegularExpression tsfRe(
-    R"(^ *\|\|\|[ \t]*(?<main>(?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)? *$)", MO);
-const QRegularExpression tsfRe2(
-    R"(^ *\|\|!(?<nam>.)(?<main>[|: \n]?\s*(?<conts>.*?)\s*)?? *$)", MO);
+R"(^ *\|\|((\|[ \t]*(?<nam>(?:[^|: \n])*)|!(?<nam2>.))[ \t]*[|: ]?[ \t]*(?<conts>.*?)[ \t]*)?? *$)", MO);
 QString TemplateSideFeat::check(QString& txt, QString& err) const {
-    if (!tsfRe.match(txt).hasMatch() && !tsfRe2.match(txt).hasMatch()) return txt;
+    if (!tsfRe.match(txt).hasMatch()) return txt;
     QStringList parts;
     QStringList titles;
 
-    const static std::set<const QRegularExpression*> tsfRes = {&tsfRe, &tsfRe2};
-    for (auto* re : tsfRes) {
-        uint end = 0;
-        auto it = re->globalMatch(txt);
-        while (it.hasNext()) {
-            QRegularExpressionMatch m = it.next();
-            QString p = trimNL(txt.mid(end, m.capturedStart() - end));
-            if (!p.isEmpty()) parts << p;
-            if (QString conts = m.captured("conts"); !conts.isNull()) {
-                parts = splTemplArgs(conts) + parts;
-            }
-            titles << m.captured("nam");
-            end = m.capturedEnd();
+    uint end = 0;
+    auto it = tsfRe.globalMatch(txt);
+    while (it.hasNext()) {
+        QRegularExpressionMatch m = it.next();
+        QString p = trimNL(txt.mid(end, m.capturedStart() - end));
+        if (!p.isEmpty()) parts << p;
+        if (QString conts = m.captured("conts"); !conts.isEmpty()) {
+            parts = splTemplArgs(conts) + parts;
         }
-        {
-            QString p = trimNL(txt.mid(end));
-            if (!p.isEmpty()) parts << p;
-        }
+        QString name = m.captured("nam");
+        if (name.isNull()) name = m.captured("nam2");
+        titles << name;
+        end = m.capturedEnd();
+    }
+    {
+        QString p = trimNL(txt.mid(end));
+        if (!p.isEmpty()) parts << p;
     }
 
     QString title;
@@ -172,14 +169,16 @@ QString TemplateSideFeat::check(QString& txt, QString& err) const {
 }
 QString TemplateSideFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) return txt;
-    if (tsfRe.match(txt).hasMatch() || tsfRe2.match(txt).hasMatch())
+    if (tsfRe.match(txt).hasMatch())
         return "";
     return txt;
 }
 QString TemplateSideFeat::markup(QString& line) const {
-    if (auto m = tsfRe.match(line); m.hasMatch())
+    const static QRegularExpression re(
+        R"(^ *\|\|\|[ \t]*(.*)?? *$)");
+    if (auto m = re.match(line); m.hasMatch())
         return QString("<span style='color:%1'>│││ %2</span>")
-            .arg(col).arg(m.captured("main"));
+            .arg(col).arg(m.captured(1));
     const static QRegularExpression re2(
         R"(^ *\|\|!(&[^;]+;|.)(.*?)?? *$)");
     if (auto m = re2.match(line); m.hasMatch())

@@ -102,11 +102,17 @@ void MarkdownEdit::keyPressEvent(QKeyEvent *event) {
                 event->accept();
             }
         }
+        if (key == Qt::Key_A) {
+            updateTxt(false, true);
+            selectAll();
+            event->accept();
+            return;
+        }
         // TODO: Undo and redo
         if (key == Qt::Key_Y || (event->modifiers()& Qt::ShiftModifier && key == Qt::Key_Z)) {
             event->accept();
             return;
-        } else if (key == Qt::Key_Z) {
+        } if (key == Qt::Key_Z) {
             event->accept();
             return;
         }

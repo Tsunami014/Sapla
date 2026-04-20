@@ -34,8 +34,8 @@ Template::Template(QString c, QString p) {
     ptns = {};
     if (p.isNull()) return;
     uint idx = 0;
-    const static auto splby = QRegularExpression(R"((?<!\\) )");
-    for (auto sub : p.replace('\n', " ").split(splby)) {
+    const static auto splby = QRegularExpression(R"((?<!\\)\s)");
+    for (auto sub : p.split(splby)) {
         if (sub != "") {
             GeneratePatterns(sub, idx, ptns);
         }
@@ -51,12 +51,12 @@ bool Template::failed() {
 }
 
 const QString prefs = ".^*\"";
-const QString suffs = "\\[|{;=\n";
+const QString suffs = "\\[|{;=\r";
 const QRegularExpression replRe(
     "%(?<pref>["+prefs+"]+)?"
-  R"((?<conts>(?:\\[^\x05\n]|[^\x05% )"+prefs+suffs+"])+)"
-    "(?<suff>(?:["+suffs+R"(](?:\\[^\x05\n]|[^\x05% )"+suffs+"])+)+)?"
-    "(?<end>\x05|%|$|(?=[ \n]))");
+  R"((?<conts>(?:\\[^\x05\n]|[^\x05% \n)"+prefs+suffs+"])+)"
+    "(?<suff>(?:["+suffs+R"(](?:\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
+    "(?:\x05|%|$|(?=[ \n]))");
 const std::vector<QChar> suffsList() {
     std::vector<QChar> vec;
     vec.reserve(suffs.size() + 2);
@@ -121,7 +121,7 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
         const static std::vector<QChar> suffs = suffsList();
         bool good = true;
         bool esc = false;
-        for (auto& c : suff+'\n') {
+        for (auto& c : suff+'\r') {
             if (esc) {
                 sofar += c;
                 esc = false;

@@ -33,9 +33,7 @@ const QString quoteRepl = "<span style='"
     "font-style:" "italic;"
 "'>\\1▎\\2</span>";
 QString parseMarkdownHtml(QString txt) {
-    QString esc = txt.toHtmlEscaped();
-
-    esc
+    QString esc = txt.toHtmlEscaped()
        .replace("\t", "    ")
        .replace("\\\\", "⧵")  // To escape backslashes themselves, replace it with a character that won't be picked up
        .replace("\\n", "\n")

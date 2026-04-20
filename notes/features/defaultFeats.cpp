@@ -115,28 +115,32 @@ QMap<QString, QString> MirrorSideFeat::help() const {
 }
 
 const QRegularExpression tsfRe(
-    R"(^ *\|\|\|[ \t]*((?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)? *$)", MO);
+    R"(^ *\|\|\|[ \t]*(?<main>(?<nam>.*?)[ \t]*([|: \n]\s*(?<conts>.*?)\s*)??)? *$)", MO);
+const QRegularExpression tsfRe2(
+    R"(^ *\|\|!(?<nam>.)(?<main>[|: \n]?\s*(?<conts>.*?)\s*)?? *$)", MO);
 QString TemplateSideFeat::check(QString& txt, QString& err) const {
-    auto spl = txt.split(tsfRe);
-    if (spl.length() == 1) return txt;
+    if (!tsfRe.match(txt).hasMatch() && !tsfRe2.match(txt).hasMatch()) return txt;
     QStringList parts;
     QStringList titles;
 
-    uint end = 0;
-    auto it = tsfRe.globalMatch(txt);
-    while (it.hasNext()) {
-        QRegularExpressionMatch m = it.next();
-        QString p = trimNL(txt.mid(end, m.capturedStart() - end));
-        if (!p.isEmpty()) parts << p;
-        if (QString conts = m.captured("conts"); !conts.isNull()) {
-            parts = splTemplArgs(conts) + parts;
+    const static std::set<const QRegularExpression*> tsfRes = {&tsfRe, &tsfRe2};
+    for (auto* re : tsfRes) {
+        uint end = 0;
+        auto it = re->globalMatch(txt);
+        while (it.hasNext()) {
+            QRegularExpressionMatch m = it.next();
+            QString p = trimNL(txt.mid(end, m.capturedStart() - end));
+            if (!p.isEmpty()) parts << p;
+            if (QString conts = m.captured("conts"); !conts.isNull()) {
+                parts = splTemplArgs(conts) + parts;
+            }
+            titles << m.captured("nam");
+            end = m.capturedEnd();
         }
-        titles << m.captured("nam");
-        end = m.capturedEnd();
-    }
-    {
-        QString p = trimNL(txt.mid(end));
-        if (!p.isEmpty()) parts << p;
+        {
+            QString p = trimNL(txt.mid(end));
+            if (!p.isEmpty()) parts << p;
+        }
     }
 
     QString title;
@@ -168,22 +172,31 @@ QString TemplateSideFeat::check(QString& txt, QString& err) const {
 }
 QString TemplateSideFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME) return txt;
-    if (tsfRe.match(txt).hasMatch())
+    if (tsfRe.match(txt).hasMatch() || tsfRe2.match(txt).hasMatch())
         return "";
     return txt;
 }
 QString TemplateSideFeat::markup(QString& line) const {
-    if (auto m = tsfRe.match(line); m.hasMatch()) {
+    if (auto m = tsfRe.match(line); m.hasMatch())
         return QString("<span style='color:%1'>│││ %2</span>")
-            .arg(col).arg(m.captured(1));
-    }
+            .arg(col).arg(m.captured("main"));
+    const static QRegularExpression re2(
+        R"(^ *\|\|!(&[^;]+;|.)(.*?)?? *$)");
+    if (auto m = re2.match(line); m.hasMatch())
+        return QString("<span style='color:%1'>││! %2 %3</span>")
+            .arg(col).arg(m.captured(1)).arg(m.captured(2));
     return line;
 }
 QMap<QString, QString> TemplateSideFeat::help() const {
-    return {{"Template sided note\n|||",
-        "Separates the note into parts, then each part is an argument into a note template.\n"
-        "Only one ||| must have a name after it, the rest must all have nothing afterwards.\n"
-        "After the name can be a separator and arguments exactly like a regular template application"
-            "(see this screen help for more info)."
-    }};
+    return {
+        {"Template sided note\n|||",
+            "Separates the note into parts, then each part is an argument into a note template.\n"
+            "Only one ||| must have a name after it, the rest must all have nothing afterwards.\n"
+            "After the name can be a separator and arguments exactly like a regular template application"
+                "(see this screen help for more info)."
+        }, {"One char\nTemplate sided note\n||!",
+            "Same as |||, but only uses one character in the name and does not require a separator.\n"
+            "For example if the name was `-` then you could use it like ||!- or ||!-arguments"
+        }
+    };
 }

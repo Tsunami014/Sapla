@@ -206,12 +206,19 @@ const QString BROWSE_HELP =
 const QString ARGUMENT_HELP =
 "<h1>Arguments quick reference</h1>"
     "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
+    "<p><i>Argument names must only contain letters and numbers</i></p>"
 "<h2><u>Argument specifier</u></h2>"
     "<p>The argument specifier is in between the template name and contents, and is contained within "+code("[]")+"."
         +nl("It is separated from both by either a "+code(":")+" or a "+code("|")+" or a space or a newline."
        )+"</p>"
     "<p>Inside the brackets is a space separated list of names. The arguments will be named by this in the order they are passed in.</p>"
-    "<p>The argument name in the argument specifier can have some suffixes, for example "+code("[name|default]")+"</p>"
+    "<p>The argument name in the argument specifier can have suffixes like regular argument usage, for example "+code("[name|default]")+"</p>"
+    "<p>You can also specify the same argument to have multiple names with /, e.g. "+code("[name1/name2]")+"</p>"
+    "<p>Additionally, using "+code("name=thing")+" allows you to set macros (and unless / is used it will not take up an argument; i.e. "+code("[macro=this first second]")+")"
+        +nl(
+        "Macros are substituted in-place. You can also use % in your macros, but there is a recursion limit."
+        "<br>For example, "+code("|: test [name=Hello,\\ %1] Remember to say '%name' :|")+" applied via "+code("||test me||")+" will output "+hl("Remember to say 'Hello, me'")
+        )+"</p>"
     "<h3>Argument specifier options (suffixes)</h3>"
     "<ul>"
         "<li>"+code("|def")+" - if the output is null (e.g. no argument was provided), display the text after instead.</li>"

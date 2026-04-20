@@ -100,7 +100,7 @@ const QRegularExpression replRe(
     "(?<!%)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9]+)"
     "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
-    "(?:\x05|%|$|(?=[ \n]))"
+    "(?:\x05|%|$|(?=[ \n$]))"
 
   R"(|(?<!\$)\$(?<conts2>[a-zA-Z0-9]+))");
 const std::vector<QChar> suffsList() {

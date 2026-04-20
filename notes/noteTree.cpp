@@ -13,13 +13,15 @@ QTreeWidget* getNoteTree(QWidget* parent) {
     int cols = 5;
     tree->setColumnCount(cols);
     tree->setHeaderLabels({"Name", "📚", "📝", "🏷️", "‼️"});
-    tree->header()->setSectionResizeMode(0, QHeaderView::Interactive);
+    auto header = tree->header();
+    header->setStretchLastSection(false);
     for (int i = 1; i < cols; i++) {
-        tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+        header->setSectionResizeMode(i, QHeaderView::ResizeToContents);
     }
-    tree->header()->setSectionResizeMode(cols-2, QHeaderView::Interactive);
-    tree->header()->setMinimumSectionSize(40);
-    tree->header()->setDefaultSectionSize(180);
+    header->setSectionResizeMode(0, QHeaderView::Interactive);
+    header->setSectionResizeMode(cols-2, QHeaderView::Interactive);
+    header->setMinimumSectionSize(40);
+    header->setDefaultSectionSize(180);
 
     resetNoteTree(tree);
     return tree;

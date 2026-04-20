@@ -23,12 +23,12 @@ QString _AutoColour::nxtCol() {
     return ret;
 }
 
-Schedule getSchd(std::map<int, Schedule> schds, int idx) {
+Schedule getSchd(std::map<int, Schedule> schds, int part, int idx) {
     auto it = schds.find(idx);
     if (it != schds.end()) {
         return schds.at(idx);
     }
-    return Schedule(idx);
+    return Schedule(part, idx);
 }
 
 void registerNoteFeatures() {

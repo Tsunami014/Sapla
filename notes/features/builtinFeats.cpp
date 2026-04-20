@@ -16,7 +16,7 @@ QMap<QString, QString> ScheduleFeat::help() const {
         "WARNING: only for if you are bothered - this is auto generated and you do not need to know ANY of this.\n"
         "Schedule strings have the following format:\n"
         "<<feat,idx,score,time>>\n"
-        "Where feat is the feature name, "
+        "Where feat is the feature name (suffixed with _<idx> if using ~~~, if not there defaults to _0), "
             "idx is the idx of the note (used by each feature in a different way), "
             "score is the score given to the note of how well you remembered it, "
             "and time is the next time it will be shown.\n"

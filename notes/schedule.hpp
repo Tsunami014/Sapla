@@ -47,8 +47,8 @@ struct _scheduleInf {
 extern _scheduleInf ScheduleInfo;
 using TimePoint = std::chrono::system_clock::time_point;
 struct Schedule {
-    Schedule(int idx);
-    Schedule(int idx, float score, long long nxtTime);
+    Schedule(int part, int idx);
+    Schedule(int part, int idx, float score, long long nxtTime);
     QString toInf(QString title);
 
     void update(int rating = -1);
@@ -57,6 +57,7 @@ struct Schedule {
     float score;
     TimePoint nxt;
     int idx;
+    int part;
     float percentage() const;
     TimePoint trueNxt(TimePoint now) const;
     bool dueNow() const;

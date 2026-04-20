@@ -99,14 +99,14 @@ protected:
     }
 };
 
-std::vector<std::unique_ptr<FlashCard>>SecretFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const {
+std::vector<std::unique_ptr<FlashCard>>SecretFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const {
     if (!secretRe.match(txt).hasMatch()) {
         return {};
     }
     std::vector<std::unique_ptr<FlashCard>> result;
     result.push_back(
         std::make_unique<SecretFlashCard>(
-            parent, txt, txt, getName(), getSchd(schds, 0)
+            parent, txt, txt, getName(), getSchd(schds, part, 0)
         )
     );
     return result;

@@ -29,7 +29,7 @@ struct FeatReg {
 };
 struct CardFeatReg : public FeatReg {
     inline static std::unique_ptr<CardFeatReg> instance = nullptr;
-    virtual std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const { return {}; }
+    virtual std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const { return {}; }
     virtual bool dominance(const QString& txt) const { return false; }
 };
 
@@ -54,7 +54,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
 #define Feat_markup        QString markup(QString& line) const override
 
-#define CFeat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds) const override
+#define CFeat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const override
 #define CFeat_dominance     bool dominance(const QString& txt) const override
 
 

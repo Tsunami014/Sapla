@@ -126,7 +126,19 @@ ScheduleMap Note::getSchdMap() {
                 error += "Found not 4 parts in schedule string: `" + part + "`\n";
                 continue;
             }
+            QStringList spl2 = spl[0].split("_");
+            if (spl2.size() == 1) {
+                spl2.append("0");
+            } else if (spl2.size() > 2) {
+                error += "Found too many parts in schedule name: `" + spl[0] + "`\n";
+                continue;
+            }
             bool ok;
+            uint num = spl2[1].toUInt(&ok);
+            if (!ok) {
+                error += "Could not convert schedule number to int: `" + spl2[1] + "`\n";
+                continue;
+            }
             int idx = spl[1].toInt(&ok);
             if (!ok) {
                 error += "Could not convert idx to int: `" + spl[1] + "`\n";
@@ -142,7 +154,7 @@ ScheduleMap Note::getSchdMap() {
                 error += "Could not convert time to long long: `" + spl[3] + "`\n";
                 continue;
             }
-            auto [_, inserted] = scheduleMap[spl[0]].try_emplace(idx, idx, sco, nxtTime);
+            auto [_, inserted] = scheduleMap[spl2.join('_')].try_emplace(idx, num, idx, sco, nxtTime);
             if (!inserted) {
                 error += "Schedule idx already exists: `" + spl[1] + "`\n";
             }
@@ -173,6 +185,7 @@ void Note::updateCards() {
         }
     }
 
+    uint i = 0;
     for (QString conts : totconts.split(mnsRe)) {
         std::vector<QString> dominants;
         for (auto& f : CardFeats) {
@@ -196,11 +209,13 @@ void Note::updateCards() {
 
         auto scheduleMap = getSchdMap();
         for (auto& f : CardFeats) {
-            auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
+            QString nam = f->getName()+'_'+QString::number(i);
+            auto fcs = f->getFlashCards(this, conts, scheduleMap[nam], i);
             for (auto& item : fcs)
                 CLaddCard(item.get());
             std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));
         }
+        i++;
     }
 }
 QString Note::preview() {
@@ -237,7 +252,7 @@ void Note::updateSchedules() {
 }
 void Note::removeSchedules() {
     for (auto& fc : cards) {
-        fc->schd = Schedule(fc->schd.idx);
+        fc->schd = Schedule(fc->schd.part, fc->schd.idx);
         CLrefreshCard(fc.get());
     }
     updateSchedules();

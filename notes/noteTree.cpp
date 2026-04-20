@@ -18,7 +18,7 @@ QTreeWidget* getNoteTree(QWidget* parent) {
     }
     tree->header()->setSectionResizeMode(cols-2, QHeaderView::Interactive);
     tree->header()->setMinimumSectionSize(40);
-    tree->header()->setDefaultSectionSize(120);
+    tree->header()->setDefaultSectionSize(180);
 
     resetNoteTree(tree);
     return tree;

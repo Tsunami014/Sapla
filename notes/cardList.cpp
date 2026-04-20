@@ -133,6 +133,7 @@ void refreshCurPile() {
     const int nepln = nonemptypiles.size();
 
     while (1) {
+        if (nonemptypiles.size() == 0) return;
         if (state <= 0) {
             i = 0;
             mx = QRandomGenerator::global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;

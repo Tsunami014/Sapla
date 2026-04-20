@@ -7,4 +7,4 @@
 const QString MODULE = "CardFeature";
 constexpr auto MO = QRegularExpression::MultilineOption;
 
-Schedule getSchd(std::map<int, Schedule> schds, int idx);
+Schedule getSchd(std::map<int, Schedule> schds, int part, int idx);

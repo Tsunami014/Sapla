@@ -194,13 +194,17 @@ _scheduleInf ScheduleInfo(
     , parseDuration("6", "mins")  // Leave amount
 );
 
-Schedule::Schedule(int id, float sco, long long nxtTime) : idx(id), score(sco) {
+Schedule::Schedule(int prt, int id, float sco, long long nxtTime) : part(prt), idx(id), score(sco) {
     std::chrono::seconds dur(nxtTime);
     nxt = TimePoint(dur);
 }
-Schedule::Schedule(int id) : idx(id), score(0), nxt() {}
+Schedule::Schedule(int prt, int id) : part(prt), idx(id), score(0), nxt() {}
 QString Schedule::toInf(QString title) {
-    return title + "," + QString::number(idx) + "," + QString::number(score) + "," +
+    QString titlesuff;
+    if (part != 0) {
+        titlesuff = '_'+QString::number(part);
+    }
+    return title + titlesuff + "," + QString::number(idx) + "," + QString::number(score) + "," +
         QString::number(std::chrono::duration_cast<std::chrono::seconds>(nxt.time_since_epoch()).count());
 }
 

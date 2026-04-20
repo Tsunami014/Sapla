@@ -158,7 +158,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
 }
 const QString varRe = R"()";
 const QRegularExpression loopRe(
-    R"(\s*@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@@\s*(?<conts>(?:\n|.)+?)@@\s*)");
+    R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
 QString Template::replace_main(QStringList args) {
     if (failed()) return "==<ERROR>==";
     for (auto& str : args) {

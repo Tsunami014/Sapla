@@ -4,6 +4,49 @@
 
 std::map<QString, Template> globalTemplates;
 
+const static QRegularExpression escapeRe(R"((?<!\\)\(((?:\\.|[^)])+)\))");
+QString escape(QString inp) {
+    QString out = inp;
+
+    auto it = escapeRe.globalMatch(out);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+
+        QByteArray b64 = m.captured(1).toUtf8().toBase64();
+        QString encoded = QString::fromLatin1(b64);
+        QString repl = "("+
+            encoded.replace('+', '\x0A').replace('/', '\x0B').replace('=', '\x0C')
+            +")";
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        out.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return out;
+}
+QString deescape(QString inp) {
+    QString out = inp;
+
+    auto it = escapeRe.globalMatch(out);
+    int offs = 0;
+    uint idx = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+
+        QByteArray b64 = m.captured(1).toLatin1()
+            .replace('\x0A', '+').replace('\x0B', '/').replace('\x0C', '=');
+        QString repl = QString::fromUtf8(QByteArray::fromBase64(b64));
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        out.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return out;
+}
+
 void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) {
     if (conts == "-") {
         i++;
@@ -15,7 +58,8 @@ void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) 
     bool usedi = false;
     for (auto sect : (conts).split(splby)) {
         const static auto re = QRegularExpression("([a-zA-Z0-9]+)(.*)");
-        auto m = re.match(sect);
+        QString realsect = deescape(sect);
+        auto m = re.match(realsect);
         if (!m.hasMatch()) continue;
         QString name = m.captured(1);
         QString repl = m.captured(2);
@@ -35,7 +79,7 @@ Template::Template(QString c, QString p) {
     if (p.isNull()) return;
     uint idx = 0;
     const static auto splby = QRegularExpression(R"((?<!\\)\s)");
-    for (auto sub : p.split(splby)) {
+    for (auto sub : escape(p).split(splby)) {
         if (sub != "") {
             GeneratePatterns(sub, idx, ptns);
         }
@@ -55,7 +99,7 @@ const QString suffs = "\\[|{;=\r";
 const QRegularExpression replRe(
     "(?<!%)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9]+)"
-    "(?<suff>(?:["+suffs+R"(](?:\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
+    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
     "(?:\x05|%|$|(?=[ \n]))"
 
   R"(|(?<!\$)\$(?<conts2>[a-zA-Z0-9]+))");
@@ -68,14 +112,12 @@ const std::vector<QChar> suffsList() {
     return vec;
 }
 QString Template::replace(QStringList args, QString out, uint depth) {
-    if (failed()) return "==<ERROR>==";
+    if (depth == 0 && failed()) return "==<ERROR>==";
 
     auto it = replRe.globalMatch(out);
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
 
         QString repl;
         QString conts = m.captured("conts");
@@ -104,7 +146,9 @@ QString Template::replace(QStringList args, QString out, uint depth) {
             }
         }
 
-        if (!parseArg(repl, m.captured("pref"), m.captured("suff"))) continue;
+        if (!parseArg(repl, m.captured("pref"), escape(m.captured("suff")))) continue;
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
@@ -137,6 +181,7 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                         break;
                     }
                 } else {
+                    sofar = deescape(sofar);
                     switch (apply.unicode()) {
                         case ';':
                             repl.replace(' ', '\3');

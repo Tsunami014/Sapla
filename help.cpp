@@ -203,11 +203,13 @@ const QString BROWSE_HELP =
 
 const QString ARGUMENT_HELP =
 "<h1>Arguments quick reference</h1>"
+"<h2><u>Basics</u></h2>"
     "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
     "<p>Arguments can also be used as a $ then the name (but NOT end with $)."
         "The difference with $ is it cannot contain prefixes or suffixes and it ends on any other non-alphanumeric character"
         "(so you can have e.g. "+code("$1$2")+" instead of "+code("%1%%2%")+", but you will have to use % for e.g. "+code("%1%hi")+" where there are alphanumeric characters after)"
     "<p><i>Argument names must only contain letters and numbers</i> (except you can have arguments called "+code("-")+" which will skip that argument)</p>"
+    "<p>A special way for escaping unique to arguments is encasing the text within (), e.g. "+code("%1|(this is a test)")+" (the spaces are escaped by being inside the brackets)</p>"
 "<h2><u>Argument specifier</u></h2>"
     "<p>The argument specifier is in between the template name and contents, and is contained within "+code("[]")+"."
         +nl("It is separated from both by either a "+code(":")+" or a "+code("|")+" or a space or a newline."

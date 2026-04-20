@@ -48,7 +48,7 @@ QString deescape(QString inp) {
     return out;
 }
 
-void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) {
+void Template::GeneratePatterns(QString conts, uint& i) {
     if (conts == "-") {
         i++;
         return;
@@ -80,7 +80,7 @@ Template::Template(QString c, QString p) {
     uint idx = 0;
     for (auto sub : escape(p).split(QRegularExpression(R"((?<!\\)\s)"))) {
         if (sub != "") {
-            GeneratePatterns(sub, idx, ptns);
+            GeneratePatterns(sub, idx);
         }
     }
 }
@@ -97,11 +97,13 @@ const QString prefs = "\".^*_";
 const QString suffs = "\\[|{;=>\r";
 const QRegularExpression replRe(
     "(?<!%)%(?<pref>["+prefs+"]+)?"
-    "(?<conts>[a-zA-Z0-9]+)"
+    "(?<conts>[a-zA-Z0-9\\-]+)"
     "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
     "(?:\x05|%|$|(?=[ \n$]))"
 
-  R"(|(?<!\$)\$(?<conts2>[a-zA-Z0-9]+))");
+  R"(|(?<!\$)\$)"
+    "(?<pref2>["+prefs+"]+)?"
+    "(?<conts2>[a-zA-Z0-9\\-]+)");
 const std::vector<QChar> suffsList() {
     std::vector<QChar> vec;
     vec.reserve(suffs.size() + 2);
@@ -150,7 +152,9 @@ QString Template::replace(QStringList args, QString out, uint depth) {
             }
         }
 
-        if (!parseArg(repl, m.captured("pref"), escape(m.captured("suff")))) continue;
+        QString pref = m.captured("pref");
+        if (pref.isNull()) pref = m.captured("pref2");
+        if (!parseArg(repl, pref, escape(m.captured("suff")))) continue;
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
         out.replace(start, end - start, repl);

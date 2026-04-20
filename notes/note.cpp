@@ -75,6 +75,7 @@ bool Note::isGlobal() {
 void Note::reset() {
     error = "";
     templates.clear();
+    cards.clear();
 }
 void Note::setContents(const QString& nc) {
     orig = nc;
@@ -191,10 +192,10 @@ void Note::updateCards() {
         auto scheduleMap = getSchdMap();
         for (auto& f : CardFeats) {
             auto fcs = f->getFlashCards(this, conts, scheduleMap[f->getName()]);
+            for (auto& item : fcs)
+                CLaddCard(item.get());
             std::move(fcs.begin(), fcs.end(), std::back_inserter(cards));
         }
-        for (auto& item : cards)
-            CLaddCard(item.get());
     }
 }
 QString Note::preview() {

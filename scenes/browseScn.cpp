@@ -37,7 +37,6 @@ BrowseScene::BrowseScene(Note* sel)
         filter->setFont(getFont(1.2));
         filter->setPlaceholderText("Filter...");
         QObject::connect(filter, &QLineEdit::textChanged, this, &BrowseScene::filterChanged);
-        filterChanged();
 
         te = new MarkdownEdit(this);
         QObject::connect(te, &MarkdownEdit::textChanged, this, &BrowseScene::typed);
@@ -129,7 +128,7 @@ BrowseScene::BrowseScene(Note* sel)
                 selectionChange();
             }
         });
-        updateInfo();
+        filterChanged(); // Also runs updateInfo
 
         if (sel != nullptr) {
             for (int i = 0; i < tree->topLevelItemCount(); ++i) {
@@ -146,20 +145,26 @@ Note* BrowseScene::getSelNote() {
 }
 
 void BrowseScene::updateInfo() {
-    auto progs = getOverallProgress();
-    float perc;
-    if (progs.totCards > 0) {
-        perc = std::round((
-            progs.complete/progs.totCards
-        ) * 10000)/100;
+    QString filtr = filter->text();
+    _overallProgr progr;
+    if (filtr.isEmpty()) {
+        progr = getOverallProgress();
     } else {
-        perc = 100;
+        progr = getOverallFilteredProgress(filtr);
     }
-    info.setText(
-        QString("%1 cards, %2% complete")
-            .arg(progs.totCards)
-            .arg(perc)
-    );
+    float perc;
+    if (progr.totCards > 0) {
+        perc = std::round((
+            progr.complete/progr.totCards
+        ) * 10000)/100;
+        info.setText(
+            QString("%1 cards, %2% complete")
+                .arg(progr.totCards)
+                .arg(perc)
+        );
+    } else {
+        info.setText("0 cards");
+    }
 }
 void BrowseScene::updatePrev() {
     updateInfo();
@@ -208,6 +213,7 @@ void BrowseScene::updatePrev() {
 
 void BrowseScene::filterChanged() {
     filterTree(tree, filter->text());
+    updateInfo();
 }
 
 void BrowseScene::typed() {

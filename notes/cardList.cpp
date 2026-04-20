@@ -1,6 +1,7 @@
 #include "cardList.hpp"
 #include "getNotes.hpp"
 #include "pile.hpp"
+#include "filter.hpp"
 #include "../log.hpp"
 #include <QRandomGenerator>
 
@@ -48,6 +49,19 @@ _overallProgr getOverallProgress() {
         completes += fc->schd.percentage();
     }
     return { cardsln, completes };
+}
+_overallProgr getOverallFilteredProgress(QString filter) {
+    uint ln = 0;
+    float completes = 0;
+    for (auto* n : notesL) {
+        if (!matchesFilter(n, filter)) continue;
+        for (uint i = 0; i < n->getNumCards(); i++) {
+            auto fc = n->getFlashCard(i);
+            ln++;
+            completes += fc->schd.percentage();
+        }
+    }
+    return { ln, completes };
 }
 
 const std::vector<FlashCard*>& CardList(bool sorted) {

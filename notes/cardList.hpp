@@ -12,6 +12,7 @@ struct _overallProgr {
     float complete;
 };
 _overallProgr getOverallProgress();
+_overallProgr getOverallFilteredProgress(QString filter);
 
 const std::vector<FlashCard*>& CardList(bool sorted);
 void CLaddCard(FlashCard* newCard);

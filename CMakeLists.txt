@@ -45,6 +45,7 @@ set(CORELIB
     notes/getNotes.cpp
     notes/cardList.cpp
     notes/pile.hpp
+    notes/filter.cpp
     notes/noteTree.cpp
         notes/features/features.cpp
         notes/features/builtinFeats.cpp

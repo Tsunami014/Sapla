@@ -53,10 +53,12 @@ bool Template::failed() {
 const QString prefs = ".^*\"";
 const QString suffs = "\\[|{;=\r";
 const QRegularExpression replRe(
-    "%(?<pref>["+prefs+"]+)?"
-  R"((?<conts>(?:\\[^\x05\n]|[^\x05% \n)"+prefs+suffs+"])+)"
+    "(?<!%)%(?<pref>["+prefs+"]+)?"
+    "(?<conts>[a-zA-Z0-9]+)"
     "(?<suff>(?:["+suffs+R"(](?:\\[^\x05\n]|[^\x05% \n)"+suffs+"])+)+)?"
-    "(?:\x05|%|$|(?=[ \n]))");
+    "(?:\x05|%|$|(?=[ \n]))"
+
+  R"(|(?<!\$)\$(?<conts2>[a-zA-Z0-9]+))");
 const std::vector<QChar> suffsList() {
     std::vector<QChar> vec;
     vec.reserve(suffs.size() + 2);
@@ -77,6 +79,7 @@ QString Template::replace(QStringList args, QString out, uint depth) {
 
         QString repl;
         QString conts = m.captured("conts");
+        if (conts.isNull()) conts = m.captured("conts2");
         if (auto it = ptns.find(conts); it != ptns.end()) {
             if (depth+1 > MAX_RECURSION) continue;
             repl = replace(args, it->second, depth+1);

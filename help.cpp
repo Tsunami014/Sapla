@@ -198,15 +198,15 @@ const QString BROWSE_HELP =
             )+"</p>"
         "<p>"+qu+"Multiple note templates of the same type (global&global or local&local) cannot have the same name, but if a local note template has the same name as a global one the local one will be used instead.</p>"
     "<h3>Arguments</h3>"
-        "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
-        "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier) or "+code("%#")+" (for every argument separated by "+code("|")+").</p>"
-        "<p>The argument specifier is a space separated list of argument names which match up to their indexes.</p>"
-        "<p>For more info on or methods for utilising arguments, see the <b>Help &gt; Argument Help</b> menu.</p>"
+        "<p>For more info on or methods for utilising arguments or the argument specifier, see the <b>Help &gt; Argument Help</b> menu.</p>"
 ;
 
 const QString ARGUMENT_HELP =
 "<h1>Arguments quick reference</h1>"
     "<p>Arguments are used in note template definitions by a % then the name then either another % or a space.</p>"
+    "<p>Arguments can also be used as a $ then the name (but NOT end with $)."
+        "The difference with $ is it cannot contain prefixes or suffixes and it ends on any other non-alphanumeric character"
+        "(so you can have e.g. "+code("$1$2")+" instead of "+code("%1%%2%")+", but you will have to use % for e.g. "+code("%1%hi")+" where there are alphanumeric characters after)"
     "<p><i>Argument names must only contain letters and numbers</i> (except you can have arguments called "+code("-")+" which will skip that argument)</p>"
 "<h2><u>Argument specifier</u></h2>"
     "<p>The argument specifier is in between the template name and contents, and is contained within "+code("[]")+"."

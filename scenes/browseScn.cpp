@@ -206,21 +206,27 @@ void BrowseScene::typed() {
     }
     Note* n;
     QTreeWidgetItem* it;
+    bool updAll;
     if (selected.size() == 0) {
         n = new Note(md);
         n->update();
         notesL.push_back(n);
         it = addToTree(tree, n);
         tree->setCurrentItem(it);
+        updAll = n->isGlobal();
     } else {
         n = getSelNote();
-        n->setContents(md);
+        updAll = n->setContents(md);
         it = selected.first();
     }
     writeNotes();
 
     updatePrev();
-    updateItem(it, n);
+    if (updAll) {
+        updateAllItems(tree);
+    } else {
+        updateItem(it, n);
+    }
     if (n->isGlobal()) updateAllItems(tree);
 }
 void BrowseScene::selectionChange() {

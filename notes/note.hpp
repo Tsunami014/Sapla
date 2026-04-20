@@ -36,7 +36,7 @@ public:
     QStringList tags;
     QString error;
 
-    void setContents(const QString& newContents);
+    bool setContents(const QString& newContents);
     void update();
     void updateGlobals();
     void updateCards();
@@ -54,6 +54,7 @@ public:
     void destroy();
     void rmCards();
 private:
+    void update(bool isGlobal);
     void reset();
     QString orig;
     std::vector<std::unique_ptr<FlashCard>> cards;

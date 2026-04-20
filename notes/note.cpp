@@ -23,8 +23,7 @@ Note::Note(QString conts) {
 }
 Note::~Note() {
     if (!QApplication::closingDown()) {  // If it is closing down this will fail
-        cards.clear();
-        templates.clear();
+        reset();
     }
 }
 bool Note::operator==(const Note& other) const {
@@ -77,12 +76,18 @@ void Note::reset() {
     templates.clear();
     cards.clear();
 }
-void Note::setContents(const QString& nc) {
+bool Note::setContents(const QString& nc) {
+    bool ig = isGlobal();
     orig = nc;
-    update();
+    bool updAll = ig || isGlobal();
+    update(updAll);
+    return updAll;
 }
 void Note::update() {
-    if (isGlobal()) { // Update everything if it defines a global template
+    update(isGlobal());
+}
+void Note::update(bool isGlobal) {
+    if (isGlobal) { // Update everything if it defines a global template
         updateNoteCards();
     } else {
         reset();

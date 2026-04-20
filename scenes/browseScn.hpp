@@ -30,7 +30,7 @@ protected:
     QVBoxLayout* form;
     MarkdownEdit* te;
 
-    void updatePrev();
+    void updatePrev(bool refresh = false);
     void updateInfo();
     Side side;
     SchdInfoWid* siw;

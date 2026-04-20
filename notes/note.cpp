@@ -4,6 +4,7 @@
 #include "features.hpp"
 #include "../log.hpp"
 #include "../base/markdown.hpp"
+#include "../base/seedrng.hpp"
 #include <unordered_set>
 #include <QApplication>
 #include <QRegularExpression>
@@ -294,7 +295,8 @@ void FlashCard::update(int rating) {
     schd.update(rating);
 }
 
-QString FlashCard::getSide(Side s) const {
+QString FlashCard::getSide(Side s, bool randSeed) const {
+    if (randSeed) useseed = false;
     QString txt;
     switch (s) {
         case SIDE_FRONT:

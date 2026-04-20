@@ -61,7 +61,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 extern const QRegularExpression scheduleInfRe;
 struct ScheduleFeat : FeatReg {
     Feat_Instance(ScheduleFeat)
-    Feat_order(9999);
+    Feat_order(99999);
     Feat_name("<<>>");
     Feat_replacements;
     Feat_markup;

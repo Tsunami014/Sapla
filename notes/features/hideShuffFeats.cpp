@@ -1,7 +1,6 @@
 // Hidden and shuffle features
 #include "features.hpp"
-#include <QRandomGenerator>
-#include <QDateTime>
+#include "base/seedrng.hpp"
 
 const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?)\.\.)");
 QString ShuffledFeat::replacements(QString& txt, Side s) const {
@@ -34,7 +33,7 @@ QString ShuffledFeat::replacements(QString& txt, Side s) const {
                     }
                     QString strorig = str;
                     do {
-                        std::shuffle(str.begin(), str.end(), *QRandomGenerator::global());
+                        std::shuffle(str.begin(), str.end(), getRNG());
                     } while (str == strorig);
                     groups.append(
                         s[0] + str + s[ln-1]
@@ -87,7 +86,6 @@ const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?)(?<!\\)\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
-    auto tse = QDateTime::currentMSecsSinceEpoch();
 
     auto it = hiddenRe.globalMatch(txt);
     int offs = 0;
@@ -106,9 +104,9 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
             QStringList opts = conts.split("//");
             uint idx;
             if (seed.isNull()) {
-                idx = QRandomGenerator::global()->bounded(opts.size());
+                idx = rng_bounded(opts.size());
             } else {
-                idx = QRandomGenerator(tse+qHash(seed)).bounded(opts.size());
+                idx = rng_bounded_seed(qHash(seed), opts.size());
             }
             QString item = opts[idx];
 

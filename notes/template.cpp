@@ -1,3 +1,4 @@
+#include "features.hpp"
 #include "template.hpp"
 #include <QRegularExpression>
 #include <QList>
@@ -112,7 +113,12 @@ const std::vector<QChar> suffsList() {
     return vec;
 }
 QString Template::replace(QStringList args, QString out, uint depth) {
-    if (depth == 0 && failed()) return "==<ERROR>==";
+    if (depth == 0) {
+        if (failed()) return "==<ERROR>==";
+        for (auto& str : args) {
+            str = ScheduleFeat::instance->replacements(str, SIDE_HIDE);
+        }
+    }
 
     auto it = replRe.globalMatch(out);
     int offs = 0;

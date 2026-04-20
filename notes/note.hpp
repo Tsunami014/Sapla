@@ -79,7 +79,7 @@ public:
     Schedule schd;
     Note* parent;
     QString title;
-    virtual QString getSide(Side s) const;
+    virtual QString getSide(Side s, bool randSeed = true) const;
     QString getSideHtml(Side s) const;
 protected:
     QString front;

@@ -1,5 +1,5 @@
 #include "features.hpp"
-#include <QRandomGenerator>
+#include "base/seedrng.hpp"
 
 const QRegularExpression secretRe(R"((?<!\\){(.*?[^\\\n])(?:::(?<group>.*?[^\\\n]))?(?:\?\?(?<hint>.*?[^\\\n]))?})");
 
@@ -68,7 +68,7 @@ protected:
         QSet<QString> touseGroups;
         QList<QString> gs = groupNams.values();
         for (uint i = 0; i < useAmnt; i++) {
-            int idx = QRandomGenerator::global()->bounded(initSze-i);
+            int idx = rng_bounded(initSze-i);
             touseGroups.insert(gs[idx]);
             // This is an efficient way to delete the item, but it destroys the order. Good thing I don't care!
             gs[idx] = std::move(gs.last()); // Move last item to idx

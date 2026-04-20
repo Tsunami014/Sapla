@@ -7,6 +7,7 @@
 #include "../notes/decks.hpp"
 #include "../notes/cardList.hpp"
 #include "../base/font.hpp"
+#include "../base/seedrng.hpp"
 #include <QTimer>
 #include <QHeaderView>
 #include <QKeyEvent>
@@ -166,7 +167,10 @@ void BrowseScene::updateInfo() {
         info.setText("0 cards");
     }
 }
-void BrowseScene::updatePrev() {
+void BrowseScene::updatePrev(bool refresh) {
+    if (refresh) {
+        seed = getSeed();
+    }
     updateInfo();
     preview->setDisabled(true);
     if (tree->selectedItems().size() == 0) {
@@ -208,7 +212,8 @@ void BrowseScene::updatePrev() {
     if (side == SIDE_FRONT) sidestr = " (front)";
     else if (side == SIDE_BACK) sidestr = " (back)";
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
-    preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
+    setSeed(seed);
+    preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side, false));
 }
 
 void BrowseScene::filterChanged() {
@@ -243,7 +248,7 @@ void BrowseScene::typed() {
     }
     writeNotes();
 
-    updatePrev();
+    updatePrev(true);
     if (updAll) {
         updateAllItems(tree);
     } else {
@@ -256,12 +261,12 @@ void BrowseScene::selectionChange() {
     if (selected.isEmpty()) {
         te->setMarkdown("");
         prevIdx.reset();
-        updatePrev();
+        updatePrev(true);
         return;
     }
     Note* n = getSelNote();
     te->setMarkdown(n->contents());
-    updatePrev();
+    updatePrev(true);
 }
 
 void BrowseScene::newNote() {

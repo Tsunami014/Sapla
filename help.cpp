@@ -193,6 +193,7 @@ const QString BROWSE_HELP =
             +nl(
             "For example, if a note template had the name "+code("-")+" then a usage that would work is "+code("|!-args||")+"."
             "<br>Another example for understanding: If the note template was named "+code("!")+" Then it could be used like this: "+code("|!! args ||")+" (as stated above, there can be extra spaces. But keep in mind if you have "+code("|! ! arg ||")+" it will use the note template with name "+code(" ")+"!)"
+            "<br>You can skip the extra gap between the title and the contents here, e.g. "+code("|!-contents||")+
             "<br><i>Please remember for these that the name must be one character long</i>"
             )+"</p>"
         "<p>"+qu+"Multiple note templates of the same type (global&global or local&local) cannot have the same name, but if a local note template has the same name as a global one the local one will be used instead.</p>"

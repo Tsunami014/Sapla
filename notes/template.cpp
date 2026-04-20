@@ -53,12 +53,11 @@ void GeneratePatterns(QString conts, uint& i, std::map<QString, QString>& ptns) 
         i++;
         return;
     }
-    const static auto splby = QRegularExpression(R"((?<!\\)(?=/))");
     QString name;
     QString repl;
     bool usedi = false;
-    for (auto sect : (conts).split(splby)) {
-        const static auto re = QRegularExpression("([a-zA-Z0-9]+)(.*)");
+    const QRegularExpression re("([a-zA-Z0-9]+)(.*)");
+    for (auto sect : (conts).split(QRegularExpression(R"((?<!\\)(?=/))"))) {
         QString realsect = deescape(sect);
         auto m = re.match(realsect);
         if (!m.hasMatch()) continue;
@@ -79,8 +78,7 @@ Template::Template(QString c, QString p) {
     ptns = {};
     if (p.isNull()) return;
     uint idx = 0;
-    const static auto splby = QRegularExpression(R"((?<!\\)\s)");
-    for (auto sub : escape(p).split(splby)) {
+    for (auto sub : escape(p).split(QRegularExpression(R"((?<!\\)\s)"))) {
         if (sub != "") {
             GeneratePatterns(sub, idx, ptns);
         }

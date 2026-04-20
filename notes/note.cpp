@@ -14,8 +14,7 @@ const QString MODULE = "Note";
 
 QString trimNL(const QString& orig) {
     QString nstr = orig;
-    static const QRegularExpression re(R"(^\s*\n|\n\s*$)");
-    return nstr.replace("\\\n", "").remove(re);
+    return nstr.replace("\\\n", "").remove(QRegularExpression(R"(^\s*\n|\n\s*$)"));
 }
 
 Note::Note(QString conts) {

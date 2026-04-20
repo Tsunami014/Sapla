@@ -115,8 +115,7 @@ QString SecretFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) {
         return txt;
     }
-    static const QRegularExpression simpleSecretRe(R"((?<!\\){.*?[^\\\n]})");
-    return txt.remove(simpleSecretRe);
+    return txt.remove(QRegularExpression(R"((?<!\\){.*?[^\\\n]})"));
 }
 QString SecretFeat::markup(QString& line) const {
     auto it = secretRe.globalMatch(line);

@@ -78,7 +78,7 @@ void SchdInfoWid::removeSchdls() {
     if (n == nullptr) return;
     n->removeSchedules();
     auto scn = dynamic_cast<BrowseScene*>(MG->curScene);
-    if (scn) scn->typed();
+    if (scn) scn->selectionChange();
 }
 void SchdInfoWid::schdInfoDialog() {
     if (n == nullptr) return;

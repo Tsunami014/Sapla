@@ -258,12 +258,14 @@ void BrowseScene::typed() {
 }
 void BrowseScene::selectionChange() {
     QList<QTreeWidgetItem*> selected = tree->selectedItems();
+    filterTree(tree, filter->text());
     if (selected.isEmpty()) {
         te->setMarkdown("");
         prevIdx.reset();
         updatePrev(true);
         return;
     }
+    selected.first()->setHidden(false);
     Note* n = getSelNote();
     te->setMarkdown(n->contents());
     updatePrev(true);

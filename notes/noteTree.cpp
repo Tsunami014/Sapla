@@ -76,3 +76,6 @@ void filterTree(QTreeWidget* tree, QString filter) {
         item->setHidden(!matchesFilter(getNote(item), filter));
     }
 }
+void filterItem(QTreeWidgetItem* it, QString filter) {
+    it->setHidden(!matchesFilter(getNote(it), filter));
+}

@@ -17,5 +17,5 @@ QRandomGenerator getRNG() {
 }
 QRandomGenerator getRNG(quint32 seed2) {
     quint32 outseed = useseed? seed : getSeed();
-    return { outseed * seed2 };
+    return { outseed * (seed2+1) };
 }

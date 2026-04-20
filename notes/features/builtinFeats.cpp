@@ -148,7 +148,7 @@ QString TemplateFeat::replacements(QString& txt, Side s) const {
         .remove(templLoclDefRe)
     ;
 }
-const QRegularExpression templApplyReplRe(R"((?<!\\)(\|![^ \t\n:=<]))");
+const QRegularExpression templApplyReplRe(R"((?<!\\)(\|!(?:&[^;]+;|[^ \t\n:=<])))");
 QString TemplateFeat::markup(QString& line) const {
     const QString boldify = "<b style='color:%1;'>%2</b>";
     QString nln = line

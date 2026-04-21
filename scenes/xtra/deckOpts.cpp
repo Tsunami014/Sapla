@@ -17,9 +17,6 @@ void showDeckOpts() {
     MG->styliseDialog(dialog);
     auto font2 = getFont(2);
 
-    auto title = new QLabel(QString("<h1>Deck options for %1:</h1>").arg(curDeck));
-    title->setFont(font2);
-
     auto mkBtn = [dialog, font2](QString txt, auto func){
         auto* btn = new SvgBtn(":/assets/btn.svg");
         btn->setPadding(20, -20);
@@ -30,23 +27,51 @@ void showDeckOpts() {
     };
 
     QVBoxLayout* layout = new QVBoxLayout(dialog);
-    layout->addWidget(title);
-    layout->addWidget(mkBtn("Delete deck", [dialog](){
-        if (deleteDeck(false) != -1) {
-            dialog->accept();
-        }
-    }));
+    {
+        auto title = new QLabel(QString("<h2>Deck options for %1:</h2>").arg(curDeck));
+        title->setFont(font2);
+        layout->addWidget(title);
+    } {
+        auto* lay2 = new QHBoxLayout();
+        lay2->addWidget(mkBtn("Delete deck", [dialog](){
+            if (deleteDeck(false) != -1) {
+                dialog->accept();
+            }
+        }), 2);
+        lay2->addWidget(mkBtn("Export deck", [dialog](){
+        }), 4);
+        layout->addLayout(lay2);
+    }
+
+    layout->addSpacing(20);
+    SvgBtn* cpybtn;
+    {
+        auto* lay2 = new QHBoxLayout();
+        auto title2 = new QLabel("<h3>Copy deck options</h3>");
+        title2->setFont(font2);
+        title2->setAlignment(Qt::AlignCenter);
+        lay2->addWidget(title2, 2);
+
+        cpybtn = new SvgBtn(":/assets/btn.svg");
+        cpybtn->setPadding(20, -20);
+        cpybtn->setFont(font2);
+        cpybtn->setText("Copy deck");
+
+        lay2->addWidget(cpybtn, 1);
+        layout->addLayout(lay2);
+    }
 
     auto temp = new QCheckBox("Temporarily copy", dialog);
     temp->setFont(font2);
     layout->addWidget(temp);
 
-    layout->addWidget(mkBtn("Copy deck", [=](){
+    QObject::connect(cpybtn, &SvgBtn::clicked, dialog, [=](){
         if (copyDeck(Copy_Regular, temp->checkState() == Qt::Checked)) {
             dialog->accept();
         }
-    }));
+    });
 
+    layout->addSpacing(20);
     layout->setSizeConstraint(QLayout::SetFixedSize);
     QObject::connect(dialog, &QDialog::finished, [=](int result){
         MG->curScene->dialogClose();

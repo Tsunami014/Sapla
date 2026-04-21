@@ -1,0 +1,2 @@
+bool tryExport();
+bool tryImport();

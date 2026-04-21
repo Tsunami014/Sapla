@@ -1,5 +1,6 @@
 #include "baseScn.hpp"
 #include "../core.hpp"
+#include "../menu.hpp"
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QApplication>
@@ -30,6 +31,7 @@ bool BaseScene::keyEv(QKeyEvent* event) {
     return MG->handleEv(event);
 }
 bool BaseScene::eventFilter(QObject* obj, QEvent* event) {
+    if (dialogging) return false;
     if (this != MG->curScene) {
         return false;
     }

@@ -132,6 +132,7 @@ int MainGame::cardFin(FlashCard* card, int key, Tree* tree) {
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {
+    if (dialogging) return false;
     QWidget* fw = QApplication::focusWidget();
     if (fw) {
         if (qobject_cast<QLineEdit*>(fw) ||

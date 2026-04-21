@@ -75,7 +75,8 @@ const QString HOME_HELP =
 "<h2>Menu items</h2>"
     "<ul>"
         "<li><b>File</b><ul>"
-            "<li>Delete all temporary decks (starting with "+hl(".")+") (moves them to the recycle bin if possible)</li>"
+            "<li>Delete all temporary decks (decks starting with "+hl(".")+") (moves them to the recycle bin if possible)</li>"
+            "<li>Import deck</li>"
         "</ul></li>"
     "</ul>"
 "<h2>Decks</h2>"
@@ -93,6 +94,7 @@ const QString HOME_HELP =
     "<h3>Deck options (for the current deck)</h3>"
         "<ul>"
             "<li>Delete the deck (does the same thing as backspacing the name, except does not ask for verification first)</li>"
+            "<li>Export the deck (can choose what format in the file dialog)</li>"
             "<li>Copy the deck with some requirements, e.g. to make it temporary</li>"
         "</ul>"
 ;

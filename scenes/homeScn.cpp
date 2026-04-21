@@ -8,6 +8,7 @@
 #include "../wids/svgBtn.hpp"
 #include "../notes/decks.hpp"
 #include "../notes/getNotes.hpp"
+#include "../notes/eximport.hpp"
 #include "../core.hpp"
 #include "../help.hpp"
 #include <QLabel>
@@ -17,7 +18,9 @@
 
 const QString HELP_TXT = HOME_HELP;
 
-HomeScene::HomeScene() : BaseScene(), deleteTmps("Delete temporary decks", Menues->FileMenu) {
+HomeScene::HomeScene() : BaseScene(),
+        deleteTmps("Delete temporary decks", Menues->FileMenu),
+        imprt("Import deck", Menues->FileMenu) {
     helpStr = &HELP_TXT;
     MG->changeBG("pretty");
 
@@ -125,6 +128,7 @@ HomeScene::HomeScene() : BaseScene(), deleteTmps("Delete temporary decks", Menue
         initNotes();
         dialogClose(); // For setting the items and idx
     });
+    connect(&imprt, &QAction::triggered, this, [](){ tryImport(); });
 
     auto* hlay3 = new QHBoxLayout();
     hlay3->addStretch(1);

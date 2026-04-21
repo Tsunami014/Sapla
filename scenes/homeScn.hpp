@@ -11,5 +11,6 @@ public:
 private:
     QComboBox* deckNam;
     MenuItem deleteTmps;
+    MenuItem imprt;
 };
 

@@ -2,6 +2,7 @@
 #include "core.hpp"
 #include "menu.hpp"
 #include "notes/decks.hpp"
+#include "notes/eximport.hpp"
 #include "wids/svgBtn.hpp"
 #include "base/font.hpp"
 #include "../homeScn.hpp"
@@ -34,11 +35,12 @@ void showDeckOpts() {
     } {
         auto* lay2 = new QHBoxLayout();
         lay2->addWidget(mkBtn("Delete deck", [dialog](){
-            if (deleteDeck(false) != -1) {
+            if (deleteDeck(false) != -1)
                 dialog->accept();
-            }
         }), 2);
         lay2->addWidget(mkBtn("Export deck", [dialog](){
+            dialog->accept();
+            tryExport();
         }), 4);
         layout->addLayout(lay2);
     }
@@ -63,6 +65,7 @@ void showDeckOpts() {
 
     auto temp = new QCheckBox("Temporarily copy", dialog);
     temp->setFont(font2);
+    temp->setCheckState(Qt::Checked);
     layout->addWidget(temp);
 
     QObject::connect(cpybtn, &SvgBtn::clicked, dialog, [=](){

@@ -77,6 +77,7 @@ void showDeckOpts() {
     layout->addSpacing(20);
     layout->setSizeConstraint(QLayout::SetFixedSize);
     QObject::connect(dialog, &QDialog::finished, [=](int result){
+        dialogging = false;
         MG->curScene->dialogClose();
     });
     dialogging = true;

@@ -6,6 +6,7 @@
 extern quint32 seed;
 extern bool useseed;
 
+void setSeed();
 void setSeed(quint32 sd);
 quint32 getSeed();
 

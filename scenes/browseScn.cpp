@@ -213,7 +213,7 @@ void BrowseScene::updatePrev(bool refresh) {
     else if (side == SIDE_BACK) sidestr = " (back)";
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
     setSeed(seed);
-    preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side, false));
+    preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
 }
 
 void BrowseScene::filterChanged() {

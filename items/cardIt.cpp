@@ -1,14 +1,17 @@
 #include "cardIt.hpp"
 #include "../base/font.hpp"
 #include "../base/svgRend.hpp"
+#include "../base/seedrng.hpp"
 #include <QCursor>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include <QKeyEvent>
 
 CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, float fontsze, QGraphicsItem* parent)
-    : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)),
-      front(fc->getSideHtml(SIDE_FRONT)), back(fc->getSideHtml(SIDE_BACK)), txt() {
+    : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)), txt() {
+        setSeed();
+        front = fc->getSideHtml(SIDE_FRONT);
+        back = fc->getSideHtml(SIDE_BACK);
         setAcceptHoverEvents(true);
         txt.setTextFormat(Qt::RichText);
         txt.setWordWrap(true);

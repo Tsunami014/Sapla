@@ -294,8 +294,7 @@ void FlashCard::update(int rating) {
     schd.update(rating);
 }
 
-QString FlashCard::getSide(Side s, bool randSeed) const {
-    if (randSeed) useseed = false;
+QString FlashCard::getSide(Side s) const {
     QString txt;
     switch (s) {
         case SIDE_FRONT:

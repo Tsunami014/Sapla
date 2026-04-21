@@ -1,6 +1,7 @@
 #include "eximport.hpp"
 #include "decks.hpp"
 #include "getNotes.hpp"
+#include "../base/seedrng.hpp"
 #include "../menu.hpp"
 #include "../log.hpp"
 #include "../core.hpp"
@@ -13,27 +14,22 @@ struct Port {
     QString name;
     QString ext;
     std::function<QString()> xport;
-    std::function<QString(QString)> import;
+    std::function<QString(QString)> import = [](QString in){ return in; };
     QString getFilter() const {
         return QString("%1 (*%2)").arg(name).arg(ext);
     }
 };
 
-const auto close = [](){
-    dialogging = false;
-    MG->curScene->dialogClose();
-};
-
 const std::vector<Port> ports = {
-    { "Deck file", ".deck",
+    { "Deck file (original)", ".deck",
         [](){
             QString out;
             for (auto* n : notesL) {
                 out += makeSafe(n->contents()) + "\n";
             }
             return out;
-        }, [](QString in){ return in; }
-    }, { "Markdown file", ".md",
+        }
+    }, { "Markdown file (original)", ".md",
         [](){
             QStringList outs;
             for (auto* n : notesL) {
@@ -47,14 +43,80 @@ const std::vector<Port> ports = {
             }
             return l.join("\n");
         }
+    }, { "Markdown file (rendered)", ".md",
+        [](){
+            QStringList outs;
+            for (auto* n : notesL) {
+                for (int i = 0; i < n->getNumCards(); i++) {
+                    auto* card = n->getFlashCard(i);
+                    setSeed();
+                    outs <<
+                        card->getSide(SIDE_FRONT)
+                        +"\n---\n"+
+                        card->getSide(SIDE_BACK)
+                    ;
+                }
+            }
+            return outs.join("\n\n\n\n");
+        }
+    }, { "HTML file (rendered)", ".html",
+        [](){
+            QStringList outs;
+            for (auto* n : notesL) {
+                for (int i = 0; i < n->getNumCards(); i++) {
+                    auto* card = n->getFlashCard(i);
+                    setSeed();
+                    outs << "<p>"+
+                        card->getSideHtml(SIDE_FRONT)
+                        +"<hr>"+
+                        card->getSideHtml(SIDE_BACK)
+                    +"</p>";
+                }
+            }
+            const QString pref =
+            "<style>"
+                "* {"
+                    "font-family: sans;"
+                "}"
+            "</style>";
+            return pref+outs.join("<br><br>");
+        }, [](QString in){
+            QStringList l = in.replace(QRegularExpression(
+                    R"(<\s*(script|style)[^>]*?>(?:.|\n)*?<(?:\s|\/)*(?1)[^>]*?>)"
+                ), "").split("<br><br>");
+            for (auto& it : l) {
+                it = makeSafe(it
+                    .replace("<br>", "\n")
+                    .replace(QRegularExpression("</?(?:p)>"), "")
+                );
+            }
+            return l.join("\n");
+        }
     }
 };
 /* TODOS
  * Markdown table
- * HTML
+ * Interactive HTML
  * CSV
  * Plain text
 */
+
+const QString anyfilter() {
+    QStringList out;
+    for (auto& p : ports) out << "*"+p.ext;
+    return "Any supported file ("+out.join(' ')+")";
+}
+const QStringList filters() {
+    QStringList l;
+    for (auto& p : ports) l << p.getFilter();
+    return l;
+}
+
+
+const auto close = [](){
+    dialogging = false;
+    MG->curScene->dialogClose();
+};
 bool xport(const Port& p, QString pth) {
     QFile file(pth);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -70,16 +132,6 @@ bool xport(const Port& p, QString pth) {
     }
 }
 
-const QString anyfilter() {
-    QStringList out;
-    for (auto& p : ports) out << "*"+p.ext;
-    return "Any supported file ("+out.join(' ')+")";
-}
-const QStringList filters() {
-    QStringList l;
-    for (auto& p : ports) l << p.getFilter();
-    return l;
-}
 bool tryExport() {
     QString filtr;
     dialogging = true;

@@ -7,6 +7,9 @@ void setSeed(quint32 sd) {
     seed = sd;
     useseed = true;
 }
+void setSeed() {
+    setSeed(getSeed());
+}
 quint32 getSeed() {
     return QDateTime::currentMSecsSinceEpoch();
 }

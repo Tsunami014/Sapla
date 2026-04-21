@@ -20,16 +20,18 @@ void SvgUtils::setSvg(const QString& path) {
 
 bool SvgUtils::touching(const QPointF& pos) {
     QRect r = getRect();
-    if (pos.x() < 0 || pos.y() < 0 || pos.x() >= r.width() || pos.y() >= r.height())
+    QPointF realpos = {pos.x()-r.x(), pos.y()-r.y()};
+    QSize sze = r.size();
+    if (realpos.x() < 0 || realpos.y() < 0 || realpos.x() >= sze.width() || realpos.y() >= sze.height())
         return false;
-    QImage img(r.size(), QImage::Format_ARGB32_Premultiplied);
+    QImage img(sze, QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::transparent);
     // Paint the svg onto the image
     QPainter p(&img);
-    rend.render(&p, QRectF({0, 0}, r.size()));
+    rend.render(&p, QRectF({0, 0}, sze));
     p.end();
     // Find the colour at the pixel of the mouse
-    QColor color = img.pixelColor(pos.toPoint());
+    QColor color = img.pixelColor(realpos.toPoint());
     return color.alpha() != 0; // Find if it's transparent
 }
 

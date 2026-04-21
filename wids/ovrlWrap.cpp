@@ -111,11 +111,6 @@ void OverlayWrapper::forwardMouse(QWidget* target, QMouseEvent* src, const QPoin
     if (!evTarget) return;
 
     if (src->type() == QEvent::MouseButtonPress) {
-        if ((target->focusPolicy() & Qt::ClickFocus)) {
-            for (QWidget* p = target->parentWidget(); p; p = p->parentWidget()) {
-                if (p->focusPolicy() & Qt::ClickFocus) { target = p; break; }
-            }
-        }
         target->setFocus(Qt::MouseFocusReason);
         if (QWidget* win = target->window()) {
             win->activateWindow();

@@ -11,7 +11,7 @@ const QString MODULE = "ExImport";
 struct Port {
     QString name;
     QString ext;
-    std::function<QString(QString)> xport;
+    std::function<QString()> xport;
     std::function<QString(QString)> import;
     QString getFilter() const {
         return QString("%1 (*%2)").arg(name).arg(ext);
@@ -25,8 +25,13 @@ const auto close = [](){
 
 const std::vector<Port> ports = {
     { "Deck file", ".deck",
-        [](QString deck){ return deck; },
-        [](QString in){ return in; }
+        [](){
+            QString out;
+            for (auto* n : notesL) {
+                out += makeSafe(n->contents()) + "\n";
+            }
+            return out;
+        }, [](QString in){ return in; }
     }
 };
 /*"Markdown file (*.md)",
@@ -34,14 +39,9 @@ const std::vector<Port> ports = {
 "CSV file (*.csv)",
 "Plain text (*.txt)"*/
 bool xport(const Port& p, QString pth) {
-    QString out;
-    for (auto* n : notesL) {
-        out += makeSafe(n->contents()) + "\n";
-    }
-
     QFile file(pth);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream(&file) << p.xport(out);
+        QTextStream(&file) << p.xport();
         file.close();
         Log::Info(MODULE) << "Exported deck to file `" << pth << "`!";
         close();

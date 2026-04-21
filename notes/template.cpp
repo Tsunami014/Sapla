@@ -103,7 +103,7 @@ bool Template::failed() {
 const QString prefs = "\".^*_";
 const QString suffs = "\\[|{;=>\r";
 const QRegularExpression replRe(
-    "(?<!%)%(?<pref>["+prefs+"]+)?"
+    "(?<!%|\\\\)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9\\-]+)"
     "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
     "(?:\x05|%|$|(?=[ \n$]))"
@@ -156,7 +156,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
 
         QString pref = m.captured("pref");
         if (pref.isNull()) pref = m.captured("pref2");
-        if (!parseArg(repl, pref, escape(m.captured("suff")))) continue;
+        if (!parseArg(args, repl, pref, escape(m.captured("suff")))) continue;
         if (repl.contains('\x06')) continue;
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -205,7 +205,7 @@ QString Template::replace() {
     return replace_main({});
 }
 
-bool Template::parseArg(QString& repl, QString pref, QString suff) {
+bool Template::parseArg(QStringList args, QString& repl, QString pref, QString suff) {
     if (!suff.isNull()) {
         QChar apply;
         QString sofar;
@@ -225,7 +225,7 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                         break;
                     }
                 } else {
-                    sofar = deescape(sofar);
+                    sofar = replace_inner(args, deescape(sofar), 1);
                     if (sofar == "" && apply != ';') {
                         good = false;
                         break;

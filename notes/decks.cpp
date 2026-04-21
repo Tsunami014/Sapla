@@ -66,6 +66,7 @@ void changeDeck(QString newname, bool createNew) {
     updateNoteCards();
     Log::Debug(MODULE) << "Successfully loaded " << notesL.size() << " notes from deck " << newname << "!";
 }
+
 int renameDeck(QString newname) {
     if (newname == "" || newname == ".") {
         //Log::Warn(MODULE) << "Deck name cannot be empty!";
@@ -108,6 +109,7 @@ int renameDeck(QString newname) {
         return -1;
     }
 }
+
 int deleteDeck(bool ask) {
     if (ask && !doubleCheck("delete the deck '"+curDeck+"'")) return -1;
     QString pth = getDecksPath()+"/"+curDeck;
@@ -143,46 +145,75 @@ QString int2word(uint num) {
     }
     return QLocale(QLocale::English).toString(num) + suf;
 }
-bool copyDeck(DeckCopyType typ, bool tmp) {
-    QString pth = getDecksPath()+"/";
-    QString frompth = pth+curDeck;
+QString getNewName(QString name) {
     uint idx;
     QString nam;
-    auto match = copyre.match(curDeck);
+    auto match = copyre.match(name);
     if (match.hasMatch()) {
         bool ok;
         uint num = match.captured(1).remove(',').toUInt(&ok);
         if (!ok) { // Should REALLY never happen
-            Log::Warn(MODULE) << "Something very wrong happened with the copy deck!";
+            Log::Warn(MODULE) << "Something very wrong happened with the get new name!";
             idx = 1;
-            nam = curDeck;
+            nam = name;
         } else {
             idx = num;
-            nam = curDeck.slice(0, curDeck.length()-match.captured().length());
+            nam = name.slice(0, name.length()-match.captured().length());
         }
     } else {
         idx = 1;
-        nam = curDeck;
-    }
-    if (tmp) {
-        if (!nam.startsWith('.')) nam = "."+nam;
-        idx = 1;
-    } else if (nam.startsWith('.')) {
-        nam = nam.slice(1);
-        idx = 1;
+        nam = name;
     }
     while (true) {
-        idx += 1;
-        QString end = nam + " the "+int2word(idx);
+        QString end = idx == 1 ? nam : nam + " the "+int2word(idx);
         auto it = std::find(decks.begin(), decks.end(), end);
         if (it == decks.end()) {
-            if (!QFile::copy(frompth, pth+end)) {
-                Log::Error(MODULE) << "Could not copy deck! You may need to refresh the app if you changed an external file.";
-                return false;
-            }
-            curDeck = end;
-            initNotes(); // Update list to be the order it would be created
-            return true;
+            return end;
         }
+        idx += 1;
     };
 }
+bool copyDeck(DeckCopyType typ, bool tmp) {
+    QString pth = getDecksPath()+"/";
+    QString nam = curDeck;
+    if (tmp) {
+        if (!nam.startsWith('.'))
+            nam = "."+nam;
+    } else if (nam.startsWith('.')) {
+        nam = nam.slice(1);
+    }
+    QString newname = getNewName(nam);
+    auto it = std::find(decks.begin(), decks.end(), newname);
+    if (it == decks.end()) {
+        if (!QFile::copy(pth+curDeck, pth+newname)) {
+            Log::Error(MODULE) << "Could not copy deck! You may need to refresh the app if you changed an external file.";
+            return false;
+        }
+        curDeck = newname;
+        initNotes(); // Update list to be the order it would be created
+        return true;
+    }
+    Log::Error(MODULE) << "Something bad happened with getting a new name!";
+    return false;
+}
+
+bool loadNewDeck(QString conts, QString name) {
+    if (name == "") {
+        return false;
+    }
+    QString newname = getNewName(name);
+
+    QString pth = getDecksPath()+"/"+newname;
+    QFile file(pth);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream(&file) << conts;
+        file.close();
+        decks.push_back(newname);
+        changeDeck(newname, false);
+        return true;
+    } else {
+        Log::Error(MODULE) << "Unable to open file `" << pth << "`!";
+        return false;
+    }
+}
+

@@ -17,3 +17,4 @@ enum DeckCopyType {
     Copy_NoSchedule
 };
 bool copyDeck(DeckCopyType typ = Copy_Regular, bool tmp = false);
+bool loadNewDeck(QString conts, QString name);

@@ -20,7 +20,7 @@ void showDeckOpts() {
 
     auto mkBtn = [dialog, font2](QString txt, auto func){
         auto* btn = new SvgBtn(":/assets/btn.svg");
-        btn->setPadding(20, -20);
+        btn->setPadding(0, -20);
         btn->setFont(font2);
         btn->setText(txt);
         QObject::connect(btn, &SvgBtn::clicked, dialog, func);
@@ -37,11 +37,11 @@ void showDeckOpts() {
         lay2->addWidget(mkBtn("Delete deck", [dialog](){
             if (deleteDeck(false) != -1)
                 dialog->accept();
-        }), 2);
+        }));
         lay2->addWidget(mkBtn("Export deck", [dialog](){
             dialog->accept();
             tryExport();
-        }), 4);
+        }));
         layout->addLayout(lay2);
     }
 
@@ -52,14 +52,14 @@ void showDeckOpts() {
         auto title2 = new QLabel("<h3>Copy deck options</h3>");
         title2->setFont(font2);
         title2->setAlignment(Qt::AlignCenter);
-        lay2->addWidget(title2, 2);
+        lay2->addWidget(title2);
 
         cpybtn = new SvgBtn(":/assets/btn.svg");
-        cpybtn->setPadding(20, -20);
+        cpybtn->setPadding(0, -20);
         cpybtn->setFont(font2);
         cpybtn->setText("Copy deck");
 
-        lay2->addWidget(cpybtn, 1);
+        lay2->addWidget(cpybtn);
         layout->addLayout(lay2);
     }
 

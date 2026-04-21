@@ -30,6 +30,7 @@ void makeDialog(const QString& HtmlTxt, const QString& title, const QString& xtr
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     layout->addWidget(txtEd);
     QObject::connect(dialog, &QDialog::finished, [=](int result){
+        dialogging = false;
         MG->curScene->dialogClose();
     });
     dialogging = true;

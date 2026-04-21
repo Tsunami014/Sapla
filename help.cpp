@@ -256,7 +256,9 @@ const QString ARGUMENT_HELP =
         "<li>"+code(";sep")+" - splits the text by 'sep' (converts all sep characters to spaces so you can use "+code("{")+" to index)"
             "<br><b>NOTE<b>: It replaces all existing spaces with a special character that gets replaced with a space at the end to make everything work. "
             "But don't worry, you can still split by a space (remember to escape it tho)</li>"
-        "<li>"+code("=sep")+" - joins the text with 'sep' (replaces all spacing)"
+        "<li>"+code("+sep")+" - joins the text with 'sep' (replaces all spacing)"
+        "<li>"+code("=exp")+" - sets the text to blank if it equals the expression (remember can use $ for vars)</li>"
+        "<li>"+code("!exp")+" - sets the text to blank if it does NOT equal the expression</li>"
     "</ul>"
 "<h2><u>Loops</u></h2>"
     "<p>Loops in the contents can be designated with "+code("@@var items@@ ... @@")+".</p>"
@@ -264,8 +266,9 @@ const QString ARGUMENT_HELP =
     "<p>The items part is just an expression, and the var loops over every item in items (split by spaces)</p>"
 "<h2><u>Argument tricks</u></h2>"
     "<ul>"
-        "<li>If/else statements can be made by using > then |; so IF it is not blank it will output the > text ELSE it will output the | text</li>"
-        "<li>An example for above is checking length: "+code("%1{2:>Longer|Shorter% than 2 words")+"</li>"
+        "<li>If/else statements can be made by using > then |; so IF it is not blank it will output the > text ELSE it will output the | text"
+            "<br>An example is checking length: "+code("%1{2:>Longer|Shorter% than 2 words")+
+            "<br>Another example is checking if the argument is equal to a string; e.g. "+code("You %1!hello>typed|(did not type) hello")+"</li>"
     "</ul>"
 ;
 

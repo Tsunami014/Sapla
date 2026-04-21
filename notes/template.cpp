@@ -101,7 +101,7 @@ bool Template::failed() {
 }
 
 const QString prefs = "\".^*_";
-const QString suffs = "\\[|{;=>\r";
+const QString suffs = "\\[|{;+>!=\r";
 const QRegularExpression replRe(
     "(?<!%|\\\\)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9\\-]+)"
@@ -239,7 +239,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                 repl.slice(1, repl.length()-2);
                             }
                             break;
-                        case '=':
+                        case '+':
                             repl.replace(' ', sofar);
                             break;
                         case '{':
@@ -373,6 +373,16 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                         case '>':
                             if (!repl.isNull())
                                 repl = sofar;
+                            break;
+                        case '=':
+                            if (repl == sofar) {
+                                repl = {};
+                            }
+                            break;
+                        case '!':
+                            if (repl != sofar) {
+                                repl = {};
+                            }
                             break;
                         default:
                             good = false;

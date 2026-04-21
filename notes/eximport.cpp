@@ -4,6 +4,7 @@
 #include "../menu.hpp"
 #include "../log.hpp"
 #include "../core.hpp"
+#include <QRegularExpression>
 #include <QFileDialog>
 
 const QString MODULE = "ExImport";
@@ -32,12 +33,28 @@ const std::vector<Port> ports = {
             }
             return out;
         }, [](QString in){ return in; }
+    }, { "Markdown file", ".md",
+        [](){
+            QStringList outs;
+            for (auto* n : notesL) {
+                outs << n->contents().replace(QRegularExpression("\n\n\n\n+"), "\n\n\n");
+            }
+            return outs.join("\n\n\n\n");
+        }, [](QString in){
+            QStringList l = in.split("\n\n\n\n");
+            for (auto& it : l) {
+                it = makeSafe(it);
+            }
+            return l.join("\n");
+        }
     }
 };
-/*"Markdown file (*.md)",
-"Markdown table (*.md)",
-"CSV file (*.csv)",
-"Plain text (*.txt)"*/
+/* TODOS
+ * Markdown table
+ * HTML
+ * CSV
+ * Plain text
+*/
 bool xport(const Port& p, QString pth) {
     QFile file(pth);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {

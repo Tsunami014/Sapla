@@ -230,6 +230,8 @@ const QString ARGUMENT_HELP =
     "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier) or "+code("%#")+" (for every argument separated by "+code("|")+").</p>"
     "<p>Arguments must end with either a space (in which case the space is kept) or a %</p>"
     "<p>%index arguments can be negative, e.g. "+code("%-1")+" which would give the last argument. Also, "+code("%0")+" is equivalent to "+code("%#")+" for convenience</p>"
+    "<p>There is a special argument type: "+code("%-")+". This argument represents every number in existance and is used with { to get a sequence of numbers."
+        "If you do not include { directly after there is a good chance it fails. An example of it working is "+code("%-{1:5")+"</p>"
     "<p>Arguments can be used with prefixes and/or suffixes, for example "+code("%.name")+", "+code("%name[1")+" or "+code("%.name[0")+".</p>"
     "<p>They can be stacked and will be executed in the order you put them in, so e.g. "+code(".^")+" would first lower <i>then</i> title case, converting e.g. "+hl("hElLo wOrLd!")+" to "+hl("Hello World!")+".</p>"
     "<h3>Argument prefixes</h3>"

@@ -3,6 +3,13 @@
 #include <QRegularExpression>
 #include <QList>
 
+/* Escape codes
+ * \3 - replacement for spaces
+ * \5 - used as a premature ending for %args
+ * \6 - used to represent every number separated by spaces
+ * \A \B \C - used for escaping base64
+ */
+
 std::map<QString, Template> globalTemplates;
 
 const static QRegularExpression escapeRe(R"((?<!\\)\(((?:\\.|[^)])+)\))");
@@ -124,6 +131,8 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
         if (auto it = ptns.find(conts); it != ptns.end()) {
             if (depth+1 > MAX_RECURSION) continue;
             repl = replace_inner(args, it->second, depth+1);
+        } else if (conts == "-") {
+            repl = '\x06';
         } else {
             if (conts == "#") {
                 conts = "0";
@@ -148,6 +157,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
         QString pref = m.captured("pref");
         if (pref.isNull()) pref = m.captured("pref2");
         if (!parseArg(repl, pref, escape(m.captured("suff")))) continue;
+        if (repl.contains('\x06')) continue;
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
         out.replace(start, end - start, repl);
@@ -241,7 +251,16 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                                 good = false;
                                 break;
                             }
-                            uint replln = words ? repl.count(' ')+1 : repl.length();
+                            uint replln;
+                            if (repl == "\x06") {
+                                if (!words) {
+                                    good = false;
+                                    break;
+                                }
+                                replln = std::numeric_limits<uint>::max();
+                            } else {
+                                replln = words ? repl.count(' ')+1 : repl.length();
+                            }
                             int from;
                             if (spl[0] == "") {
                                 if (splln == 1) {
@@ -259,6 +278,10 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                             }
                             if (from < 0) from = replln + from - 1;
                             if (splln == 1) {
+                                if (repl == "\x06") {
+                                    repl = QString::number(from);
+                                    break;
+                                }
                                 if (from >= replln || from < 0) {
                                     repl = {};
                                     break;
@@ -310,7 +333,14 @@ bool Template::parseArg(QString& repl, QString pref, QString suff) {
                                     break;
                                 }
                                 if (to >= replln) to = replln-1;
-                                if (words) {
+                                if (repl == "\x06") {
+                                    QStringList li = {};
+                                    for (int i = from; i < to; i += step) {
+                                        li.append(QString::number(i));
+                                    }
+                                    if (reverse) std::reverse(li.begin(), li.end());
+                                    repl = li.join(' ');
+                                } else if (words) {
                                     int ln = to-from+1;
                                     auto li = repl.split(' ').sliced(from, ln);
                                     if (step != 1) {

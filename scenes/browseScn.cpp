@@ -68,6 +68,7 @@ BrowseScene::BrowseScene(Note* sel)
         siw = new SchdInfoWid(this);
         preview = new MarkdownEdit(this);
         preview->setButton(true);
+        preview->setProperty("Disabled", true);
         connect(preview, &MarkdownEdit::clicked, this, [=](){
             if (side == SIDE_FRONT) side = SIDE_BACK;
             else if (side == SIDE_BACK) side = SIDE_FRONT;
@@ -172,7 +173,7 @@ void BrowseScene::updatePrev(bool refresh) {
         seed = getSeed();
     }
     updateInfo();
-    preview->setDisabled(true);
+    preview->setProperty("Disabled", true);
     if (tree->selectedItems().size() == 0) {
         prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
@@ -207,7 +208,7 @@ void BrowseScene::updatePrev(bool refresh) {
         preview->setMarkdown(n->preview());
         return;
     }
-    preview->setDisabled(false);
+    preview->setProperty("Disabled", false);
     QString sidestr;
     if (side == SIDE_FRONT) sidestr = " (front)";
     else if (side == SIDE_BACK) sidestr = " (back)";

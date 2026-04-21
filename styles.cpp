@@ -78,7 +78,7 @@ void MainGame::initStyles() {
         "QTextEdit:focus, QLineEdit:focus {"
             "border: 2px solid #333;"
         "}"
-        "QTextEdit:disabled, QLineEdit:disabled {"
+        "QTextEdit:disabled, QTextEdit[Disabled='true'], QLineEdit:disabled {"
             "background-color: %2;"
             "color: #DADADA;"
             "border: 1px solid #999;"

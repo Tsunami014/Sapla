@@ -20,6 +20,7 @@ protected:
 
 private:
     void forwardMouse(QWidget* target, QMouseEvent* src, const QPoint& globalPos);
+    void forwardWheel(QWidget* target, QWheelEvent* src, const QPoint& globalPos);
 
     void transitionHover(QWidget* newTarget);
 

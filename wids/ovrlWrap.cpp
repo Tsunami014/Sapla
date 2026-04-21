@@ -1,6 +1,7 @@
 #include "ovrlWrap.hpp"
 #include "../core.hpp"
 #include <QMouseEvent>
+#include <QWheelEvent>
 #include <QCoreApplication>
 #include <QAbstractScrollArea>
 
@@ -93,6 +94,17 @@ bool OverlayWrapper::event(QEvent* ev) {
 
             return true;
         }
+        case QEvent::Wheel: {
+            auto* we = static_cast<QWheelEvent*>(ev);
+
+            const QPoint globalPos = we->globalPosition().toPoint();
+            QWidget* scene = MG->curScene;
+            QWidget* under = scene->childAt(scene->mapFromGlobal(globalPos));
+            if (!under) under = scene;
+
+            forwardWheel(under, we, globalPos);
+            return true;
+        }
 
         case QEvent::Leave:
         case QEvent::WindowDeactivate:
@@ -129,6 +141,26 @@ void OverlayWrapper::forwardMouse(QWidget* target, QMouseEvent* src, const QPoin
         src->buttons(),
         src->modifiers()
     );
+    QCoreApplication::postEvent(evTarget, fwd);
+}
+void OverlayWrapper::forwardWheel(QWidget* target, QWheelEvent* src, const QPoint& globalPos) {
+    QWidget* evTarget = getEventTarget(target);
+    if (!evTarget) return;
+
+    const QPointF localPos  = evTarget->mapFromGlobal(globalPos);
+
+    auto* fwd = new QWheelEvent(
+        localPos,
+        globalPos,
+        src->pixelDelta(),
+        src->angleDelta(),
+        src->buttons(),
+        src->modifiers(),
+        src->phase(),
+        src->inverted(),
+        src->source()
+    );
+
     QCoreApplication::postEvent(evTarget, fwd);
 }
 

@@ -173,11 +173,17 @@ void BrowseScene::updatePrev(bool refresh) {
         seed = getSeed();
     }
     updateInfo();
-    preview->setProperty("Disabled", true);
+    auto setDisabledness = [&](bool disabled) {
+        preview->setProperty("Disabled", disabled);
+        preview->style()->unpolish(preview);
+        preview->style()->polish(preview);
+        preview->update();
+    };
     if (tree->selectedItems().size() == 0) {
         prevIdxLabl->setText("Select a note");
         preview->setMarkdown("");
         siw->chngNote();
+        setDisabledness(true);
         return;
     }
     Note* n = getSelNote();
@@ -200,12 +206,14 @@ void BrowseScene::updatePrev(bool refresh) {
         prevIdxLabl->setText("<span style='color:red;'>Encountered errors!</span>");
         preview->setMarkdown(n->error);
         side = SIDE_FRONT;
+        setDisabledness(true);
         return;
     }
     siw->chngNote(n);
     if (prevIdx.idx == 0) {
         prevIdxLabl->setText("No cards to preview!");
         preview->setMarkdown(n->preview());
+        setDisabledness(true);
         return;
     }
     preview->setProperty("Disabled", false);
@@ -215,6 +223,7 @@ void BrowseScene::updatePrev(bool refresh) {
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
     setSeed(seed);
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
+    setDisabledness(false);
 }
 
 void BrowseScene::filterChanged() {

@@ -261,7 +261,7 @@ const QString ARGUMENT_HELP =
         "<li>"+code("!exp")+" - sets the text to blank if it does NOT equal the expression</li>"
     "</ul>"
 "<h2><u>Loops</u></h2>"
-    "<p>Loops in the contents can be designated with "+code("@@var items@@ ... @@")+".</p>"
+    "<p>Loops in the contents can be designated with "+code("@@var items@ ... @@")+".</p>"
     "<p>The var name does not have a $ or % behind it (like defining a macro)</p>"
     "<p>The items part is just an expression, and the var loops over every item in items (split by spaces)</p>"
 "<h2><u>Argument tricks</u></h2>"

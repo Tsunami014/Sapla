@@ -125,10 +125,13 @@ int MainGame::cardFin(FlashCard* card, int key, Tree* tree) {
     } else {
         return -1;
     }
-    card->update(rating);
+    float sco = card->update(rating);
+    if (sco == 0) sco = -0.5; // So it's still increasing
     card->parent->updateSchedules();
-    int grow = std::max(rating * 10 + 5, 0);
-    return tree->grow(grow, rating >= ScheduleInfo.ratesLen()/4);
+    float min = *std::min_element(ScheduleInfo.ratingScos.begin(), ScheduleInfo.ratingScos.end());
+    float sze = *std::max_element(ScheduleInfo.ratingScos.begin(), ScheduleInfo.ratingScos.end()) - min;
+    int grow = ((sco+min)/sze) * 10;
+    return tree->grow(grow, sco > 0);
 }
 
 bool MainGame::handleEv(QKeyEvent* event) {

@@ -207,17 +207,17 @@ QString Schedule::toInf(QString title) {
         QString::number(std::chrono::duration_cast<std::chrono::seconds>(nxt.time_since_epoch()).count());
 }
 
-void Schedule::update(int rating) {
+float Schedule::update(int rating) {
     if (rating == -1) {
         nxt += ScheduleInfo.skipAmnt;
-        return;
+        return 0;
     } else if (rating == -2) {
         nxt += ScheduleInfo.redoAmnt;
-        return;
+        return 0;
     }
     if (rating < 0 || rating >= ScheduleInfo.ratesLen()) {
         Log::Error(MODULE) << "Found bad rating value: " << rating << "!";
-        return;
+        return 0;
     }
     auto diff = ScheduleInfo.ratingScos[rating];
     score = std::clamp(score + diff, 0.0f, float(ScheduleInfo.timings.size()-1));
@@ -226,6 +226,7 @@ void Schedule::update(int rating) {
     } else {
         nxt = std::chrono::system_clock::now() + ScheduleInfo.timings[std::round(score)];
     }
+    return diff;
 }
 Duration Schedule::getUpdatedTime(int rating) {
     auto diff = ScheduleInfo.ratingScos[rating];

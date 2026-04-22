@@ -75,7 +75,7 @@ public:
     bool isAlive();
     bool operator==(const FlashCard& other) const;
 
-    virtual void update(int rating = -1);
+    virtual float update(int rating = -1);
 
     Schedule schd;
     Note* parent;

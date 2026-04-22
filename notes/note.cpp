@@ -298,8 +298,8 @@ FlashCard::~FlashCard() {
 }
 bool FlashCard::isAlive() { return alive; }
 
-void FlashCard::update(int rating) {
-    schd.update(rating);
+float FlashCard::update(int rating) {
+    return schd.update(rating);
 }
 
 QString FlashCard::getSide(Side s) const {

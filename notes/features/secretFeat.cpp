@@ -49,9 +49,10 @@ public:
         }
         updateDifficulty();
     }
-    void update(int rating = -1) override {
-        schd.update(rating);
+    float update(int rating = -1) override {
+        float out = schd.update(rating);
         updateDifficulty();
+        return out;
     }
 
 protected:

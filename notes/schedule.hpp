@@ -51,7 +51,7 @@ struct Schedule {
     Schedule(int part, int idx, float score, long long nxtTime);
     QString toInf(QString title);
 
-    void update(int rating = -1);
+    float update(int rating = -1);
     Duration getUpdatedTime(int rating = -1);
 
     float score;

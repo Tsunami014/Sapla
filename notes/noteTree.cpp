@@ -10,9 +10,9 @@ Note* getNote(QTreeWidgetItem* item) {
 
 QTreeWidget* getNoteTree(QWidget* parent) {
     auto* tree = new ListWidget();
-    int cols = 5;
+    int cols = 6;
     tree->setColumnCount(cols);
-    tree->setHeaderLabels({"Name", "📚", "📝", "🏷️", "‼️"});
+    tree->setHeaderLabels({"Name", "📚", "📝", "%", "🏷️", "‼️"});
     auto header = tree->header();
     header->setStretchLastSection(false);
     for (int i = 1; i < cols; i++) {
@@ -45,8 +45,9 @@ void updateItem(QTreeWidgetItem* it, Note* note) {
     }
     it->setData(1, Qt::DisplayRole, QVariant(note->getNumCards()));
     it->setData(2, Qt::DisplayRole, QVariant(note->getNumTemplates()));
-    it->setText(3, note->tags.join(", "));
-    it->setData(4, Qt::DisplayRole, QVariant(note->error.count("\n")));
+    it->setData(3, Qt::DisplayRole, QVariant(std::round(note->percentage()*100)));
+    it->setText(4, note->tags.join(", "));
+    it->setData(5, Qt::DisplayRole, QVariant(note->error.count("\n")));
 
     //item->setIcon(0, QIcon(":/icons/file.png"));
 }

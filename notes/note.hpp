@@ -40,6 +40,7 @@ public:
     void update();
     void updateGlobals();
     void updateCards();
+    float percentage();
 
     QString contents() const;
     QString title();

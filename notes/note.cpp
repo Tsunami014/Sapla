@@ -62,6 +62,14 @@ int Note::getNumCards() {
 int Note::getNumTemplates() {
     return templates.size();
 }
+float Note::percentage() {
+    if (cards.size() == 0) return 0;
+    float perc = 0;
+    for (auto& c : cards) {
+        perc += c->schd.percentage();
+    }
+    return perc/cards.size();
+}
 
 void Note::rmCards() {
     cards.clear();

@@ -50,26 +50,9 @@ void SchdInfoWid::chngNote(Note* note) {
     if (n == nullptr) {
         txt->setText("");
     } else {
-        auto nmap = n->getSchdMap();
-        unsigned int amnt = 0;
-        float totperc = 0;
-        // Remove empty maps & count them all for the text
-        for (const auto& [key, innerMap] : nmap) {
-            amnt += innerMap.size();
-            if (!innerMap.empty()) {
-                map.emplace(key, innerMap);
-                float perc = 0;
-                for (const auto& [idx, schd] : innerMap) {
-                    perc += std::clamp(schd.score / ScheduleInfo.learntSco, 0.0f, 1.0f) * 100;
-                }
-                totperc += perc;
-            }
-        }
-        uint8_t outperc = std::round(
-            std::clamp(totperc / amnt, 0.0f, 100.0f)
-        );
         txt->setText(
-            QString("%1 schedules  \n%2% done").arg(amnt).arg(outperc)
+            QString("%1 schedules  \n%2% done")
+                .arg(n->getSchdMap().size()).arg(std::round(n->percentage()*100))
         );
     }
 }

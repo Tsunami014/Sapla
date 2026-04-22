@@ -1,5 +1,7 @@
 # Sapla
-A cool flashcard app made in QT!
+A cool flashcard app made in QT! It is extremely flexible and allows you to make flashcards as easy or complicated as you want extremely efficiently.
+
+A tutorial is located at `Help -> Tutorial` and covers everything you need to know, ramping up in complexity as you get further on.
 
 If you need any help, please use the `Help -> App help` or `Help -> This screen help` menu item. For FAQ, important things or sneaky tricks look at the app help.
 

@@ -16,7 +16,7 @@ QAction* last = nullptr;
 _MenuesTyp* Menues = new _MenuesTyp;
 
 bool dialogging = false;
-void makeDialog(const QString& HtmlTxt, const QString& title, const QString& xtraStyle) {
+QDialog* baseDialog(const QString& HtmlTxt, const QString& title, const QString& xtraStyle = "") {
     QDialog* dialog = new QDialog;
     dialog->setWindowTitle(title);
     dialog->resize(500, 700);
@@ -29,6 +29,10 @@ void makeDialog(const QString& HtmlTxt, const QString& title, const QString& xtr
     txtEd->setHtml(HtmlTxt);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     layout->addWidget(txtEd);
+    return dialog;
+}
+void makeDialog(const QString& HtmlTxt, const QString& title, const QString& xtraStyle) {
+    auto dialog = baseDialog(HtmlTxt, title, xtraStyle);
     QObject::connect(dialog, &QDialog::finished, [=](int result){
         dialogging = false;
         MG->curScene->dialogClose();
@@ -57,6 +61,11 @@ void initMenu(QMenuBar* b) {
     Menues->GotoMenu = gmenu;
 
     auto* hmenu = new _MenuBase("Help");
+    hmenu->addAction("Tutorial", []() {
+        auto dialog = baseDialog(TUTORIAL, "Application help");
+        dialog->setModal(false);
+        dialog->show();
+    });
     hmenu->addAction("Application help", []() { makeDialog(APP_HELP, "Application help"); });
     hmenu->addAction("This screen help", []() {
         if (helpStr) makeDialog(*helpStr, "This screen help");

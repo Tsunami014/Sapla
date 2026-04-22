@@ -23,9 +23,19 @@ const QString nl(const QString str) {
 }
 const QString qu = "<span style='background-color:" "#AAAAAA;'>&nbsp;</span>&nbsp;";
 
+
+const QString TUTORIAL =
+"<h1><b>TUTORIAL</b></h1>"
+    "<p>This will try to be a guide on doing everything in the app, from your first basic notes to complex templates. You do you, but I'll try to make it as interactive as possible (you get to make some test notes).</p>"
+"<h2>Your first look at the app</h2>"
+    "<p>The app may appear large and overwhelming at first, but it really isn't. You can choose how complicated you want to be when using this app. "
+        "The app has features that make note taking as easy or as complicated as you want.</p>"
+;
+
 const QString APP_HELP = 
 "<h1><b>IMPORTANT THINGS</b></h1>"
     "<ul>"
+        "<li><b>IF YOU ARE OVERWHELMED, LOOK AT THE TUTORIAL (<b>Help &gt; Tutorial</b>)</li>"
         "<li>"
             "<p>Decks starting with a "+hl(".")+" are temporary and will be <i>put in the recycle bin</i> next app startup (or on request, see the home screen's help)</p>"
             "<p>Removing the "+hl(".")+" at the start of a deck name will make it not temporary anymore, and adding one will make it temporary."

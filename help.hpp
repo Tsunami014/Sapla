@@ -1,6 +1,7 @@
 #pragma once
 #include <QString>
 
+const extern QString TUTORIAL;
 const extern QString APP_HELP;
 const extern QString HOME_HELP;
 const extern QString BROWSE_HELP;

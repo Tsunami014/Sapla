@@ -140,7 +140,11 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
             bool ok;
             if (int num = conts.toInt(&ok); ok) {
                 if (num == 0) {
-                    repl = args.join('|');
+                    QStringList as = args;
+                    for (auto& a : as) {
+                        a.replace(' ', '\3');
+                    }
+                    repl = as.join(' ');
                 } else {
                     if (num < 0) {
                         num = args.length()+num + 1;

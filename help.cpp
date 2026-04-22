@@ -227,7 +227,7 @@ const QString ARGUMENT_HELP =
         "<br>For example, "+code("|: test [name=Hello,\\ %1] Remember to say '%name' :|")+" applied via "+code("||test me||")+" will output "+hl("Remember to say 'Hello, me'")
         )+"</p>"
 "<h2><u>Argument usage</u></h2>"
-    "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier) or "+code("%#")+" (for every argument separated by "+code("|")+").</p>"
+    "<p>Arguments are specified as either %index (e.g. "+code("%1")+" for the first argument) or %name (when defined in an argument specifier) or "+code("%#")+" (for every argument separated by space (with spaces escaped; for use with {)).</p>"
     "<p>Arguments must end with either a space (in which case the space is kept) or a %</p>"
     "<p>%index arguments can be negative, e.g. "+code("%-1")+" which would give the last argument. Also, "+code("%0")+" is equivalent to "+code("%#")+" for convenience</p>"
     "<p>There is a special argument type: "+code("%-")+". This argument represents every number in existance and is used with { to get a sequence of numbers."

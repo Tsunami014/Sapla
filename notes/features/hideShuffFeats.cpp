@@ -1,6 +1,7 @@
 // Hide and shuffle features
 #include "features.hpp"
 #include "base/seedrng.hpp"
+#include <deque>
 
 const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?)\.\.)");
 QString ScrambledFeat::replacements(QString& txt, Side s) const {
@@ -71,6 +72,64 @@ QMap<QString, QString> ScrambledFeat::help() const {
            {"Scrambled text\n.. ..",
             "Scrambles each word, keeping the start and end letters and removing capitalisation\n"
             "E.g. `..Hello wOrLd..` might scramble to `Hlelo wlord`"
+        }
+    };
+}
+
+
+const QRegularExpression shuflRe(R"((?<!\\)>> ?(?<conts>(?:.|\n)+?)(?<end>$| ?(?<!\\)<<))", MO);
+struct shflResult {
+    bool eol;
+    qsizetype start;
+    qsizetype end;
+};
+QString ShuffledFeat::check(QString& txt, QString& err) const {
+    std::deque<shflResult> res;
+    std::vector<QString> endoflns;
+    std::vector<QString> inlns;
+    auto it = shuflRe.globalMatch(txt);
+    while (it.hasNext()) {
+        auto m = it.next();
+        bool eol = m.captured("end").isEmpty();
+        (eol? endoflns : inlns).push_back(m.captured("conts"));
+        res.push_front(shflResult{ eol,
+            m.capturedStart(),
+            m.capturedEnd()
+        });
+    }
+    auto rng = getRNG();
+    std::shuffle(endoflns.begin(), endoflns.end(), rng);
+    std::shuffle(inlns.begin(), inlns.end(), rng);
+    int offs = 0;
+    while (!res.empty()) {
+        auto nxt = res.back();
+        res.pop_back();
+        auto* li = (nxt.eol? &endoflns : &inlns);
+        if (li->empty()) {
+            Log::Error(MODULE) << "Shuffle failed! How did you manage this?";
+            return txt;
+        }
+        QString repl = li->back();
+        li->pop_back();
+        int start = nxt.start + offs;
+        int end = nxt.end + offs;
+        txt.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return txt;
+}
+QString ShuffledFeat::markup(QString& line) const {
+    const QRegularExpression re(R"((?<!\\)(&gt;&gt; ?| ?&lt;&lt;))");
+    return line.replace(re, "<b style='color:" + col + "'>\\1</b>");
+}
+QMap<QString, QString> ShuffledFeat::help() const {
+    return {
+           {"Shuffled line\n>>",
+            "All line shuffles (not both) get shuffled around\n"
+            "Matches text until the end of the line"
+        }, {"Shuffled text\n>> <<",
+            "All text shuffles (not both) get shuffled around\n"
+            "Matches text in between >> and <<"
         }
     };
 }

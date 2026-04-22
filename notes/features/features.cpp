@@ -36,6 +36,7 @@ void registerNoteFeatures() {
     Feats.clear();
     REGISTER_FEAT(MultinoteSepFeat);
     REGISTER_FEAT(TemplateSideFeat);
+    REGISTER_FEAT(ShuffledFeat);
     REGISTER_CFEAT(SingleSideFeat);
     REGISTER_CFEAT(DoubleSideFeat);
     REGISTER_CFEAT(MirrorSideFeat);

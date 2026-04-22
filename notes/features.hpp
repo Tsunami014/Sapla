@@ -176,3 +176,12 @@ struct ScrambledFeat : FeatReg {
     Feat_help;
 };
 
+struct ShuffledFeat : FeatReg {
+    Feat_Instance(ShuffledFeat)
+    Feat_useCol;
+    Feat_order(200);
+    Feat_name(">> <<");
+    Feat_check;
+    Feat_markup;
+    Feat_help;
+};

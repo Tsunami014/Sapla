@@ -181,7 +181,7 @@ struct ShuffledFeat : FeatReg {
     Feat_useCol;
     Feat_order(200);
     Feat_name(">> <<");
-    Feat_check;
+    Feat_replacements;
     Feat_markup;
     Feat_help;
 };

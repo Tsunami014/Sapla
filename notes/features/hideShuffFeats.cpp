@@ -78,12 +78,15 @@ QMap<QString, QString> ScrambledFeat::help() const {
 
 
 const QRegularExpression shuflRe(R"((?<!\\)>> ?(?<conts>(?:.|\n)+?)(?<end>$| ?(?<!\\)<<))", MO);
+const QRegularExpression shuflBasicRe(R"((?<!\\)(&gt;&gt; ?| ?&lt;&lt;))");
 struct shflResult {
     bool eol;
     qsizetype start;
     qsizetype end;
 };
-QString ShuffledFeat::check(QString& txt, QString& err) const {
+QString ShuffledFeat::replacements(QString& txt, Side s) const {
+    if (s == SIDE_NAME) return txt;
+    if (s == SIDE_HIDE) return txt.remove(shuflBasicRe);
     std::deque<shflResult> res;
     std::vector<QString> endoflns;
     std::vector<QString> inlns;
@@ -119,8 +122,7 @@ QString ShuffledFeat::check(QString& txt, QString& err) const {
     return txt;
 }
 QString ShuffledFeat::markup(QString& line) const {
-    const QRegularExpression re(R"((?<!\\)(&gt;&gt; ?| ?&lt;&lt;))");
-    return line.replace(re, "<b style='color:" + col + "'>\\1</b>");
+    return line.replace(shuflBasicRe, "<b style='color:" + col + "'>\\1</b>");
 }
 QMap<QString, QString> ShuffledFeat::help() const {
     return {

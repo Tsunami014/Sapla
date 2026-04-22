@@ -48,10 +48,12 @@ void DeckProgress::initialupd() {
     unsigned int idx = 0;
     for (auto p : progrs) {
         nums.push_back(p.cur);
-        outTxts.append(
-            "<b style='color:" + MG->styls.pbcols[idx + 3].name(QColor::HexRgb) + "'>"
-            + p.label + "</b>"
-        );
+        if (!p.label.isEmpty()) {
+            outTxts.append(
+                "<b style='color:" + MG->styls.pbcols[idx + 3].name(QColor::HexRgb) + "'>"
+                + p.label + "</b>"
+            );
+        }
         idx = (idx + 1) % maxSze;
     }
     pb.setValues(nums);

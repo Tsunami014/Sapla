@@ -25,20 +25,30 @@ CurPile curpile{};
 double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for display
 
 std::vector<_progressVal> getProgresses() {
-    unsigned int cardsln = allCards.size();
+    unsigned int unsns = 0;
     unsigned int news = 0;
-    unsigned int pracs = 0;
+    unsigned int duenews = 0;
     unsigned int learns = 0;
+    unsigned int duelearns = 0;
+    unsigned int revis = 0;
+    unsigned int duerevis = 0;
     for (auto* fc : allCards) {
-        if (fc->schd.isNew()) news++;
-        else if (fc->schd.score < ScheduleInfo.notnewSco) pracs++;
-        else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
+        bool due = fc->schd.dueNow();
+        if (fc->schd.isNew()) unsns++;
+        else if (fc->schd.score < ScheduleInfo.notnewSco) (due? duenews : news)++;
+        else if (fc->schd.score < ScheduleInfo.learntSco) (due? duelearns : learns)++;
+        else (due? duerevis : revis)++;
     }
     return {
-        {"Revising", cardsln-(news+pracs+learns)},
-        {"Learning", learns},
-        {"New", pracs},
-        {"Unseen", news},
+        // And change colours
+        {"", revis},
+        {"Revising", duerevis},
+        {"", learns},
+        {"Learning", duelearns},
+        {"", news},
+        {"New", duenews},
+        {"", 0},
+        {"Unseen", unsns},
     };
 }
 _overallProgr getOverallProgress() {

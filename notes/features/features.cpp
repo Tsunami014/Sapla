@@ -41,7 +41,7 @@ void registerNoteFeatures() {
     REGISTER_CFEAT(MirrorSideFeat);
     REGISTER_CFEAT(SecretFeat);
     REGISTER_FEAT(HiddenFeat);
-    REGISTER_FEAT(ShuffledFeat);
+    REGISTER_FEAT(ScrambledFeat);
     REGISTER_FEAT(TagFeat);
     REGISTER_FEAT(TemplateFeat);
     REGISTER_FEAT(ScheduleFeat);

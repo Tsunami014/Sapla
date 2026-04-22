@@ -166,8 +166,8 @@ struct HiddenFeat : FeatReg {
     Feat_help;
 };
 
-struct ShuffledFeat : FeatReg {
-    Feat_Instance(ShuffledFeat)
+struct ScrambledFeat : FeatReg {
+    Feat_Instance(ScrambledFeat)
     Feat_useCol;
     Feat_order(100);
     Feat_name(".. ..");

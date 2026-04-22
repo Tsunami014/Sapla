@@ -1,9 +1,9 @@
-// Hidden and shuffle features
+// Hide and shuffle features
 #include "features.hpp"
 #include "base/seedrng.hpp"
 
 const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?)\.\.)");
-QString ShuffledFeat::replacements(QString& txt, Side s) const {
+QString ScrambledFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(scramblRe);
 
@@ -51,7 +51,7 @@ QString ShuffledFeat::replacements(QString& txt, Side s) const {
     }
     return txt;
 }
-QString ShuffledFeat::markup(QString& line) const {
+QString ScrambledFeat::markup(QString& line) const {
     auto it = scramblRe.globalMatch(line);
     int offs = 0;
     while (it.hasNext()) {
@@ -66,7 +66,7 @@ QString ShuffledFeat::markup(QString& line) const {
     }
     return line;
 }
-QMap<QString, QString> ShuffledFeat::help() const {
+QMap<QString, QString> ScrambledFeat::help() const {
     return {
            {"Scrambled text\n.. ..",
             "Scrambles each word, keeping the start and end letters and removing capitalisation\n"

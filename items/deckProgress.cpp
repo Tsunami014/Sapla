@@ -7,7 +7,7 @@
 DeckProgress::DeckProgress(QGraphicsItem* parent)
     : RectItem(parent), pb(this), txt(this) {
         txt.setFont(getFont(1.25));
-        initialupd();
+        upd();
         txt.setTransformOriginPoint(txt.boundingRect().topLeft());
         txt.setRotation(90);
     }
@@ -33,16 +33,6 @@ void DeckProgress::setRect(const QRectF& newRect) {
 void DeckProgress::upd() {
     auto progrs = getProgresses();
     std::vector<float> nums;
-    for (auto p : progrs) {
-        nums.push_back(p.cur);
-    }
-    pb.setValues(nums);
-    update();
-    pb.update();
-}
-void DeckProgress::initialupd() {
-    auto progrs = getProgresses();
-    std::vector<float> nums;
     QStringList outTxts;
     size_t maxSze = MG->styls.pbcols.size()-3;
     unsigned int idx = 0;
@@ -58,5 +48,5 @@ void DeckProgress::initialupd() {
     }
     pb.setValues(nums);
     pb.update();
-    txt.setHtml(outTxts.join("  "));
+    txt.setHtml(outTxts.join(""));
 }

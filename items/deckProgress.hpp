@@ -10,7 +10,6 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override {}
     void upd();
 protected:
-    void initialupd();
     MultiProgressBarItem pb;
     QGraphicsTextItem txt;
 };

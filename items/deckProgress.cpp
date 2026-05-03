@@ -41,7 +41,7 @@ void DeckProgress::upd() {
         if (!p.label.isEmpty()) {
             outTxts.append(
                 "<b style='color:" + MG->styls.pbcols[idx + 3].name(QColor::HexRgb) + "'>"
-                + p.label + "</b>"
+                + p.label.replace('\t', "  ").replace(' ', "&nbsp;") + "</b>"
             );
         }
         idx = (idx + 1) % maxSze;

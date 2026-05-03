@@ -27,46 +27,22 @@ double activeWeight = 0; // Weight of cards from curpile that were temporarily r
 std::vector<_progressVal> getProgresses() {
     unsigned int unsns = 0;
     unsigned int news = 0;
-    unsigned int duenews = 0;
     unsigned int learns = 0;
-    unsigned int duelearns = 0;
     unsigned int revis = 0;
-    unsigned int duerevis = 0;
     for (auto* fc : allCards) {
         bool due = fc->schd.dueNow();
         if (fc->schd.isNew()) unsns++;
-        else if (fc->schd.score < ScheduleInfo.notnewSco) (due? duenews : news)++;
-        else if (fc->schd.score < ScheduleInfo.learntSco) (due? duelearns : learns)++;
-        else (due? duerevis : revis)++;
+        else if (fc->schd.score < ScheduleInfo.notnewSco) news++;
+        else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
+        else revis++;
     }
-    std::vector<_progressVal> out;
-    auto generate = [&out](QString labl, uint reg, uint rev){
-        if (reg == 0 && rev == 0) {
-            out.push_back({"", 0});
-            out.push_back({"", 0});
-        } else {
-            const auto lablsze = labl.length();
-            QString mid1;
-            QString mid2;
-            if (reg == 0) {
-                mid2 = labl.sliced(1, lablsze-2);
-            } else if (rev == 0) {
-                mid1 = labl.sliced(1, lablsze-2);
-            } else {
-                const auto mid = std::floor(lablsze/2)-1;
-                mid1 = labl.sliced(1, mid);
-                mid2 = labl.sliced(mid+1, lablsze-mid-2);
-            }
-            out.push_back({labl.at(0)+mid1, reg});
-            out.push_back({mid2+labl.at(lablsze-1)+"&nbsp;&nbsp;", rev});
-        }
+    return {
+        // And change colours
+        {"Revising\t", revis},
+        {"Learning\t", learns},
+        {"New\t", news},
+        {"Unseen", unsns},
     };
-    generate("Revising", revis, duerevis);
-    generate("Learning", learns, duelearns);
-    generate("New", news, duenews);
-    out.push_back({"", 0});
-    out.push_back({"Unseen", unsns});
-    return out;
 }
 _overallProgr getOverallProgress() {
     unsigned int cardsln = allCards.size();

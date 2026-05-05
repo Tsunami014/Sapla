@@ -146,10 +146,10 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
                     }
                     repl = as.join(' ');
                 } else {
-                    if (num < 0) {
+                    if (num <= 0) {
                         num = args.length()+num + 1;
                     }
-                    if (num <= args.length()) {
+                    if (num > 0 && num <= args.length()) {
                         repl = args[num-1];
                     }
                 }

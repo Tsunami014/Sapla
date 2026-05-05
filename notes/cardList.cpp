@@ -9,11 +9,11 @@ const QString MODULE = "CardList";
 
 std::vector<FlashCard*> allCards;
 
-const uint maxCurPileWeight = 6; // new cards - if a card is known well, the curpile can hold more cards (up to double this)
+const uint maxCurPileWeight = 12; // revising cards - if all cards are new, the curpile can hold only half of this
 
 // Max/min number of cards a pile can provide the curpile before rolling for a new pile
 const uint minPileStreak = 2;
-const uint maxPileStreak = 8;
+const uint maxPileStreak = 5;
 
 RandPile newpile{};
 BacklogPile earlypile{};
@@ -134,18 +134,21 @@ void refreshCurPile() {
     static uint i = 0;
     static uint mx = 0;
     static Pile* last = nullptr;
-    int state = 0; // < 0; pick new that isn't (-state), =0; pick new, >0; use that-1
+    int state = 0; // < 0; pick new pile that isn't (-state), =0; pick any new pile, >0; use (that-1)
 
     std::vector<Pile*> nonemptypiles;
     uint idx = 0;
+    bool isnew = true;
     for (auto* p : pilepile) {
         if (!p->empty()) {
             nonemptypiles.push_back(p);
+            if (isnew) nonemptypiles.push_back(p); // So there is twice the likelihood of picking new cards
             idx++;
             if (p == last) {
                 state = idx;
             }
         }
+        isnew = false;
     }
     const int nepln = nonemptypiles.size();
 

@@ -162,9 +162,9 @@ public:
         cards.push_front(card);
         if (cards.size() < 2) return;
         if (QRandomGenerator::global()->bounded(2)) {
-            auto last = cards.end() - 1;
-            auto secondLast = cards.end() - 2;
-            std::iter_swap(last, secondLast);
+            auto front = cards.begin() - 1;
+            auto secondFront = cards.begin() - 2;
+            std::iter_swap(front, secondFront);
         }
     }
 

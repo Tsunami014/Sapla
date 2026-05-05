@@ -55,11 +55,7 @@ QString deescape(QString inp) {
     return out;
 }
 
-void Template::GeneratePatterns(QString conts, uint& i) {
-    if (conts == "-") {
-        i++;
-        return;
-    }
+void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
     QString name;
     QString repl;
     bool usedi = false;
@@ -73,7 +69,8 @@ void Template::GeneratePatterns(QString conts, uint& i) {
         if (!repl.isEmpty() && repl[0] == '=') {
             ptns.emplace(name, repl.sliced(1));
         } else {
-            ptns.emplace(name, '%'+QString::number(i+1)+repl);
+            QString pref = rev ? "-" : "";
+            ptns.emplace(name, '%'+pref+QString::number(i+1)+repl);
             usedi = true;
         }
     }
@@ -85,9 +82,20 @@ Template::Template(QString c, QString p) {
     ptns = {};
     if (p.isNull()) return;
     uint idx = 0;
+    uint lastidx = 0;
+    bool rev = false;
     for (auto sub : escape(p).split(QRegularExpression(R"((?<!\\)\s)"))) {
         if (sub != "") {
-            GeneratePatterns(sub, idx);
+            if (sub == "-") {
+                idx++;
+            } else if (sub == "*") {
+                uint cur = idx;
+                idx = lastidx;
+                lastidx = cur;
+                rev = !rev;
+            } else {
+                GeneratePatterns(sub, idx, rev);
+            }
         }
     }
 }

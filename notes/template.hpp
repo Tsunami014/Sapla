@@ -15,7 +15,7 @@ protected:
     QString conts;
     std::map<QString, QString> ptns;
 
-    void GeneratePatterns(QString conts, uint& i);
+    void GeneratePatterns(QString conts, uint& i, bool rev);
     bool parseArg(QStringList args, QString& repl, QString pref, QString suff);
     QString replace_main(QStringList args);
     QString replace_inner(QStringList args, QString conts, uint depth);

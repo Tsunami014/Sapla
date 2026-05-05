@@ -17,7 +17,7 @@
 const QString MODULE = "BrowseScene";
 
 void BrowseScene::prevIdxTyp::reset() {
-    idx = 0; max = 0;
+    idx = 0; max = -1;
 }
 
 BrowseScene::BrowseScene(Note* sel)
@@ -188,6 +188,9 @@ void BrowseScene::updatePrev(bool refresh) {
     }
     Note* n = getSelNote();
     int nOO = n->getNumCards();
+    if (prevIdx.max == -1) {
+        side = SIDE_FRONT;
+    }
     if (prevIdx.max != nOO) {
         int idx = prevIdx.idx;
         if (idx > nOO) {
@@ -269,9 +272,9 @@ void BrowseScene::typed() {
 void BrowseScene::selectionChange() {
     QList<QTreeWidgetItem*> selected = tree->selectedItems();
     filterTree(tree, filter->text());
+    prevIdx.reset();
     if (selected.isEmpty()) {
         te->setMarkdown("");
-        prevIdx.reset();
         updatePrev(true);
         return;
     }
@@ -284,6 +287,7 @@ void BrowseScene::selectionChange() {
 void BrowseScene::newNote() {
     if (!checkValidDeck()) return;
     tree->clearSelection();
+    prevIdx.reset();
     writeNotes();
 
     tree->sortItems(

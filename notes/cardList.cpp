@@ -138,17 +138,17 @@ void refreshCurPile() {
 
     std::vector<Pile*> nonemptypiles;
     uint idx = 0;
-    bool isnew = true;
     for (auto* p : pilepile) {
         if (!p->empty()) {
             nonemptypiles.push_back(p);
-            if (isnew) nonemptypiles.push_back(p); // So there is twice the likelihood of picking new cards
             idx++;
             if (p == last) {
                 state = idx;
             }
         }
-        isnew = false;
+    }
+    if (!nonemptypiles.empty()) {
+        nonemptypiles.push_back(nonemptypiles.front()); // So there is twice the likelihood of picking new cards (or at least newer)
     }
     const int nepln = nonemptypiles.size();
 

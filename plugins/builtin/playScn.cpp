@@ -37,6 +37,10 @@ PlayScene::~PlayScene() {
 bool PlayScene::keyEv(QKeyEvent* event) {
     if (MG->handleEv(event)) return true;
     int key = event->key();
+    if (key == Qt::Key_Space) {
+        card->flip();
+        return true;
+    }
 
     if (card->side == 255) {
         switch (MG->cardFin(card->fc, key, &tr)) {

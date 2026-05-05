@@ -24,7 +24,9 @@ public:
     void focusOutEvent(QFocusEvent *event = nullptr) override;
     void keyPressEvent(QKeyEvent *event) override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) override;
+
     uint8_t side;  // 0 if front, 255 if back, anywhere else for a transition effect between the 2
+    void flip();
 
     GetFlashCard fc;
 
@@ -36,7 +38,6 @@ protected:
     QString front;
     QString back;
 
-    void flip();
     virtual void onflip(bool back);
 };
 

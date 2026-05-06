@@ -8,8 +8,10 @@
  * \4 - used as a substitution for %
  * \5 - used as a premature ending for %args
  * \6 - used to represent every number separated by spaces
+ * \7 - used to represent an escaped )
  * \9 \B \C - used for escaping base64
  * \E - used as an ending for b64 strings
+ *
  * \A and \D are LF and CR respectively
  */
 
@@ -55,7 +57,7 @@ QString deescape(QString inp, bool keepbrackets) {
             repl = cap;
         }
         if (keepbrackets) {
-            repl = "("+repl+")";
+            repl = "("+repl.replace(')', '\7')+")";
         }
 
         int start = m.capturedStart(0) + offs;
@@ -64,7 +66,7 @@ QString deescape(QString inp, bool keepbrackets) {
         offs += repl.length() - (end - start);
     }
     if (!keepbrackets) return out;
-    return out.replace('\4', '%');
+    return out.replace('\4', '%').replace('\7', ')');
 }
 
 const QRegularExpression hideEscapesRe(R"((?<!\\)\(.*?[^\\)]\))");
@@ -110,7 +112,7 @@ void Template::handlePtns(QString p) {
     uint idx = 0;
     uint lastidx = 0;
     bool rev = false;
-    for (auto sub : escape(p).split(QRegularExpression(R"((?<!\\)[ \t\n])"))) {
+    for (auto sub : escape(p).split(QRegularExpression(R"((?<!\\)[ \n])"))) {
         if (sub != "") {
             if (sub == "-") {
                 idx++;
@@ -179,6 +181,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
                 ptns[nam] = it;
                 repl += replace_inner(args, inner, 1);
             }
+            ptns = oldptns;
 
             int start = m.capturedStart(0) + offs;
             int end = m.capturedEnd(0) + offs;
@@ -271,7 +274,8 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                         break;
                     }
                 } else {
-                    sofar = replace_inner(args, deescape(sofar, apply == '&'), 1);
+                    if (apply != '&')
+                        sofar = replace_inner(args, deescape(sofar, true), 1);
                     if (sofar == "" && apply != ';') {
                         good = false;
                         break;
@@ -289,7 +293,10 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                             repl.replace(' ', sofar);
                             break;
                         case '&': {
-                            repl = handlefunc(args, deescape(sofar, false), repl);
+                            auto oldptns = ptns;
+                            ptns["x"] = repl;
+                            repl = handlefunc(args, deescape(sofar, false));
+                            ptns = oldptns;
                             if (repl.isEmpty()) repl = "???";
                             break;}
                         case '{':
@@ -494,25 +501,45 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
     return true;
 }
 
-QSet<QChar> spls = {' ', '+', '-', '*', '/', '%'};
-float Template::hfvar(QStringList args, QString nam, QString x, bool* ok) {
-    if (nam == "x") {
-        nam = x;
-    } else {
-        nam = replace_inner(args, nam, 1);
+QSet<QChar> spls = {' ', '+', '-', '*', '/', '~'};
+Template::vartyp Template::hfvar(QStringList args, QString nam) {
+    QString conts = replace_inner(args, deescape(nam, true), 1);
+    bool ok;
+    if (float num = conts.toFloat(&ok); ok) {
+        return {num};
     }
-    return nam.toFloat(ok);
+    return {conts};
 }
-QString Template::handlefunc(QStringList args, QString fn, QString x) {
+QString Template::handlefunc(QStringList args, QString fn) {
     QStringList execs;
     QString part;
     uint indent = 0;
+    bool escaped = false;
+    bool escaping = false;
     for (auto& c : fn) {
-        if (c == '}') {
+        if (escaped) {
+            escaped = false;
+            if (escaping) part += "\\";
+            part += c;
+            continue;
+        } if (c == '\\') {
+            escaped = true;
+            continue;
+        } if (c == '|') {
+            if (!part.isEmpty()) {
+                execs.push_back(part);
+                part = {};
+            }
+            escaping = !escaping;
+            continue;
+        } if (escaping) {
+            part += c;
+            continue;
+        } if (c == '}') {
             if (indent == 0) return "";
             indent--;
             if (indent == 0) {
-                QString handl = handlefunc(args, part, x);
+                QString handl = handlefunc(args, part);
                 if (handl.isEmpty()) return "";
                 execs.push_back(handl);
                 continue;
@@ -521,8 +548,11 @@ QString Template::handlefunc(QStringList args, QString fn, QString x) {
             if (indent == 0 && !part.isEmpty()) {
                 execs.push_back(part);
                 part = {};
+            } else if (indent > 0) {
+                part += c;
             }
             indent++;
+            continue;
         }
         if (indent != 0) {
             part += c;
@@ -544,42 +574,72 @@ QString Template::handlefunc(QStringList args, QString fn, QString x) {
     uint exsln = execs.length();
     if (exsln == 0) return "";
     if (exsln == 1) {
-        bool ok;
-        float out = hfvar(args, execs[0], x, &ok);
-        if (!ok) return "";
-        return QString::number(out);
+        auto out = hfvar(args, execs[0]);
+        return out.displ();
     }
     if (execs[0] == "-") {
         execs.push_front("0");
         exsln++;
     }
     if (exsln == 2) return "";
-    bool ok;
-    float out = hfvar(args, execs[0], x, &ok);
-    if (!ok) return "";
+    auto out = hfvar(args, execs[0]);
     uint idx = 1;
     uint mx = execs.size();
     while (idx < mx) {
         QString op = execs[idx];
         if (op.length() != 1) return "";
         if (++idx >= mx) return "";
-        float with = hfvar(args, execs[idx], x, &ok);
-        if (!ok) return "";
+        auto with = hfvar(args, execs[idx]);
         switch (op[0].unicode()) {
-            case '+':
-                out += with; break;
-            case '-':
-                out -= with; break;
-            case '*':
-                out *= with; break;
-            case '/':
-                out /= with; break;
-            case '%':
-                out = std::fmod(out, with); break;
+            case '+': {
+                bool ok;
+                float n1 = out.getNum(&ok);
+                if (ok) {
+                    float n2 = with.getNum(&ok);
+                    if (ok) { out = {n1+n2}; break; }
+                }
+                out = {out.displ()+with.displ()};
+                break;}
+            case '-': {
+                bool ok;
+                float n1 = out.getNum(&ok);
+                if (!ok) return "";
+                float n2 = with.getNum(&ok);
+                if (!ok) return "";
+                out = {n1-n2};
+                break;}
+            case '*': {
+                bool ok;
+                float w = with.getNum(&ok);
+                if (!ok) return "";
+                if (float n = out.getNum(&ok); ok) {
+                    out = {n*w};
+                } else {
+                    int nw = std::round(w);
+                    if (nw < 0) return "";
+                    else out = {out.getStr(&ok).repeated(nw)}; // Handles == 0
+                }
+                break;}
+            case '/': {
+                bool ok;
+                float n1 = out.getNum(&ok);
+                if (!ok) return "";
+                float n2 = with.getNum(&ok);
+                if (n2 == 0 || !ok) return "";
+                out = {n1/n2};
+                break;}
+            case '~': {
+                bool ok;
+                float n1 = out.getNum(&ok);
+                if (!ok) return "";
+                float n2 = with.getNum(&ok);
+                if (!ok) return "";
+                out = {std::fmod(n1, n2)};
+                break;}
             default:
                 return "";
         }
         idx++;
     }
-    return QString::number(out);
+    return out.displ();
 }

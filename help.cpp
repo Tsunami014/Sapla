@@ -279,6 +279,8 @@ const QString ARGUMENT_HELP =
     "</ul>"
 "<h2><u>Loops</u></h2>"
     "<p>Loops in the contents can be designated with "+code("@@var items@ ... @@")+".</p>"
+    "<p>Loop argument specifiers can be used exactly the same as regular argument specifiers (like this: "+code("@@var [a1 a2] items@ ... @@")+"). "
+        "They work in the exact same way. They also do not care what the last specifier's index was so for every loop no matter what it starts from argument 1 going up.</p>"
     "<p>The var name does not have a $ or % behind it (like defining a macro)</p>"
     "<p>The items part is just an expression, and the var loops over every item in items (split by spaces)</p>"
 "<h2><u>Argument tricks</u></h2>"

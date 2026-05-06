@@ -76,11 +76,8 @@ void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
     }
     if (usedi) i++;
 }
-
-Template::Template(QString c, QString p) {
-    conts = c.isNull() ? "" : c;
-    ptns = {};
-    if (p.isNull()) return;
+void Template::handlePtns(QString p) {
+    if (p.isEmpty()) return;
     uint idx = 0;
     uint lastidx = 0;
     bool rev = false;
@@ -99,6 +96,12 @@ Template::Template(QString c, QString p) {
         }
     }
 }
+
+Template::Template(QString c, QString p) {
+    conts = c.isNull() ? "" : c;
+    ptns = {};
+    handlePtns(p);
+}
 Template::Template() {
     conts = QString();
     ptns = {};
@@ -109,7 +112,7 @@ bool Template::failed() {
 }
 
 const QRegularExpression loopRe(
-    R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
+    R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?:\[(?<spec>(?:\\\]|[^\]])*)\]\s+)?(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
 const QString prefs = "\".^*_";
 const QString suffs = "\\[|{;+>!=\r";
 const QRegularExpression replRe(
@@ -140,6 +143,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
             QString nam = m.captured("nam");
             QString inner = m.captured("conts");
             auto oldptns = ptns;
+            handlePtns(m.captured("spec"));
             QStringList items = replace_inner(args, m.captured("its"), 1).split(' ');
             for (auto& it : items) {
                 if (it.isEmpty()) continue;
@@ -275,7 +279,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                 replln = words ? repl.count(' ')+1 : repl.length();
                             }
                             int from;
-                            if (spl[0] == "") {
+                            if (spl[0].isEmpty()) {
                                 if (splln == 1) {
                                     good = false;
                                     break;
@@ -307,7 +311,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                             } else {
                                 bool ok2;
                                 int to;
-                                if (spl[1] == "") {
+                                if (spl[1].isEmpty()) {
                                     to = replln-1;
                                 } else {
                                     bool ok;
@@ -318,7 +322,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                     }
                                 }
                                 int step;
-                                if (splln == 2 || spl[2] == "") {
+                                if (splln == 2 || spl[2].isEmpty()) {
                                     step = 1;
                                 } else {
                                     bool ok;
@@ -337,7 +341,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                     step = -step;
                                     int toOld = to;
                                     to = from;
-                                    from = to;
+                                    from = toOld;
                                 }
                                 if (from < 0) from = 0;
                                 if (to < 0) to = replln + to - 1;
@@ -358,7 +362,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                     auto li = repl.split(' ').sliced(from, ln);
                                     if (step != 1) {
                                         QStringList li2 = {};
-                                        for (uint i = 0; i <= ln; i += step) {
+                                        for (uint i = 0; i < ln; i += step) {
                                             li2.append(li[i]);
                                         }
                                         li = std::move(li2);
@@ -373,7 +377,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                                         }
                                         repl = std::move(out);
                                     } else {
-                                        repl.slice(from, to-from+1);
+                                        repl = repl.slice(from, to-from+1);
                                     }
                                     if (reverse) std::reverse(repl.begin(), repl.end());
                                 }

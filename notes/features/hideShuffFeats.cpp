@@ -3,7 +3,7 @@
 #include "base/seedrng.hpp"
 #include <deque>
 
-const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?)\.\.)");
+const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?[^\\\n])\.\.)");
 QString ScrambledFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(scramblRe);
@@ -143,7 +143,7 @@ struct hiddenResult {
     QString contents;
 };
 
-const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?)(?<!\\)\]\])");
+const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?[^\\])\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(hiddenRe);
@@ -155,14 +155,14 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
 
         QString conts = m.captured(1);
         QString seed;
-        if (conts.contains("##")) {
-            int idx = conts.indexOf("##");
+        if (auto m2 = QRegularExpression("(?<!\\\\)##").match(conts); m2.hasMatch()) {
+            int idx = m2.capturedStart();
             seed = conts.sliced(idx+2);
             conts.slice(0, idx);
         }
         QString repl;
-        if (conts.contains("::") || conts.contains("//")) {
-            QStringList opts = conts.split("//");
+        if (QRegularExpression(R"((?<!\\)(?:::|\/\/))").match(conts).hasMatch()) {
+            QStringList opts = conts.split(QRegularExpression(R"((?<!\\)\/\/)"));
             uint idx;
             if (seed.isNull()) {
                 idx = rng_bounded(opts.size());
@@ -171,8 +171,8 @@ QString HiddenFeat::replacements(QString& txt, Side s) const {
             }
             QString item = opts[idx];
 
-            if (item.contains("::")) {
-                QStringList sides = item.split("::");
+            QStringList sides = item.split(QRegularExpression("(?<!\\\\)::"));
+            if (sides.length() > 1) {
                 repl = s == SIDE_BACK ? sides[1] : sides[0];
             } else {
                 repl = item;
@@ -194,9 +194,9 @@ QString HiddenFeat::markup(QString& line) const {
         auto m = it.next();
         QString conts = m.captured(1);
         conts
-            .replace("//", "<b style='color:" + col + "'>//</b>")
-            .replace("##", "<b style='color:" + col + "'>##</b>")
-            .replace("::", "<b style='color:" + col + "'>::</b>")
+            .replace(QRegularExpression(R"((?<!\\)\/\/)"), "<b style='color:" + col + "'>//</b>")
+            .replace(QRegularExpression("(?<!\\\\)##"), "<b style='color:" + col + "'>##</b>")
+            .replace(QRegularExpression("(?<!\\\\)::"), "<b style='color:" + col + "'>::</b>")
         ;
         QString repl =
             "<b style='color:" + col + "'>[[</b>" +

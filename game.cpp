@@ -130,7 +130,7 @@ int MainGame::cardFin(FlashCard* card, int key, Tree* tree) {
     card->parent->updateSchedules();
     float min = *std::min_element(ScheduleInfo.ratingScos.begin(), ScheduleInfo.ratingScos.end());
     float sze = *std::max_element(ScheduleInfo.ratingScos.begin(), ScheduleInfo.ratingScos.end()) - min;
-    int grow = ((sco+min)/sze) * 10;
+    int grow = ((sco-min)/sze) * 50;
     return tree->grow(grow, sco > 0);
 }
 

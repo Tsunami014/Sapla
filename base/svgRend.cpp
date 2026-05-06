@@ -97,19 +97,14 @@ QByteArray RenderSvg(const QString& svgPath) {
 
             for (const QString &cls : classAttr.split(' ', Qt::SkipEmptyParts)) {
                 if (colours.contains(cls)) {
-                    QString looking4;
-                    if (cls[0] == 's') {
-                        looking4 = "stroke";
-                    } else {
-                        looking4 = "fill";
-                    }
-                    for (int i = 0; i < attrs.size(); ++i) {
+                    QString looking4 = (cls.startsWith('s') ? QStringLiteral("stroke") : QStringLiteral("fill"));
+
+                    for (int i = attrs.size() - 1; i >= 0; --i) {
                         if (attrs[i].qualifiedName().toString() == looking4) {
                             attrs.removeAt(i);
-                            break;
                         }
                     }
-                    attrs.append(looking4, colours[cls]);
+                    attrs.append(QXmlStreamAttribute(looking4, colours[cls]));
                 }
             }
 
@@ -123,6 +118,10 @@ QByteArray RenderSvg(const QString& svgPath) {
         else if (reader.isCharacters()) {
             writer.writeCharacters(reader.text().toString());
         }
+    }
+
+    if (reader.hasError()) {
+        Log::Warn(MODULE) << "XML parse error: " << reader.errorString();
     }
 
     return output;

@@ -248,7 +248,7 @@ TimePoint Schedule::trueNxt(TimePoint now) const {
     return nxt;
 }
 bool Schedule::dueNow() const {
-    return nxt <= std::chrono::system_clock::now();
+    return isNew() || nxt <= std::chrono::system_clock::now();
 }
 bool Schedule::isNew() const {
     return nxt == TimePoint{};

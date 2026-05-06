@@ -134,68 +134,38 @@ void refreshCurPile() {
     static uint i = 0;
     static uint mx = 0;
     static Pile* last = nullptr;
-    int state = 0; // < 0; pick new pile that isn't (-state), =0; pick any new pile, >0; use (that-1)
-
-    std::vector<Pile*> nonemptypiles;
-    uint idx = 0;
-    for (auto* p : pilepile) {
-        if (!p->empty()) {
-            nonemptypiles.push_back(p);
-            idx++;
-            if (p == last) {
-                state = idx;
-            }
-        }
-    }
-    if (!nonemptypiles.empty()) {
-        nonemptypiles.push_back(nonemptypiles.front()); // So there is twice the likelihood of picking new cards (or at least newer)
-    }
-    const int nepln = nonemptypiles.size();
 
     while (1) {
-        if (nonemptypiles.size() == 0) return;
-        if (state <= 0) {
+        if (last == nullptr || last->empty() || i >= mx) {
+            std::vector<Pile*> usepiles;
+            int amnt = 3; // So earlier piles (for newer cards) are more likely
+            for (auto* p : pilepile) {
+                if (p != last && !p->empty()) {
+                    int tot = amnt *
+                        // Piles that are not due are half as likely
+                        (p->top()->schd.dueNow()? 2:0);
+                    for (int _ = 0; _ < tot; _++) {
+                        usepiles.push_back(p);
+                    }
+                }
+                if (amnt > 1) amnt--;
+            }
+            uint usable = usepiles.size();
+            if (usable == 0) return;
             i = 0;
             mx = QRandomGenerator::global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;
 
-            if (nepln == 0) return;
-            if (nepln == 1) {
-                state = 1;
-            } else if (state == 0) {
-                state = QRandomGenerator::global()->bounded(nepln)+1;
+            if (usable == 1) {
+                last = usepiles.back();
             } else {
-                int oldstate = -state;
-                if (nepln == 2) {
-                    state = 2 - (oldstate-1);
-                } else {
-                    state = QRandomGenerator::global()->bounded(nepln-1)+1;
-                    if (state >= oldstate) {
-                        state++;
-                    }
-                }
+                last = usepiles[QRandomGenerator::global()->bounded(usable)];
             }
-            last = nonemptypiles[state-1];
         }
-        if (state-1 >= nepln) {
-            state = 0;
-            continue;
-        }
-        Pile* pile = nonemptypiles[state-1];
-        if (pile->empty()) {
-            nonemptypiles[state-1] = nonemptypiles.back();
-            nonemptypiles.pop_back();
-            state = 0;
-            continue;
-        }
-        if (i >= mx) {
-            state = -state;
-            continue;
-        }
-        double newWeight = cardweight(pile->top());
+        double newWeight = cardweight(last->top());
         if (curpile.weight() + newWeight >= maxCurPileWeight - activeWeight) {
             break;
         }
-        curpile.push(pile->pop_top());
+        curpile.push(last->pop_top());
         i++;
     }
 }

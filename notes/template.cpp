@@ -65,7 +65,7 @@ QString deescape(QString inp, bool keepbrackets) {
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
-    if (!keepbrackets) return out;
+    if (keepbrackets) return out;
     return out.replace('\4', '%').replace('\7', ')');
 }
 
@@ -97,6 +97,9 @@ void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
         if (!m.hasMatch()) continue;
         QString name = m.captured(1);
         QString repl = m.captured(2);
+        if (repl.length() >= 2 && repl[0] == '&' && repl[1] == '=') {
+            repl = "=%x&" + repl.sliced(2);
+        }
         if (!repl.isEmpty() && repl[0] == '=') {
             ptns.emplace(name, repl.sliced(1));
         } else {
@@ -149,8 +152,8 @@ const QString suffs = "\\[|{&;+>!=\r";
 const QRegularExpression replRe(
     "(?<!%|\\\\)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9\\-]+)"
-    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\([^\x05\n]*?[^\\)]\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
-    "(?:\x05|%|$|(?=[ \n$]))"
+    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\([^\x05\n]*?[^\\)]\)|\\[^\x05\n]|[^\x05% \t\n)"+suffs+"])*)+)?"
+    "(?:\x05|%|$|(?=[ \t\n$]))"
 
   R"(|(?<!\$)\$)"
     "(?<pref2>["+prefs+"]+)?"
@@ -275,7 +278,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                     }
                 } else {
                     if (apply != '&')
-                        sofar = replace_inner(args, deescape(sofar, true), 1);
+                        sofar = replace_inner(args, deescape(sofar, false), 1);
                     if (sofar == "" && apply != ';') {
                         good = false;
                         break;
@@ -286,7 +289,11 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                             sofar.replace(' ', '\3');
                             repl.replace(sofar, " ");
                             if (sofar == "") {
-                                repl.slice(1, repl.length()-2);
+                                if (repl.length() <= 1) {
+                                    repl = "";
+                                } else {
+                                    repl.slice(1, repl.length()-2);
+                                }
                             }
                             break;
                         case '+':

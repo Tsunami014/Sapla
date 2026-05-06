@@ -69,10 +69,10 @@ QStringList splTemplArgs(QString args) {
     }
     return parts;
 }
-const QString templBaseNameRe = R"(\s*(?<nam>[^|: \n]+?)\s*)";
-const QString templBasePatternRe = R"(([|: \n]\s*(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
+const QString templBaseNameRe = R"(\s*(?<nam>[^|: \t\n]+?)\s*)";
+const QString templBasePatternRe = R"(([|: \t\n]\s*(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
 const QString templBaseContentsInnerRe = R"((?:\\.|.|\n)*?)";
-const QString templBaseContentsRe = QString("([|: \n]\\s*(?<conts>%1)\\s*)??").arg(templBaseContentsInnerRe);
+const QString templBaseContentsRe = QString("([|: \t\n]\\s*(?<conts>%1)\\s*)??").arg(templBaseContentsInnerRe);
 const QString templDefBase =
     templBaseNameRe + templBasePatternRe + templBaseContentsRe;
 const QString templDefPref = R"(\s*^\s*)";
@@ -82,7 +82,7 @@ const QRegularExpression templDefRe(
 const QRegularExpression templLoclDefRe(
     templDefPref + QString(R"(\|:%1:\|)").arg(templDefBase) + templDefSuff, MO);
 const QRegularExpression templApplyRe(
-    QString(R"((?<!\\)\|(?:\|%1%2|!(?<nam2>[^ \t\n:=|])\s*([|: \n]\s*)?(?<conts2>%3)??\s*)(?<!\\)\|\|)")
+    QString(R"((?<!\\)\|(?:\|%1%2|!(?<nam2>[^ \t\n:=|])\s*([|: \t\n]\s*)?(?<conts2>%3)??\s*)(?<!\\)\|\|)")
         .arg(templBaseNameRe).arg(templBaseContentsRe).arg(templBaseContentsInnerRe), MO);
 QString TemplateFeat::check(QString& txt, QString& err) const {
     std::map<QString, Template> loclTempls;

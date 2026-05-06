@@ -20,6 +20,9 @@ protected:
     bool parseArg(QStringList args, QString& repl, QString pref, QString suff);
     QString replace_main(QStringList args);
     QString replace_inner(QStringList args, QString conts, uint depth);
+
+    QString handlefunc(QStringList args, QString fn, QString x);
+    float hfvar(QStringList args, QString nam, QString x, bool* ok);
 };
 
 extern std::map<QString, Template> globalTemplates;

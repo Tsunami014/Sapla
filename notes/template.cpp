@@ -5,9 +5,11 @@
 
 /* Escape codes
  * \3 - replacement for spaces
+ * \4 - used as a substitution for %
  * \5 - used as a premature ending for %args
  * \6 - used to represent every number separated by spaces
  * \9 \B \C - used for escaping base64
+ * \E - used as an ending for b64 strings
  * \A and \D are LF and CR respectively
  */
 
@@ -25,7 +27,7 @@ QString escape(QString inp) {
         QString encoded = m.captured(1).toUtf8().toBase64();
         QString repl = "("+
             encoded.replace('+', '\x09').replace('/', '\x0B').replace('=', '\x0C')
-            +")";
+            +"\x0E)";
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -34,7 +36,7 @@ QString escape(QString inp) {
     }
     return out;
 }
-QString deescape(QString inp) {
+QString deescape(QString inp, bool keepbrackets) {
     QString out = inp;
 
     auto it = escapeRe.globalMatch(out);
@@ -43,16 +45,43 @@ QString deescape(QString inp) {
     while (it.hasNext()) {
         auto m = it.next();
 
-        QByteArray b64 = m.captured(1).toLatin1()
-            .replace('\x09', '+').replace('\x0B', '/').replace('\x0C', '=');
-        QString repl = QString::fromUtf8(QByteArray::fromBase64(b64));
+        QString cap = m.captured(1);
+        QString repl;
+        if (cap.endsWith('\x0E')) {
+            QByteArray b64 = cap.sliced(0, cap.length()-1).toLatin1()
+                .replace('\x09', '+').replace('\x0B', '/').replace('\x0C', '=');
+            repl = QString::fromUtf8(QByteArray::fromBase64(b64));
+        } else {
+            repl = cap;
+        }
+        if (keepbrackets) {
+            repl = "("+repl+")";
+        }
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
         out.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
-    return out;
+    if (!keepbrackets) return out;
+    return out.replace('\4', '%');
+}
+
+const QRegularExpression hideEscapesRe(R"((?<!\\)\(.*?[^\\)]\))");
+QString hideEscapes(QString inp) {
+    QString inp2 = inp;
+    auto it = hideEscapesRe.globalMatch(inp2);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        auto repl = m.captured().replace('%', '\4');
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        inp2.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return inp2;
 }
 
 void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
@@ -61,7 +90,7 @@ void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
     bool usedi = false;
     const QRegularExpression re("([a-zA-Z0-9]+)(.*)");
     for (auto sect : (conts).split(QRegularExpression(R"((?<!\\)(?=/))"))) {
-        QString realsect = deescape(sect);
+        QString realsect = deescape(sect, true);
         auto m = re.match(realsect);
         if (!m.hasMatch()) continue;
         QString name = m.captured(1);
@@ -112,13 +141,13 @@ bool Template::failed() {
 }
 
 const QRegularExpression loopRe(
-    R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?:\[(?<spec>(?:\\\]|[^\]])*)\]\s+)?(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
+    R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?:\[(?<spec>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])*)\]\s+)?(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
 const QString prefs = "\".^*_";
-const QString suffs = "\\[|{;+>!=\r";
+const QString suffs = "\\[|{&;+>!=\r";
 const QRegularExpression replRe(
     "(?<!%|\\\\)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9\\-]+)"
-    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\(.+?\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
+    "(?<suff>(?:["+suffs+R"(](?:(?<!\\)\([^\x05\n]*?[^\\)]\)|\\[^\x05\n]|[^\x05% \n)"+suffs+"])*)+)?"
     "(?:\x05|%|$|(?=[ \n$]))"
 
   R"(|(?<!\$)\$)"
@@ -158,7 +187,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
         }
     }
 
-    auto it = replRe.globalMatch(out);
+    auto it = replRe.globalMatch(hideEscapes(out));
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
@@ -206,7 +235,7 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
         offs += repl.length() - (end - start);
     }
     if (depth != 0) return out;
-    return out.replace("%%", "%").replace('\3', ' ').replace('\5', "");
+    return out.replace("%%", "%").replace('\3', ' ').replace('\5', "").replace('\4', '%');
 }
 QString Template::replace_main(QStringList args) {
     if (failed()) return "==<ERROR>==";
@@ -242,7 +271,7 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                         break;
                     }
                 } else {
-                    sofar = replace_inner(args, deescape(sofar), 1);
+                    sofar = replace_inner(args, deescape(sofar, apply == '&'), 1);
                     if (sofar == "" && apply != ';') {
                         good = false;
                         break;
@@ -259,6 +288,10 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                         case '+':
                             repl.replace(' ', sofar);
                             break;
+                        case '&': {
+                            repl = handlefunc(args, deescape(sofar, false), repl);
+                            if (repl.isEmpty()) repl = "???";
+                            break;}
                         case '{':
                         case '[': {
                             bool words = apply == '{';
@@ -384,11 +417,11 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                             }
                             break;}
                         case '|':
-                            if (repl.isNull())
+                            if (repl.isEmpty())
                                 repl = sofar;
                             break;
                         case '>':
-                            if (!repl.isNull())
+                            if (!repl.isEmpty())
                                 repl = sofar;
                             break;
                         case '=':
@@ -459,4 +492,94 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
         if (!good) return false;
     }
     return true;
+}
+
+QSet<QChar> spls = {' ', '+', '-', '*', '/', '%'};
+float Template::hfvar(QStringList args, QString nam, QString x, bool* ok) {
+    if (nam == "x") {
+        nam = x;
+    } else {
+        nam = replace_inner(args, nam, 1);
+    }
+    return nam.toFloat(ok);
+}
+QString Template::handlefunc(QStringList args, QString fn, QString x) {
+    QStringList execs;
+    QString part;
+    uint indent = 0;
+    for (auto& c : fn) {
+        if (c == '}') {
+            if (indent == 0) return "";
+            indent--;
+            if (indent == 0) {
+                QString handl = handlefunc(args, part, x);
+                if (handl.isEmpty()) return "";
+                execs.push_back(handl);
+                continue;
+            }
+        } if (c == '{') {
+            if (indent == 0 && !part.isEmpty()) {
+                execs.push_back(part);
+                part = {};
+            }
+            indent++;
+        }
+        if (indent != 0) {
+            part += c;
+            continue;
+        }
+        if (spls.find(c) != spls.end()) {
+            if (!part.isEmpty())
+                execs.push_back(part);
+            if (c != ' ') {
+                execs.push_back(c);
+            }
+            part = {};
+            continue;
+        }
+        part += c;
+    }
+    if (indent != 0) return "";
+    if (!part.isEmpty()) execs.push_back(part);
+    uint exsln = execs.length();
+    if (exsln == 0) return "";
+    if (exsln == 1) {
+        bool ok;
+        float out = hfvar(args, execs[0], x, &ok);
+        if (!ok) return "";
+        return QString::number(out);
+    }
+    if (execs[0] == "-") {
+        execs.push_front("0");
+        exsln++;
+    }
+    if (exsln == 2) return "";
+    bool ok;
+    float out = hfvar(args, execs[0], x, &ok);
+    if (!ok) return "";
+    uint idx = 1;
+    uint mx = execs.size();
+    while (idx < mx) {
+        QString op = execs[idx];
+        if (op.length() != 1) return "";
+        if (++idx >= mx) return "";
+        float with = hfvar(args, execs[idx], x, &ok);
+        if (!ok) return "";
+        switch (op[0].unicode()) {
+            case '+':
+                out += with; break;
+            case '-':
+                out -= with; break;
+            case '*':
+                out *= with; break;
+            case '/':
+                out /= with; break;
+            case '%':
+                out = std::fmod(out, with); break;
+            default:
+                return "";
+        }
+        idx++;
+    }
+    return QString::number(out);
 }

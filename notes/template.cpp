@@ -17,6 +17,10 @@
 
 std::map<QString, Template> globalTemplates;
 
+const QString prefs = "\".^*_&";
+const QString suffs = "\\[|{&;+>!=\r";
+
+
 const static QRegularExpression escapeRe(R"((?<!\\)\(((?:\\.|[^)])+)\))");
 QString escape(QString inp) {
     QString out = inp;
@@ -89,26 +93,24 @@ QString hideEscapes(QString inp) {
 void Template::GeneratePatterns(QString conts, uint& i, bool rev) {
     QString name;
     QString repl;
-    bool usedi = false;
-    const QRegularExpression re("([a-zA-Z0-9]+)(.*)");
+    const QRegularExpression re("(["+prefs+"]*)(\\*?[a-zA-Z0-9]+)(.*)");
     for (auto sect : (conts).split(QRegularExpression(R"((?<!\\)(?=/))"))) {
         QString realsect = deescape(sect, true);
         auto m = re.match(realsect);
         if (!m.hasMatch()) continue;
-        QString name = m.captured(1);
-        QString repl = m.captured(2);
+        QString prefs = m.captured(1);
+        QString name = m.captured(2);
+        QString repl = m.captured(3);
         if (repl.length() >= 2 && repl[0] == '&' && repl[1] == '=') {
             repl = "=%x&" + repl.sliced(2);
         }
         if (!repl.isEmpty() && repl[0] == '=') {
             ptns.emplace(name, repl.sliced(1));
         } else {
-            QString pref = rev ? "-" : "";
-            ptns.emplace(name, '%'+pref+QString::number(i+1)+repl);
-            usedi = true;
+            QString minus = rev ? "-" : "";
+            ptns.emplace(name, '%'+prefs+minus+QString::number(++i)+repl);
         }
     }
-    if (usedi) i++;
 }
 void Template::handlePtns(QString p) {
     if (p.isEmpty()) return;
@@ -147,8 +149,6 @@ bool Template::failed() {
 
 const QRegularExpression loopRe(
     R"((?:(?<=\n)\s*|[ \t]*)@@\s*(?<nam>[a-zA-Z0-9]+)\s+(?:\[(?<spec>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])*)\]\s+)?(?<its>(?:\((?:\\\)|[^)])*\)|\\@|[^@])+)\s*@\s*(?<conts>(?:\n|.)+?)@@(?:\s*(?=\n)|[ \t]*))");
-const QString prefs = "\".^*_";
-const QString suffs = "\\[|{&;+>!=\r";
 const QRegularExpression replRe(
     "(?<!%|\\\\)%(?<pref>["+prefs+"]+)?"
     "(?<conts>[a-zA-Z0-9\\-]+)"
@@ -157,7 +157,7 @@ const QRegularExpression replRe(
 
   R"(|(?<!\$)\$)"
     "(?<pref2>["+prefs+"]+)?"
-    "(?<conts2>[a-zA-Z0-9\\-]+)");
+    "(?<conts2>[a-zA-Z0-9\\-]+|#|\\*)");
 const std::vector<QChar> suffsList() {
     std::vector<QChar> vec;
     vec.reserve(suffs.size() + 2);
@@ -206,6 +206,8 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
             repl = replace_inner(args, it->second, depth+1);
         } else if (conts == "-") {
             repl = '\x06';
+        } else if (conts == "*") {
+            repl = replace_inner(args, "%0+\\|", depth+1);
         } else {
             if (conts == "#") {
                 conts = "0";
@@ -497,6 +499,9 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
                 case '_':
                     repl = QString::number(repl.count(' ')+1);
                     break;
+                case '&':
+                    repl = replace_inner(args, repl, 1);
+                    break;
                 default:
                     good = false;
                     break;
@@ -508,7 +513,6 @@ bool Template::parseArg(QStringList args, QString& repl, QString pref, QString s
     return true;
 }
 
-QSet<QChar> spls = {' ', '+', '-', '*', '/', '~'};
 Template::vartyp Template::hfvar(QStringList args, QString nam) {
     QString conts = replace_inner(args, deescape(nam, true), 1);
     bool ok;
@@ -517,67 +521,16 @@ Template::vartyp Template::hfvar(QStringList args, QString nam) {
     }
     return {conts};
 }
+const QRegularExpression funcRe(R"(((?:\(.*?[^\\]\)|%(?:\(.*[^\\]\)|[^ \t\n%])+(?:$|%|(?=\s))|\{(?:[^{}]+|(?R))*\}|[^ \t\n])+?)((?<!\\)[+\-*\/~]|$|(?=[ \t\n])))");
 QString Template::handlefunc(QStringList args, QString fn) {
     QStringList execs;
-    QString part;
-    uint indent = 0;
-    bool escaped = false;
-    bool escaping = false;
-    for (auto& c : fn) {
-        if (escaped) {
-            escaped = false;
-            if (escaping) part += "\\";
-            part += c;
-            continue;
-        } if (c == '\\') {
-            escaped = true;
-            continue;
-        } if (c == '|') {
-            if (!part.isEmpty()) {
-                execs.push_back(part);
-                part = {};
-            }
-            escaping = !escaping;
-            continue;
-        } if (escaping) {
-            part += c;
-            continue;
-        } if (c == '}') {
-            if (indent == 0) return "";
-            indent--;
-            if (indent == 0) {
-                QString handl = handlefunc(args, part);
-                if (handl.isEmpty()) return "";
-                execs.push_back(handl);
-                continue;
-            }
-        } if (c == '{') {
-            if (indent == 0 && !part.isEmpty()) {
-                execs.push_back(part);
-                part = {};
-            } else if (indent > 0) {
-                part += c;
-            }
-            indent++;
-            continue;
-        }
-        if (indent != 0) {
-            part += c;
-            continue;
-        }
-        if (spls.find(c) != spls.end()) {
-            if (!part.isEmpty())
-                execs.push_back(part);
-            if (c != ' ') {
-                execs.push_back(c);
-            }
-            part = {};
-            continue;
-        }
-        part += c;
+    auto it = funcRe.globalMatch(fn);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        if (QString txt = m.captured(1); !txt.isEmpty()) execs << txt;
+        if (QString txt = m.captured(2); !txt.isEmpty()) execs << txt;
     }
-    if (indent != 0) return "";
-    if (!part.isEmpty()) execs.push_back(part);
     uint exsln = execs.length();
     if (exsln == 0) return "";
     if (exsln == 1) {

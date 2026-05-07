@@ -70,9 +70,9 @@ QStringList splTemplArgs(QString args) {
     return parts;
 }
 const QString templBaseNameRe = R"(\s*(?<nam>[^|: \t\n]+?)\s*)";
-const QString templBasePatternRe = R"(([|: \t\n]\s*(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
+const QString templBasePatternRe = R"(((?:[: \t\n]\s*|\|\s+)(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
 const QString templBaseContentsInnerRe = R"((?:\\.|.|\n)*?)";
-const QString templBaseContentsRe = QString("([|: \t\n]\\s*(?<conts>%1)\\s*)??").arg(templBaseContentsInnerRe);
+const QString templBaseContentsRe = QString(R"(((?:[: \t\n]\s*|\|\s+)(?<conts>%1)\s*)??)").arg(templBaseContentsInnerRe);
 const QString templDefBase =
     templBaseNameRe + templBasePatternRe + templBaseContentsRe;
 const QString templDefPref = R"(\s*^\s*)";

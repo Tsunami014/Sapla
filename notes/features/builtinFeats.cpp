@@ -61,17 +61,20 @@ QMap<QString, QString> TagFeat::help() const {
 }
 
 
-const QRegularExpression staRe(R"((?<!\\)(?:\\\\)*\|)", MO);
+const QRegularExpression staRe(R"(\s*(?:(?<=(?<!\\)\|)>\|\s*(.+?)\s*\|<\||(.*?)\s*(?<!\\)(?:\||$))\s*)", MO | QRegularExpression::DotMatchesEverythingOption);
 QStringList splTemplArgs(QString args) {
-    QStringList parts = args.split(staRe);
-    for (QString &p : parts) {
-        p = p.trimmed();
+    QStringList out;
+    auto it = staRe.globalMatch(args);
+    while (it.hasNext()) {
+        auto m = it.next();
+        if (QString txt = m.captured(1); !txt.isEmpty()) out << txt;
+        if (QString txt = m.captured(2); !txt.isEmpty()) out << txt;
     }
-    return parts;
+    return out;
 }
 const QString templBaseNameRe = R"(\s*(?<nam>[^|: \t\n]+?)\s*)";
 const QString templBasePatternRe = R"(((?:[: \t\n]\s*|\|\s+)(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
-const QString templBaseContentsInnerRe = R"((?:\\.|.|\n)*?)";
+const QString templBaseContentsInnerRe = R"((?:\|>\|.+?\|<\||\\.|.|\n)*?)";
 const QString templBaseContentsRe = QString(R"(((?:[: \t\n]\s*|\|\s+)(?<conts>%1)\s*)??)").arg(templBaseContentsInnerRe);
 const QString templDefBase =
     templBaseNameRe + templBasePatternRe + templBaseContentsRe;

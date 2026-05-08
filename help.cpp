@@ -196,7 +196,7 @@ const QString BROWSE_HELP =
             +nl(
             "Here are example structures: "+code("|| name [stuff here] conts ||")+"  "+code("|!- [stuff here]: conts ||")
             )+"</p>"
-        "<p>The body for template usages is split up into multiple arguments, which are separated by a "+code("|")+" only.</p>"
+        "<p>The body for template usages is split up into multiple arguments, which are separated by a "+code("|")+" only (<b>Or "+code("|>| ... |<|")+" to allow for escaping</b>).</p>"
         "<p>Please do not put note template things inside other note template things. Nesting is not supported.</p>"
         "<p><b>Unlike other features</b>, this will not keep spacing in between arguments (so it still will before and after)."
             +nl(

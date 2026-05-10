@@ -17,11 +17,13 @@ protected:
     std::map<QString, QString> ptns;
 
     void handlePtns(QString p);
-    void GeneratePatterns(QString conts, uint& i, bool rev);
-    bool parseArg(QStringList args, QString& repl, QString pref, QString suff);
-    QString replace_main(QStringList args);
+    QString parseArg(QStringList args, QString nam, QString pref, QString suff, uint depth);
     QString replace_inner(QStringList args, QString conts, uint depth);
 
+private:
+    using _parseRes = std::pair<QString, QChar*>;
+    _parseRes parseLoop(QStringList args, QChar* it, const QString& out, uint depth);
+    _parseRes parseVar(QStringList args, QChar* it, const QString& out, uint depth);
     struct vartyp {
         std::variant<float, QString> dat;
         QString getStr(bool *ok) {
@@ -40,8 +42,25 @@ protected:
             } return QString::number(std::get<float>(dat));
         }
     };
-    QString handlefunc(QStringList args, QString fn);
-    vartyp hfvar(QStringList args, QString nam);
+    QString handlefunc(QStringList args, QString fn, uint depth);
+    vartyp hfvar(QStringList args, QString nam, uint depth);
 };
 
 extern std::map<QString, Template> globalTemplates;
+
+std::vector<std::pair<QString, Template>> getTempls(QString txt, bool global);
+bool templDefExists(QString txt, bool global);
+QString rmTemplDefs(QString txt);
+struct _applyRet {
+    QChar* it;
+    bool success() { return it != nullptr; }
+    const QString& txt;
+    QString& err;
+
+    QString name = {};
+    QString conts = {};
+    QChar* start = nullptr;
+    QChar* end = nullptr;
+};
+_applyRet* applyTempl(QString& txt, QString& err);
+void applyTempl(_applyRet* inp);

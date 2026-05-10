@@ -72,84 +72,62 @@ QStringList splTemplArgs(QString args) {
     }
     return out;
 }
-const QString templBaseNameRe = R"(\s*(?<nam>[^|: \t\n]+?)\s*)";
-const QString templBasePatternRe = R"(((?:[: \t\n]\s*|\|\s+)(?<!\\)\[(?<ptn>(?:(?<!\\)\(.*?[^\\)]\)|\\\]|[^\]])+)\]\s*)?)";
-const QString templBaseContentsInnerRe = R"((?:\|>\|.+?\|<\||\\.|.|\n)*?)";
-const QString templBaseContentsRe = QString(R"(((?:[: \t\n]\s*|\|\s+)(?<conts>%1)\s*)??)").arg(templBaseContentsInnerRe);
-const QString templDefBase =
-    templBaseNameRe + templBasePatternRe + templBaseContentsRe;
-const QString templDefPref = R"(\s*^\s*)";
-const QString templDefSuff = R"(\s*$\s*?(?=\n)?)";
-const QRegularExpression templDefRe(
-    templDefPref + QString(R"(\|=%1=\|)").arg(templDefBase) + templDefSuff, MO);
-const QRegularExpression templLoclDefRe(
-    templDefPref + QString(R"(\|:%1:\|)").arg(templDefBase) + templDefSuff, MO);
-const QRegularExpression templApplyRe(
-    QString(R"((?<!\\)\|(?:\|%1%2|!(?<nam2>[^ \t\n:=|])\s*([|: \t\n]\s*)?(?<conts2>%3)??\s*)(?<!\\)\|\|)")
-        .arg(templBaseNameRe).arg(templBaseContentsRe).arg(templBaseContentsInnerRe), MO);
 QString TemplateFeat::check(QString& txt, QString& err) const {
     std::map<QString, Template> loclTempls;
-    {
-        auto it = templLoclDefRe.globalMatch(txt);
-        while (it.hasNext()) {
-            auto m = it.next();
-            QString title = m.captured("nam");
-            if (loclTempls.find(title) != loclTempls.end()) {
-                err += "Multiple local templates named `" + title + "`!\n";
-                if (!loclTempls[title].failed())
-                    loclTempls.emplace(title, Template());
-            } else {
-                loclTempls.try_emplace(title, 
-                    m.captured("conts"), m.captured("ptn")
-                );
-            }
+    auto ts = getTempls(txt, false);
+    for (auto t : ts) {
+        QString title = t.first;
+        if (loclTempls.find(title) != loclTempls.end()) {
+            err += "Multiple local templates named `" + title + "`!\n";
+            if (!loclTempls[title].failed())
+                loclTempls[title] = Template();
+        } else {
+            loclTempls[title] = t.second;
         }
     }
-    txt = txt
-        .remove(templDefRe)
-        .remove(templLoclDefRe)
-    ;
-    auto it = templApplyRe.globalMatch(txt);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
+    txt = rmTemplDefs(txt);
+    for (uint _ = 0; _ < MAX_RECURSION; _++) {
+        QString txt2 = txt;
+        auto* t = applyTempl(txt2, err);
+        int offs = 0;
+        while (t->success()) {
+            QString name = t->name;
+            Template* templ;
+            QString repl;
+            bool good = true;
+            if (auto it = loclTempls.find(name); it != loclTempls.end()) {
+                templ = &it->second;
+            } else if (auto it = globalTemplates.find(name); it != globalTemplates.end()) {
+                templ = &it->second;
+            } else {
+                err += "Unknown template name: `" + name + "`\n";
+                good = false;
+            }
+            if (templ->failed()) {
+                err += "Template `" + name + "` failed!\n";
+                good = false;
+            }
+            if (good) {
+                QString match = t->conts;
+                if (!match.isEmpty()) {
+                    repl = templ->replace(splTemplArgs(match));
+                } else {
+                    repl = templ->replace();
+                }
+            } else { repl = ""; }
 
-        QString g1 = m.captured("nam");
-        QString name = g1.isNull() ? m.captured("nam2") : g1;
-        Template* templ;
-        QString repl;
-        if (auto it = loclTempls.find(name); it != loclTempls.end()) {
-            templ = &it->second;
-        } else if (auto it = globalTemplates.find(name); it != globalTemplates.end()) {
-            templ = &it->second;
-        } else {
-            err += "Unknown template name: `" + name + "`\n";
-            continue;
+            int start = (t->start - txt2.begin()) + offs;
+            int end = (t->end - txt2.begin()) + offs;
+            txt.replace(start, end - start, repl);
+            offs += repl.length() - (end - start);
+            applyTempl(t);
         }
-        if (templ->failed()) {
-            err += "Template `" + name + "` failed!\n";
-            continue;
-        }
-        QString g2 = m.captured("conts");
-        QString match = g2.isNull() ? m.captured("conts2") : g2;
-        if (!match.isNull()) {
-            repl = templ->replace(splTemplArgs(match));
-        } else {
-            repl = templ->replace();
-        }
-
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        txt.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
+        delete t;
     }
     return txt;
 }
 QString TemplateFeat::replacements(QString& txt, Side s) const {
-    return txt
-        .remove(templDefRe)
-        .remove(templLoclDefRe)
-    ;
+    return rmTemplDefs(txt);
 }
 const QRegularExpression templApplyReplRe(R"((?<!\\)(\|!(?:&[^;]+;|[^ \t\n:=<])))");
 QString TemplateFeat::markup(QString& line) const {

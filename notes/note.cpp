@@ -77,7 +77,7 @@ void Note::rmCards() {
 
 bool Note::isGlobal() {
     QString hidden = TemplateFeat::instance->highersReplace(orig);
-    return templDefRe.match(hidden).hasMatch();
+    return templDefExists(hidden, true);
 }
 void Note::reset() {
     error = "";
@@ -105,14 +105,10 @@ void Note::update(bool isGlobal) {
 void Note::updateGlobals() {
     reset();
     QString hidden = TemplateFeat::instance->highersReplace(orig);
-    auto it = templDefRe.globalMatch(hidden);
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString title = m.captured("nam");
-        auto [it, inserted] = globalTemplates.insert_or_assign(
-            title, Template(
-            m.captured("conts"), m.captured("ptn")
-        ));
+    auto ts = getTempls(hidden, true);
+    for (auto& t : ts) {
+        QString title = t.first;
+        auto [it, inserted] = globalTemplates.insert_or_assign(title, t.second);
 
         if (inserted) {
             templates.push_back(title);

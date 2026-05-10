@@ -77,9 +77,6 @@ struct MultinoteSepFeat : FeatReg {
     Feat_help;
 };
 QStringList splTemplArgs(QString args);
-extern const QRegularExpression templDefRe;
-extern const QRegularExpression templLoclDefRe;
-extern const QRegularExpression templApplyRe;
 struct TemplateFeat : FeatReg {
     Feat_Instance(TemplateFeat)
     Feat_useCols(2);

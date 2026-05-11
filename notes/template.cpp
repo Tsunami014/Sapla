@@ -77,6 +77,8 @@ void Template::handlePtns(QString p) {
                 }
                 if (suffln >= 2 && suff[0] == '#' && suff[1] == '=') {
                     ptns.emplace(name, suff.sliced(2));
+                } else if (suffln >= 2 && suff[0] == '(' && suff[1] == '=') {
+                    ptns.emplace(name, suff.sliced(2, suff.length()-3));
                 } else if (suffln >= 2 && suff[0] == '&' && suff[1] == '=') {
                     ptns.emplace(name, "\f%x&"+suff.sliced(2));
                 } else if (suffln > 0 && suff[0] == '=') {
@@ -107,6 +109,7 @@ void Template::handlePtns(QString p) {
             } else {
                 out << sofar;
                 sofar = c;
+                if (c == '(') indent++;
             }
         } else {
             sofar += c;
@@ -845,9 +848,12 @@ _ltdRes loopTemplDefs(QChar* it, const QString& out, bool global) {
                         continue;
                     } else { nam += c; }
                 } else if (stage == 1) {
-                    if (ptn.isEmpty() && c != '[') {
-                        stage++;
-                        conts += c;
+                    if (!esc && ptn.isEmpty()) {
+                        if (c == '[') ptn += c;
+                        else if (!c.isSpace()) {
+                            stage++;
+                            conts += c;
+                        }
                     } else if (!esc && c == ']' && (it != out.end() && it->isSpace() || *it == ':' || *it == '|')) {
                         stage++;
                     } else {

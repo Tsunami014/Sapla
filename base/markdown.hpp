@@ -17,6 +17,8 @@ private:
     int load(Point saved);
     Point anchor;
     Point pos;
+    int vScroll;
+    int hScroll;
 };
 
 class MarkdownEdit : public QTextEdit {

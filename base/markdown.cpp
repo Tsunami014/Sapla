@@ -2,6 +2,7 @@
 #include "font.hpp"
 #include <QTextList>
 #include <QTextBlock>
+#include <QScrollBar>
 
 
 class MarkdownBlockData : public QTextBlockUserData {
@@ -14,12 +15,16 @@ SaveCursor::SaveCursor(QTextEdit* parent) : QObject(parent), edit(parent) {
     QTextCursor curs = edit->textCursor();
     anchor = save(curs.anchor());
     pos = save(curs.position());
+    vScroll = edit->verticalScrollBar()->value();
+    hScroll = edit->horizontalScrollBar()->value();
 }
 SaveCursor::~SaveCursor() {
     QTextCursor ncurs(edit->document());
     ncurs.setPosition(load(anchor));
     ncurs.setPosition(load(pos), QTextCursor::KeepAnchor);
     edit->setTextCursor(ncurs);
+    edit->verticalScrollBar()->setValue(vScroll);
+    edit->horizontalScrollBar()->setValue(hScroll);
 }
 SaveCursor::Point SaveCursor::save(int thing) {
     QTextBlock blk = edit->document()->findBlock(thing);
@@ -27,6 +32,7 @@ SaveCursor::Point SaveCursor::save(int thing) {
 }
 int SaveCursor::load(Point saved) {
     auto blk = edit->document()->findBlockByNumber(saved.first);
+    if (!blk.isValid()) return 0;
     int absPos = blk.position() + saved.second;
     int absEnd = blk.position() + blk.length() - 1;
     return qMin(absPos, absEnd);
@@ -245,10 +251,11 @@ void MarkdownEdit::updateTxt(bool save, bool orig) {
         bool newData = !data;
         if (newData) {
             data = new MarkdownBlockData();
+            data->plain = true;
             block.setUserData(data);
         }
 
-        if (newData || (save && block.text() != data->orig)) {
+        if (newData || (save && data->plain && block.text() != data->orig)) {
             data->orig = block.text();
             data->plain = true;
         }

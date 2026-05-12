@@ -167,16 +167,14 @@ _scheduleInf ScheduleInfo(
     "10mins\n"
     "30mins\n"
     "1hr\n"
-    "1hr30min\n"
     "3hrs\n"
-    "6hrs\n"
-    "12hrs\n"
+    "8hrs\n"
     "1day\n"
     "2days\n"
     "4days\n"
     "1wk\n"
-    "1wk4days\n"
-    "2wks3days\n"
+    "1wk3days\n"
+    "2wks4days\n"
     "4wks\n"
     "2mos\n"
     "4mos\n"
@@ -188,7 +186,7 @@ _scheduleInf ScheduleInfo(
     , parseDuration("1", "min")  // Fail amount
 
     , parseDuration("1", "hour")  // NotNew amount
-    , parseDuration("1", "day")  // Learnt amount
+    , parseDuration("3", "days")  // Learnt amount
 
     , parseDuration("6", "mins")  // Leave amount
 );

@@ -29,7 +29,8 @@ WinScene::WinScene() {
     lay->addWidget(tr, 1);
 }
 bool WinScene::keyEv(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Escape) {
+    auto key = event->key();
+    if (key == Qt::Key_Escape || key == Qt::Key_Enter) {
         MG->showFC();
         return true;
     }

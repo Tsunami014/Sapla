@@ -116,8 +116,8 @@ QString TemplateFeat::check(QString& txt, QString& err) const {
                 }
             } else { repl = ""; }
 
-            int start = (t->start - txt2.begin()) + offs;
-            int end = (t->end - txt2.begin()) + offs;
+            int start = t->start + offs;
+            int end = t->end + offs;
             txt.replace(start, end - start, repl);
             offs += repl.length() - (end - start);
             applyTempl(t);

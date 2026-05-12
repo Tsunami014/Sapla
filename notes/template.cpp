@@ -21,6 +21,7 @@ const QString suffs = "[|{&;+>!=\r";
 void Template::handlePtns(QString p) {
     p = p.trimmed();
     if (p.isEmpty()) return;
+    // Not indexing idx, but pattern number
     uint idx = 0;
     uint lastidx = 0;
     bool rev = false;
@@ -154,17 +155,17 @@ const std::vector<QChar> suffsList() {
     return vec;
 }
 
-Template::_parseRes Template::parseLoop(QStringList args, QChar* it, const QString& out, uint depth) {
+Template::_parseRes Template::parseLoop(QStringList args, qsizetype idx, const QString& out, uint depth) {
     uint stage = 0;
     QString countr;
     QString loopovr;
     QString end;
-    while (it != out.end()) {
-        QChar c = *it++;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
         bool esc = c == '\\';
         if (esc) {
-            if (it == out.end()) break;
-            c = *it++;
+            if (idx >= out.length()) break;
+            c = out.at(idx++);
             if (c == '\n') continue;
         }
 
@@ -184,17 +185,17 @@ Template::_parseRes Template::parseLoop(QStringList args, QChar* it, const QStri
             if (!esc && c == '[') {
                 bool good = false;
                 QString inner;
-                QChar* it2 = it;
-                while (it2 != out.end()) {
-                    QChar c = *it2++;
+                auto idx2 = idx;
+                while (idx2 < out.length()) {
+                    QChar c = out.at(idx2++);
                     if (c == '\\') {
-                        if (it2 != out.end()) {
-                            inner += *it2++;
+                        if (idx2 < out.length()) {
+                            inner += out.at(idx2++);
                         } else {
-                            return {{}, nullptr};
+                            return {{}, -1};
                         }
-                    } else if (c == ']' && it2->isSpace()) {
-                        while (it2 != out.end() && it2->isSpace()) it2++;
+                    } else if (c == ']' && (idx2 >= out.length() || out.at(idx2).isSpace())) {
+                        while (idx2 < out.length() && out.at(idx2).isSpace()) idx2++;
                         good = true;
                         break;
                     } else {
@@ -202,7 +203,7 @@ Template::_parseRes Template::parseLoop(QStringList args, QChar* it, const QStri
                     }
                 }
                 if (good) {
-                    it = it2;
+                    idx = idx2;
                     handlePtns(inner);
                     continue;
                 }
@@ -213,7 +214,7 @@ Template::_parseRes Template::parseLoop(QStringList args, QChar* it, const QStri
         }
         if (stage == 2) {
             if (!esc && end.isEmpty() && c.isSpace()) continue;
-            if (!esc && c == '@' && it != out.end() && *it == '@') {
+            if (!esc && c == '@' && idx < out.length() && out.at(idx) == '@') {
                 QString o;
                 QStringList its = replace_inner(args, loopovr.trimmed(), depth+1).split(' ');
                 for (auto& it : its) {
@@ -221,22 +222,22 @@ Template::_parseRes Template::parseLoop(QStringList args, QChar* it, const QStri
                     ptns[countr] = it;
                     o += replace_inner(args, end, depth+1);
                 }
-                return {o, it+1};
+                return {o, idx+1};
             }
             if (esc) end += '\\';
             end += c;
         }
     }
-    return {{}, nullptr};
+    return {{}, -1};
 }
-Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QString& out, uint depth) {
+Template::_parseRes Template::parseVar(QStringList args, qsizetype idx, const QString& out, uint depth) {
     uint stage = 0;
-    bool isdollar = (*it++) == '$';
+    bool isdollar = out.at(idx++) == '$';
     QString pref;
     QString nam;
     QString suff;
-    while (it != out.end()) {
-        QChar c = *it++;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
 
         if (stage == 0) {
             if (prefs.contains(c)) {
@@ -250,7 +251,7 @@ Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QStrin
                 continue;
             } else {
                 if (isdollar) {
-                    it--;
+                    idx--;
                     break;
                 }
                 stage++;
@@ -258,8 +259,8 @@ Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QStrin
         }
         if (stage == 2) {
             if (c == '\\') {
-                if (it != out.end()) {
-                    QChar newc = *it++;
+                if (idx < out.length()) {
+                    QChar newc = out.at(idx++);
                     if (newc == '\n') continue;
                     if (newc == '(') {
                         suff += "(";
@@ -273,26 +274,26 @@ Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QStrin
                 } else { break; }
             }
             if (c == '(') {
-                if (it == out.end()) {
+                if (idx >= out.length()) {
                     suff += '(';
                     break;
                 }
                 QString whole = "(";
                 int indent = 1;
-                QChar* it2 = it;
-                while (indent > 0 && it2 != out.end()) {
-                    QChar c = *it2++;
+                auto idx2 = idx;
+                while (indent > 0 && idx2 < out.length()) {
+                    QChar c = out.at(idx2++);
                     if (c == '\\') {
-                        if (it2 != out.end()) {
-                            QChar newc = *it2++;
+                        if (idx2 < out.length()) {
+                            QChar newc = out.at(idx2++);
                             if (newc == '\n') continue;
                             if (newc == '(') {
-                                suff += "(";
+                                whole += "(";
                             } else if (newc == ')') {
-                                suff += ")";
+                                whole += ")";
                             } else {
-                                suff += '\\';
-                                suff += newc;
+                                whole += '\\';
+                                whole += newc;
                             }
                             continue;
                         } else { break; }
@@ -302,7 +303,7 @@ Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QStrin
                     whole += c;
                 }
                 if (indent <= 0) {
-                    it = it2;
+                    idx = idx2;
                     suff += whole;
                     continue;
                 }
@@ -311,15 +312,15 @@ Template::_parseRes Template::parseVar(QStringList args, QChar* it, const QStrin
                 break;
             }
             if (c.isSpace()) {
-                it--;
+                idx--;
                 break;
             }
             suff += c;
         }
     }
     QString o = parseArg(args, nam, pref, suff, depth+1);
-    if (o.isNull()) return {{}, nullptr};
-    return {o, it};
+    if (o.isNull()) return {{}, -1};
+    return {o, idx};
 }
 
 QString Template::replace_inner(QStringList args, QString out, uint depth) {
@@ -327,33 +328,32 @@ QString Template::replace_inner(QStringList args, QString out, uint depth) {
     auto origPtns = ptns;
 
     QString ret;
-    auto it = out.begin();
-    while (it != out.end()) {
-        QChar c = *it++;
+    for (qsizetype idx = 0; idx < out.length(); idx++) {
+        QChar c = out.at(idx);
         
         if (c == '\\') {
-            if (it != out.end()) {
+            if (++idx < out.length()) {
                 ret += '\\';
-                ret += *it++;
+                ret += out.at(idx);
             } else {
                 ret += c;
             }
             continue;
         }
-        if (c == '@' && it != out.end() && *it == '@') {
-            auto o = parseLoop(args, it+1, out, depth);
+        if (c == '@' && idx+1 < out.length() && out.at(idx+1) == '@') {
+            auto o = parseLoop(args, idx+2, out, depth);
             ptns = origPtns;
-            if (o.second != nullptr) {
+            if (o.second != -1) {
                 ret += o.first;
-                it = o.second;
+                idx = o.second-1;
                 continue;
             }
         }
         if (c == '%' || c == '$') {
-            auto o = parseVar(args, it-1, out, depth);
-            if (o.second != nullptr) {
+            auto o = parseVar(args, idx, out, depth);
+            if (o.second != -1) {
                 ret += o.first;
-                it = o.second;
+                idx = o.second-1;
                 continue;
             }
         }
@@ -440,7 +440,7 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                                 if (repl.length() <= 1) {
                                     repl = "";
                                 } else {
-                                    repl.slice(1, repl.length()-2);
+                                    repl = repl.sliced(1, repl.length()-2);
                                 }
                             }
                             break;
@@ -462,12 +462,12 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                             if (splln == 0 || splln > 3) {
                                 return {};
                             }
-                            uint replln;
+                            int replln;
                             if (repl == "\x06") {
                                 if (!words) {
                                     return {};
                                 }
-                                replln = std::numeric_limits<uint>::max();
+                                replln = -1;
                             } else {
                                 replln = words ? repl.count(' ')+1 : repl.length();
                             }
@@ -485,25 +485,34 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                                     break;
                                 }
                             }
-                            if (from < 0) from = replln + from - 1;
+                            if (from < 0) {
+                                if (replln == -1) {
+                                    repl = "";
+                                    break;
+                                }
+                                from = replln + from;
+                            }
                             if (splln == 1) {
                                 if (repl == "\x06") {
                                     repl = QString::number(from);
                                     break;
                                 }
-                                if (from >= replln || from < 0) {
+                                if (replln != -1 && from >= replln || from < 0) {
                                     repl = "";
                                     break;
                                 }
                                 if (words) {
                                     repl = repl.split(' ').sliced(from, 1).join(' ');
                                 } else {
-                                    repl.slice(from, 1);
+                                    repl = repl.sliced(from, 1);
                                 }
                             } else {
-                                bool ok2;
                                 int to;
                                 if (spl[1].isEmpty()) {
+                                    if (replln == -1) {
+                                        repl = "";
+                                        break;
+                                    }
                                     to = replln-1;
                                 } else {
                                     bool ok;
@@ -536,12 +545,18 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                                     from = toOld;
                                 }
                                 if (from < 0) from = 0;
-                                if (to < 0) to = replln + to - 1;
-                                if (from > to || from >= replln || to < 0) {
+                                if (to < 0) {
+                                    if (replln == -1) {
+                                        repl = "";
+                                        break;
+                                    }
+                                    to = replln + to;
+                                }
+                                if (from > to || (replln != -1 && from >= replln) || to < 0) {
                                     repl = "";
                                     break;
                                 }
-                                if (to >= replln) to = replln-1;
+                                if (replln != -1 && to >= replln) to = replln-1;
                                 if (repl == "\x06") {
                                     QStringList li = {};
                                     for (int i = from; i < to; i += step) {
@@ -554,8 +569,8 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                                     auto li = repl.split(' ').sliced(from, ln);
                                     if (step != 1) {
                                         QStringList li2 = {};
-                                        for (uint i = 0; i < ln; i += step) {
-                                            li2.append(li[i]);
+                                        for (int i = 0; i < ln; i += step) {
+                                            li2.append(li.at(i));
                                         }
                                         li = std::move(li2);
                                     }
@@ -564,12 +579,12 @@ QString Template::parseArg(QStringList args, QString nam, QString pref, QString 
                                 } else {
                                     if (step != 1) {
                                         QString out;
-                                        for (uint i = from; i <= to; i += step) {
-                                            out += repl[i];
+                                        for (int i = from; i < to; i += step) {
+                                            out += repl.at(i);
                                         }
                                         repl = std::move(out);
                                     } else {
-                                        repl = repl.slice(from, to-from+1);
+                                        repl = repl.sliced(from, to-from+1);
                                     }
                                     if (reverse) std::reverse(repl.begin(), repl.end());
                                 }
@@ -705,7 +720,7 @@ QString Template::handlefunc(QStringList args, QString fn, uint depth) {
         }
     }
     if (!sofar.isEmpty()) execs << sofar;
-    uint exsln = execs.length();
+    auto exsln = execs.length();
     if (exsln == 0) return {};
     if (exsln == 1) {
         auto out = hfvar(args, execs[0], depth);
@@ -717,8 +732,8 @@ QString Template::handlefunc(QStringList args, QString fn, uint depth) {
     }
     if (exsln == 2) return {};
     auto out = hfvar(args, execs[0], depth);
-    uint idx = 1;
-    uint mx = execs.size();
+    qsizetype idx = 1;
+    auto mx = execs.size();
     while (idx < mx) {
         QString op = execs[idx];
         if (op.length() != 1) return {};
@@ -780,33 +795,33 @@ QString Template::handlefunc(QStringList args, QString fn, uint depth) {
 
 
 struct _ltdRes {
-    QChar* nit = nullptr;
+    qsizetype nidx = -1;
 
-    QChar* startit = nullptr;
-    QChar* endit = nullptr;
+    qsizetype startidx = -1;
+    qsizetype endidx = -1;
     QString nam = {};
     QString ptn = {};
     QString conts = {};
 };
 
-_ltdRes loopTemplDefs(QChar* it, const QString& out, bool global) {
+_ltdRes loopTemplDefs(qsizetype idx, const QString& out, bool global) {
     const QChar use = global ? '=':':';
-    while (it != out.end()) {
-        QChar c = *it++;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
         if (c == '\\') {
-            if (it == out.end()) { break; }
-            else { it++; }
-        } else if (c == '|' && it != out.end() && *it == use) {
-            QChar* start = it-1;
-            it++;
+            if (idx < out.length()) { idx++; }
+            else { break; }
+        } else if (c == '|' && idx < out.length() && out.at(idx) == use) {
+            qsizetype start = idx-1;
+            idx++;
             uint stage = 0;
             QString nam;
             QString ptn;
             QString conts;
             int indent = 0;
             bool nxtesc = false;
-            while (it != out.end()) {
-                QChar c = *it++;
+            while (idx < out.length()) {
+                QChar c = out.at(idx++);
                 bool esc = false;
                 if (nxtesc) {
                     nxtesc = false;
@@ -823,18 +838,18 @@ _ltdRes loopTemplDefs(QChar* it, const QString& out, bool global) {
                     esc = true;
                 }
 
-                if (!esc && c == use && it != out.end() && *it == '|') {
-                    if (ptn.length() > 1) ptn = ptn.sliced(1, ptn.length()-1);
+                if (!esc && c == use && idx < out.length() && out.at(idx) == '|') {
+                    if (ptn.length() > 1) ptn = ptn.sliced(1, ptn.length()-1); // Already removed the last ), should only have the first (
                     else ptn = "";
-                    while (start != out.begin()) {
-                        if ((start-1)->isSpace()) start--;
+                    while (start > 0) {
+                        if (out.at(start-1).isSpace()) start--;
                         else break;
                     }
-                    it++;
-                    auto end = it;
-                    while (it != out.end()) {
-                        QChar c = *it++;
-                        if (c == '\n') end = it-1;
+                    idx++;
+                    auto end = idx;
+                    while (idx < out.length()) {
+                        QChar c = out.at(idx++);
+                        if (c == '\n') end = idx-1;
                         else if (!c.isSpace()) break;
                     }
                     return {end, start, end, nam, ptn, conts.trimmed()};
@@ -854,7 +869,7 @@ _ltdRes loopTemplDefs(QChar* it, const QString& out, bool global) {
                             stage++;
                             conts += c;
                         }
-                    } else if (!esc && c == ']' && (it != out.end() && it->isSpace() || *it == ':' || *it == '|')) {
+                    } else if (!esc && c == ']' && idx < out.length() && (out.at(idx).isSpace() || out.at(idx) == ':' || out.at(idx) == '|')) {
                         stage++;
                     } else {
                         ptn += c;
@@ -870,30 +885,29 @@ _ltdRes loopTemplDefs(QChar* it, const QString& out, bool global) {
 
 std::vector<std::pair<QString, Template>> getTempls(QString txt, bool global) {
     std::vector<std::pair<QString, Template>> out;
-    auto it = txt.begin();
+    qsizetype idx = 0;
     while (1) {
-        auto res = loopTemplDefs(it, txt, global);
-        if (res.nit == nullptr) break;
-        it = res.nit;
+        auto res = loopTemplDefs(idx, txt, global);
+        if (res.nidx == -1) break;
+        idx = res.nidx;
         out.push_back({res.nam, {res.conts, res.ptn}});
     }
     return out;
 }
 
 bool templDefExists(QString txt, bool global) {
-    auto res = loopTemplDefs(txt.begin(), txt, global);
-    return res.nit != nullptr;
+    auto res = loopTemplDefs(0, txt, global);
+    return res.nidx != -1;
 }
 
 QString _rmTemplDefs(QString txt, bool global) {
-    auto it = txt.begin();
+    qsizetype idx = 0;
     while (1) {
-        auto res = loopTemplDefs(it, txt, global);
-        if (res.nit == nullptr) break;
-        auto idx = res.startit - txt.begin();
-        txt = txt.remove(idx, res.endit - res.startit);
-        if (idx >= txt.length()) break;
-        it = txt.begin() + idx;
+        auto res = loopTemplDefs(idx, txt, global);
+        if (res.nidx == -1) break;
+        txt = txt.remove(res.startidx, res.endidx - res.startidx);
+        if (res.startidx >= txt.length()) break;
+        idx = res.startidx;
     }
     return txt;
 }
@@ -902,47 +916,47 @@ QString rmTemplDefs(QString txt) {
 }
 
 _applyRet* applyTempl(QString& txt, QString& err) {
-    auto* ret = new _applyRet{txt.begin(), txt, err};
+    auto* ret = new _applyRet{0, txt, err};
     applyTempl(ret);
     return ret;
 }
-std::pair<QString, QChar*> untilBreak(QChar* it, const QString& out) {
+std::pair<QString, qsizetype> untilBreak(qsizetype idx, const QString& out) {
     QString end;
-    while (it != out.end()) {
-        QChar c = *it++;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
         if (c.isSpace() || c == ':' || c == '|') {
-            if (!end.isEmpty()) return {end, it};
+            if (!end.isEmpty()) return {end, idx};
             continue;
         } else {
             end += c;
         }
     }
-    return {{}, nullptr};
+    return {{}, -1};
 }
 void applyTempl(_applyRet* inp) {
-    auto end = inp->txt.end();
-    QChar* it = inp->it;
-    while (it != end) {
-        QChar c = *it++;
+    QString out = inp->txt;
+    qsizetype idx = inp->idx;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
         if (c == '\\') {
-            if (it == end) { break; }
-            else { it++; }
-        } else if (c == '|' && it != end && (*it == '|' || *it == '!')) {
+            if (idx < out.length()) { idx++; }
+            else { break; }
+        } else if (c == '|' && idx < out.length() && (out.at(idx) == '|' || out.at(idx) == '!')) {
             QString nam;
-            QChar* it2 = it+1;
-            if (it2 == end) continue;
-            if (*it == '!') {
-                nam = *it2++;
+            auto idx2 = idx+1;
+            if (idx2 >= out.length()) continue;
+            if (out.at(idx) == '!') {
+                nam = out.at(idx2++);
             } else {
                 bool good = false;
-                while (it2 != end) {
-                    QChar c = *it2++;
+                while (idx2 < out.length()) {
+                    QChar c = out.at(idx2++);
                     if (c == '\\') {
-                        if (it2 == end) { break; }
-                        else {
+                        if (idx2 < out.length()) {
                             nam += '\\';
-                            nam += *it2++;
+                            nam += out.at(idx2++);
                         }
+                        else { break; }
                     } else if (c.isSpace()) {
                         if (!nam.isEmpty()) {
                             good = true;
@@ -950,8 +964,8 @@ void applyTempl(_applyRet* inp) {
                         }
                         continue;
                     } else if (c == ':' || c == '|') {
-                        if (c == '|' && it2 != end && *it2 == '|') {
-                            it2--; // So it matches the || after
+                        if (c == '|' && idx2 < out.length() && out.at(idx2) == '|') {
+                            idx2--; // So it matches the || after
                         }
                         good = true;
                         break;
@@ -960,23 +974,23 @@ void applyTempl(_applyRet* inp) {
                 if (!good) continue;
             }
             QString conts;
-            while (it2 != end) {
-                QChar c = *it2++;
-                if (c == '|' && it2 != end && *it2 == '>' && it2+1 != end && *(it2+1) == '|') {
-                    auto it3 = it2+2;
+            while (idx2 < out.length()) {
+                QChar c = out.at(idx2++);
+                if (c == '|' && idx2 < out.length() && out.at(idx2) == '>' && idx2+1 < out.length() && out.at(idx2+1) == '|') {
+                    auto idx3 = idx2+2;
                     QString moreconts = "|>|";
                     bool success = false;
-                    while (it3 != end) {
-                        QChar c = *it3++;
+                    while (idx3 < out.length()) {
+                        QChar c = out.at(idx3++);
                         if (c == '\\') {
-                            if (it3 == end) { break; }
-                            else {
+                            if (idx3 < out.length()) {
                                 moreconts += '\\';
-                                moreconts += *it3++;
+                                moreconts += out.at(idx3++);
                             }
-                        } else if (c == '|' && it3 != end && *it3 == '<' && it3+1 != end && *(it3+1) == '|') {
+                            else { break; }
+                        } else if (c == '|' && idx3 < out.length() && out.at(idx3) == '<' && idx3+1 < out.length() && out.at(idx3+1) == '|') {
                             conts = conts + moreconts + "|<|";
-                            it2 = it3+2;
+                            idx2 = idx3+2;
                             success = true;
                             break;
                         } else {
@@ -985,15 +999,15 @@ void applyTempl(_applyRet* inp) {
                     }
                     if (success) continue;
                 } if (c == '\\') {
-                    if (it2 == end) { break; }
-                    else {
+                    if (idx2 < out.length()) {
                         conts += '\\';
-                        conts += *it2++;
+                        conts += out.at(idx2++);
                     }
-                } else if (c == '|' && it2 != end && *it2 == '|') {
-                    inp->start = it-1;
-                    inp->end = it2+1;
-                    inp->it = it2+1;
+                    else { break; }
+                } else if (c == '|' && idx2 < out.length() && out.at(idx2) == '|') {
+                    inp->start = idx-1;
+                    inp->end = idx2+1;
+                    inp->idx = idx2+1;
                     inp->name = nam;
                     inp->conts = conts.trimmed();
                     return;
@@ -1001,5 +1015,5 @@ void applyTempl(_applyRet* inp) {
             }
         }
     }
-    inp->it = nullptr;
+    inp->idx = -1;
 }

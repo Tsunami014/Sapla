@@ -14,7 +14,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-MainGame::MainGame() : logLay(), logLayWrap(this), curGame(nullptr) {
+MainGame::MainGame() : logLay(), logLayWrap(this), curGame(nullptr), curScene(nullptr) {
     sceneStash = new QWidget(this);
     sceneStash->hide();
     bg = new SvgWidget(this);

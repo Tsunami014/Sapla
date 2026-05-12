@@ -21,9 +21,9 @@ protected:
     QString replace_inner(QStringList args, QString conts, uint depth);
 
 private:
-    using _parseRes = std::pair<QString, QChar*>;
-    _parseRes parseLoop(QStringList args, QChar* it, const QString& out, uint depth);
-    _parseRes parseVar(QStringList args, QChar* it, const QString& out, uint depth);
+    using _parseRes = std::pair<QString, qsizetype>;
+    _parseRes parseLoop(QStringList args, qsizetype it, const QString& out, uint depth);
+    _parseRes parseVar(QStringList args, qsizetype it, const QString& out, uint depth);
     struct vartyp {
         std::variant<float, QString> dat;
         QString getStr(bool *ok) {
@@ -52,15 +52,15 @@ std::vector<std::pair<QString, Template>> getTempls(QString txt, bool global);
 bool templDefExists(QString txt, bool global);
 QString rmTemplDefs(QString txt);
 struct _applyRet {
-    QChar* it;
-    bool success() { return it != nullptr; }
+    qsizetype idx;
+    bool success() { return idx != -1; }
     const QString& txt;
     QString& err;
 
     QString name = {};
     QString conts = {};
-    QChar* start = nullptr;
-    QChar* end = nullptr;
+    qsizetype start = -1;
+    qsizetype end = -1;
 };
 _applyRet* applyTempl(QString& txt, QString& err);
 void applyTempl(_applyRet* inp);

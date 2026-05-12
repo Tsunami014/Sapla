@@ -142,8 +142,8 @@ void refreshCurPile() {
             for (auto* p : pilepile) {
                 if (p != last && !p->empty()) {
                     int tot = (amnt > 1? amnt+1 : 1) *
-                        // Piles that are not due are half as likely
-                        (p->top()->schd.dueNow()? 2:0);
+                        // Piles that are not due are much less likely
+                        (p->top()->schd.dueNow()? 3:1);
                     for (int _ = 0; _ < tot; _++) {
                         usepiles.push_back(p);
                     }
@@ -152,14 +152,16 @@ void refreshCurPile() {
             }
             uint usable = usepiles.size();
             if (usable == 0) return;
-            i = 0;
-            mx = QRandomGenerator::global()->bounded(maxPileStreak-minPileStreak)+minPileStreak;
-
             if (usable == 1) {
                 last = usepiles.back();
             } else {
                 last = usepiles[QRandomGenerator::global()->bounded(usable)];
             }
+            i = 0;
+            const int diff = (maxPileStreak-minPileStreak) *
+                (last->top()->schd.dueNow()? 1:0.5) * // Decrease num of cards if not due
+                (last == pilepile.back()? 0.9:1); // Decrease num of cards a bit if is learnt
+            mx = QRandomGenerator::global()->bounded(diff)+minPileStreak;
         }
         double newWeight = cardweight(last->top());
         if (curpile.weight() + newWeight >= maxCurPileWeight - activeWeight) {

@@ -25,24 +25,47 @@ CurPile curpile{};
 double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for usage
 
 std::vector<_progressVal> getProgresses() {
-    unsigned int unsns = 0;
-    unsigned int news = 0;
-    unsigned int learns = 0;
-    unsigned int revis = 0;
+    uint unsns = 0;
+    uint news = 0; uint duenews = 0;
+    uint learns = 0; uint duelearns = 0;
+    uint revis = 0; uint duerevis = 0;
     for (auto* fc : allCards) {
         bool due = fc->schd.dueNow();
         if (fc->schd.isNew()) unsns++;
-        else if (fc->schd.score < ScheduleInfo.notnewSco) news++;
-        else if (fc->schd.score < ScheduleInfo.learntSco) learns++;
-        else revis++;
+        else if (fc->schd.score < ScheduleInfo.notnewSco) (due? duenews : news)++;
+        else if (fc->schd.score < ScheduleInfo.learntSco) (due? duelearns : learns)++;
+        else (due? duerevis : revis)++;
     }
-    return {
-        // And change colours
-        {"Revising\t", revis},
-        {"Learning\t", learns},
-        {"New\t", news},
-        {"Unseen", unsns},
+    std::vector<_progressVal> out;
+    auto generate = [&out](QString labl, uint dne, uint due){
+        if (dne == 0 && due == 0) {
+            out.push_back({"", 0});
+            out.push_back({"", 0});
+        } else if (due == 0) {
+            out.push_back({"", 0});
+            out.push_back({labl, dne});
+        } else if (dne == 0) {
+            out.push_back({labl+'!', 0});
+            out.push_back({"", due});
+        } else {
+            const auto lablsze = labl.length();
+            const double perc = static_cast<double>(due)/(dne+due);
+            // The text before and including the ! should be what is due
+            const auto mid = std::floor(perc*lablsze);
+            QString mid1 = labl.sliced(0, mid)+'!';
+            QString mid2 = labl.sliced(mid);
+            out.push_back({mid1, 0});
+            out.push_back({mid2+"\t", dne+due});
+        }
     };
+    generate("Revising", revis, duerevis);
+    generate("Learning", learns, duelearns);
+    generate("New", news, duenews);
+    if (unsns != 0) {
+        out.push_back({"", 0});
+        out.push_back({"Unseen\t", unsns});
+    }
+    return out;
 }
 _overallProgr getOverallProgress() {
     unsigned int cardsln = allCards.size();

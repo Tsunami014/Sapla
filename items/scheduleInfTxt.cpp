@@ -85,14 +85,12 @@ void ScheduleInfoTxt::generate(FlashCard* card) {
             Qt::Key_1 + i
         );
     }
-    mkBtn(
-        "-",
+    mkBtn("-",
         ScheduleInfo.redoAmnt,
         Qt::Key_Minus,
         "<br><i>Redo</i>"
     );
-    mkBtn(
-        "=",
+    mkBtn("=",
         ScheduleInfo.skipAmnt,
         Qt::Key_Equal,
         "<br><i>Skip</i>"

@@ -341,9 +341,11 @@ const QString PLUGVIEW_HELP =
 ;
 
 const QString GAME_HELP =
-"<p>Click while hovering over a card to flip (can press again to unflip), and once flipped press a button or key on your keyboard as listed on the right to finish and reschedule the card.</p>"
+"<p>Click while hovering over a card or press space if there's only one card to flip (can do again to unflip), and once flipped press a button or key on your keyboard as listed on the right to finish and reschedule the card.</p>"
 "<p>Reset and Skip both don't change the score of the card but just reschedule it for later (skip a lot longer away than reset)</p>"
 "<p>The times present are only an aim. The app gives you cards sorted based on these times, so when you will recieve these cards is independent of the times.</p>"
+"<p>The dark text and ! in the titles of the progress bar showcase how many cards are due. The more dark text, the more cards are due. This makes each piece of text it's own little progress bar! "
+    "But note this text only updates when the game 'refreshes' (e.g. when a card is completed)</p>"
 "<h2>Keybinds</h2>"
     "<ul>"
         "<li>&lt;Esc&gt; to go back to the home screen</li>"

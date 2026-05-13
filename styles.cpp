@@ -148,10 +148,15 @@ void MainGame::initStyles() {
         getQCol("alight", -40, 70, 10), // The light, faded bg
         getQCol("light", 20, -50, 10), // The default progressbar colour
         // The rest of the progressbar colour options
+        getQCol("alight", -30, -30, 20),
         getQCol("alight", 0, 0, 20),
+        getQCol("red", -20, -20, 20),
         getQCol("red", 0, 0, 20),
+        getQCol("adark", -20, 25, 20),
         getQCol("adark", 15, 60, 20),
+        getQCol("shadow", -40, 0, 20),
         getQCol("shadow", -5, 35, 20),
+        getQCol("blue", 10, -10, 20),
         getQCol("blue", 40, 20, 20),
     };
 

@@ -22,7 +22,7 @@ std::vector<Pile*> pilepile{
     &newpile, &earlypile, &otherpile
 };
 CurPile curpile{};
-double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for display
+double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for usage
 
 std::vector<_progressVal> getProgresses() {
     unsigned int unsns = 0;
@@ -190,7 +190,8 @@ GetFlashCard::GetFlashCard() {
         }
     }
     if (ptr && ptr->isAlive()) {
-        activeWeight += cardweight(ptr);
+        weightIncr = cardweight(ptr);
+        activeWeight += weightIncr;
     }
     modify = ptr->isAlive();
 }
@@ -204,22 +205,26 @@ void GetFlashCard::updateSchedule(int rating) {
     }
 }
 void GetFlashCard::finish() {
+    if (weightIncr != 0 && activeWeight > 0) {
+        activeWeight -= cardweight(ptr);
+        if (activeWeight < 0) activeWeight = 0;
+    }
     if (modify && ptr && ptr->isAlive()) {
         if (ptr->schd.score >= ScheduleInfo.leaveSco) {
             addCard(ptr);
         } else {
             curpile.push(ptr);
         }
-        activeWeight -= cardweight(ptr);
     }
     modify = false;
 }
 
 // Move constructor
 GetFlashCard::GetFlashCard(GetFlashCard&& other) noexcept
-    : ptr(other.ptr), modify(other.modify) {
+    : ptr(other.ptr), modify(other.modify), weightIncr(other.weightIncr) {
         other.ptr = nullptr;
         other.modify = false;
+        other.weightIncr = 0;
     }
 // Move assignment.
 GetFlashCard& GetFlashCard::operator=(GetFlashCard&& other) noexcept {
@@ -227,8 +232,10 @@ GetFlashCard& GetFlashCard::operator=(GetFlashCard&& other) noexcept {
         finish();
         ptr = other.ptr;
         modify = other.modify;
+        weightIncr = other.weightIncr;
         other.ptr = nullptr;
         other.modify = false;
+        other.weightIncr = 0;
     }
     return *this;
 }

@@ -48,5 +48,6 @@ public:
 private:
     FlashCard* ptr = nullptr;
     bool modify = false;
+    double weightIncr = 0;
 };
 

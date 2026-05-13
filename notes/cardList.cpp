@@ -25,14 +25,14 @@ CurPile curpile{};
 double activeWeight = 0; // Weight of cards from curpile that were temporarily removed for usage
 
 std::vector<_progressVal> getProgresses() {
-    uint unsns = 0;
-    uint news = 0; uint duenews = 0;
+    uint news = 0;
+    uint frshs = 0; uint duefrshs = 0;
     uint learns = 0; uint duelearns = 0;
     uint revis = 0; uint duerevis = 0;
     for (auto* fc : allCards) {
         bool due = fc->schd.dueNow();
-        if (fc->schd.isNew()) unsns++;
-        else if (fc->schd.score < ScheduleInfo.notnewSco) (due? duenews : news)++;
+        if (fc->schd.isNew()) news++;
+        else if (fc->schd.score < ScheduleInfo.notnewSco) (due? duefrshs : frshs)++;
         else if (fc->schd.score < ScheduleInfo.learntSco) (due? duelearns : learns)++;
         else (due? duerevis : revis)++;
     }
@@ -55,15 +55,15 @@ std::vector<_progressVal> getProgresses() {
             QString mid1 = labl.sliced(0, mid)+'!';
             QString mid2 = labl.sliced(mid);
             out.push_back({mid1, 0});
-            out.push_back({mid2+"\t", dne+due});
+            out.push_back({mid2+'\t', dne+due});
         }
     };
     generate("Revising", revis, duerevis);
     generate("Learning", learns, duelearns);
-    generate("New", news, duenews);
-    if (unsns != 0) {
+    generate("Fresh", frshs, duefrshs);
+    if (news != 0) {
         out.push_back({"", 0});
-        out.push_back({"Unseen\t", unsns});
+        out.push_back({"New\t", news});
     }
     return out;
 }

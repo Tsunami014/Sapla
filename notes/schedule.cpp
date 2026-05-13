@@ -251,5 +251,5 @@ bool Schedule::dueNow() const {
     return isNew() || nxt <= std::chrono::system_clock::now();
 }
 bool Schedule::isNew() const {
-    return nxt == TimePoint{};
+    return nxt == TimePoint{} || score < 1;
 }

@@ -24,7 +24,6 @@ set(CORELIB
     base/svgUtils.cpp
     base/svgWid.hpp
     base/flowlayout.cpp
-    base/seedrng.cpp
 
     wids/ovrlWrap.cpp
     wids/listWid.cpp

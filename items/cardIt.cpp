@@ -9,7 +9,7 @@
 
 CardGraphicItem::CardGraphicItem(const QString& fname, GetFlashCard& flashc, float fontsze, QGraphicsItem* parent)
     : RectItem(parent), SvgUtils(fname), side(0), fc(std::move(flashc)), txt() {
-        setSeed();
+        newSeed();
         front = fc->getSideHtml(SIDE_FRONT);
         back = fc->getSideHtml(SIDE_BACK);
         setAcceptHoverEvents(true);

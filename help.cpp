@@ -68,17 +68,6 @@ const QString APP_HELP =
             +nl("To see the logs: <b>Help &gt; Logs</b>. Config directory is the first log on the list."
             )+"</li>"
     "</ul>"
-"<h1>Tricks</h1>"
-    "<p>If you are using this often consider making note templates to do these</p>"
-    "<ul>"
-        "<li>"
-            "<h3>Random hidden per side</h3>"
-            "<p>With the hidden feature, the randomness overrides the per-side.</p>"
-            "<p>To get around this, you can do something like this: "+code("[[front1::||front2::]][[::back]]")+"."
-                +nl("2 hidden features are used, where one randomly picks one of the fronts to use and the other only appears on the back."
-                )+"</p>"
-        "</li>"
-    "</ul>"
 ;
 
 const QString HOME_HELP = 

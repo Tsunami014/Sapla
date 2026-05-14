@@ -7,6 +7,7 @@ const QRegularExpression scramblRe(R"((?<!\\)\.\.(.*?[^\\\n])\.\.)");
 QString ScrambledFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
     if (s == SIDE_HIDE) return txt.remove(scramblRe);
+    auto rng = getRNG("Scramble");
 
     auto it = scramblRe.globalMatch(txt);
     int offs = 0;
@@ -34,7 +35,7 @@ QString ScrambledFeat::replacements(QString& txt, Side s) const {
                     }
                     QString strorig = str;
                     do {
-                        std::shuffle(str.begin(), str.end(), getRNG());
+                        std::shuffle(str.begin(), str.end(), rng);
                     } while (str == strorig);
                     groups.append(
                         s[0] + str + s[ln-1]
@@ -100,7 +101,7 @@ QString ShuffledFeat::replacements(QString& txt, Side s) const {
             m.capturedEnd()
         });
     }
-    auto rng = getRNG();
+    auto rng = getRNG("Shuffle");
     std::shuffle(endoflns.begin(), endoflns.end(), rng);
     std::shuffle(inlns.begin(), inlns.end(), rng);
     int offs = 0;
@@ -137,93 +138,136 @@ QMap<QString, QString> ShuffledFeat::help() const {
 }
 
 
-struct hiddenResult {
-    int start;
-    int end;
-    QString contents;
+struct hiddenMatch {
+    std::vector<QStringList> opts;
+    QString seed;
 };
+std::pair<QString, qsizetype> _matchHiddensInner(qsizetype idx, const QString& out, std::function<QString(hiddenMatch)> replfn) {
+    std::vector<QStringList> opts;
+    QStringList cur;
+    QString sofar;
+    bool seed = false;
+    bool ended = false;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
+        if (c == '\\') {
+            sofar += '\\';
+            if (idx < out.length()) { sofar += out.at(idx++); }
+        } else if (c == '[' && idx < out.length() && out.at(idx) == '[') {
+            const auto o = _matchHiddensInner(idx+1, out, replfn);
+            if (o.second == -1) {
+                sofar += c;
+                continue;
+            }
+            sofar += o.first;
+            idx = o.second;
+        } else if (!seed && c == ':' && idx < out.length() && out.at(idx) == ':') {
+            idx++;
+            cur.push_back(sofar);
+            sofar = {};
+        } else if (!seed && c == '/' && idx < out.length() && out.at(idx) == '/') {
+            idx++;
+            cur.push_back(sofar);
+            sofar = {};
+            opts.push_back(cur);
+            cur = {};
+        } else if (!seed && c == '#' && idx < out.length() && out.at(idx) == '#') {
+            idx++;
+            cur.push_back(sofar);
+            sofar = {};
+            opts.push_back(cur);
+            cur = {};
+            seed = true;
+        } else if (c == ']' && idx < out.length() && out.at(idx) == ']') {
+            QString sd;
+            if (seed) {
+                sd = sofar;
+                if (sd.isNull()) sd = "";
+            } else {
+                cur.push_back(sofar);
+                sofar = {};
+                opts.push_back(cur);
+            }
+            return {replfn({opts, sd}), idx+1};
+        } else {
+            sofar += c;
+        }
+    }
+    return {{}, -1};
+}
+QString matchHiddens(const QString& out, std::function<QString(hiddenMatch)> replfn) {
+    QString end;
+    bool ended = false;
+    qsizetype idx = 0;
+    while (idx < out.length()) {
+        QChar c = out.at(idx++);
+        if (c == '\\') {
+            end += '\\';
+            if (idx < out.length()) { end += out.at(idx++); }
+        } else if (c == '[' && idx < out.length() && out.at(idx) == '[') {
+            const auto o = _matchHiddensInner(idx+1, out, replfn);
+            if (o.second == -1) {
+                end += c;
+                continue;
+            }
+            end += o.first;
+            idx = o.second;
+        } else {
+            end += c;
+        }
+    }
+    return end;
+}
 
-const QRegularExpression hiddenRe(R"((?<!\\)\[\[((?:.|\n)*?[^\\])\]\])");
 QString HiddenFeat::replacements(QString& txt, Side s) const {
     if (s == SIDE_NAME || s == SIDE_GETFC) return txt;
-    if (s == SIDE_HIDE) return txt.remove(hiddenRe);
+    if (s == SIDE_HIDE) return matchHiddens(txt, [](hiddenMatch){return "";});
 
-    auto it = hiddenRe.globalMatch(txt);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-
-        QString conts = m.captured(1);
-        QString seed;
-        if (auto m2 = QRegularExpression("(?<!\\\\)##").match(conts); m2.hasMatch()) {
-            int idx = m2.capturedStart();
-            seed = conts.sliced(idx+2);
-            conts.slice(0, idx);
-        }
-        QString repl;
-        if (QRegularExpression(R"((?<!\\)(?:::|\/\/))").match(conts).hasMatch()) {
-            QStringList opts = conts.split(QRegularExpression(R"((?<!\\)\/\/)"));
-            uint idx;
-            if (seed.isNull()) {
-                idx = rng_bounded(opts.size());
-            } else {
-                idx = rng_bounded_seed(qHash(seed), opts.size());
-            }
-            QString item = opts[idx];
-
-            QStringList sides = item.split(QRegularExpression("(?<!\\\\)::"));
-            if (sides.length() > 1) {
-                repl = s == SIDE_BACK ? sides[1] : sides[0];
-            } else {
-                repl = item;
-            }
+    auto rng = getRNG("Hidden");
+    return matchHiddens(txt, [s, &rng](hiddenMatch m){
+        if (m.opts.size() == 0) return QString();
+        if (m.opts.size() == 1 && m.opts[0].size() <= 1) return QString();
+        uint idx;
+        int mx = m.opts.size();
+        if (m.seed.isNull()) {
+            idx = rng.bounded(mx);
         } else {
-            repl = "";
+            idx = getRNG("Hidden-"+m.seed).bounded(mx);
         }
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        txt.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }
-    return txt;
+        QStringList item = m.opts.at(idx);
+        if (item.size() == 0) return QString();
+        if (item.size() == 1) return item[0];
+        if (s == SIDE_BACK) return item[1];
+        return item[0];
+    });
 }
 QString HiddenFeat::markup(QString& line) const {
-    auto it = hiddenRe.globalMatch(line);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString conts = m.captured(1);
-        conts
-            .replace(QRegularExpression(R"((?<!\\)\/\/)"), "<b style='color:" + col + "'>//</b>")
-            .replace(QRegularExpression("(?<!\\\\)##"), "<b style='color:" + col + "'>##</b>")
-            .replace(QRegularExpression("(?<!\\\\)::"), "<b style='color:" + col + "'>::</b>")
-        ;
-        QString repl =
-            "<b style='color:" + col + "'>[[</b>" +
-            conts +
-            "<b style='color:" + col + "'>]]</b>"
-        ;
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        line.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }
-    return line;
+    const QString b = "<b style='color:" + col + "'>";
+    return matchHiddens(line, [&b](hiddenMatch m){
+        QStringList outs;
+        for (auto& it : m.opts) {
+            outs.append(it.join("::"));
+        }
+        QString out = b+"[[</b>"+outs.join("//");
+        if (m.seed.isNull()) return out+b+"]]</b>";
+        return out+b+"##</b>"+m.seed+b+"]]</b>";
+    });
 }
 QMap<QString, QString> HiddenFeat::help() const {
     return {
            {"Always hidden text\n[[]]",
             "Always hides text (so can be seen as a 'comment')\n"
             "E.g. [[This text will NEVER be seen and doesn't affect anything!]]\n"
-            "Note features will still do stuff there though (e.g. if you had note templates or something it will still evaluate them)"
         }, {"Hidden on sides\n[[::]]",
             "Only shows text if it's on a specific side\n"
             "E.g. `[[hi::bye]]` would show `hi` if it's on the front side of a flashcard and `bye` if it's on the back.\n"
+            "These can be stacked (though this is more useful with randomly hidden)\n"
             "Leaving sides blank is ok (e.g. `[[front::]]`)"
         }, {"Randomly hidden\n[[//##]]",
             "Randomly selects one of the listed features to use\n"
             "E.g. `[[A//B]]` would show either A or B with a 50% chance\n"
             "This can be combined with hidden on sides, e.g. `[[choice1//choice2front::choice2back//choice3]]`)\n"
+            "These can also be stacked e.g. `[[hifr::[[hibk1//hibk2]]//byefr::byebk]]`\n"
             "Using ## will set the seed so you can have the same result for different random choices (e.g. `[[1//2##a]] [[1//2##a]]`)\n"
             "The seed can be any text or number input and MUST BE AT THE END (`[[1##seed//2]]` will use a seed of `seed//2`)."
         }

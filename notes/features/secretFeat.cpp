@@ -68,8 +68,9 @@ protected:
         ) + 1;
         QSet<QString> touseGroups;
         QList<QString> gs = groupNams.values();
+        auto rng = getRNG("Secret");
         for (uint i = 0; i < useAmnt; i++) {
-            int idx = rng_bounded(initSze-i);
+            int idx = rng.bounded(initSze-i);
             touseGroups.insert(gs[idx]);
             // This is an efficient way to delete the item, but it destroys the order. Good thing I don't care!
             gs[idx] = std::move(gs.last()); // Move last item to idx

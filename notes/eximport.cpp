@@ -49,7 +49,7 @@ const std::vector<Port> ports = {
             for (auto* n : notesL) {
                 for (int i = 0; i < n->getNumCards(); i++) {
                     auto* card = n->getFlashCard(i);
-                    setSeed();
+                    newSeed();
                     outs <<
                         card->getSide(SIDE_FRONT)
                         +"\n---\n"+
@@ -65,7 +65,7 @@ const std::vector<Port> ports = {
             for (auto* n : notesL) {
                 for (int i = 0; i < n->getNumCards(); i++) {
                     auto* card = n->getFlashCard(i);
-                    setSeed();
+                    newSeed();
                     outs << "<p>"+
                         card->getSideHtml(SIDE_FRONT)
                         +"<hr>"+

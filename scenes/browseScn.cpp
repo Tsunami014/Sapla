@@ -169,9 +169,7 @@ void BrowseScene::updateInfo() {
     }
 }
 void BrowseScene::updatePrev(bool refresh) {
-    if (refresh) {
-        seed = getSeed();
-    }
+    if (refresh) newSeed();
     updateInfo();
     auto setDisabledness = [&](bool disabled) {
         preview->setProperty("Disabled", disabled);
@@ -224,7 +222,6 @@ void BrowseScene::updatePrev(bool refresh) {
     if (side == SIDE_FRONT) sidestr = " (front)";
     else if (side == SIDE_BACK) sidestr = " (back)";
     prevIdxLabl->setText(QString("Preview card %1/%2%3").arg(prevIdx.idx).arg(prevIdx.max).arg(sidestr));
-    setSeed(seed);
     preview->setMarkdown(n->getFlashCard(prevIdx.idx-1)->getSide(side));
     setDisabledness(false);
 }

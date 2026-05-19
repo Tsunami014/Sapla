@@ -165,6 +165,14 @@ public:
             auto front = cards.begin() - 1;
             auto secondFront = cards.begin() - 2;
             std::iter_swap(front, secondFront);
+            return;
+        }
+        if (cards.size() < 3) return;
+        if (QRandomGenerator::global()->bounded(2)) {
+            auto front = cards.begin() - 1;
+            auto thirdFront = cards.begin() - 3;
+            std::iter_swap(front, thirdFront);
+            return;
         }
     }
 

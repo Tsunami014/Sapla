@@ -75,7 +75,6 @@ If you need help on anything, look at the `help > this screen help` or `help > a
 ### The easy way
 Download the executable from the releases tab
 ### The hard way (build from source)
-#### Linux
 - Ensure you have cmake installed (on any Linux just install `cmake`)
 - Ensure QT is installed (and the svg library too)
     - For Linux, find which package it is.
@@ -91,6 +90,7 @@ Download the executable from the releases tab
         ```
         nix-shell -p cmake qt6.qtbase qt6.qtwayland
         ```
+- Then to publish as an appimage run `./publish.sh` or `make publish` (you can also run `make debug` or `make build` to just build it)
 ##### Automatic building and packaging
 ```bash
 ./publish.sh

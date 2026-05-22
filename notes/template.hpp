@@ -1,7 +1,7 @@
 #pragma once
 #include <QString>
 #include <variant>
-#include <map>
+#include <unordered_map>
 
 const uint MAX_RECURSION = 15;
 
@@ -14,7 +14,7 @@ public:
     QString replace(QStringList args);
 protected:
     QString conts;
-    std::map<QString, QString> ptns;
+    std::unordered_map<QString, QString> ptns;
 
     void handlePtns(QString p);
     QString parseArg(QStringList args, QString nam, QString pref, QString suff, uint depth);
@@ -46,7 +46,7 @@ private:
     vartyp hfvar(QStringList args, QString nam, uint depth);
 };
 
-extern std::map<QString, Template> globalTemplates;
+extern std::unordered_map<QString, Template> globalTemplates;
 
 std::vector<std::pair<QString, Template>> getTempls(QString txt, bool global);
 bool templDefExists(QString txt, bool global);

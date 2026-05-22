@@ -1,7 +1,7 @@
 #pragma once
 #include <QString>
 #include <QStringList>
-#include <map>
+#include <unordered_map>
 #include "schedule.hpp"
 #include "template.hpp"
 
@@ -15,7 +15,7 @@ enum Side {
 
 QString trimNL(const QString& orig);
 
-using ScheduleMap = std::map<QString, std::map<int, Schedule>>;
+using ScheduleMap = std::unordered_map<QString, std::unordered_map<int, Schedule>>;
 
 class FlashCard; // Forward reference
 class Note {

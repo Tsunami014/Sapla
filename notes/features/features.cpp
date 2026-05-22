@@ -23,7 +23,7 @@ QString _AutoColour::nxtCol() {
     return ret;
 }
 
-Schedule getSchd(std::map<int, Schedule> schds, int part, int idx) {
+Schedule getSchd(std::unordered_map<int, Schedule> schds, int part, int idx) {
     auto it = schds.find(idx);
     if (it != schds.end()) {
         return schds.at(idx);

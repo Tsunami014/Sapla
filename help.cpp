@@ -233,7 +233,7 @@ const QString ARGUMENT_HELP =
             )+"</p>"
         "<p>Using "+code("name&=thing")+" is a shorthand for "+code("name=%x&")+", useful for equations (below)</p>"
         "<p><i>All the above macro definitions will also expand inner $args or %args too</i>, so if you do not want this then use "+code("name#=thing")+".</p>"
-        "<p>Using"+code("name(=thing)")+" is the same as "+code("name#=(thing)")+" except removing the outer ().</p>"
+        "<p>Using "+code("name(=thing)")+" is the same as "+code("name#=(thing)")+" except removing the outer ().</p>"
     "<h3>Special specifiers</h3>"
         "<p>Special specifiers are things you can do instead of an argument or macro in an argument specifier. Here are the options:</p>"
         "<ul>"

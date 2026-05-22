@@ -7,12 +7,13 @@
  * \2 - replacement for spaces
  * \3 - represents a \ that only escapes and doesn't have any physical form
  * \6 - used to represent every number separated by spaces
+ * \E - used at the end of pattern names for duplicates
  * \F - used to state this variable should be expanded
  *
  * \A and \D are LF and CR respectively (so do not use them!)
  */
 
-std::map<QString, Template> globalTemplates;
+std::unordered_map<QString, Template> globalTemplates;
 
 const QString prefs = "\".^*_&";
 const QString suffs = "[|{&;+>!=\r";
@@ -76,12 +77,18 @@ void Template::handlePtns(QString p) {
                 } else {
                     suffln = suff.length();
                 }
-                if (suffln >= 2 && suff[0] == '#' && suff[1] == '=') {
-                    ptns.emplace(name, suff.sliced(2));
-                } else if (suffln >= 2 && suff[0] == '(' && suff[1] == '=') {
-                    ptns.emplace(name, suff.sliced(2, suff.length()-3));
+                if (suffln >= 2 && (suff[0] == '#' || suff[0] == '(') && suff[1] == '=') {
+                    if (!pref.isEmpty()) {
+                        ptns.emplace(name, "\f%"+pref+name+"\E");
+                        name += "\E";
+                    }
+                    if (suff[0] == '(') {
+                        ptns.emplace(name, suff.sliced(2, suff.length()-3));
+                    } else {
+                        ptns.emplace(name, suff.sliced(2));
+                    }
                 } else if (suffln >= 2 && suff[0] == '&' && suff[1] == '=') {
-                    ptns.emplace(name, "\f%x&"+suff.sliced(2));
+                    ptns.emplace(name, "\f%"+pref+"x&"+suff.sliced(2));
                 } else if (suffln > 0 && suff[0] == '=') {
                     ptns.emplace(name, '\f'+suff.sliced(1));
                 } else {
@@ -246,7 +253,7 @@ Template::_parseRes Template::parseVar(QStringList args, qsizetype idx, const QS
             } else { stage++; }
         }
         if (stage == 1) {
-            if (c.isLetterOrNumber() || c == '-' || nam.isEmpty()) {
+            if (c.isLetterOrNumber() || c == '-' || c == '\x0E' || nam.isEmpty()) {
                 nam += c;
                 continue;
             } else {

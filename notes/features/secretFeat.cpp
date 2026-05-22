@@ -101,7 +101,7 @@ protected:
     }
 };
 
-std::vector<std::unique_ptr<FlashCard>>SecretFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const {
+std::vector<std::unique_ptr<FlashCard>>SecretFeat::getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const {
     if (!secretRe.match(txt).hasMatch()) {
         return {};
     }

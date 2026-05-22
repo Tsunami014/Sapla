@@ -73,7 +73,7 @@ QStringList splTemplArgs(QString args) {
     return out;
 }
 QString TemplateFeat::check(QString& txt, QString& err) const {
-    std::map<QString, Template> loclTempls;
+    std::unordered_map<QString, Template> loclTempls;
     auto ts = getTempls(txt, false);
     for (auto t : ts) {
         QString title = t.first;

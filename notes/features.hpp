@@ -29,7 +29,7 @@ struct FeatReg {
 };
 struct CardFeatReg : public FeatReg {
     inline static std::unique_ptr<CardFeatReg> instance = nullptr;
-    virtual std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const { return {}; }
+    virtual std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const { return {}; }
     virtual bool dominance(const QString& txt) const { return false; }
 };
 
@@ -42,7 +42,7 @@ inline std::vector<CardFeatReg*> CardFeats;
     Feats.push_back(nam::instance.get());
 
 void registerNoteFeatures();
-Schedule getSchd(std::map<int, Schedule> schds, int idx);
+Schedule getSchd(std::unordered_map<int, Schedule> schds, int idx);
 
 #define Feat_useCol        void init() override { col = AC.nxtCol(); } QString col
 #define Feat_useCols(amnt) void init() override { for (int i=0; i<amnt; i++) { cols.push_back(AC.nxtCol()); } } std::vector<QString> cols
@@ -54,7 +54,7 @@ Schedule getSchd(std::map<int, Schedule> schds, int idx);
 #define Feat_replacements  QString replacements(QString& txt, Side s) const override
 #define Feat_markup        QString markup(QString& line) const override
 
-#define CFeat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const override
+#define CFeat_getFlashCards std::vector<std::unique_ptr<FlashCard>> getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const override
 #define CFeat_dominance     bool dominance(const QString& txt) const override
 
 

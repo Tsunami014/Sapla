@@ -5,7 +5,7 @@ const QRegularExpression ssfRe(R"(^ *--- *$)", MO);
 bool SingleSideFeat::dominance(const QString& txt) const {
     return ssfRe.match(txt).hasMatch();
 }
-std::vector<std::unique_ptr<FlashCard>> SingleSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const {
+std::vector<std::unique_ptr<FlashCard>> SingleSideFeat::getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const {
     QRegularExpressionMatch m = ssfRe.match(txt);
     if (!m.hasMatch()) {
         return {};
@@ -41,7 +41,7 @@ const QRegularExpression dsfRe(R"(^ *=== *$)", MO);
 bool DoubleSideFeat::dominance(const QString& txt) const {
     return dsfRe.match(txt).hasMatch();
 }
-std::vector<std::unique_ptr<FlashCard>> DoubleSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const {
+std::vector<std::unique_ptr<FlashCard>> DoubleSideFeat::getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const {
     QRegularExpressionMatch m = dsfRe.match(txt);
     if (!m.hasMatch()) {
         return {};
@@ -80,7 +80,7 @@ const QRegularExpression msfRe(R"(^ *\/\/\/ *$)", MO);
 bool MirrorSideFeat::dominance(const QString& txt) const {
     return msfRe.match(txt).hasMatch();
 }
-std::vector<std::unique_ptr<FlashCard>> MirrorSideFeat::getFlashCards(Note* parent, const QString& txt, std::map<int, Schedule> schds, int part) const {
+std::vector<std::unique_ptr<FlashCard>> MirrorSideFeat::getFlashCards(Note* parent, const QString& txt, std::unordered_map<int, Schedule> schds, int part) const {
     QStringList cards = txt.split(msfRe);
     auto len = cards.length();
     if (len < 2) {

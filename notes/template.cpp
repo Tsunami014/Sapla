@@ -7,7 +7,7 @@
  * \2 - replacement for spaces
  * \3 - represents a \ that only escapes and doesn't have any physical form
  * \6 - used to represent every number separated by spaces
- * \E - used at the end of pattern names for duplicates
+ * \x0E - used at the end of pattern names for duplicates
  * \F - used to state this variable should be expanded
  *
  * \A and \D are LF and CR respectively (so do not use them!)
@@ -79,8 +79,8 @@ void Template::handlePtns(QString p) {
                 }
                 if (suffln >= 2 && (suff[0] == '#' || suff[0] == '(') && suff[1] == '=') {
                     if (!pref.isEmpty()) {
-                        ptns.emplace(name, "\f%"+pref+name+"\E");
-                        name += "\E";
+                        ptns.emplace(name, "\f%"+pref+name+"\x0E");
+                        name += "\x0E";
                     }
                     if (suff[0] == '(') {
                         ptns.emplace(name, suff.sliced(2, suff.length()-3));
